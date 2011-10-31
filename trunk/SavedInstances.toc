@@ -34,15 +34,7 @@ libs\LibDataBroker-1.1\LibDataBroker-1.1.lua
 libs\LibDBIcon-1.0\LibDBIcon-1.0.lua
 #@end-no-lib-strip@ 
 
-Locales\enUS.lua
-Locales\frFR.lua
-Locales\deDE.lua
-Locales\koKR.lua
-Locales\esMX.lua
-Locales\ruRU.lua
-Locales\zhCN.lua
-Locales\esES.lua
-Locales\zhTW.lua
+locale.lua
 
 SavedInstances.lua
 config.lua
