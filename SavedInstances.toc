@@ -1,0 +1,48 @@
+## Interface: 40200
+## Title: SavedInstances
+## Notes: Keeps track of the raid IDs saved against your characters.
+## Author: @project-author@
+## Version: @project-version@ (r@file-revision@)
+## X-AceForum: 14896
+## X-License: BSD
+## X-Category: Raid
+## OptionalDeps: Ace3, CallbackHandler-1.0, LibBossIDs-1.0, LibDataBroker-1.1, LibDBIcon-1.0, LibQTip-1.0
+#@no-lib-strip@
+## X-Embeds: Ace3, CallbackHandler-1.0, LibBossIDs-1.0, LibDataBroker-1.1, LibDBIcon-1.0, LibQTip-1.0
+#@end-no-lib-strip@ 
+## SavedVariables: SavedInstancesDB
+## LoadOnDemand: 0
+
+
+#@no-lib-strip@
+libs\LibStub\LibStub.lua
+libs\CallbackHandler-1.0\CallbackHandler-1.0.xml
+libs\AceAddon-3.0\AceAddon-3.0.xml
+libs\AceLocale-3.0\AceLocale-3.0.xml
+libs\AceEvent-3.0\AceEvent-3.0.xml
+libs\AceTimer-3.0\AceTimer-3.0.xml
+libs\AceGUI-3.0\AceGUI-3.0.xml
+libs\AceConfig-3.0\AceConfig-3.0.xml
+libs\AceLocale-3.0\AceLocale-3.0.xml
+libs\LibQTip-1.0\lib.xml
+libs\LibBossIDs-1.0\lib.xml
+#@end-no-lib-strip@ 
+
+libs\LibDataBroker-1.1\LibDataBroker-1.1.lua
+
+#@no-lib-strip@
+libs\LibDBIcon-1.0\LibDBIcon-1.0.lua
+#@end-no-lib-strip@ 
+
+Locales\enUS.lua
+Locales\frFR.lua
+Locales\deDE.lua
+Locales\koKR.lua
+Locales\esMX.lua
+Locales\ruRU.lua
+Locales\zhCN.lua
+Locales\esES.lua
+Locales\zhTW.lua
+
+SavedInstances.lua
+config.lua
