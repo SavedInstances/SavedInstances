@@ -1,4 +1,5 @@
 local addonName, vars = ...
+SavedInstances = vars
 vars.core = LibStub("AceAddon-3.0"):NewAddon("SavedInstances", "AceEvent-3.0", "AceTimer-3.0")
 local core = vars.core
 vars.L = SavedInstances_locale()
@@ -82,8 +83,9 @@ vars.defaultDB = {
 	Toons = { }, 	-- table key: "Toon - Realm"; value:
 				-- Class: string
 				-- AlwaysShow: boolean
-				-- Daily1: expiry (normal)
-				-- Daily2: expiry (heroic)
+				-- Daily1: expiry (normal) REMOVED
+				-- Daily2: expiry (heroic) REMOVED
+				-- LFG1: expiry 
 	Indicators = {
 		D1Indicator = "BLANK", -- indicator: ICON_*, BLANK
 		D1Text = "5",
@@ -124,7 +126,7 @@ vars.defaultDB = {
 		ColumnStyle = "NORMAL", -- "NORMAL", "CLASS", "ALTERNATING"
 		AltColumnColor = { 0.2, 0.2, 0.2, 1, }, -- grey
 		RecentHistory = false,
-		TrackRandom = false,
+		TrackLFG = true,
 	},
 	Instances = { }, 	-- table key: "Instance name"; value:
 					-- Show: boolean
@@ -356,8 +358,6 @@ local function MaintainInstanceDB()
 				for difficulty, d in pairs(i[toon]) do
 					if d.Expires < time() then
 						i[toon][difficulty] = nil
-						if t.Daily1 == d.ID then t.Daily1 = nil end
-						if t.Daily2 == d.ID then t.Daily2 = nil end
 						vars.db.Lockouts[d.ID] = nil
 					else
 						vars.db.Lockouts[d.ID] = vars.db.Lockouts[d.ID] or { }
@@ -372,10 +372,15 @@ local function MaintainInstanceDB()
 			end
 		end
 	end
-	-- clearing out old daily markers
+	-- update random toon info
+	local t = vars.db.Toons[thisToon]
+        t.LFG1 = GetLFGRandomCooldownExpiration()
+	local desert = select(7,UnitDebuff("player",GetSpellInfo(71041)))
+	if desert and (not t.LFG1 or desert > t.LFG1) then
+	  t.LFG1 = desert
+	end
 	for toon, t in pairs(vars.db.Toons) do
-		if t.Daily1 and t.Daily1 < time() then t.Daily1 = nil end
-		if t.Daily2 and t.Daily2 < time() then t.Daily2 = nil end
+		if t.LFG1 and t.LFG1 < GetTime() then t.LFG1 = nil end
 	end
 end
 
@@ -512,6 +517,7 @@ function core:OnDisable()
 end
 
 function core:PLAYER_ENTERING_WORLD()
+  MaintainInstanceDB()
 end
 
 function core:CheckSystemMessage()
@@ -691,29 +697,34 @@ function core:ShowTooltip(anchorframe)
 		end
 	end
 	-- random dungeon
-	if vars.db.Tooltip.TrackRandom then
-		local randomdaily = false
+	if vars.db.Tooltip.TrackLFG then
+		local randomcd = false
 		for toon, t in pairs(vars.db.Toons) do
-			if t.Daily1 or t.Daily2 then
-				randomdaily = true
+			if t.LFG1 then
+				randomcd = true
 				for diff = 1, 4 do
 					columns[toon..diff] = columns[toon..diff] or tooltip:AddColumn("CENTER")
 				end
 			end
 		end
 		local randomLine
-		if randomdaily then
+		if randomcd then
 			if not firstcategory and vars.db.Tooltip.CategorySpaces then
 				tooltip:AddSeparator(6,0,0,0,0)
 			end
 			randomLine = tooltip:AddLine(YELLOWFONT .. LFG_TYPE_RANDOM_DUNGEON .. FONTEND)		
 		end
 		for toon, t in pairs(vars.db.Toons) do
-			if t.Daily1 then
-				tooltip:SetCell(randomLine, columns[toon..1], DifficultyString(nil, 1, toon))
-			end
-			if t.Daily2 then
-				tooltip:SetCell(randomLine, columns[toon..2], DifficultyString(nil, 2, toon))
+			if t.LFG1 and GetTime() < t.LFG1 then
+			        local diff = t.LFG1 - GetTime()
+				--[[
+				local hr,min,sec = math.floor(diff/3600), math.floor((diff%3600)/60), math.floor(diff%60)
+				local str = string.format(":%02d",sec)
+				if (min > 0 or hr > 0) then str = string.format("%02d",min)..str end
+				if (hr > 0) then str = string.format("%02d:",hr)..str end
+				--]]
+				local str = SecondsToTime(diff, false, false, 1)
+				tooltip:SetCell(randomLine, columns[toon..1], ClassColorise(t.Class,str), "CENTER",4)
 			end
 		end
 	end

@@ -218,12 +218,12 @@ core.Options = {
 					desc = L["Display instances in order of recommended level from lowest to highest"],
 					order = 23,
 				},
-				TrackRandom = {
+				TrackLFG = {
 					type = "toggle",
 					order = 24,
 					width = "double",
-					name = L["Track random daily dungeon"],
-					desc = L["Show which characters have completed a random dungeon"],
+					name = L["Track LFG dungeon cooldown"],
+					desc = L["Show cooldown for characters to use LFG dungeon system"],
 				},
 				
 				ToonHeader = {
