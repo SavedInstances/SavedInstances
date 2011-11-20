@@ -225,6 +225,16 @@ core.Options = {
 					name = L["Track LFG dungeon cooldown"],
 					desc = L["Show cooldown for characters to use LFG dungeon system"],
 				},
+				TrackJP = {
+					type = "toggle",
+					order = 25,
+					name = L["Track Justice Points"],
+				},
+				TrackVP = {
+					type = "toggle",
+					order = 26,
+					name = L["Track Valor Points"],
+				},
 				
 				ToonHeader = {
 					order = 31, 
