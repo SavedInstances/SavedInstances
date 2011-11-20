@@ -127,6 +127,8 @@ vars.defaultDB = {
 		AltColumnColor = { 0.2, 0.2, 0.2, 1, }, -- grey
 		RecentHistory = false,
 		TrackLFG = true,
+		TrackJP = true,
+		TrackVP = true,
 	},
 	Instances = { }, 	-- table key: "Instance name"; value:
 					-- Show: boolean
@@ -382,6 +384,12 @@ local function MaintainInstanceDB()
 	for toon, t in pairs(vars.db.Toons) do
 		if t.LFG1 and t.LFG1 < GetTime() then t.LFG1 = nil end
 	end
+	t.currency = t.currency or {}
+	for _,idx in pairs({395, 396}) do
+	  local ci = t.currency[idx] or {}
+	  _, ci.amount, _, ci.earnedThisWeek, ci.weeklyMax, ci.totalMax = GetCurrencyInfo(idx)
+	  t.currency[idx] = ci
+	end
 end
 
 local function coloredText(fontstring)
@@ -423,6 +431,47 @@ local function ShowIndicatorTooltip(cell, arg, ...)
 	    indicatortip:AddLine(coloredText(left), coloredText(right))
 	  end
 	end
+end
+
+local colorpat = "\124c%c%c%c%c%c%c%c%c"
+local weeklycap = CURRENCY_WEEKLY_CAP:gsub("%%%d*\$?([ds])","%%%1")
+local weeklycap_scan = weeklycap:gsub("%%d","(%%d+)"):gsub("%%s","(\124c%%x%%x%%x%%x%%x%%x%%x%%x)")
+local totalcap = CURRENCY_TOTAL_CAP:gsub("%%%d*\$?([ds])","%%%1")
+local totalcap_scan = totalcap:gsub("%%d","(%%d+)"):gsub("%%s","(\124c%%x%%x%%x%%x%%x%%x%%x%%x)")
+
+local function ShowCurrencyTooltip(cell, arg, ...)
+  local toon, idx, ci = unpack(arg)
+  if not toon or not idx or not ci then return end
+  local name,_,tex = GetCurrencyInfo(idx)
+  tex = " \124TInterface\\Icons\\"..tex..":0\124t"
+  indicatortip = QTip:Acquire("SavedInstancesIndicatorTooltip", 2, "LEFT", "RIGHT")
+  indicatortip:Clear()
+  indicatortip:SetHeaderFont(tooltip:GetHeaderFont())
+  local nameline, _ = indicatortip:AddHeader()
+  indicatortip:AddHeader(ClassColorise(vars.db.Toons[toon].Class, strsplit(' ', toon)), "("..(ci.amount or "0")..tex..")")
+
+  scantt:SetOwner(UIParent,"ANCHOR_NONE")
+  scantt:SetCurrencyByID(idx)
+  local name = scantt:GetName()
+  for i=1,scantt:NumLines() do
+    local left = _G[name.."TextLeft"..i]
+    if left:GetText():find(weeklycap_scan) or left:GetText():find(totalcap_scan) then
+      -- omit player's values
+    else
+      indicatortip:AddLine("")
+      indicatortip:SetCell(indicatortip:GetLineCount(),1,coloredText(left), nil, nil, nil, nil, nil, nil, 250)
+    end
+  end
+  if ci.weeklyMax and ci.weeklyMax > 0 then
+    indicatortip:AddLine(weeklycap:format("", (ci.earnedThisWeek or 0), (ci.weeklyMax/100 or 0)))
+  end
+  if ci.totalMax and ci.totalMax > 0 then
+    indicatortip:AddLine(totalcap:format("", (ci.amount or 0), (ci.totalMax/100 or 0)))
+  end
+
+  indicatortip:SetAutoHideDelay(0.1, tooltip)
+  indicatortip:SmartAnchorTo(tooltip)
+  indicatortip:Show()
 end
 
 local function UpdateLDBTextMode()
@@ -728,6 +777,51 @@ function core:ShowTooltip(anchorframe)
 			end
 		end
 	end
+
+        for _,info in ipairs({{395, vars.db.Tooltip.TrackJP}, {396, vars.db.Tooltip.TrackVP}}) do
+          local idx, setting = unpack(info)
+          if setting then
+            local show 
+   	    for toon, t in pairs(vars.db.Toons) do
+		-- ci.name, ci.amount, ci.earnedThisWeek, ci.weeklyMax, ci.totalMax
+                local ci = t.currency and t.currency[idx] 
+		if ci and (ci.amount > 0 or ci.earnedThisWeek > 0) then
+		  local name,_,tex = GetCurrencyInfo(idx)
+		  show = name.." \124TInterface\\Icons\\"..tex..":0\124t"
+		  for diff = 1, 4 do
+			columns[toon..diff] = columns[toon..diff] or tooltip:AddColumn("CENTER")
+		  end
+		end
+	    end
+   	    local currLine
+	    if show then
+		if not firstcategory and vars.db.Tooltip.CategorySpaces then
+			tooltip:AddSeparator(6,0,0,0,0)
+		end
+		currLine = tooltip:AddLine(YELLOWFONT .. show .. FONTEND)		
+
+   	      for toon, t in pairs(vars.db.Toons) do
+                local ci = t.currency and t.currency[idx] 
+		if ci and (ci.amount > 0 or ci.earnedThisWeek > 0) then
+                   local str
+                   if ci.weeklyMax and ci.weeklyMax > 0 then
+                      str = (ci.earnedThisWeek or "0").."/"..(ci.weeklyMax/100)..
+                            " ("..(ci.amount or "0")..((ci.totalMax and ci.totalMax > 0 and "/"..(ci.totalMax/100)) or "")..")"
+                   elseif ci.totalMax and ci.totalMax > 0 then
+                      str = "("..(ci.amount or "0").."/"..(ci.totalMax/100)..")"
+                   else
+                      str = "("..ci.amount..")"
+                   end
+		   tooltip:SetCell(currLine, columns[toon..1], ClassColorise(t.Class,str), "CENTER",4)
+		   tooltip:SetCellScript(currLine, columns[toon..1], "OnEnter", ShowCurrencyTooltip, {toon, idx, ci})
+		   tooltip:SetCellScript(currLine, columns[toon..1], "OnLeave", 
+							     function() indicatortip:Hide(); GameTooltip:Hide() end)
+                end
+              end
+	    end
+          end
+        end
+
 	-- toon names
 	for toondiff, col in pairs(columns) do
 		local toon = strsub(toondiff, 1, #toondiff-1)
