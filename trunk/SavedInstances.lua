@@ -68,6 +68,7 @@ vars.Categories = {
 local tooltip, indicatortip
 local history = { }
 local thisToon = UnitName("player") .. " - " .. GetRealmName()
+local maxlvl = MAX_PLAYER_LEVEL_TABLE[#MAX_PLAYER_LEVEL_TABLE]
 
 local storelockout = false -- when true, store the details against the current lockout
 
@@ -82,10 +83,12 @@ vars.defaultDB = {
 	},
 	Toons = { }, 	-- table key: "Toon - Realm"; value:
 				-- Class: string
+				-- Level: integer
 				-- AlwaysShow: boolean
 				-- Daily1: expiry (normal) REMOVED
 				-- Daily2: expiry (heroic) REMOVED
 				-- LFG1: expiry 
+				-- WeeklyResetTime: expiry
 	Indicators = {
 		D1Indicator = "BLANK", -- indicator: ICON_*, BLANK
 		D1Text = "5",
@@ -182,12 +185,23 @@ local function GetServerOffset()
 	local server = serverHour + serverMinute / 60
 	local localT = localHour + localMinute / 60
 	offset = floor((server - localT) * 2 + 0.5) / 2
+	if raw then return offset end
 	if offset >= 12 then
 		offset = offset - 24
 	elseif offset < -12 then
 		offset = offset + 24
 	end
 	return offset
+end
+
+local function GetNextWeeklyResetTime()
+  local offset = GetServerOffset() * 3600
+  local nightlyReset = time() + GetQuestResetTime()
+  --while date("%A",nightlyReset+offset) ~= WEEKDAY_TUESDAY do 
+  while date("%w",nightlyReset+offset) ~= "2" do
+    nightlyReset = nightlyReset + 24 * 3600
+  end
+  return nightlyReset
 end
 
 -- local addon functions below
@@ -384,6 +398,17 @@ local function MaintainInstanceDB()
 	for toon, t in pairs(vars.db.Toons) do
 		if t.LFG1 and t.LFG1 < GetTime() then t.LFG1 = nil end
 	end
+	-- Weekly Reset
+	for toon, t in pairs(vars.db.Toons) do
+	  if not t.WeeklyResetTime or t.WeeklyResetTime < time() then 
+	    t.currency = t.currency or {}
+	    for _,idx in pairs({395, 396}) do
+	      t.currency[idx] = t.currency[idx] or {}
+	      t.currency[idx].earnedThisWeek = 0
+	    end
+          end 
+	  t.WeeklyResetTime = GetNextWeeklyResetTime()
+	end
 	t.currency = t.currency or {}
 	for _,idx in pairs({395, 396}) do
 	  local ci = t.currency[idx] or {}
@@ -524,6 +549,7 @@ function core:OnInitialize()
 	config = vars.config
 	db.Toons[thisToon] = db.Toons[thisToon] or { }
 	db.Toons[thisToon].Class = db.Toons[thisToon].Class or select(2, UnitClass("player"))
+	db.Toons[thisToon].Level = UnitLevel("player")
 	db.Toons[thisToon].AlwaysShow = db.Toons[thisToon].AlwaysShow or false
 	db.Lockouts = db.Lockouts or { }
 	RequestRaidInfo()
@@ -622,8 +648,8 @@ function core:Refresh()
 end
 
 function core:LFG_COMPLETION_REWARD()
-	local _, _, diff = GetInstanceInfo()
-	vars.db.Toons[thisToon]["Daily"..diff] = time() + GetQuestResetTime() + GetServerOffset() * 3600
+	--local _, _, diff = GetInstanceInfo()
+	--vars.db.Toons[thisToon]["Daily"..diff] = time() + GetQuestResetTime() + GetServerOffset() * 3600
 end
 
 function core:ShowTooltip(anchorframe)
@@ -785,12 +811,16 @@ function core:ShowTooltip(anchorframe)
    	    for toon, t in pairs(vars.db.Toons) do
 		-- ci.name, ci.amount, ci.earnedThisWeek, ci.weeklyMax, ci.totalMax
                 local ci = t.currency and t.currency[idx] 
-		if ci and (ci.amount > 0 or ci.earnedThisWeek > 0) then
-		  local name,_,tex = GetCurrencyInfo(idx)
-		  show = name.." \124TInterface\\Icons\\"..tex..":0\124t"
+		if ci and (((ci.earnedThisWeek or 0) > 0 and (ci.weeklyMax or 0) > 0) 
+		       -- or ((ci.amount or 0) > 0 and ci.weeklyMax == 0 and t.Level == maxlvl)
+		       ) then
 		  for diff = 1, 4 do
 			columns[toon..diff] = columns[toon..diff] or tooltip:AddColumn("CENTER")
 		  end
+		end
+		if ci and (ci.amount or 0) > 0 and columns[toon..1] then
+		  local name,_,tex = GetCurrencyInfo(idx)
+		  show = name.." \124TInterface\\Icons\\"..tex..":0\124t"
 		end
 	    end
    	    local currLine
@@ -802,7 +832,7 @@ function core:ShowTooltip(anchorframe)
 
    	      for toon, t in pairs(vars.db.Toons) do
                 local ci = t.currency and t.currency[idx] 
-		if ci and (ci.amount > 0 or ci.earnedThisWeek > 0) then
+		if ci and columns[toon..1] and ((ci.earnedThisWeek or 0) > 0 or (ci.amount or 0) > 0) then
                    local str
                    if ci.weeklyMax and ci.weeklyMax > 0 then
                       str = (ci.earnedThisWeek or "0").."/"..(ci.weeklyMax/100)..
