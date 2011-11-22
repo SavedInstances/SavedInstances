@@ -74,6 +74,13 @@ local storelockout = false -- when true, store the details against the current l
 
 local scantt = CreateFrame("GameTooltip", "SavedInstancesScanTooltip", UIParent, "GameTooltipTemplate")
 
+local currency = { 
+  395, -- Justice Points 
+  396, -- Valor Points
+  392, -- Honor Points
+  390, -- Conquest Points
+}
+
 vars.defaultDB = {
 	DBVersion = 10,
 	History = { }, -- for tracking 5 instance per hour limit
@@ -130,8 +137,10 @@ vars.defaultDB = {
 		AltColumnColor = { 0.2, 0.2, 0.2, 1, }, -- grey
 		RecentHistory = false,
 		TrackLFG = true,
-		TrackJP = true,
-		TrackVP = true,
+		Currency395 = true, -- Justice Points 
+		Currency396 = true, -- Valor Points
+		Currency392 = false, -- Honor Points
+		Currency390 = false, -- Conquest Points
 	},
 	Instances = { }, 	-- table key: "Instance name"; value:
 					-- Show: boolean
@@ -402,7 +411,7 @@ local function MaintainInstanceDB()
 	for toon, t in pairs(vars.db.Toons) do
 	  if not t.WeeklyResetTime or t.WeeklyResetTime < time() then 
 	    t.currency = t.currency or {}
-	    for _,idx in pairs({395, 396}) do
+	    for _,idx in ipairs(currency) do
 	      t.currency[idx] = t.currency[idx] or {}
 	      t.currency[idx].earnedThisWeek = 0
 	    end
@@ -410,9 +419,13 @@ local function MaintainInstanceDB()
 	  t.WeeklyResetTime = GetNextWeeklyResetTime()
 	end
 	t.currency = t.currency or {}
-	for _,idx in pairs({395, 396}) do
+	for _,idx in pairs(currency) do
 	  local ci = t.currency[idx] or {}
 	  _, ci.amount, _, ci.earnedThisWeek, ci.weeklyMax, ci.totalMax = GetCurrencyInfo(idx)
+          if idx == 396 then -- VP x 100, CP x 1
+            ci.weeklyMax = ci.weeklyMax and ci.weeklyMax/100
+          end
+          ci.totalMax = ci.totalMax and ci.totalMax/100
 	  t.currency[idx] = ci
 	end
 end
@@ -463,6 +476,7 @@ local weeklycap = CURRENCY_WEEKLY_CAP:gsub("%%%d*\$?([ds])","%%%1")
 local weeklycap_scan = weeklycap:gsub("%%d","(%%d+)"):gsub("%%s","(\124c%%x%%x%%x%%x%%x%%x%%x%%x)")
 local totalcap = CURRENCY_TOTAL_CAP:gsub("%%%d*\$?([ds])","%%%1")
 local totalcap_scan = totalcap:gsub("%%d","(%%d+)"):gsub("%%s","(\124c%%x%%x%%x%%x%%x%%x%%x%%x)")
+local season_scan = CURRENCY_SEASON_TOTAL:gsub("%%%d*\$?([ds])","(%%%1*)")
 
 local function ShowCurrencyTooltip(cell, arg, ...)
   local toon, idx, ci = unpack(arg)
@@ -480,7 +494,9 @@ local function ShowCurrencyTooltip(cell, arg, ...)
   local name = scantt:GetName()
   for i=1,scantt:NumLines() do
     local left = _G[name.."TextLeft"..i]
-    if left:GetText():find(weeklycap_scan) or left:GetText():find(totalcap_scan) then
+    if left:GetText():find(weeklycap_scan) or 
+       left:GetText():find(totalcap_scan) or
+       (left:GetText():find(season_scan) and toon ~= thisToon) then
       -- omit player's values
     else
       indicatortip:AddLine("")
@@ -488,10 +504,10 @@ local function ShowCurrencyTooltip(cell, arg, ...)
     end
   end
   if ci.weeklyMax and ci.weeklyMax > 0 then
-    indicatortip:AddLine(weeklycap:format("", (ci.earnedThisWeek or 0), (ci.weeklyMax/100 or 0)))
+    indicatortip:AddLine(weeklycap:format("", (ci.earnedThisWeek or 0), (ci.weeklyMax or 0)))
   end
   if ci.totalMax and ci.totalMax > 0 then
-    indicatortip:AddLine(totalcap:format("", (ci.amount or 0), (ci.totalMax/100 or 0)))
+    indicatortip:AddLine(totalcap:format("", (ci.amount or 0), (ci.totalMax or 0)))
   end
 
   indicatortip:SetAutoHideDelay(0.1, tooltip)
@@ -804,8 +820,8 @@ function core:ShowTooltip(anchorframe)
 		end
 	end
 
-        for _,info in ipairs({{395, vars.db.Tooltip.TrackJP}, {396, vars.db.Tooltip.TrackVP}}) do
-          local idx, setting = unpack(info)
+        for _,idx in ipairs(currency) do
+	  local setting = vars.db.Tooltip["Currency"..idx]
           if setting then
             local show 
    	    for toon, t in pairs(vars.db.Toons) do
@@ -835,10 +851,10 @@ function core:ShowTooltip(anchorframe)
 		if ci and columns[toon..1] and ((ci.earnedThisWeek or 0) > 0 or (ci.amount or 0) > 0) then
                    local str
                    if ci.weeklyMax and ci.weeklyMax > 0 then
-                      str = (ci.earnedThisWeek or "0").."/"..(ci.weeklyMax/100)..
-                            " ("..(ci.amount or "0")..((ci.totalMax and ci.totalMax > 0 and "/"..(ci.totalMax/100)) or "")..")"
+                      str = (ci.earnedThisWeek or "0").."/"..ci.weeklyMax..
+                            " ("..(ci.amount or "0")..((ci.totalMax and ci.totalMax > 0 and "/"..ci.totalMax) or "")..")"
                    elseif ci.totalMax and ci.totalMax > 0 then
-                      str = "("..(ci.amount or "0").."/"..(ci.totalMax/100)..")"
+                      str = "("..(ci.amount or "0").."/"..ci.totalMax..")"
                    else
                       str = "("..ci.amount..")"
                    end
