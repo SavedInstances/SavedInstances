@@ -1,5 +1,6 @@
 local addonName, vars = ...
 SavedInstances = vars
+local addon = vars
 vars.core = LibStub("AceAddon-3.0"):NewAddon("SavedInstances", "AceEvent-3.0", "AceTimer-3.0")
 local core = vars.core
 vars.L = SavedInstances_locale()
@@ -426,6 +427,9 @@ local function MaintainInstanceDB()
             ci.weeklyMax = ci.weeklyMax and ci.weeklyMax/100
           end
           ci.totalMax = ci.totalMax and ci.totalMax/100
+          if idx == 390 then
+             ci.season = addon:GetSeasonCurrency(390)
+          end
 	  t.currency[idx] = ci
 	end
 end
@@ -478,6 +482,19 @@ local totalcap = CURRENCY_TOTAL_CAP:gsub("%%%d*\$?([ds])","%%%1")
 local totalcap_scan = totalcap:gsub("%%d","(%%d+)"):gsub("%%s","(\124c%%x%%x%%x%%x%%x%%x%%x%%x)")
 local season_scan = CURRENCY_SEASON_TOTAL:gsub("%%%d*\$?([ds])","(%%%1*)")
 
+function addon:GetSeasonCurrency(idx) 
+  scantt:SetOwner(UIParent,"ANCHOR_NONE")
+  scantt:SetCurrencyByID(idx)
+  local name = scantt:GetName()
+  for i=1,scantt:NumLines() do
+    local left = _G[name.."TextLeft"..i]
+    if left:GetText():find(season_scan) then
+      return left:GetText()
+    end
+  end  
+  return nil
+end
+
 local function ShowCurrencyTooltip(cell, arg, ...)
   local toon, idx, ci = unpack(arg)
   if not toon or not idx or not ci then return end
@@ -496,7 +513,7 @@ local function ShowCurrencyTooltip(cell, arg, ...)
     local left = _G[name.."TextLeft"..i]
     if left:GetText():find(weeklycap_scan) or 
        left:GetText():find(totalcap_scan) or
-       (left:GetText():find(season_scan) and toon ~= thisToon) then
+       left:GetText():find(season_scan) then
       -- omit player's values
     else
       indicatortip:AddLine("")
@@ -508,6 +525,9 @@ local function ShowCurrencyTooltip(cell, arg, ...)
   end
   if ci.totalMax and ci.totalMax > 0 then
     indicatortip:AddLine(totalcap:format("", (ci.amount or 0), (ci.totalMax or 0)))
+  end
+  if ci.season and #ci.season > 0 then
+    indicatortip:AddLine(ci.season)
   end
 
   indicatortip:SetAutoHideDelay(0.1, tooltip)
