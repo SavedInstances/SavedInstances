@@ -427,9 +427,7 @@ local function MaintainInstanceDB()
             ci.weeklyMax = ci.weeklyMax and ci.weeklyMax/100
           end
           ci.totalMax = ci.totalMax and ci.totalMax/100
-          if idx == 390 then
-             ci.season = addon:GetSeasonCurrency(390)
-          end
+          ci.season = addon:GetSeasonCurrency(idx)
 	  t.currency[idx] = ci
 	end
 end
