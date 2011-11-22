@@ -225,15 +225,30 @@ core.Options = {
 					name = L["Track LFG dungeon cooldown"],
 					desc = L["Show cooldown for characters to use LFG dungeon system"],
 				},
-				TrackJP = {
-					type = "toggle",
-					order = 25,
-					name = L["Track Justice Points"],
+				CurrencyHeader = {
+					order = 50, 
+					type = "header",
+					name = CURRENCY,
 				},
-				TrackVP = {
+				Currency395 = { -- Justice Points
 					type = "toggle",
-					order = 26,
-					name = L["Track Valor Points"],
+					order = 51,
+					name = L["Track"].." "..GetCurrencyInfo(395),
+				},
+				Currency396 = { -- Valor Points
+					type = "toggle",
+					order = 52,
+					name = L["Track"].." "..GetCurrencyInfo(396),
+				},
+				Currency392 = { -- Honor Points
+					type = "toggle",
+					order = 53,
+					name = L["Track"].." "..GetCurrencyInfo(392),
+				},
+				Currency390 = { -- Conquest Points
+					type = "toggle",
+					order = 54,
+					name = L["Track"].." "..GetCurrencyInfo(390),
 				},
 				
 				ToonHeader = {
