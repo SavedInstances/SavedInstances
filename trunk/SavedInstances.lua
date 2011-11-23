@@ -34,14 +34,7 @@ local GOLDFONT = NORMAL_FONT_COLOR_CODE
 local YELLOWFONT = LIGHTYELLOW_FONT_COLOR_CODE
 local WHITEFONT = HIGHLIGHT_FONT_COLOR_CODE
 local GRAYFONT = GRAY_FONT_COLOR_CODE
-local EXPANSION_NAME0 = EXPANSION_NAME0 -- "Classic"
-local EXPANSION_NAME1 = EXPANSION_NAME1 -- "The Burning Crusade"
-local EXPANSION_NAME2 = EXPANSION_NAME2 -- "Wrath of the Lich King"
-local EXPANSION_NAME3 = EXPANSION_NAME3 -- "Cataclysm"
-local LFG_TYPE_DUNGEON = LFG_TYPE_DUNGEON -- "Dungeon"
-local LFG_TYPE_RAID = LFG_TYPE_RAID -- "Raid"
 local LFD_RANDOM_REWARD_EXPLANATION2 = LFD_RANDOM_REWARD_EXPLANATION2
-local LFG_TYPE_RANDOM_DUNGEON = LFG_TYPE_RANDOM_DUNGEON -- "Random Dungeon"
 
 vars.Indicators = {
 	ICON_STAR = ICON_LIST[1] .. "16:16:0:0|t",
@@ -188,7 +181,7 @@ local function TableLen(table)
 	return i
 end
 
-local function GetServerOffset()
+function addon:GetServerOffset()
 	-- this function was borrowed from Broker Currency with Azethoth
 	local serverHour, serverMinute = GetGameTime()
 	local localHour, localMinute = tonumber(date("%H")), tonumber(date("%M"))
@@ -204,8 +197,8 @@ local function GetServerOffset()
 	return offset
 end
 
-local function GetNextWeeklyResetTime()
-  local offset = GetServerOffset() * 3600
+function addon:GetNextWeeklyResetTime()
+  local offset = addon:GetServerOffset() * 3600
   local nightlyReset = time() + GetQuestResetTime()
   --while date("%A",nightlyReset+offset) ~= WEEKDAY_TUESDAY do 
   while date("%w",nightlyReset+offset) ~= "2" do
@@ -401,7 +394,7 @@ local function MaintainInstanceDB()
 	-- update random toon info
 	local t = vars.db.Toons[thisToon]
         t.LFG1 = GetLFGRandomCooldownExpiration()
-	local desert = select(7,UnitDebuff("player",GetSpellInfo(71041)))
+	local desert = select(7,UnitDebuff("player",GetSpellInfo(71041))) -- GetLFGDeserterExpiration()
 	if desert and (not t.LFG1 or desert > t.LFG1) then
 	  t.LFG1 = desert
 	end
@@ -417,7 +410,7 @@ local function MaintainInstanceDB()
 	      t.currency[idx].earnedThisWeek = 0
 	    end
           end 
-	  t.WeeklyResetTime = GetNextWeeklyResetTime()
+	  t.WeeklyResetTime = addon:GetNextWeeklyResetTime()
 	end
 	t.currency = t.currency or {}
 	for _,idx in pairs(currency) do
@@ -683,7 +676,7 @@ end
 
 function core:LFG_COMPLETION_REWARD()
 	--local _, _, diff = GetInstanceInfo()
-	--vars.db.Toons[thisToon]["Daily"..diff] = time() + GetQuestResetTime() + GetServerOffset() * 3600
+	--vars.db.Toons[thisToon]["Daily"..diff] = time() + GetQuestResetTime() + addon:GetServerOffset() * 3600
 end
 
 function core:ShowTooltip(anchorframe)
