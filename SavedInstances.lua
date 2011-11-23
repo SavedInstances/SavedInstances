@@ -235,42 +235,39 @@ local function GetLFDID(name)
 	return foundid
 end
 
-local function InstanceCategory(instance)
+function addon:InstanceCategory(instance)
 	if not instance then return nil end
 	local instance = vars.db.Instances[instance]
 	return ((instance.Raid and "R") or ((not instance.Raid) and "D")) .. instance.Expansion
 end
-vars.InstanceCategory = InstanceCategory
 
-local function InstancesInCategory(targetcategory)
+function addon:InstancesInCategory(targetcategory)
 	-- returns a table of the form { "instance1", "instance2", ... }
 	if (not targetcategory) then return { } end
 	local list = { }
 	for instance, _ in pairs(vars.db.Instances) do
-		if InstanceCategory(instance) == targetcategory then
+		if addon:InstanceCategory(instance) == targetcategory then
 			list[#list+1] = instance
 		end
 	end
 	return list
 end
-vars.InstancesInCategory = InstancesInCategory
 
-local function CategorySize(category)
+function addon:CategorySize(category)
 	if not category then return nil end
 	local i = 0
 	for instance, _ in pairs(vars.db.Instances) do
-		if category == InstanceCategory(instance) then
+		if category == addon:InstanceCategory(instance) then
 			i = i + 1
 		end
 	end
 	return i
 end
-vars.CategorySize = CategorySize
 
-local function OrderedInstances(category)
+function addon:OrderedInstances(category)
 	-- returns a table of the form { "instance1", "instance2", ... }
 	local orderedlist = { }
-	local instances = InstancesInCategory(category)
+	local instances = addon:InstancesInCategory(category)
 	while #instances > 0 do
 		local highest, lowest, selected
 		for i, instance in ipairs(instances) do
@@ -300,10 +297,9 @@ local function OrderedInstances(category)
 	end
 	return orderedlist
 end
-vars.OrderedInstances = OrderedInstances
 
 
-local function OrderedCategories()
+function addon:OrderedCategories()
 	-- returns a table of the form { "category1", "category2", ... }
 	local orderedlist = { }
 	local firstexpansion, lastexpansion, expansionstep, firsttype, lasttype
@@ -336,7 +332,6 @@ local function OrderedCategories()
 	end
 	return orderedlist
 end
-vars.OrderedCategories = OrderedCategories
 
 local function DifficultyString(instance, diff, toon)
 	local setting
@@ -709,9 +704,9 @@ function core:ShowTooltip(anchorframe)
 	local categorysize = { } -- remember the number of instances to be shown for each category
 	local instancesaved = { } -- remember if each instance has been saved or not (boolean)
 	local doseparator = false -- use this to determine whether to insert spaces or not
-	for _, category in ipairs(OrderedCategories()) do
+	for _, category in ipairs(addon:OrderedCategories()) do
 		categorysize[category] = 0
-		for _, instance in ipairs(OrderedInstances(category)) do
+		for _, instance in ipairs(addon:OrderedInstances(category)) do
 			for toon, t in pairs(vars.db.Toons) do
 				for diff = 1, 4 do
 					if vars.db.Instances[instance][toon] and vars.db.Instances[instance][toon][diff] then
@@ -737,7 +732,7 @@ function core:ShowTooltip(anchorframe)
 	local categoryrow = { } -- remember where each category heading goes
 	local instancerow = { } -- remember where each instance goes
 	local firstcategory = true -- use this to skip spacing before the first category
-	for _, category in ipairs(OrderedCategories()) do
+	for _, category in ipairs(addon:OrderedCategories()) do
 		if categorysize[category] > 0 then
 			if not firstcategory and vars.db.Tooltip.CategorySpaces then
 				tooltip:AddSeparator(6,0,0,0,0)
@@ -746,7 +741,7 @@ function core:ShowTooltip(anchorframe)
 				categoryrow[category], _ = tooltip:AddLine()
 
 			end
-			for _, instance in ipairs(OrderedInstances(category)) do
+			for _, instance in ipairs(addon:OrderedInstances(category)) do
 				for toon, t in pairs(vars.db.Toons) do
 					for diff = 1, 4 do
 						if vars.db.Instances[instance][toon] and vars.db.Instances[instance][toon][diff] then
