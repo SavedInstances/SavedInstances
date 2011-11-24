@@ -21,10 +21,6 @@ local GetNumSavedInstances = GetNumSavedInstances
 local GetSavedInstanceInfo = GetSavedInstanceInfo
 local IsInInstance = IsInInstance
 local SecondsToTime = SecondsToTime
-local RequestRaidInfo = RequestRaidInfo
-local UnitAura = UnitAura
-local UnitClass = UnitClass
-local UnitName = UnitName
 
 -- local (optimal) references to Blizzard's strings
 local RAID_CLASS_COLORS = RAID_CLASS_COLORS
@@ -365,7 +361,7 @@ local function DifficultyString(instance, diff, toon)
 	return ColorCodeOpen(color) .. gsub(prefs[setting.."Text"], "ICON", iconstring) .. FONTEND
 end
 
-local function MaintainInstanceDB()
+function addon:MaintainInstanceDB()
 	for instance, i in pairs(vars.db.Instances) do
 		for toon, t in pairs(vars.db.Toons) do
 			if i[toon] then
@@ -601,6 +597,8 @@ function core:OnEnable()
 	self:RegisterEvent("UPDATE_INSTANCE_INFO", "Refresh")
 	self:RegisterEvent("RAID_INSTANCE_WELCOME", RequestRaidInfo)
 	self:RegisterEvent("CHAT_MSG_SYSTEM", "CheckSystemMessage")
+	self:RegisterEvent("CHAT_MSG_CURRENCY", "CheckSystemMessage")
+	self:RegisterEvent("CHAT_MSG_LOOT", "CheckSystemMessage")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
 	self:RegisterEvent("LFG_COMPLETION_REWARD") -- for random daily dungeon tracking
 end
@@ -614,15 +612,28 @@ function core:OnDisable()
 end
 
 function core:PLAYER_ENTERING_WORLD()
-  MaintainInstanceDB()
+  addon:MaintainInstanceDB()
 end
 
-function core:CheckSystemMessage()
-	if arg1 == INSTANCE_SAVED then
-		storelockout = true
-		RequestRaidInfo()
+function addon:UpdateThisLockout()
+	storelockout = true
+	RequestRaidInfo()
+end
+local currency_msg = CURRENCY_GAINED:gsub(":.*$","")
+function core:CheckSystemMessage(event, msg)
+	if (msg:find(INSTANCE_SAVED) or -- first boss kill
+	    msg:find(currency_msg)) -- subsequent boss kills (unless capped or over level)
+	   and IsInInstance() then
+	   addon:UpdateThisLockout()
 	end
 end
+
+function core:LFG_COMPLETION_REWARD()
+	--local _, _, diff = GetInstanceInfo()
+	--vars.db.Toons[thisToon]["Daily"..diff] = time() + GetQuestResetTime() + addon:GetServerOffset() * 3600
+	addon:UpdateThisLockout()
+end
+
 
 function core:Refresh()
 	-- update entire database from the current character's perspective
@@ -666,12 +677,7 @@ function core:Refresh()
 		end
 	end
 	storelockout = false
-	MaintainInstanceDB()
-end
-
-function core:LFG_COMPLETION_REWARD()
-	--local _, _, diff = GetInstanceInfo()
-	--vars.db.Toons[thisToon]["Daily"..diff] = time() + GetQuestResetTime() + addon:GetServerOffset() * 3600
+	addon:MaintainInstanceDB()
 end
 
 function core:ShowTooltip(anchorframe)
@@ -684,7 +690,7 @@ function core:ShowTooltip(anchorframe)
 	hFont:SetFont(hFontPath, hFontSize, "OUTLINE")
 	tooltip:SetHeaderFont(hFont)
 	local headLine, headCol = tooltip:AddHeader(GOLDFONT .. "SavedInstances" .. FONTEND)
-	MaintainInstanceDB()
+	addon:MaintainInstanceDB()
 	if columns then columns = nil end
 	local columns = { }
 	-- allocating columns for characters
