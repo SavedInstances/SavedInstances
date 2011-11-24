@@ -389,19 +389,19 @@ function addon:MaintainInstanceDB()
 	if desert and (not t.LFG1 or desert > t.LFG1) then
 	  t.LFG1 = desert
 	end
-	for toon, t in pairs(vars.db.Toons) do
-		if t.LFG1 and t.LFG1 < GetTime() then t.LFG1 = nil end
+	for toon, ti in pairs(vars.db.Toons) do
+		if ti.LFG1 and (ti.LFG1 < GetTime()) then ti.LFG1 = nil end
 	end
 	-- Weekly Reset
-	for toon, t in pairs(vars.db.Toons) do
-	  if not t.WeeklyResetTime or t.WeeklyResetTime < time() then 
-	    t.currency = t.currency or {}
+	for toon, ti in pairs(vars.db.Toons) do
+	  if not ti.WeeklyResetTime or (ti.WeeklyResetTime < time()) then 
+	    ti.currency = ti.currency or {}
 	    for _,idx in ipairs(currency) do
-	      t.currency[idx] = t.currency[idx] or {}
-	      t.currency[idx].earnedThisWeek = 0
+	      ti.currency[idx] = ti.currency[idx] or {}
+	      ti.currency[idx].earnedThisWeek = 0
 	    end
           end 
-	  t.WeeklyResetTime = addon:GetNextWeeklyResetTime()
+	  ti.WeeklyResetTime = addon:GetNextWeeklyResetTime()
 	end
 	t.currency = t.currency or {}
 	for _,idx in pairs(currency) do
