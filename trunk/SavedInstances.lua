@@ -621,9 +621,13 @@ function addon:UpdateThisLockout()
 end
 local currency_msg = CURRENCY_GAINED:gsub(":.*$","")
 function core:CheckSystemMessage(event, msg)
-	if (msg:find(INSTANCE_SAVED) or -- first boss kill
+        local inst, t = IsInInstance()
+	-- note: currency is already updated in TooltipShow, 
+	-- here we just hook JP/VP currency messages to capture lockout changes
+	if inst and (t == "party" or t == "raid") and -- dont update on bg honor 
+	   (msg:find(INSTANCE_SAVED) or -- first boss kill
 	    msg:find(currency_msg)) -- subsequent boss kills (unless capped or over level)
-	   and IsInInstance() then
+	   then
 	   addon:UpdateThisLockout()
 	end
 end
