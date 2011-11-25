@@ -8,9 +8,9 @@
 ## X-AceForum: 14896
 ## X-License: BSD
 ## X-Category: Raid
-## OptionalDeps: Ace3, CallbackHandler-1.0, LibBossIDs-1.0, LibDataBroker-1.1, LibDBIcon-1.0, LibQTip-1.0
+## OptionalDeps: Ace3, CallbackHandler-1.0, LibDataBroker-1.1, LibDBIcon-1.0, LibQTip-1.0
 #@no-lib-strip@
-## X-Embeds: Ace3, CallbackHandler-1.0, LibBossIDs-1.0, LibDataBroker-1.1, LibDBIcon-1.0, LibQTip-1.0
+## X-Embeds: Ace3, CallbackHandler-1.0, LibDataBroker-1.1, LibDBIcon-1.0, LibQTip-1.0
 #@end-no-lib-strip@ 
 ## SavedVariables: SavedInstancesDB
 ## LoadManagers: AddonLoader
