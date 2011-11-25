@@ -11,7 +11,6 @@ vars.icon = vars.LDB and LibStub("LibDBIcon-1.0", true)
 vars.instanceDB = select(1, GetLFDChoiceInfo())
 
 local QTip = LibStub("LibQTip-1.0")
---local bosses = LibStub("LibBossIDs-1.0")
 local dataobject, db, config
 
 -- local (optimal) references to provided functions
@@ -195,7 +194,11 @@ end
 
 function addon:GetNextWeeklyResetTime()
   local offset = addon:GetServerOffset() * 3600
-  local nightlyReset = time() + GetQuestResetTime()
+  local resettime = GetQuestResetTime()
+  if not resettime or resettime <= 0 then -- ticket 43: can fail during startup
+    return nil
+  end
+  local nightlyReset = time() + resettime
   --while date("%A",nightlyReset+offset) ~= WEEKDAY_TUESDAY do 
   while date("%w",nightlyReset+offset) ~= "2" do
     nightlyReset = nightlyReset + 24 * 3600
@@ -393,7 +396,9 @@ function addon:MaintainInstanceDB()
 		if ti.LFG1 and (ti.LFG1 < GetTime()) then ti.LFG1 = nil end
 	end
 	-- Weekly Reset
-	for toon, ti in pairs(vars.db.Toons) do
+	local nextreset = addon:GetNextWeeklyResetTime()
+	if nextreset and nextreset > time() then
+	 for toon, ti in pairs(vars.db.Toons) do
 	  if not ti.WeeklyResetTime or (ti.WeeklyResetTime < time()) then 
 	    ti.currency = ti.currency or {}
 	    for _,idx in ipairs(currency) do
@@ -401,7 +406,8 @@ function addon:MaintainInstanceDB()
 	      ti.currency[idx].earnedThisWeek = 0
 	    end
           end 
-	  ti.WeeklyResetTime = addon:GetNextWeeklyResetTime()
+	  ti.WeeklyResetTime = nextreset
+	 end
 	end
 	t.currency = t.currency or {}
 	for _,idx in pairs(currency) do
