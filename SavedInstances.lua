@@ -126,6 +126,7 @@ vars.defaultDB = {
 		AltColumnColor = { 0.2, 0.2, 0.2, 1, }, -- grey
 		RecentHistory = false,
 		TrackLFG = true,
+		TrackDeserter = true,
 		Currency395 = true, -- Justice Points 
 		Currency396 = true, -- Valor Points
 		Currency392 = false, -- Honor Points
@@ -392,8 +393,10 @@ function addon:MaintainInstanceDB()
 	if desert and (not t.LFG1 or desert > t.LFG1) then
 	  t.LFG1 = desert
 	end
+	t.pvpdesert = select(7,UnitDebuff("player",GetSpellInfo(26013))) 
 	for toon, ti in pairs(vars.db.Toons) do
 		if ti.LFG1 and (ti.LFG1 < GetTime()) then ti.LFG1 = nil end
+		if ti.pvpdesert and (ti.pvpdesert < GetTime()) then ti.pvpdesert = nil end
 	end
 	-- Weekly Reset
 	local nextreset = addon:GetNextWeeklyResetTime()
@@ -838,6 +841,30 @@ function core:ShowTooltip(anchorframe)
 				--]]
 				local str = SecondsToTime(diff, false, false, 1)
 				tooltip:SetCell(randomLine, columns[toon..1], ClassColorise(t.Class,str), "CENTER",4)
+			end
+		end
+	end
+	if vars.db.Tooltip.TrackDeserter then
+		local show = false
+		for toon, t in pairs(vars.db.Toons) do
+			if t.pvpdesert then
+				show = true
+				for diff = 1, 4 do
+					columns[toon..diff] = columns[toon..diff] or tooltip:AddColumn("CENTER")
+				end
+			end
+		end
+		if show then
+			if not firstcategory and vars.db.Tooltip.CategorySpaces then
+				tooltip:AddSeparator(6,0,0,0,0)
+			end
+			show = tooltip:AddLine(YELLOWFONT .. DESERTER .. FONTEND)		
+		end
+		for toon, t in pairs(vars.db.Toons) do
+			if t.pvpdesert and GetTime() < t.pvpdesert then
+			        local diff = t.pvpdesert - GetTime()
+				local str = SecondsToTime(diff, false, false, 1)
+				tooltip:SetCell(show, columns[toon..1], ClassColorise(t.Class,str), "CENTER",4)
 			end
 		end
 	end
