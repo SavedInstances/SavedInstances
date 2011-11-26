@@ -225,6 +225,13 @@ core.Options = {
 					name = L["Track LFG dungeon cooldown"],
 					desc = L["Show cooldown for characters to use LFG dungeon system"],
 				},
+				TrackDeserter = {
+					type = "toggle",
+					order = 25,
+					width = "double",
+					name = L["Track Battleground Deserter cooldown"],
+					desc = L["Show cooldown for characters to use battleground system"],
+				},
 				CurrencyHeader = {
 					order = 50, 
 					type = "header",
