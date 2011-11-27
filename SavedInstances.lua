@@ -1,14 +1,13 @@
 local addonName, vars = ...
 SavedInstances = vars
 local addon = vars
+local addonName = "SavedInstances"
 vars.core = LibStub("AceAddon-3.0"):NewAddon("SavedInstances", "AceEvent-3.0", "AceTimer-3.0")
 local core = vars.core
 vars.L = SavedInstances_locale()
 local L = vars.L
 vars.LDB = LibStub("LibDataBroker-1.1", true)
 vars.icon = vars.LDB and LibStub("LibDBIcon-1.0", true)
-
-vars.instanceDB = select(1, GetLFDChoiceInfo())
 
 local QTip = LibStub("LibQTip-1.0")
 local dataobject, db, config
@@ -69,6 +68,13 @@ local currency = {
   392, -- Honor Points
   390, -- Conquest Points
 }
+
+local debugenabled = true
+local function debug(msg)
+  if debugenabled then
+     DEFAULT_CHAT_FRAME:AddMessage("\124cFFFF0000"..addonName.."\124r: "..msg)
+  end
+end
 
 vars.defaultDB = {
 	DBVersion = 10,
@@ -136,6 +142,7 @@ vars.defaultDB = {
 					-- Show: boolean
 					-- Raid: boolean
 					-- Expansion: integer
+					-- RecLevel: integer
 					-- LFDID: integer
 					-- LFDupdated: integer
 					-- REMOVED Encounters[integer] = { GUID : integer, Name : string }
@@ -222,6 +229,9 @@ local function GetLastLockedInstance()
 end
 
 local function GetLFDID(name)
+  local info = vars.db.Instances[name]
+  return info and info.LFDID
+--[[
 	local foundid, reclevel
 	for id, details in pairs(vars.instanceDB) do
 		if (strfind(details[1], name, 1, true) or strfind(name, details[1], 1, true))
@@ -233,6 +243,7 @@ local function GetLFDID(name)
 		end
 	end
 	return foundid
+--]]
 end
 
 function addon:InstanceCategory(instance)
@@ -271,10 +282,7 @@ function addon:OrderedInstances(category)
 	while #instances > 0 do
 		local highest, lowest, selected
 		for i, instance in ipairs(instances) do
-			local instancelevel
-			if vars.db.Instances[instance].LFDID and vars.instanceDB[vars.db.Instances[instance].LFDID] then
-				instancelevel = vars.instanceDB[vars.db.Instances[instance].LFDID][5]
-			end
+			local instancelevel = vars.db.Instances[instance].RecLevel or 0
 			if vars.db.Tooltip.ReverseInstances then
 				if not lowest or (instancelevel and instancelevel < lowest) then
 					lowest = instancelevel
@@ -365,7 +373,76 @@ local function DifficultyString(instance, diff, toon)
 	return ColorCodeOpen(color) .. gsub(prefs[setting.."Text"], "ICON", iconstring) .. FONTEND
 end
 
-function addon:MaintainInstanceDB()
+-- run about once per session to update our database of instance info
+local instancesUpdated = false
+function addon:UpdateInstanceData()
+  --debug("UpdateInstanceData()")
+  local dungeonDB = GetLFDChoiceInfo() -- could also use LFDDungeonList, but thats lazily updated
+  if not dungeonDB or instancesUpdated then return end  -- nil before first use in UI
+  instancesUpdated = true
+  local raidHeaders, raidDB = GetFullRaidList()
+  local count = 0
+  for _,rinfo in pairs(raidDB) do
+    for _,rid in pairs(rinfo) do
+      if rid > 0 then -- ignore headers
+        addon:UpdateInstance(rid) 
+        count = count + 1
+      end
+    end
+  end
+  for did,_ in pairs(dungeonDB) do
+    if did > 0 then -- ignore headers
+      addon:UpdateInstance(did)
+      count = count + 1
+    end
+  end
+  debug("UpdateInstanceData(): completed "..count.." updates.")
+end
+
+--if LFDParentFrame then hooksecurefunc(LFDParentFrame,"Show",function() addon:UpdateInstanceData() end) end
+
+function addon:UpdateInstance(id)
+  --debug("UpdateInstance: "..id)
+  local currentbuild = select(2, GetBuildInfo())
+  currentbuild = tonumber(currentbuild)
+  local name, typeID, subtypeID, 
+        minLevel, maxLevel, recLevel, minRecLevel, maxRecLevel, 
+	expansionLevel, groupID, textureFilename, 
+	difficulty, maxPlayers, description, isHoliday = nil
+  if LFGGetDungeonInfoByID and LFGDungeonInfo then -- 4.2 (requires LFGDungeonInfo)
+    local instanceInfo = LFGGetDungeonInfoByID(id)
+    if not instanceInfo then return end
+    name, typeID, -- subtypeID,
+    minLevel, maxLevel, recLevel, minRecLevel, maxRecLevel, 
+    expansionLevel, groupID, textureFilename, 
+    difficulty, maxPlayers, description, isHoliday
+	= unpack(instanceInfo)
+  elseif GetLFGDungeonInfo and currentbuild > 14545 then -- 4.3
+    name, typeID, subtypeID,
+    minLevel, maxLevel, recLevel, minRecLevel, maxRecLevel, 
+    expansionLevel, groupID, textureFilename, 
+    difficulty, maxPlayers, description, isHoliday
+        = GetLFGDungeonInfo(id)
+  else -- dont know how to query
+    return
+  end
+  debug("UpdateInstance: "..id.." "..(name or "nil").." "..(expansionLevel or "nil").." "..(recLevel or "nil").." "..(maxPlayers or "nil"))
+  if not name or not expansionLevel or not recLevel or not maxPlayers then return end
+
+  vars.db.Instances[name] = vars.db.Instances[name] or {}
+  local instance = vars.db.Instances[name]
+  instance.Show = instance.Show or vars.db.Tooltip.NewInstanceShow
+  instance.Encounters = nil -- deprecated
+  instance.LFDID = id
+  instance.LFDupdated = currentbuild
+  instance.Expansion = expansionLevel
+  instance.RecLevel = instance.RecLevel or recLevel
+  if recLevel < instance.RecLevel then instance.RecLevel = recLevel end -- favor non-heroic RecLevel
+  instance.Raid = (tonumber(maxPlayers) > 5)
+end
+
+-- run regularly to update lockouts and cached data for this toon
+function addon:UpdateToonData()
 	for instance, i in pairs(vars.db.Instances) do
 		for toon, t in pairs(vars.db.Toons) do
 			if i[toon] then
@@ -604,6 +681,7 @@ end
 
 function core:OnEnable()
 	self:RegisterEvent("UPDATE_INSTANCE_INFO", "Refresh")
+	self:RegisterEvent("LFG_UPDATE_RANDOM_INFO", function() addon:UpdateInstanceData() end)
 	self:RegisterEvent("RAID_INSTANCE_WELCOME", RequestRaidInfo)
 	self:RegisterEvent("CHAT_MSG_SYSTEM", "CheckSystemMessage")
 	self:RegisterEvent("CHAT_MSG_CURRENCY", "CheckSystemMessage")
@@ -621,7 +699,7 @@ function core:OnDisable()
 end
 
 function core:PLAYER_ENTERING_WORLD()
-  addon:MaintainInstanceDB()
+  addon:UpdateToonData()
 end
 
 function addon:UpdateThisLockout()
@@ -650,24 +728,18 @@ end
 
 function core:Refresh()
 	-- update entire database from the current character's perspective
+        addon:UpdateInstanceData()
 	local numsaved = GetNumSavedInstances()
 	if numsaved > 0 then
 		for i = 1, numsaved do
 			local name, id, expires, diff, locked, extended, mostsig, raid, players, diffname = GetSavedInstanceInfo(i)
 			if ( locked ) then
-				vars.db.Instances[name] = vars.db.Instances[name] or { }
+			        local LFDID = GetLFDID(name) or (GetPartyLFGID and GetPartyLFGID())
+			        addon:UpdateInstance(LFDID)
 				local instance = vars.db.Instances[name]
-				instance.Raid = instance.Raid or raid
-				local currentbuild = select(2, GetBuildInfo())
-				if not instance.LFDDID or instance.LFDupdated < currentbuild then
-					instance.LFDupdated = currentbuild
-					instance.LFDID = GetLFDID(name)
-					if instance.LFDID then
-						instance.Expansion = vars.instanceDB[instance.LFDID][8]
-					end
+				if instance then
+				  instance.Raid = instance.Raid or raid
 				end
-				instance.Expansion = instance.Expansion or 0
-				instance.Show = instance.Show or vars.db.Tooltip.NewInstanceShow
 				if locked then
 					instance[thisToon] = instance[thisToon] or { }
 					instance[thisToon][diff] = {
@@ -690,7 +762,7 @@ function core:Refresh()
 		end
 	end
 	storelockout = false
-	addon:MaintainInstanceDB()
+	addon:UpdateToonData()
 end
 
 function core:ShowTooltip(anchorframe)
@@ -703,7 +775,7 @@ function core:ShowTooltip(anchorframe)
 	hFont:SetFont(hFontPath, hFontSize, "OUTLINE")
 	tooltip:SetHeaderFont(hFont)
 	local headLine, headCol = tooltip:AddHeader(GOLDFONT .. "SavedInstances" .. FONTEND)
-	addon:MaintainInstanceDB()
+	addon:UpdateToonData()
 	if columns then columns = nil end
 	local columns = { }
 	-- allocating columns for characters
