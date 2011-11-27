@@ -64,6 +64,7 @@ local function IndicatorColorOptions(nextorder, indicatortype)
 			return db.Indicators[indicatortype .. "ClassColor"]
 		end,
 		get = function(info)
+		        db.Indicators[info[#info]] = db.Indicators[info[#info]] or vars.defaultDB.Indicators[info[#info]]
 			local r = db.Indicators[info[#info]][1]
 			local g = db.Indicators[info[#info]][2]
 			local b = db.Indicators[info[#info]][3]
@@ -364,7 +365,7 @@ core.Options = {
 			type = "group",
 			name = L["Indicators"],
 			get = function(info)
-					return db.Indicators[info[#info]]
+					return db.Indicators[info[#info]] or vars.defaultDB.Indicators[info[#info]]
 			end,
 			set = function(info, value)
 					db.Indicators[info[#info]] = value
