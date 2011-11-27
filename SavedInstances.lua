@@ -69,7 +69,7 @@ local currency = {
   390, -- Conquest Points
 }
 
-local debugenabled = true
+local debugenabled = false
 local function debug(msg)
   if debugenabled then
      DEFAULT_CHAT_FRAME:AddMessage("\124cFFFF0000"..addonName.."\124r: "..msg)
@@ -430,6 +430,7 @@ function addon:UpdateInstance(id)
   end
   debug("UpdateInstance: "..id.." "..(name or "nil").." "..(expansionLevel or "nil").." "..(recLevel or "nil").." "..(maxPlayers or "nil"))
   if not name or not expansionLevel or not recLevel or not maxPlayers then return end
+  if name:find(PVP_RATED_BATTLEGROUND) then return end -- ignore 10v10 rated bg
 
   vars.db.Instances[name] = vars.db.Instances[name] or {}
   local instance = vars.db.Instances[name]
