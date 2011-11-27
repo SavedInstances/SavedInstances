@@ -22,6 +22,7 @@ local EXPANSION_NAME2 = EXPANSION_NAME2 -- "Wrath of the Lich King"
 local EXPANSION_NAME3 = EXPANSION_NAME3 -- "Cataclysm"
 local LFG_TYPE_DUNGEON = LFG_TYPE_DUNGEON -- "Dungeon"
 local LFG_TYPE_RAID = LFG_TYPE_RAID -- "Raid"
+local RAID_DIFFICULTY0 = EXPANSION_NAME0 .. " " .. LFG_TYPE_RAID
 local RAID_DIFFICULTY1 = RAID_DIFFICULTY1 -- "10 man"
 local RAID_DIFFICULTY2 = RAID_DIFFICULTY2 -- "25 man"
 local RAID_DIFFICULTY3 = RAID_DIFFICULTY3 -- "10 man (Heroic)"
@@ -399,6 +400,18 @@ core.Options = {
 					},
 				},
 				
+				R0 = {
+					type = "group",
+					order = 3.5,
+					name = RAID_DIFFICULTY0,
+					args = {
+						R0Indicator = IndicatorIconOptions(1),
+						R0Text = IndicatorTextOptions(2),
+						R0Color = IndicatorColorOptions(3, "R0"),
+						R0ClassColor = IndicatorClassColorOption(4),
+					},
+				},
+
 				R1 = {
 					type = "group",
 					order = 4,
