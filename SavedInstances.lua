@@ -377,7 +377,8 @@ end
 local instancesUpdated = false
 function addon:UpdateInstanceData()
   --debug("UpdateInstanceData()")
-  local dungeonDB = GetLFDChoiceInfo() -- could also use LFDDungeonList, but thats lazily updated
+  local dungeonDB = (GetLFDChoiceInfo and GetLFDChoiceInfo()) or -- 4.2 and earlier
+                    LFDDungeonList -- lazily updated
   if not dungeonDB or instancesUpdated then return end  -- nil before first use in UI
   instancesUpdated = true
   local raidHeaders, raidDB = GetFullRaidList()
@@ -390,9 +391,10 @@ function addon:UpdateInstanceData()
       end
     end
   end
-  for did,_ in pairs(dungeonDB) do
-    if did > 0 then -- ignore headers
-      addon:UpdateInstance(did)
+  for did,dinfo in pairs(dungeonDB) do
+    local id = (type(dinfo) == "number" and dinfo) or did
+    if id > 0 then -- ignore headers
+      addon:UpdateInstance(id)
       count = count + 1
     end
   end
