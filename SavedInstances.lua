@@ -100,6 +100,10 @@ vars.defaultDB = {
 		D2Text = "5+",
 		D2Color = { 0, 1, 0, 1, }, -- green
 		D2ClassColor = true,
+		R0Indicator = "BLANK", -- indicator: ICON_*, BLANK
+		R0Text = "X",
+		R0Color = { 0.6, 0.6, 0, 1, }, -- dark yellow
+		R0ClassColor = true,
 		R1Indicator = "BLANK", -- indicator: ICON_*, BLANK
 		R1Text = "10",
 		R1Color = { 0.6, 0.6, 0, 1, }, -- dark yellow
@@ -347,7 +351,11 @@ local function DifficultyString(instance, diff, toon)
 		setting = "D" .. diff
 	else
 		local instance = vars.db.Instances[instance]
-		setting = ((instance.Raid and "R") or ((not instance.Raid) and "D")) .. diff
+		if instance.Expansion == 0 and instance.Raid then
+		  setting = "R0"
+		else
+		  setting = ((instance.Raid and "R") or ((not instance.Raid) and "D")) .. diff
+		end
 	end
 	local prefs = vars.db.Indicators
 	if prefs[setting .. "ClassColor"] then
@@ -359,8 +367,11 @@ local function DifficultyString(instance, diff, toon)
 		1,
 	}
 	else
-		color = prefs[setting.."Color"]
+	        prefs[setting.."Color"]  = prefs[setting.."Color"] or vars.defaultDB.Indicators[setting.."Color"]
+		color = prefs[setting.."Color"] 
 	end
+	prefs[setting.."Text"] = prefs[setting.."Text"] or vars.defaultDB.Indicators[setting.."Text"]
+	prefs[setting.."Indicator"] = prefs[setting.."Indicator"] or vars.defaultDB.Indicators[setting.."Indicator"]
 	if not strfind(prefs[setting.."Text"], "ICON", 1, true) then
 		return ColorCodeOpen(color) .. prefs[setting.."Text"] .. FONTEND
 	end
