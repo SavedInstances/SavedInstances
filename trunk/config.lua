@@ -1,6 +1,7 @@
 local addonName, vars = ...
 local core = vars.core
 local L = vars.L
+local addon = vars
 vars.config = core:NewModule("Config")
 module = vars.config
 
@@ -499,11 +500,11 @@ core.Options = {
 					name = L["Selected instance"],
 					disabled = function()
 						return (module.selectedCategory == nil) or
-							(vars.CategorySize(module.selectedCategory) == 0)
+							(addon:CategorySize(module.selectedCategory) == 0)
 					end,
 					get = function(info)
 						if not module.selectedCategory or not module.selectedInstance then return end
-						for i, v in ipairs(vars.OrderedInstances(module.selectedCategory)) do
+						for i, v in ipairs(addon:OrderedInstances(module.selectedCategory)) do
 							if v == module.selectedInstance then
 								index = i
 								break
@@ -512,14 +513,14 @@ core.Options = {
 						return index
 					end,
 					set = function(info, index)
-						local instances = vars.OrderedInstances(module.selectedCategory)
+						local instances = addon:OrderedInstances(module.selectedCategory)
 						module.selectedInstance = instances[index]
 						module.selectedEncounter = nil
 						--GenerateEncountersListGUI(3)
 					end,
 					values = function()
 						if module.selectedCategory == nil then return { } end
-						return vars.OrderedInstances(module.selectedCategory)
+						return addon:OrderedInstances(module.selectedCategory)
 					end,
 				},
 
@@ -528,7 +529,7 @@ core.Options = {
 					type = "group",
 					name = L["Instance details"],
 					disabled = function()
-						return not module.selectedInstance or (vars.InstanceCategory(module.selectedInstance) ~= module.selectedCategory)
+						return not module.selectedInstance or (addon:InstanceCategory(module.selectedInstance) ~= module.selectedCategory)
 					end,
 					args = {
 						Expansion = {
@@ -544,7 +545,7 @@ core.Options = {
 								local instance = db.Instances[module.selectedInstance]
 								instance.Expansion = expansion
 								instance.Raid = instance.Raid or false
-								module.selectedCategory = vars.InstanceCategory(module.selectedInstance)
+								module.selectedCategory = addon:InstanceCategory(module.selectedInstance)
 							end,
 							values = {
 								[0] = EXPANSION_NAME0,
@@ -553,6 +554,7 @@ core.Options = {
 								[3] = EXPANSION_NAME3,
 							},
 						},
+						--[[
 						LFDID = {
 							order = 2,
 							type = "select",
@@ -590,7 +592,7 @@ core.Options = {
 								instance.LFDID = LFDID
 								instance.LFDupdated = select(2, GetBuildInfo())
 								instance.Expansion = vars.instanceDB[LFDID][8]
-								module.selectedCategory = vars.InstanceCategory(module.selectedInstance)
+								module.selectedCategory = addon:InstanceCategory(module.selectedInstance)
 							end,
 							values = function()
 								local instance = db.Instances[module.selectedInstance]
@@ -614,6 +616,7 @@ core.Options = {
 								return format("Levels: %d-%d; Recommended levels: %d-%d, Recommended level: %d", details[3], details[4], details[6], details[7], details[5])
 							end
 						},
+						--]]
 						AlwaysShow = {
 							order = 4,
 							type = "toggle",
@@ -628,6 +631,7 @@ core.Options = {
 								db.Instances[module.selectedInstance].Show = value
 							end,
 						},
+						--[[
 						ForgetLFDID = {
 							order = -2,
 							type = "execute",
@@ -637,6 +641,7 @@ core.Options = {
 								vars.db.Instances[module.selectedInstance].LFDupdated = nil
 							end,
 						},
+						--]]
 						DeleteButton = {
 							order = -1,
 							type = "execute",
