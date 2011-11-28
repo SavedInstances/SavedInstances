@@ -125,7 +125,7 @@ vars.defaultDB = {
 		Details = false,
 		NewInstanceShow = false,
 		ReverseInstances = false,
-		ShowExpired = false,
+		ShowExpired = true,
 		ShowCategories = false,
 		CategorySpaces = false,
 		NewFirst = true,
@@ -362,7 +362,7 @@ local function DifficultyString(instance, diff, toon, expired)
 	end
 	local prefs = vars.db.Indicators
 	if expired then
-	  color = { 0.2, 0.2, 0.2, 1 }
+	  color = { 0.5, 0.5, 0.5, 1 }
 	elseif prefs[setting .. "ClassColor"] then
 		local RAID_CLASS_COLORS = CUSTOM_CLASS_COLORS or RAID_CLASS_COLORS
 		color = {
@@ -622,10 +622,10 @@ end
 
 local function UpdateLDBTextMode()
 	if db.Broker.HistoryText then
-		vars.dataobject.type = "data source"
+		--vars.dataobject.type = "data source"
 		core:ScheduleRepeatingTimer("UpdateLDBText", 5, nil)
 	else
-		vars.dataobject.type = "launcher"
+		--vars.dataobject.type = "launcher"
 		vars.dataobject.text = addonName
 		core:CancelAllTimers()
 	end
@@ -743,14 +743,24 @@ function core:LFG_COMPLETION_REWARD()
 end
 
 
+local function localarr(name) -- save on memory churn by reusing arrays in updates
+  name = "localarr#"..name
+  core[name] = core[name] or {}
+  return wipe(core[name])
+end
+
 function core:Refresh()
 	-- update entire database from the current character's perspective
         addon:UpdateInstanceData()
+	local temp = localarr("RefreshTemp")
+	for name, instance in pairs(vars.db.Instances) do -- clear current toons lockouts before refresh
+	  if instance[thisToon] then
+	    temp[name] = wipe(instance[thisToon]) -- use a temp to reduce memory churn
+	    instance[thisToon] = nil 
+	  end
+	end
 	local numsaved = GetNumSavedInstances()
 	if numsaved > 0 then
-	        for name, instance in pairs(vars.db.Instances) do -- clear current toons lockouts before refresh
-		  instance[thisToon] = nil 
-		end
 		for i = 1, numsaved do
 			local name, id, expires, diff, locked, extended, mostsig, raid, players, diffname = GetSavedInstanceInfo(i)
 		        local LFDID = GetLFDID(name) or (GetPartyLFGID and GetPartyLFGID())
@@ -764,16 +774,18 @@ function core:Refresh()
 			else
 			  expires = 0
 			end
-			instance[thisToon] = instance[thisToon] or { }
-			instance[thisToon][diff] = {
-				ID = id,
-				Expires = expires,
-                                Link = GetSavedInstanceChatLink(i),
-				Locked = locked,
-                                Extended = extended,
-			}
+			instance[thisToon] = instance[thisToon] or temp[name] or { }
+			local info = instance[thisToon][diff] or {}
+			wipe(info)
+			  info.ID = id
+			  info.Expires = expires
+                          info.Link = GetSavedInstanceChatLink(i)
+			  info.Locked = locked
+                          info.Extended = extended
+			instance[thisToon][diff] = info
 		end
 	end
+	wipe(temp)
 	-- update the lockout-specific details for the current instance if necessary
 	if storelockout then
 		local thisname, _, thisdiff = GetInstanceInfo()
@@ -786,9 +798,20 @@ function core:Refresh()
 	addon:UpdateToonData()
 end
 
+local function UpdateTooltip() 
+	if tooltip:IsShown() and tooltip.anchorframe then 
+	   core:ShowTooltip(tooltip.anchorframe) 
+	end
+end
+
 function core:ShowTooltip(anchorframe)
-	if tooltip and tooltip:IsShown() then return end
+	local showall = IsAltKeyDown()
+	if tooltip and tooltip:IsShown() and core.showall == showall then return end
+	core.showall = showall
+	if tooltip then QTip:Release(tooltip) end
 	tooltip = QTip:Acquire("SavedInstancesTooltip", 1, "LEFT")
+	tooltip.anchorframe = anchorframe
+	tooltip:SetScript("OnUpdate", UpdateTooltip)
 	tooltip:Clear()
 	local hFont = tooltip:GetHeaderFont()
 	local hFontPath, hFontSize
@@ -797,8 +820,7 @@ function core:ShowTooltip(anchorframe)
 	tooltip:SetHeaderFont(hFont)
 	local headLine, headCol = tooltip:AddHeader(GOLDFONT .. "SavedInstances" .. FONTEND)
 	addon:UpdateToonData()
-	if columns then columns = nil end
-	local columns = { }
+	local columns = localarr("columns")
 	-- allocating columns for characters
 	if vars.db.Toons[thisToon].AlwaysShow then
 		for diff = 1, 4 do
@@ -813,8 +835,8 @@ function core:ShowTooltip(anchorframe)
 		end
 	end
 	-- determining how many instances will be displayed per category
-	local categorysize = { } -- remember the number of instances to be shown for each category
-	local instancesaved = { } -- remember if each instance has been saved or not (boolean)
+	local categorysize = localarr("categorysize") -- remember the number of instances to be shown for each category
+	local instancesaved = localarr("instancesaved") -- remember if each instance has been saved or not (boolean)
 	local doseparator = false -- use this to determine whether to insert spaces or not
 	for _, category in ipairs(addon:OrderedCategories()) do
 		categorysize[category] = 0
@@ -822,7 +844,7 @@ function core:ShowTooltip(anchorframe)
 			local inst = vars.db.Instances[instance]
 			for toon, t in pairs(vars.db.Toons) do
 				for diff = 1, 4 do
-					if inst[toon] and inst[toon][diff] and (inst[toon][diff].Expires > 0 or vars.db.Tooltip.ShowExpired) then
+					if inst[toon] and inst[toon][diff] and (inst[toon][diff].Expires > 0 or showall) then
 						instancesaved[instance] = true
 						categorysize[category] = categorysize[category] + 1
 					elseif inst.Show then
@@ -842,8 +864,8 @@ function core:ShowTooltip(anchorframe)
 		end
 	end
 	-- allocating tooltip space for instances, categories, and space between categories
-	local categoryrow = { } -- remember where each category heading goes
-	local instancerow = { } -- remember where each instance goes
+	local categoryrow = localarr("categoryrow") -- remember where each category heading goes
+	local instancerow = localarr("instancerow") -- remember where each instance goes
 	local firstcategory = true -- use this to skip spacing before the first category
 	for _, category in ipairs(addon:OrderedCategories()) do
 		if categorysize[category] > 0 then
@@ -858,7 +880,7 @@ function core:ShowTooltip(anchorframe)
 			       local inst = vars.db.Instances[instance]
 				for toon, t in pairs(vars.db.Toons) do
 					for diff = 1, 4 do
-					        if inst[toon] and inst[toon][diff] and (inst[toon][diff].Expires > 0 or vars.db.Tooltip.ShowExpired) then
+					        if inst[toon] and inst[toon][diff] and (inst[toon][diff].Expires > 0 or showall) then
 							instancerow[instance] = instancerow[instance] or tooltip:AddLine()
 							for diff = 1, 4 do
 								columns[toon..diff] = columns[toon..diff] or tooltip:AddColumn("CENTER")
@@ -880,7 +902,7 @@ function core:ShowTooltip(anchorframe)
 			        local inst = vars.db.Instances[instance]
 				if inst[toon] then
 					for diff = 1, 4 do
-						if inst[toon][diff] and (inst[toon][diff].Expires > 0 or vars.db.Tooltip.ShowExpired) then
+						if inst[toon][diff] and (inst[toon][diff].Expires > 0 or vars.db.Tooltip.ShowExpired or showall) then
 							tooltip:SetCell(instancerow[instance], columns[toon..diff], 
 							    DifficultyString(instance, diff, toon, inst[toon][diff].Expires == 0))
 							tooltip:SetCellScript(instancerow[instance], columns[toon..diff], "OnEnter", ShowIndicatorTooltip, {instance, toon, diff})
@@ -906,7 +928,7 @@ function core:ShowTooltip(anchorframe)
 		end
 	end
 	-- random dungeon
-	if vars.db.Tooltip.TrackLFG then
+	if vars.db.Tooltip.TrackLFG or showall then
 		local randomcd = false
 		for toon, t in pairs(vars.db.Toons) do
 			if t.LFG1 then
@@ -937,7 +959,7 @@ function core:ShowTooltip(anchorframe)
 			end
 		end
 	end
-	if vars.db.Tooltip.TrackDeserter then
+	if vars.db.Tooltip.TrackDeserter or showall then
 		local show = false
 		for toon, t in pairs(vars.db.Toons) do
 			if t.pvpdesert then
@@ -964,12 +986,12 @@ function core:ShowTooltip(anchorframe)
 
         for _,idx in ipairs(currency) do
 	  local setting = vars.db.Tooltip["Currency"..idx]
-          if setting then
+          if setting or showall then
             local show 
    	    for toon, t in pairs(vars.db.Toons) do
 		-- ci.name, ci.amount, ci.earnedThisWeek, ci.weeklyMax, ci.totalMax
                 local ci = t.currency and t.currency[idx] 
-		if ci and (((ci.earnedThisWeek or 0) > 0 and (ci.weeklyMax or 0) > 0) 
+		if ci and (((ci.earnedThisWeek or 0) > 0 and (ci.weeklyMax or 0) > 0) or ((ci.amount or 0) > 0 and showall)
 		       -- or ((ci.amount or 0) > 0 and ci.weeklyMax == 0 and t.Level == maxlvl)
 		       ) then
 		  for diff = 1, 4 do
@@ -1040,6 +1062,10 @@ function core:ShowTooltip(anchorframe)
 		tooltip:SetCell(hintLine, hintCol, L["|cffffff00Right-click|r to configure SavedInstances"], "LEFT", tooltip:GetColumnCount())
 		hintLine, hintCol = tooltip:AddLine()
 		tooltip:SetCell(hintLine, hintCol, L["Hover mouse on indicator for details"], "LEFT", tooltip:GetColumnCount())
+		if not showall then
+		  hintLine, hintCol = tooltip:AddLine()
+		  tooltip:SetCell(hintLine, hintCol, L["Hold Alt to show all data"], "LEFT", tooltip:GetColumnCount())
+		end
 	end
 	-- tooltip column colours
 	if vars.db.Tooltip.ColumnStyle == "CLASS" then
