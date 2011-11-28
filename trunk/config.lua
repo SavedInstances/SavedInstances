@@ -221,6 +221,12 @@ core.Options = {
 					desc = L["Display instances in order of recommended level from lowest to highest"],
 					order = 23,
 				},
+				ShowExpired = {
+					type = "toggle",
+					name = L["Show Expired"],
+					desc = L["Show expired instance lockouts"],
+					order = 23.5,
+				},
 				TrackLFG = {
 					type = "toggle",
 					order = 24,
@@ -734,6 +740,7 @@ core.Options = {
 				},
 			},
 		},
+		--[[
 		Lockouts = {
 			order = 5,
 			type = "group",
@@ -780,6 +787,7 @@ core.Options = {
 				},
 			},
 		},
+		--]]
 	},
 }
 
@@ -800,9 +808,8 @@ function module:SetupOptions()
 	firstoptiongroup = ACD:AddToBlizOptions(namespace, nil, nil, "General")
 	ACD:AddToBlizOptions(namespace, L["Indicators"], namespace, "Indicators")
 	ACD:AddToBlizOptions(namespace, L["Instances"], namespace, "Instances")
-	ACD:AddToBlizOptions(namespace, L["Characters"], namespace, "Characters")
-	lockoutgroup = ACD:AddToBlizOptions(namespace, L["Lockouts"], namespace, "Lockouts")
-	lastoptiongroup = lockoutgroup
+	--ACD:AddToBlizOptions(namespace, L["Lockouts"], namespace, "Lockouts")
+	lastoptiongroup = ACD:AddToBlizOptions(namespace, L["Characters"], namespace, "Characters")
 end
 
 function module:ShowConfig()

@@ -125,6 +125,7 @@ vars.defaultDB = {
 		Details = false,
 		NewInstanceShow = false,
 		ReverseInstances = false,
+		ShowExpired = false,
 		ShowCategories = false,
 		CategorySpaces = false,
 		NewFirst = true,
@@ -155,12 +156,14 @@ vars.defaultDB = {
 							-- ID: integer
 							-- Expires: integer
 	MinimapIcon = { },
+	--[[ REMOVED
 	Lockouts = {	-- table key: lockout ID; value:
 						-- Name: string
 						-- Members: table "Toon name" = "Class"
 						-- REMOVED Encounters[GUID : integer] = boolean
 						-- Note: string
 	},
+	--]]
 }
 
 -- general helper functions below
@@ -345,20 +348,22 @@ function addon:OrderedCategories()
 	return orderedlist
 end
 
-local function DifficultyString(instance, diff, toon)
+local function DifficultyString(instance, diff, toon, expired)
 	local setting
 	if not instance then
 		setting = "D" .. diff
 	else
-		local instance = vars.db.Instances[instance]
-		if instance.Expansion == 0 and instance.Raid then
+		local inst = vars.db.Instances[instance]
+		if inst.Expansion == 0 and inst.Raid then
 		  setting = "R0"
 		else
-		  setting = ((instance.Raid and "R") or ((not instance.Raid) and "D")) .. diff
+		  setting = ((inst.Raid and "R") or ((not inst.Raid) and "D")) .. diff
 		end
 	end
 	local prefs = vars.db.Indicators
-	if prefs[setting .. "ClassColor"] then
+	if expired then
+	  color = { 0.2, 0.2, 0.2, 1 }
+	elseif prefs[setting .. "ClassColor"] then
 		local RAID_CLASS_COLORS = CUSTOM_CLASS_COLORS or RAID_CLASS_COLORS
 		color = {
 		RAID_CLASS_COLORS[vars.db.Toons[toon].Class].r,
@@ -462,13 +467,7 @@ function addon:UpdateToonData()
 			if i[toon] then
 				for difficulty, d in pairs(i[toon]) do
 					if d.Expires < time() then
-						i[toon][difficulty] = nil
-						vars.db.Lockouts[d.ID] = nil
-					else
-						vars.db.Lockouts[d.ID] = vars.db.Lockouts[d.ID] or { }
-						vars.db.Lockouts[d.ID].Members = vars.db.Lockouts[d.ID].Members or { }
-						vars.db.Lockouts[d.ID].Members[strsplit(' ', toon)] = vars.db.Lockouts[d.ID].Members[strsplit(' ', toon)] or { Class = t.Class }
-						vars.db.Lockouts[d.ID].Name = instance
+						i[toon][difficulty].Locked = false
 					end
 				end
 				if TableLen(i[toon]) == 0 then
@@ -538,10 +537,14 @@ local function ShowIndicatorTooltip(cell, arg, ...)
 	local nameline, _ = indicatortip:AddHeader()
 	indicatortip:SetCell(nameline, 1, DifficultyString(instance, diff, toon) .. " " .. GOLDFONT .. instance .. FONTEND, indicatortip:GetHeaderFont(), "LEFT", 2)
 	indicatortip:AddHeader(ClassColorise(vars.db.Toons[toon].Class, strsplit(' ', toon)), id)
-	indicatortip:AddLine(YELLOWFONT .. L["Time Left"] .. ":" .. FONTEND, SecondsToTime(thisinstance[toon][diff].Expires - time()))
-	if db.Lockouts[id].Note and db.Lockouts[id].Note ~= "" then
-		local noteline, _ = indicatortip:AddLine()
-		indicatortip:SetCell(noteline, 1, WHITEFONT .. db.Lockouts[id].Note .. FONTEND, "LEFT", 2)
+	local EMPH = " !!! "
+	if thisinstance[toon][diff].Extended then
+	  indicatortip:SetCell(indicatortip:AddLine(),1,WHITEFONT .. EMPH .. L["Extended Lockout - Not yet saved"] .. EMPH .. FONTEND,"CENTER",2)
+	elseif thisinstance[toon][diff].Locked == false then
+	  indicatortip:SetCell(indicatortip:AddLine(),1,WHITEFONT .. EMPH .. L["Expired Lockout - Can be extended"] .. EMPH .. FONTEND,"CENTER",2)
+	end
+	if thisinstance[toon][diff].Expires > 0 then
+	  indicatortip:AddLine(YELLOWFONT .. L["Time Left"] .. ":" .. FONTEND, SecondsToTime(thisinstance[toon][diff].Expires - time()))
 	end
 	indicatortip:SetAutoHideDelay(0.1, tooltip)
 	indicatortip:SmartAnchorTo(tooltip)
@@ -669,7 +672,7 @@ function core:OnInitialize()
 	db.Toons[thisToon].Class = db.Toons[thisToon].Class or select(2, UnitClass("player"))
 	db.Toons[thisToon].Level = UnitLevel("player")
 	db.Toons[thisToon].AlwaysShow = db.Toons[thisToon].AlwaysShow or false
-	db.Lockouts = db.Lockouts or { }
+	db.Lockouts = nil -- deprecated
 	RequestRaidInfo()
 	vars.dataobject = vars.LDB and vars.LDB:NewDataObject("SavedInstances", {
 		text = "",
@@ -745,26 +748,30 @@ function core:Refresh()
         addon:UpdateInstanceData()
 	local numsaved = GetNumSavedInstances()
 	if numsaved > 0 then
+	        for name, instance in pairs(vars.db.Instances) do -- clear current toons lockouts before refresh
+		  instance[thisToon] = nil 
+		end
 		for i = 1, numsaved do
 			local name, id, expires, diff, locked, extended, mostsig, raid, players, diffname = GetSavedInstanceInfo(i)
-			if ( locked ) then
-			        local LFDID = GetLFDID(name) or (GetPartyLFGID and GetPartyLFGID())
-			        addon:UpdateInstance(LFDID)
-				local instance = vars.db.Instances[name]
-				if instance then
-				  instance.Raid = instance.Raid or raid
-				end
-				if locked then
-					instance[thisToon] = instance[thisToon] or { }
-					instance[thisToon][diff] = {
-						ID = id,
-						Expires = expires + time(),
-                                                Link = GetSavedInstanceChatLink(i)
-					}
-				end
-			else
-				-- print("DEBUG: SavedInstances: Refresh() - ignoring expired lock for instance:" .. name)
+		        local LFDID = GetLFDID(name) or (GetPartyLFGID and GetPartyLFGID())
+		        addon:UpdateInstance(LFDID)
+			local instance = vars.db.Instances[name]
+			if instance then
+			  instance.Raid = instance.Raid or raid
 			end
+			if expires and expires > 0 then
+			  expires = expires + time()
+			else
+			  expires = 0
+			end
+			instance[thisToon] = instance[thisToon] or { }
+			instance[thisToon][diff] = {
+				ID = id,
+				Expires = expires,
+                                Link = GetSavedInstanceChatLink(i),
+				Locked = locked,
+                                Extended = extended,
+			}
 		end
 	end
 	-- update the lockout-specific details for the current instance if necessary
@@ -812,12 +819,13 @@ function core:ShowTooltip(anchorframe)
 	for _, category in ipairs(addon:OrderedCategories()) do
 		categorysize[category] = 0
 		for _, instance in ipairs(addon:OrderedInstances(category)) do
+			local inst = vars.db.Instances[instance]
 			for toon, t in pairs(vars.db.Toons) do
 				for diff = 1, 4 do
-					if vars.db.Instances[instance][toon] and vars.db.Instances[instance][toon][diff] then
+					if inst[toon] and inst[toon][diff] and (inst[toon][diff].Expires > 0 or vars.db.Tooltip.ShowExpired) then
 						instancesaved[instance] = true
 						categorysize[category] = categorysize[category] + 1
-					elseif vars.db.Instances[instance].Show then
+					elseif inst.Show then
 						categorysize[category] = categorysize[category] + 1
 					end
 				end
@@ -847,14 +855,15 @@ function core:ShowTooltip(anchorframe)
 
 			end
 			for _, instance in ipairs(addon:OrderedInstances(category)) do
+			       local inst = vars.db.Instances[instance]
 				for toon, t in pairs(vars.db.Toons) do
 					for diff = 1, 4 do
-						if vars.db.Instances[instance][toon] and vars.db.Instances[instance][toon][diff] then
+					        if inst[toon] and inst[toon][diff] and (inst[toon][diff].Expires > 0 or vars.db.Tooltip.ShowExpired) then
 							instancerow[instance] = instancerow[instance] or tooltip:AddLine()
 							for diff = 1, 4 do
 								columns[toon..diff] = columns[toon..diff] or tooltip:AddColumn("CENTER")
 							end
-						elseif vars.db.Instances[instance].Show then
+						elseif inst.Show then
 							instancerow[instance] = instancerow[instance] or tooltip:AddLine()
 						end
 					end
@@ -868,20 +877,18 @@ function core:ShowTooltip(anchorframe)
 		if instancesaved[instance] then
 			tooltip:SetCell(instancerow[instance], 1, GOLDFONT .. instance .. FONTEND)
 			for toon, t in pairs(vars.db.Toons) do
-				if vars.db.Instances[instance][toon] then
+			        local inst = vars.db.Instances[instance]
+				if inst[toon] then
 					for diff = 1, 4 do
-						local save = vars.db.Instances[instance][toon][diff]
-						if save ~= nil then
-							tooltip:SetCell(instancerow[instance], columns[toon..diff], DifficultyString(instance, diff, toon))
+						if inst[toon][diff] and (inst[toon][diff].Expires > 0 or vars.db.Tooltip.ShowExpired) then
+							tooltip:SetCell(instancerow[instance], columns[toon..diff], 
+							    DifficultyString(instance, diff, toon, inst[toon][diff].Expires == 0))
 							tooltip:SetCellScript(instancerow[instance], columns[toon..diff], "OnEnter", ShowIndicatorTooltip, {instance, toon, diff})
 							tooltip:SetCellScript(instancerow[instance], columns[toon..diff], "OnLeave", 
 							     function() indicatortip:Hide(); GameTooltip:Hide() end)
 							tooltip:SetCellScript(instancerow[instance], columns[toon..diff], "OnMouseDown", 
 							     function()
-							       local db = vars.db.Instances
-							       local link = instance and toon and diff and 
-							           db[instance] and db[instance][toon] and db[instance][toon][diff] and 
-								   db[instance][toon][diff].Link
+							       local link = inst[toon][diff].Link
 							       if link and ChatEdit_GetActiveWindow() then
 							          ChatEdit_InsertLink(link)
 							       elseif link then
