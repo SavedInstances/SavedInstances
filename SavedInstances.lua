@@ -69,9 +69,8 @@ local currency = {
   390, -- Conquest Points
 }
 
-local debugenabled = false
 local function debug(msg)
-  if debugenabled then
+  if addon.db.dbg then
      DEFAULT_CHAT_FRAME:AddMessage("\124cFFFF0000"..addonName.."\124r: "..msg)
   end
 end
@@ -125,7 +124,7 @@ vars.defaultDB = {
 		Details = false,
 		NewInstanceShow = false,
 		ReverseInstances = false,
-		ShowExpired = true,
+		ShowExpired = false,
 		ShowCategories = false,
 		CategorySpaces = false,
 		NewFirst = true,
@@ -755,7 +754,10 @@ function core:Refresh()
 	local temp = localarr("RefreshTemp")
 	for name, instance in pairs(vars.db.Instances) do -- clear current toons lockouts before refresh
 	  if instance[thisToon] then
-	    temp[name] = wipe(instance[thisToon]) -- use a temp to reduce memory churn
+	    temp[name] = instance[thisToon] -- use a temp to reduce memory churn
+	    for diff,info in pairs(temp[name]) do
+	      wipe(info)
+	    end
 	    instance[thisToon] = nil 
 	  end
 	end
@@ -785,6 +787,13 @@ function core:Refresh()
 			instance[thisToon][diff] = info
 		end
 	end
+	for name, _ in pairs(temp) do
+	  for diff,info in pairs(vars.db.Instances[name][thisToon]) do
+	    if not info.ID then
+	      vars.db.Instances[name][thisToon][diff] = nil
+	    end
+	  end
+	end
 	wipe(temp)
 	-- update the lockout-specific details for the current instance if necessary
 	if storelockout then
@@ -804,10 +813,45 @@ local function UpdateTooltip()
 	end
 end
 
+-- sorted traversal function for character table
+local cnext_sorted_names = {}
+local function cnext(t,i)
+   -- return them in reverse order
+   if #cnext_sorted_names == 0 then
+     return nil
+   else
+      local n = cnext_sorted_names[#cnext_sorted_names]
+      table.remove(cnext_sorted_names, #cnext_sorted_names)
+      return n, t[n]
+   end
+end
+local function cpairs(t)
+  wipe(cnext_sorted_names)
+  for n,_ in pairs(t) do
+    table.insert(cnext_sorted_names, n)
+  end
+  table.sort(cnext_sorted_names, function (a,b) return b == thisToon or (a ~= thisToon and a > b) end)
+  --myprint(cnext_sorted_names)
+  return cnext, t, nil
+end
+
+local function ShowAll()
+  	return (IsAltKeyDown() and true) or false
+end
+
+local columnCache = { [true] = {}, [false] = {} }
+local function addColumns(columns, toon, tooltip)
+	for diff = 1, 4 do
+		columns[toon..diff] = columns[toon..diff] or tooltip:AddColumn("CENTER")
+	end
+	columnCache[ShowAll()][toon] = true
+end
+
 function core:ShowTooltip(anchorframe)
-	local showall = IsAltKeyDown()
+	local showall = ShowAll()
 	if tooltip and tooltip:IsShown() and core.showall == showall then return end
 	core.showall = showall
+	local showexpired = showall or vars.db.Tooltip.ShowExpired
 	if tooltip then QTip:Release(tooltip) end
 	tooltip = QTip:Acquire("SavedInstancesTooltip", 1, "LEFT")
 	tooltip.anchorframe = anchorframe
@@ -821,17 +865,14 @@ function core:ShowTooltip(anchorframe)
 	local headLine, headCol = tooltip:AddHeader(GOLDFONT .. "SavedInstances" .. FONTEND)
 	addon:UpdateToonData()
 	local columns = localarr("columns")
+	for toon,_ in cpairs(columnCache[showall]) do
+		addColumns(columns, toon, tooltip)
+		columnCache[showall][toon] = false
+        end 
 	-- allocating columns for characters
-	if vars.db.Toons[thisToon].AlwaysShow then
-		for diff = 1, 4 do
-			columns[thisToon..diff] = columns[thisToon..diff] or tooltip:AddColumn("CENTER")
-		end
-	end
-	for toon, t in pairs(vars.db.Toons) do
+	for toon, t in cpairs(vars.db.Toons) do
 		if vars.db.Toons[toon].AlwaysShow then
-			for diff = 1, 4 do
-				columns[toon..diff] = columns[toon..diff] or tooltip:AddColumn("CENTER")
-			end
+			addColumns(columns, toon, tooltip)
 		end
 	end
 	-- determining how many instances will be displayed per category
@@ -878,13 +919,11 @@ function core:ShowTooltip(anchorframe)
 			end
 			for _, instance in ipairs(addon:OrderedInstances(category)) do
 			       local inst = vars.db.Instances[instance]
-				for toon, t in pairs(vars.db.Toons) do
+				for toon, t in cpairs(vars.db.Toons) do
 					for diff = 1, 4 do
-					        if inst[toon] and inst[toon][diff] and (inst[toon][diff].Expires > 0 or showall) then
+					        if inst[toon] and inst[toon][diff] and (inst[toon][diff].Expires > 0 or showexpired) then
 							instancerow[instance] = instancerow[instance] or tooltip:AddLine()
-							for diff = 1, 4 do
-								columns[toon..diff] = columns[toon..diff] or tooltip:AddColumn("CENTER")
-							end
+							addColumns(columns, toon, tooltip)
 						elseif inst.Show then
 							instancerow[instance] = instancerow[instance] or tooltip:AddLine()
 						end
@@ -902,7 +941,7 @@ function core:ShowTooltip(anchorframe)
 			        local inst = vars.db.Instances[instance]
 				if inst[toon] then
 					for diff = 1, 4 do
-						if inst[toon][diff] and (inst[toon][diff].Expires > 0 or vars.db.Tooltip.ShowExpired or showall) then
+						if inst[toon][diff] and (inst[toon][diff].Expires > 0 or showexpired) then
 							tooltip:SetCell(instancerow[instance], columns[toon..diff], 
 							    DifficultyString(instance, diff, toon, inst[toon][diff].Expires == 0))
 							tooltip:SetCellScript(instancerow[instance], columns[toon..diff], "OnEnter", ShowIndicatorTooltip, {instance, toon, diff})
@@ -917,7 +956,7 @@ function core:ShowTooltip(anchorframe)
 							          ChatFrame_OpenChat(link, DEFAULT_CHAT_FRAME)
 							       end
 							     end)
-						else
+						elseif columns[toon..diff] then
 							tooltip:SetCell(instancerow[instance], columns[toon..diff], "")
 						end
 					end
@@ -930,12 +969,10 @@ function core:ShowTooltip(anchorframe)
 	-- random dungeon
 	if vars.db.Tooltip.TrackLFG or showall then
 		local randomcd = false
-		for toon, t in pairs(vars.db.Toons) do
+		for toon, t in cpairs(vars.db.Toons) do
 			if t.LFG1 then
 				randomcd = true
-				for diff = 1, 4 do
-					columns[toon..diff] = columns[toon..diff] or tooltip:AddColumn("CENTER")
-				end
+				addColumns(columns, toon, tooltip)
 			end
 		end
 		local randomLine
@@ -961,12 +998,10 @@ function core:ShowTooltip(anchorframe)
 	end
 	if vars.db.Tooltip.TrackDeserter or showall then
 		local show = false
-		for toon, t in pairs(vars.db.Toons) do
+		for toon, t in cpairs(vars.db.Toons) do
 			if t.pvpdesert then
 				show = true
-				for diff = 1, 4 do
-					columns[toon..diff] = columns[toon..diff] or tooltip:AddColumn("CENTER")
-				end
+				addColumns(columns, toon, tooltip)
 			end
 		end
 		if show then
@@ -988,15 +1023,13 @@ function core:ShowTooltip(anchorframe)
 	  local setting = vars.db.Tooltip["Currency"..idx]
           if setting or showall then
             local show 
-   	    for toon, t in pairs(vars.db.Toons) do
+   	    for toon, t in cpairs(vars.db.Toons) do
 		-- ci.name, ci.amount, ci.earnedThisWeek, ci.weeklyMax, ci.totalMax
                 local ci = t.currency and t.currency[idx] 
 		if ci and (((ci.earnedThisWeek or 0) > 0 and (ci.weeklyMax or 0) > 0) or ((ci.amount or 0) > 0 and showall)
 		       -- or ((ci.amount or 0) > 0 and ci.weeklyMax == 0 and t.Level == maxlvl)
 		       ) then
-		  for diff = 1, 4 do
-			columns[toon..diff] = columns[toon..diff] or tooltip:AddColumn("CENTER")
-		  end
+		  addColumns(columns, toon, tooltip)
 		end
 		if ci and (ci.amount or 0) > 0 and columns[toon..1] then
 		  local name,_,tex = GetCurrencyInfo(idx)
@@ -1076,9 +1109,30 @@ function core:ShowTooltip(anchorframe)
 			tooltip:SetColumnColor(col, color.r, color.g, color.b)
 		end 
 	end						
-	tooltip:SetAutoHideDelay(0.1, anchorframe)
-	tooltip:SmartAnchorTo(anchorframe)
-	tooltip:Show()
+
+        -- cache check
+        local fail = false
+        local maxidx = 0
+	for toon,val in cpairs(columnCache[showall]) do
+		if not val then -- remove stale column
+                   columnCache[showall][toon] = nil
+                   fail = true 
+                else 
+                   local thisidx = columns[toon..1]
+                   if thisidx < maxidx then -- sort failure caused by new middle-insertion
+                      fail = true
+                   end
+                   maxidx = thisidx
+                end
+        end 
+        if fail then -- retry with corrected cache
+		debug("Tooltip cache miss")
+		core:ShowTooltip(anchorframe)
+        else -- render it
+		tooltip:SetAutoHideDelay(0.1, anchorframe)
+		tooltip:SmartAnchorTo(anchorframe)
+		tooltip:Show()
+        end
 end
 
 function core:UpdateLDBText()
