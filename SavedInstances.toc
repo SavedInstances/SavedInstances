@@ -2,9 +2,10 @@
 ## Title: SavedInstances
 ## Notes: Keeps track of the raid IDs saved against your characters.
 ## Author: @project-author@
-## Version: @project-version@ (r@file-revision@)
+## Version: @project-version@
 ## X-Build: @project-revision@
 ## X-ReleaseDate: @project-date-iso@
+## X-Revision: $Revision: 266 $
 ## X-AceForum: 14896
 ## X-License: BSD
 ## X-Category: Raid

@@ -9,6 +9,8 @@ local Config = LibStub("AceConfig-3.0")
 
 local db
 
+addon.svnrev["config.lua"] = tonumber(("$Revision: 48 $"):match("%d+"))
+
 -- local (optimal) references to Blizzard's strings
 local COLOR = COLOR -- "Color"
 local DEFAULTS = DEFAULTS -- "Defaults"
@@ -36,6 +38,7 @@ local GOLDFONT = NORMAL_FONT_COLOR_CODE
 function module:OnInitialize()
 	db = vars.db
 	module:SetupOptions()
+	addon:SetupVersion()
 end
 
 -- general helper functions
@@ -124,6 +127,11 @@ core.Options = {
 					db.Tooltip[info[#info]] = value
 			end,
 			args = {
+				ver = {
+					order = 0.5,
+					type = "description",
+					name = function() return "Version: SavedInstances "..addon.version end,
+				},
 				intro = {
 					order = 1,
 					type = "description",

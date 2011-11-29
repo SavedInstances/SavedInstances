@@ -12,6 +12,9 @@ vars.icon = vars.LDB and LibStub("LibDBIcon-1.0", true)
 local QTip = LibStub("LibQTip-1.0")
 local dataobject, db, config
 
+addon.svnrev = {}
+addon.svnrev["SavedInstances.lua"] = tonumber(("$Revision: 48 $"):match("%d+"))
+
 -- local (optimal) references to provided functions
 local GetExpansionLevel = GetExpansionLevel
 local GetInstanceDifficulty = GetInstanceDifficulty
@@ -670,6 +673,7 @@ function core:OnInitialize()
 	db.Toons[thisToon].AlwaysShow = db.Toons[thisToon].AlwaysShow or false
 	db.Lockouts = nil -- deprecated
 	RequestRaidInfo()
+        addon:SetupVersion()
 	vars.dataobject = vars.LDB and vars.LDB:NewDataObject("SavedInstances", {
 		text = "",
 		type = "launcher",
@@ -690,6 +694,27 @@ function core:OnInitialize()
 		vars.icon:Register("SavedInstances", vars.dataobject, db.MinimapIcon)
 	end
 	UpdateLDBTextMode()
+end
+
+function addon:SetupVersion()
+   if addon.version then return end
+   local svnrev = 0
+   local T_svnrev = addon.svnrev
+   T_svnrev["X-Build"] = tonumber((GetAddOnMetadata(addonName, "X-Build") or ""):match("%d+"))
+   T_svnrev["X-Revision"] = tonumber((GetAddOnMetadata(addonName, "X-Revision") or ""):match("%d+"))
+   for _,v in pairs(T_svnrev) do -- determine highest file revision
+     if v and v > svnrev then
+       svnrev = v
+     end
+   end
+   addon.revision = svnrev
+
+   T_svnrev["X-Curse-Packaged-Version"] = GetAddOnMetadata(addonName, "X-Curse-Packaged-Version")
+   T_svnrev["Version"] = GetAddOnMetadata(addonName, "Version")
+   addon.version = T_svnrev["X-Curse-Packaged-Version"] or T_svnrev["Version"] or "@"
+   if string.find(addon.version, "@") then -- dev copy uses "@.project-version.@"
+      addon.version = "r"..svnrev
+   end
 end
 
 function core:OnEnable()
@@ -1094,7 +1119,8 @@ function core:ShowTooltip(anchorframe)
 		tooltip:SetCell(hintLine, hintCol, L["Hover mouse on indicator for details"], "LEFT", tooltip:GetColumnCount())
 		if not showall then
 		  hintLine, hintCol = tooltip:AddLine()
-		  tooltip:SetCell(hintLine, hintCol, L["Hold Alt to show all data"], "LEFT", tooltip:GetColumnCount())
+		  tooltip:SetCell(hintLine, hintCol, L["Hold Alt to show all data"], "LEFT", tooltip:GetColumnCount()-4)
+		  tooltip:SetCell(hintLine, tooltip:GetColumnCount()-3, addon.version, "RIGHT", 4)
 		end
 	end
 	-- tooltip column colours
