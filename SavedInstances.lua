@@ -1119,8 +1119,12 @@ function core:ShowTooltip(anchorframe)
 		tooltip:SetCell(hintLine, hintCol, L["Hover mouse on indicator for details"], "LEFT", tooltip:GetColumnCount())
 		if not showall then
 		  hintLine, hintCol = tooltip:AddLine()
-		  tooltip:SetCell(hintLine, hintCol, L["Hold Alt to show all data"], "LEFT", tooltip:GetColumnCount()-4)
-		  tooltip:SetCell(hintLine, tooltip:GetColumnCount()-3, addon.version, "RIGHT", 4)
+		  tooltip:SetCell(hintLine, hintCol, L["Hold Alt to show all data"], "LEFT", math.max(1,tooltip:GetColumnCount()-4))
+		  if tooltip:GetColumnCount() < 5 then
+		    tooltip:AddLine(addonName.." version "..addon.version)
+		  else
+		    tooltip:SetCell(hintLine, tooltip:GetColumnCount()-3, addon.version, "RIGHT", 4)
+		  end
 		end
 	end
 	-- tooltip column colours
