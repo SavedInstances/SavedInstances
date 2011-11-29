@@ -1,4 +1,4 @@
-## Interface: 40200
+## Interface: 40300
 ## Title: SavedInstances
 ## Notes: Keeps track of the raid IDs saved against your characters.
 ## Author: @project-author@
