@@ -876,20 +876,18 @@ function core:ShowTooltip(anchorframe)
 		end
 	end
 	-- determining how many instances will be displayed per category
-	local categorysize = localarr("categorysize") -- remember the number of instances to be shown for each category
+	local categoryshown = localarr("categoryshown") -- remember if each category will be shown
 	local instancesaved = localarr("instancesaved") -- remember if each instance has been saved or not (boolean)
-	local doseparator = false -- use this to determine whether to insert spaces or not
 	for _, category in ipairs(addon:OrderedCategories()) do
-		categorysize[category] = 0
 		for _, instance in ipairs(addon:OrderedInstances(category)) do
 			local inst = vars.db.Instances[instance]
 			for toon, t in pairs(vars.db.Toons) do
 				for diff = 1, 4 do
 					if inst[toon] and inst[toon][diff] and (inst[toon][diff].Expires > 0 or showall) then
 						instancesaved[instance] = true
-						categorysize[category] = categorysize[category] + 1
+						categoryshown[category] = true
 					elseif inst.Show then
-						categorysize[category] = categorysize[category] + 1
+						categoryshown[category] = true
 					end
 				end
 			end
@@ -898,10 +896,8 @@ function core:ShowTooltip(anchorframe)
 	local categories = 0
 	-- determining how many categories have instances that will be shown
 	if vars.db.Tooltip.ShowCategories then
-		for category, size in pairs(categorysize) do
-			if size > 0 then
-				categories = categories + 1
-			end
+		for category, _ in pairs(categoryshown) do
+			categories = categories + 1
 		end
 	end
 	-- allocating tooltip space for instances, categories, and space between categories
@@ -909,11 +905,11 @@ function core:ShowTooltip(anchorframe)
 	local instancerow = localarr("instancerow") -- remember where each instance goes
 	local firstcategory = true -- use this to skip spacing before the first category
 	for _, category in ipairs(addon:OrderedCategories()) do
-		if categorysize[category] > 0 then
+		if categoryshown[category] then
 			if not firstcategory and vars.db.Tooltip.CategorySpaces then
 				tooltip:AddSeparator(6,0,0,0,0)
 			end
-			if (categories > 1 or vars.db.Tooltip.ShowSoloCategory) and (categorysize[category] > 0) then
+			if (categories > 1 or vars.db.Tooltip.ShowSoloCategory) and categoryshown[category] then
 				categoryrow[category], _ = tooltip:AddLine()
 
 			end
@@ -921,7 +917,7 @@ function core:ShowTooltip(anchorframe)
 			       local inst = vars.db.Instances[instance]
 				for toon, t in cpairs(vars.db.Toons) do
 					for diff = 1, 4 do
-					        if inst[toon] and inst[toon][diff] and (inst[toon][diff].Expires > 0 or showexpired) then
+					        if inst[toon] and inst[toon][diff] and (inst[toon][diff].Expires > 0 or showall) then
 							instancerow[instance] = instancerow[instance] or tooltip:AddLine()
 							addColumns(columns, toon, tooltip)
 						elseif inst.Show then
@@ -941,7 +937,8 @@ function core:ShowTooltip(anchorframe)
 			        local inst = vars.db.Instances[instance]
 				if inst[toon] then
 					for diff = 1, 4 do
-						if inst[toon][diff] and (inst[toon][diff].Expires > 0 or showexpired) then
+						if instancerow[instance] and columns[toon..diff] and 
+						   inst[toon][diff] and (inst[toon][diff].Expires > 0 or showexpired) then
 							tooltip:SetCell(instancerow[instance], columns[toon..diff], 
 							    DifficultyString(instance, diff, toon, inst[toon][diff].Expires == 0))
 							tooltip:SetCellScript(instancerow[instance], columns[toon..diff], "OnEnter", ShowIndicatorTooltip, {instance, toon, diff})
@@ -1076,7 +1073,7 @@ function core:ShowTooltip(anchorframe)
 	-- we now know enough to put in the category names where necessary
 	if vars.db.Tooltip.ShowCategories then
 		for category, row in pairs(categoryrow) do
-			if (categories > 1 or vars.db.Tooltip.ShowSoloCategory) and (categorysize[category] > 0) then
+			if (categories > 1 or vars.db.Tooltip.ShowSoloCategory) and categoryshown[category] then
 				tooltip:SetCell(categoryrow[category], 1, YELLOWFONT .. vars.Categories[category] .. FONTEND, "LEFT", tooltip:GetColumnCount())
 			end
 		end
