@@ -234,22 +234,21 @@ local function GetLastLockedInstance()
 	end
 end
 
-local function GetLFDID(name)
+-- some instances (like sethekk halls) are named differently by GetSavedInstanceInfo() and LFGGetDungeonInfoByID()
+-- we use the latter name to key our database, and this function to convert as needed
+local function FindInstance(name)
+  if not name or #name == 0 then return nil end
   local info = vars.db.Instances[name]
-  return info and info.LFDID
---[[
-	local foundid, reclevel
-	for id, details in pairs(vars.instanceDB) do
-		if (strfind(details[1], name, 1, true) or strfind(name, details[1], 1, true))
-				and (vars.db.Instances[name].Raid == (details[2] == 2)) then
-			if not reclevel or details[5] < reclevel then
-				foundid = id
-				reclevel = details[5]
-			end
-		end
-	end
-	return foundid
---]]
+  if info then
+    return name, info.LFDID
+  end
+  for truename, info in pairs(vars.db.Instances) do
+    if truename:find(name, 1, true) or name:find(truename, 1, true) then
+      debug("FindInstance("..name..") => "..truename)
+      return truename, info.LFDID
+    end
+  end
+  return nil
 end
 
 function addon:InstanceCategory(instance)
@@ -420,6 +419,7 @@ end
 
 function addon:UpdateInstance(id)
   --debug("UpdateInstance: "..id)
+  if not id or id <= 0 then return end
   local currentbuild = select(2, GetBuildInfo())
   currentbuild = tonumber(currentbuild)
   local name, typeID, subtypeID, 
@@ -468,9 +468,6 @@ function addon:UpdateToonData()
 					if d.Expires < time() then
 						i[toon][difficulty].Locked = false
 					end
-				end
-				if TableLen(i[toon]) == 0 then
-					i[toon] = nil
 				end
 			end
 		end
@@ -765,17 +762,20 @@ function core:Refresh()
 	if numsaved > 0 then
 		for i = 1, numsaved do
 			local name, id, expires, diff, locked, extended, mostsig, raid, players, diffname = GetSavedInstanceInfo(i)
-		        local LFDID = GetLFDID(name) or (GetPartyLFGID and GetPartyLFGID())
+		        local truename, LFDID = FindInstance(name)
 		        addon:UpdateInstance(LFDID)
-			local instance = vars.db.Instances[name]
-			if instance then
-			  instance.Raid = instance.Raid or raid
+			local instance = vars.db.Instances[truename]
+			if not instance then
+			  print("SavedInstances: ERROR: Refresh() failed to find instance: "..name)
+			  instance = {}
+			  --vars.db.Instances[name] = instance
 			end
 			if expires and expires > 0 then
 			  expires = expires + time()
 			else
 			  expires = 0
 			end
+			instance.Raid = instance.Raid or raid
 			instance[thisToon] = instance[thisToon] or temp[name] or { }
 			local info = instance[thisToon][diff] or {}
 			wipe(info)
