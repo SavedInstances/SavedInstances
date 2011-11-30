@@ -237,16 +237,23 @@ local function GetLastLockedInstance()
 	end
 end
 
+function addon:normalizeName(str)
+  return str:gsub("%p",""):gsub("%s"," "):gsub("%s%s"," "):upper()
+end
+
 -- some instances (like sethekk halls) are named differently by GetSavedInstanceInfo() and LFGGetDungeonInfoByID()
 -- we use the latter name to key our database, and this function to convert as needed
-local function FindInstance(name)
+local function FindInstance(name, raid)
   if not name or #name == 0 then return nil end
   local info = vars.db.Instances[name]
   if info then
     return name, info.LFDID
   end
+  local nname = addon:normalizeName(name)
   for truename, info in pairs(vars.db.Instances) do
-    if truename:find(name, 1, true) or name:find(truename, 1, true) then
+    local tname = addon:normalizeName(truename)
+    if (tname:find(nname, 1, true) or nname:find(tname, 1, true)) and
+       vars.db.Instances[truename].Raid == raid then -- Tempest Keep: The Botanica
       debug("FindInstance("..name..") => "..truename)
       return truename, info.LFDID
     end
@@ -788,7 +795,7 @@ function core:Refresh()
 	if numsaved > 0 then
 		for i = 1, numsaved do
 			local name, id, expires, diff, locked, extended, mostsig, raid, players, diffname = GetSavedInstanceInfo(i)
-		        local truename, LFDID = FindInstance(name)
+		        local truename, LFDID = FindInstance(name, raid)
 		        addon:UpdateInstance(LFDID)
 			local instance = vars.db.Instances[truename]
 			if not instance then
@@ -814,11 +821,13 @@ function core:Refresh()
 		end
 	end
 	for name, _ in pairs(temp) do
+	 if vars.db.Instances[name][thisToon] then
 	  for diff,info in pairs(vars.db.Instances[name][thisToon]) do
 	    if not info.ID then
 	      vars.db.Instances[name][thisToon][diff] = nil
 	    end
 	  end
+	 end
 	end
 	wipe(temp)
 	-- update the lockout-specific details for the current instance if necessary
