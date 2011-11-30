@@ -470,6 +470,7 @@ function addon:UpdateToonData()
 				for difficulty, d in pairs(i[toon]) do
 					if d.Expires < time() then
 						i[toon][difficulty].Locked = false
+						i[toon][difficulty].Expires = 0
 					end
 				end
 			end
