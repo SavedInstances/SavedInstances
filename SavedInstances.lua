@@ -799,7 +799,11 @@ function core:Refresh()
 		        addon:UpdateInstance(LFDID)
 			local instance = vars.db.Instances[truename]
 			if not instance then
-			  print("SavedInstances: ERROR: Refresh() failed to find instance: "..name)
+			  if not addon.warned[name] then
+			    addon.warned[name] = true
+			    print("SavedInstances: ERROR: Refresh() failed to find instance: "..name)
+			    print(" Please report this bug at: http://www.wowace.com/addons/saved_instances/tickets/")
+			  end
 			  instance = {}
 			  --vars.db.Instances[name] = instance
 			end
