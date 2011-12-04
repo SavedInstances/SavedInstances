@@ -463,7 +463,10 @@ function addon:UpdateInstance(id)
   else -- dont know how to query
     return
   end
-  if not name or not expansionLevel or not recLevel or not maxPlayers or isHoliday then return end
+  -- name is nil for non-existent ids
+  -- maxPlayers == 0 for non-instance zones (WotLK zones all have an entry for some reason)
+  -- isHoliday is for single-boss holiday instances that don't generate raid saves
+  if not name or not expansionLevel or not recLevel or not maxPlayers or maxPlayers == 0 or isHoliday then return end
   if name:find(PVP_RATED_BATTLEGROUND) then return end -- ignore 10v10 rated bg
 
   local instance = vars.db.Instances[name]
