@@ -405,24 +405,34 @@ function addon:UpdateInstanceData()
                     LFDDungeonList -- lazily updated
   if not dungeonDB or instancesUpdated then return end  -- nil before first use in UI
   instancesUpdated = true
-  local raidHeaders, raidDB = GetFullRaidList()
+  core:UnregisterEvent("LFG_UPDATE_RANDOM_INFO")
   local count = 0
+  local maxid = 500
+  for id=1,maxid do -- start with brute force
+    if addon:UpdateInstance(id) then
+      count = count + 1
+    end
+  end
+  local raidHeaders, raidDB = GetFullRaidList()
   for _,rinfo in pairs(raidDB) do
     for _,rid in pairs(rinfo) do
-      if rid > 0 then -- ignore headers
-        addon:UpdateInstance(rid) 
-        count = count + 1
+      if rid > 0 and rid > maxid then -- ignore headers
+        if addon:UpdateInstance(rid) then
+          count = count + 1
+	end
       end
     end
   end
   for did,dinfo in pairs(dungeonDB) do
     local id = (type(dinfo) == "number" and dinfo) or did
-    if id > 0 then -- ignore headers
-      addon:UpdateInstance(id)
-      count = count + 1
+    if id > 0 and id > maxid then -- ignore headers
+      if addon:UpdateInstance(id) then
+        count = count + 1
+      end
     end
   end
   debug("UpdateInstanceData(): completed "..count.." updates.")
+  core:Refresh()
 end
 
 --if LFDParentFrame then hooksecurefunc(LFDParentFrame,"Show",function() addon:UpdateInstanceData() end) end
@@ -453,12 +463,17 @@ function addon:UpdateInstance(id)
   else -- dont know how to query
     return
   end
-  debug("UpdateInstance: "..id.." "..(name or "nil").." "..(expansionLevel or "nil").." "..(recLevel or "nil").." "..(maxPlayers or "nil"))
-  if not name or not expansionLevel or not recLevel or not maxPlayers then return end
+  if not name or not expansionLevel or not recLevel or not maxPlayers or isHoliday then return end
   if name:find(PVP_RATED_BATTLEGROUND) then return end -- ignore 10v10 rated bg
 
-  vars.db.Instances[name] = vars.db.Instances[name] or {}
   local instance = vars.db.Instances[name]
+  local newinst = false
+  if not instance then
+    debug("UpdateInstance: "..id.." "..(name or "nil").." "..(expansionLevel or "nil").." "..(recLevel or "nil").." "..(maxPlayers or "nil"))
+    instance = {}
+    newinst = true
+  end
+  vars.db.Instances[name] = instance
   instance.Show = instance.Show or vars.db.Tooltip.NewInstanceShow
   instance.Encounters = nil -- deprecated
   instance.LFDID = id
@@ -467,6 +482,7 @@ function addon:UpdateInstance(id)
   instance.RecLevel = instance.RecLevel or recLevel
   if recLevel < instance.RecLevel then instance.RecLevel = recLevel end -- favor non-heroic RecLevel
   instance.Raid = (tonumber(maxPlayers) > 5)
+  return newinst, true
 end
 
 -- run regularly to update lockouts and cached data for this toon
@@ -680,8 +696,9 @@ function core:OnInitialize()
 	db.Toons[thisToon].Level = UnitLevel("player")
 	db.Toons[thisToon].AlwaysShow = db.Toons[thisToon].AlwaysShow or false
 	db.Lockouts = nil -- deprecated
-	RequestRaidInfo()
         addon:SetupVersion()
+	RequestRaidInfo() -- get lockout data
+	if LFGDungeonList_Setup then LFGDungeonList_Setup() end -- force LFG frame to populate instance list LFDDungeonList
 	vars.dataobject = vars.LDB and vars.LDB:NewDataObject("SavedInstances", {
 		text = "",
 		type = "launcher",
@@ -781,6 +798,7 @@ end
 function core:Refresh()
 	-- update entire database from the current character's perspective
         addon:UpdateInstanceData()
+	if not instancesUpdated then return end -- wait for UpdateInstanceData to succeed
 	local temp = localarr("RefreshTemp")
 	for name, instance in pairs(vars.db.Instances) do -- clear current toons lockouts before refresh
 	  if instance[thisToon] then
@@ -799,6 +817,7 @@ function core:Refresh()
 		        addon:UpdateInstance(LFDID)
 			local instance = vars.db.Instances[truename]
 			if not instance then
+			  debug("Refresh() failed to find instance: "..name.." : "..GetLocale())
 			  addon.warned = addon.warned or {}
 			  if not addon.warned[name] then
 			    addon.warned[name] = true
