@@ -26,9 +26,12 @@ local SecondsToTime = SecondsToTime
 -- local (optimal) references to Blizzard's strings
 local RAID_CLASS_COLORS = RAID_CLASS_COLORS
 local NO_RAID_INSTANCES_SAVED = NO_RAID_INSTANCES_SAVED -- "You are not saved to any instances"
+local RAID_FINDER = PLAYER_DIFFICULTY3
 local FONTEND = FONT_COLOR_CODE_CLOSE
 local GOLDFONT = NORMAL_FONT_COLOR_CODE
 local YELLOWFONT = LIGHTYELLOW_FONT_COLOR_CODE
+local REDFONT = RED_FONT_COLOR_CODE
+local GREENFONT = GREEN_FONT_COLOR_CODE
 local WHITEFONT = HIGHLIGHT_FONT_COLOR_CODE
 local GRAYFONT = GRAY_FONT_COLOR_CODE
 local LFD_RANDOM_REWARD_EXPLANATION2 = LFD_RANDOM_REWARD_EXPLANATION2
@@ -70,6 +73,11 @@ local currency = {
   396, -- Valor Points
   392, -- Honor Points
   390, -- Conquest Points
+}
+
+addon.LFRInstanceIDs = { 
+  416, -- The Siege of Wyrmrest Temple
+  417, -- Fall of Deathwing
 }
 
 local function debug(msg)
@@ -155,8 +163,12 @@ vars.defaultDB = {
 					-- REMOVED Encounters[integer] = { GUID : integer, Name : string }
 					-- table key: "Toon - Realm"; value:
 						-- table key: "Difficulty"; value:
-							-- ID: integer
+							-- ID: integer, positive for a Blizzard Raid ID, 
+                                                        --  negative value for an LFR encounter count
 							-- Expires: integer
+                                                        -- Locked: boolean, whether toon is locked to the save
+                                                        -- Extended: boolean, whether this is an extended raid lockout
+                                                        -- 1..numEncounters: boolean LFR isLooted
 	MinimapIcon = { },
 	--[[ REMOVED
 	Lockouts = {	-- table key: lockout ID; value:
@@ -243,7 +255,7 @@ end
 
 -- some instances (like sethekk halls) are named differently by GetSavedInstanceInfo() and LFGGetDungeonInfoByID()
 -- we use the latter name to key our database, and this function to convert as needed
-local function FindInstance(name, raid)
+function addon:FindInstance(name, raid)
   if not name or #name == 0 then return nil end
   local info = vars.db.Instances[name]
   if info then
@@ -259,6 +271,32 @@ local function FindInstance(name, raid)
     end
   end
   return nil
+end
+
+-- provide either id or name/raid to get the instance truename and db entry
+function addon:LookupInstance(id, name, raid)
+  local truename, instance
+  if name then
+    truename, id = addon:FindInstance(name, raid)
+  end
+  if id then
+    truename = select(3,addon:UpdateInstance(id))
+  end
+  if truename then
+    instance = vars.db.Instances[truename]
+  end
+  if not instance then
+    debug("LookupInstance() failed to find instance: "..(name or "")..":"..(id or 0).." : "..GetLocale())
+    addon.warned = addon.warned or {}
+    if not addon.warned[name] then
+      addon.warned[name] = true
+      print("SavedInstances: ERROR: Refresh() failed to find instance: "..name.." : "..GetLocale())
+      print(" Please report this bug at: http://www.wowace.com/addons/saved_instances/tickets/")
+    end
+    instance = {}
+    --vars.db.Instances[name] = instance
+  end
+  return truename, instance
 end
 
 function addon:InstanceCategory(instance)
@@ -487,7 +525,7 @@ function addon:UpdateInstance(id)
   instance.RecLevel = instance.RecLevel or recLevel
   if recLevel < instance.RecLevel then instance.RecLevel = recLevel end -- favor non-heroic RecLevel
   instance.Raid = (tonumber(maxPlayers) > 5)
-  return newinst, true
+  return newinst, true, name
 end
 
 -- run regularly to update lockouts and cached data for this toon
@@ -497,8 +535,11 @@ function addon:UpdateToonData()
 			if i[toon] then
 				for difficulty, d in pairs(i[toon]) do
 					if d.Expires < time() then
-						i[toon][difficulty].Locked = false
-						i[toon][difficulty].Expires = 0
+					    d.Locked = false
+				            d.Expires = 0
+                                            for x=1,(-1*(d.ID or 0)) do
+                                               d[x] = nil
+                                            end
 					end
 				end
 			end
@@ -561,23 +602,23 @@ local function ShowIndicatorTooltip(cell, arg, ...)
 	indicatortip:Clear()
 	indicatortip:SetHeaderFont(tooltip:GetHeaderFont())
 	local thisinstance = vars.db.Instances[instance]
-	local id = thisinstance[toon][diff].ID
+        local info = thisinstance[toon][diff]
+	local id = info.ID
 	local nameline, _ = indicatortip:AddHeader()
 	indicatortip:SetCell(nameline, 1, DifficultyString(instance, diff, toon) .. " " .. GOLDFONT .. instance .. FONTEND, indicatortip:GetHeaderFont(), "LEFT", 2)
-	indicatortip:AddHeader(ClassColorise(vars.db.Toons[toon].Class, strsplit(' ', toon)), id)
+	indicatortip:AddHeader(ClassColorise(vars.db.Toons[toon].Class, strsplit(' ', toon)), (id < 0 and RAID_FINDER) or id)
 	local EMPH = " !!! "
-	if thisinstance[toon][diff].Extended then
+	if info.Extended then
 	  indicatortip:SetCell(indicatortip:AddLine(),1,WHITEFONT .. EMPH .. L["Extended Lockout - Not yet saved"] .. EMPH .. FONTEND,"CENTER",2)
-	elseif thisinstance[toon][diff].Locked == false then
+	elseif info.Locked == false and info.ID > 0 then
 	  indicatortip:SetCell(indicatortip:AddLine(),1,WHITEFONT .. EMPH .. L["Expired Lockout - Can be extended"] .. EMPH .. FONTEND,"CENTER",2)
 	end
-	if thisinstance[toon][diff].Expires > 0 then
+	if info.Expires > 0 then
 	  indicatortip:AddLine(YELLOWFONT .. L["Time Left"] .. ":" .. FONTEND, SecondsToTime(thisinstance[toon][diff].Expires - time()))
 	end
 	indicatortip:SetAutoHideDelay(0.1, tooltip)
 	indicatortip:SmartAnchorTo(tooltip)
-	indicatortip:Show()
-	if thisinstance[toon][diff].Link then
+	if info.Link then
 	  scantt:SetOwner(UIParent,"ANCHOR_NONE")
 	  scantt:SetHyperlink(thisinstance[toon][diff].Link)
 	  local name = scantt:GetName()
@@ -586,6 +627,17 @@ local function ShowIndicatorTooltip(cell, arg, ...)
 	    indicatortip:AddLine(coloredText(left), coloredText(right))
 	  end
 	end
+	if info.ID < 0 then
+          for i=1,(-1*info.ID) do
+            local bossname, texture = GetLFGDungeonEncounterInfo(thisinstance.LFDID, i);
+            if info[i] then 
+              indicatortip:AddLine(bossname, REDFONT..ERR_LOOT_GONE..FONTEND)
+            else
+              --indicatortip:AddLine(bossname, GREENFONT..AVAILABLE..FONTEND)
+            end
+          end
+        end
+	indicatortip:Show()
 end
 
 local colorpat = "\124c%c%c%c%c%c%c%c%c"
@@ -818,27 +870,14 @@ function core:Refresh()
 	if numsaved > 0 then
 		for i = 1, numsaved do
 			local name, id, expires, diff, locked, extended, mostsig, raid, players, diffname = GetSavedInstanceInfo(i)
-		        local truename, LFDID = FindInstance(name, raid)
-		        addon:UpdateInstance(LFDID)
-			local instance = vars.db.Instances[truename]
-			if not instance then
-			  debug("Refresh() failed to find instance: "..name.." : "..GetLocale())
-			  addon.warned = addon.warned or {}
-			  if not addon.warned[name] then
-			    addon.warned[name] = true
-			    print("SavedInstances: ERROR: Refresh() failed to find instance: "..name.." : "..GetLocale())
-			    print(" Please report this bug at: http://www.wowace.com/addons/saved_instances/tickets/")
-			  end
-			  instance = {}
-			  --vars.db.Instances[name] = instance
-			end
+                        local truename, instance = addon:LookupInstance(nil, name, raid)
 			if expires and expires > 0 then
 			  expires = expires + time()
 			else
 			  expires = 0
 			end
 			instance.Raid = instance.Raid or raid
-			instance[thisToon] = instance[thisToon] or temp[name] or { }
+			instance[thisToon] = instance[thisToon] or temp[truename] or { }
 			local info = instance[thisToon][diff] or {}
 			wipe(info)
 			  info.ID = id
@@ -849,6 +888,24 @@ function core:Refresh()
 			instance[thisToon][diff] = info
 		end
 	end
+
+	for _,id in pairs(addon.LFRInstanceIDs) do
+	  local numEncounters, numCompleted = GetLFGDungeonNumEncounters(id);
+	  if ( numCompleted > 0 ) then
+            local truename, instance = addon:LookupInstance(id, nil, true)
+            instance[thisToon] = instance[thisToon] or temp[truename] or { }
+	    local info = instance[thisToon][2] or {}
+	    wipe(info)
+            instance[thisToon][2] = info
+  	    info.Expires = addon:GetNextWeeklyResetTime()
+            info.ID = -1*numEncounters
+	    for i=1, numEncounters do
+	      local bossName, texture, isKilled = GetLFGDungeonEncounterInfo(id, i);
+              info[i] = isKilled
+	    end
+	  end
+	end
+
 	for name, _ in pairs(temp) do
 	 if vars.db.Instances[name][thisToon] then
 	  for diff,info in pairs(vars.db.Instances[name][thisToon]) do
