@@ -1059,27 +1059,41 @@ function core:ShowTooltip(anchorframe)
 			for toon, t in pairs(vars.db.Toons) do
 			        local inst = vars.db.Instances[instance]
 				if inst[toon] then
-					for diff = 1, 4 do
-						if instancerow[instance] and columns[toon..diff] and 
-						   inst[toon][diff] and (inst[toon][diff].Expires > 0 or showexpired) then
-							tooltip:SetCell(instancerow[instance], columns[toon..diff], 
-							    DifficultyString(instance, diff, toon, inst[toon][diff].Expires == 0))
-							tooltip:SetCellScript(instancerow[instance], columns[toon..diff], "OnEnter", ShowIndicatorTooltip, {instance, toon, diff})
-							tooltip:SetCellScript(instancerow[instance], columns[toon..diff], "OnLeave", 
-							     function() indicatortip:Hide(); GameTooltip:Hide() end)
-							tooltip:SetCellScript(instancerow[instance], columns[toon..diff], "OnMouseDown", 
-							     function()
-							       local link = inst[toon][diff].Link
-							       if link and ChatEdit_GetActiveWindow() then
-							          ChatEdit_InsertLink(link)
-							       elseif link then
-							          ChatFrame_OpenChat(link, DEFAULT_CHAT_FRAME)
-							       end
-							     end)
-						elseif columns[toon..diff] then
-							tooltip:SetCell(instancerow[instance], columns[toon..diff], "")
-						end
-					end
+				  local showcol = localarr("showcol")
+				  local showcnt = 0
+				  for diff = 1, 4 do
+				    if instancerow[instance] and columns[toon..diff] and 
+				      inst[toon][diff] and (inst[toon][diff].Expires > 0 or showexpired) then
+				      showcol[diff] = true
+				      showcnt = showcnt + 1
+				    end
+				  end
+				  for diff = 1, 4 do
+				    if showcol[diff] then
+				      local base = diff
+				      local span = 1
+				      if showcnt == 1 then
+				        base = 1
+					span = 4
+				      end
+					tooltip:SetCell(instancerow[instance], columns[toon..base], 
+					    DifficultyString(instance, diff, toon, inst[toon][diff].Expires == 0), span)
+					tooltip:SetCellScript(instancerow[instance], columns[toon..base], "OnEnter", ShowIndicatorTooltip, {instance, toon, diff})
+					tooltip:SetCellScript(instancerow[instance], columns[toon..base], "OnLeave", 
+					     function() indicatortip:Hide(); GameTooltip:Hide() end)
+					tooltip:SetCellScript(instancerow[instance], columns[toon..base], "OnMouseDown", 
+					     function()
+					       local link = inst[toon][diff].Link
+					       if link and ChatEdit_GetActiveWindow() then
+					          ChatEdit_InsertLink(link)
+					       elseif link then
+					          ChatFrame_OpenChat(link, DEFAULT_CHAT_FRAME)
+					       end
+					     end)
+				    elseif columns[toon..diff] and showcnt > 1 then
+					tooltip:SetCell(instancerow[instance], columns[toon..diff], "")
+				    end
+				  end
 				end
 			end
 		elseif (not instancesaved[instance]) and (vars.db.Instances[instance].Show) then
