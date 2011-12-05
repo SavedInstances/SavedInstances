@@ -73,6 +73,7 @@ local currency = {
 }
 
 local function debug(msg)
+  --addon.db.dbg = true
   if addon.db.dbg then
      DEFAULT_CHAT_FRAME:AddMessage("\124cFFFF0000"..addonName.."\124r: "..msg)
   end
@@ -125,7 +126,6 @@ vars.defaultDB = {
 	},
 	Tooltip = {
 		Details = false,
-		NewInstanceShow = false,
 		ReverseInstances = false,
 		ShowExpired = false,
 		ShowCategories = false,
@@ -407,6 +407,7 @@ function addon:UpdateInstanceData()
   instancesUpdated = true
   core:UnregisterEvent("LFG_UPDATE_RANDOM_INFO")
   local count = 0
+  local starttime = GetTime()
   local maxid = 500
   for id=1,maxid do -- start with brute force
     if addon:UpdateInstance(id) then
@@ -431,7 +432,8 @@ function addon:UpdateInstanceData()
       end
     end
   end
-  debug("UpdateInstanceData(): completed "..count.." updates.")
+  starttime = GetTime()-starttime
+  debug("UpdateInstanceData(): completed "..count.." updates in "..string.format("%.6f",starttime).." sec.")
   core:Refresh()
 end
 
@@ -477,7 +479,7 @@ function addon:UpdateInstance(id)
     newinst = true
   end
   vars.db.Instances[name] = instance
-  instance.Show = instance.Show or vars.db.Tooltip.NewInstanceShow
+  instance.Show = instance.Show
   instance.Encounters = nil -- deprecated
   instance.LFDID = id
   instance.LFDupdated = currentbuild
