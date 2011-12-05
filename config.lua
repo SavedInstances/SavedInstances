@@ -267,6 +267,16 @@ core.Options = {
 					order = 54,
 					name = L["Track"].." "..GetCurrencyInfo(390),
 				},
+				CurrencyMax = {
+					type = "toggle",
+					order = 55,
+					name = L["Show currency max"]
+				},
+				CurrencyEarned = {
+					type = "toggle",
+					order = 56,
+					name = L["Show currency earned"]
+				},
 				
 				ToonHeader = {
 					order = 31, 

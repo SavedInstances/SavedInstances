@@ -152,6 +152,8 @@ vars.defaultDB = {
 		Currency396 = true, -- Valor Points
 		Currency392 = false, -- Honor Points
 		Currency390 = false, -- Conquest Points
+		CurrencyMax = false,
+		CurrencyEarned = true,
 	},
 	Instances = { }, 	-- table key: "Instance name"; value:
 					-- Show: boolean
@@ -1163,20 +1165,33 @@ function core:ShowTooltip(anchorframe)
 
    	      for toon, t in pairs(vars.db.Toons) do
                 local ci = t.currency and t.currency[idx] 
-		if ci and columns[toon..1] and ((ci.earnedThisWeek or 0) > 0 or (ci.amount or 0) > 0) then
+		if ci and columns[toon..1] then
+		   local earned, weeklymax, totalmax = "","",""
+		   if vars.db.Tooltip.CurrencyMax then
+		     if (ci.weeklyMax or 0) > 0 then
+		       weeklymax = "/"..ci.weeklyMax
+		     end
+		     if (ci.totalMax or 0) > 0 then
+		       totalmax = "/"..ci.totalMax
+		     end
+		   end
+		   if vars.db.Tooltip.CurrencyEarned or showall then
+		     earned = "("..(ci.amount or "0")..totalmax..")"
+		   end
                    local str
-                   if ci.weeklyMax and ci.weeklyMax > 0 then
-                      str = (ci.earnedThisWeek or "0").."/"..ci.weeklyMax..
-                            " ("..(ci.amount or "0")..((ci.totalMax and ci.totalMax > 0 and "/"..ci.totalMax) or "")..")"
-                   elseif ci.totalMax and ci.totalMax > 0 then
-                      str = "("..(ci.amount or "0").."/"..ci.totalMax..")"
-                   else
-                      str = "("..ci.amount..")"
+		   if (ci.amount or 0) > 0 or (ci.earnedThisWeek or 0) > 0 then
+                     if (ci.weeklyMax or 0) > 0 then
+                       str = (ci.earnedThisWeek or "0")..weeklymax.." "..earned
+		     elseif (ci.amount or 0) > 0 then
+                       str = "("..(ci.amount or "0")..totalmax..")"
+		     end
                    end
+		  if str then
 		   tooltip:SetCell(currLine, columns[toon..1], ClassColorise(t.Class,str), "CENTER",4)
 		   tooltip:SetCellScript(currLine, columns[toon..1], "OnEnter", ShowCurrencyTooltip, {toon, idx, ci})
 		   tooltip:SetCellScript(currLine, columns[toon..1], "OnLeave", 
 							     function() indicatortip:Hide(); GameTooltip:Hide() end)
+		  end
                 end
               end
 	    end
