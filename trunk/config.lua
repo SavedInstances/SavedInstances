@@ -216,13 +216,6 @@ core.Options = {
 					type = "header",
 					name = L["Instances"],
 				},
-				NewInstanceShow = {
-					type = "toggle",
-					width = "double",
-					order = 21,
-					name = L["Always show new instances"],
-					desc = L["New instances are shown by default, even if no characters are saved to them"],
-				},
 				ReverseInstances = {
 					type = "toggle",
 					name = L["Reverse ordering"],
