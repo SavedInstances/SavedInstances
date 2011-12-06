@@ -5,7 +5,7 @@
 ## Version: @project-version@
 ## X-Build: @project-revision@
 ## X-ReleaseDate: @project-date-iso@
-## X-Revision: $Revision: 266 $
+## X-Revision: $Revision$
 ## X-AceForum: 14896
 ## X-License: BSD
 ## X-Category: Raid

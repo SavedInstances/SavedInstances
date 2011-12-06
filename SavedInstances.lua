@@ -13,7 +13,7 @@ local QTip = LibStub("LibQTip-1.0")
 local dataobject, db, config
 
 addon.svnrev = {}
-addon.svnrev["SavedInstances.lua"] = tonumber(("$Revision: 48 $"):match("%d+"))
+addon.svnrev["SavedInstances.lua"] = tonumber(("$Revision$"):match("%d+"))
 
 -- local (optimal) references to provided functions
 local GetExpansionLevel = GetExpansionLevel
