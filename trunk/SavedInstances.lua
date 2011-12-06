@@ -557,9 +557,9 @@ function addon:UpdateToonData()
 					if d.Expires < time() then
 					    d.Locked = false
 				            d.Expires = 0
-                                            for x=1,(-1*(d.ID or 0)) do
-                                               d[x] = nil
-                                            end
+					    if d.ID < 0 then
+					      i[toon][difficulty] = nil
+					    end
 					end
 				end
 			end
