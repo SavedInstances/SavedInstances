@@ -261,7 +261,15 @@ local function GetLastLockedInstance()
 end
 
 function addon:normalizeName(str)
-  return str:gsub("%p",""):gsub("%s"," "):gsub("%s%s"," "):upper()
+  return str:gsub("%p",""):gsub("%s"," "):gsub("%s%s"," "):gsub("^%s+",""):gsub("%s+$",""):upper()
+end
+
+addon.translateInstance = {
+  ["Hellfire Citadel: Ramparts"] = "Hellfire Ramparts",
+  -- [""] = "",
+}
+for k,v in pairs(addon.translateInstance) do
+  addon.translateInstance[addon:normalizeName(k)] = addon:normalizeName(v)
 end
 
 -- some instances (like sethekk halls) are named differently by GetSavedInstanceInfo() and LFGGetDungeonInfoByID()
@@ -273,6 +281,7 @@ function addon:FindInstance(name, raid)
     return name, info.LFDID
   end
   local nname = addon:normalizeName(name)
+  nname = addon.translateInstance[nname] or nname
   for truename, info in pairs(vars.db.Instances) do
     local tname = addon:normalizeName(truename)
     if (tname:find(nname, 1, true) or nname:find(tname, 1, true)) and
