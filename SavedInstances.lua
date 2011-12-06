@@ -223,6 +223,15 @@ function addon:GetServerOffset()
 	return offset
 end
 
+addon.resetDays = {}
+if GetRealmName():find("(US)") then
+  addon.resetDays["2"] = true -- tuesday
+elseif GetRealmName():find("(EU)") then
+  addon.resetDays["3"] = true -- wednesday
+else
+  addon.resetDays["2"] = true -- tuesday?
+end
+
 function addon:GetNextWeeklyResetTime()
   local offset = addon:GetServerOffset() * 3600
   local resettime = GetQuestResetTime()
@@ -231,7 +240,7 @@ function addon:GetNextWeeklyResetTime()
   end
   local nightlyReset = time() + resettime
   --while date("%A",nightlyReset+offset) ~= WEEKDAY_TUESDAY do 
-  while date("%w",nightlyReset+offset) ~= "2" do
+  while not addon.resetDays[date("%w",nightlyReset+offset)] do
     nightlyReset = nightlyReset + 24 * 3600
   end
   return nightlyReset
