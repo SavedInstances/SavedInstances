@@ -1236,6 +1236,18 @@ function core:ShowTooltip(anchorframe)
 		local diff = strsub(toondiff, #toondiff, #toondiff)
 		if diff == "1" then
 			tooltip:SetCell(headLine, col, ClassColorise(vars.db.Toons[toon].Class, select(1, strsplit(" - ", toon))), tooltip:GetHeaderFont(), "CENTER", 4)
+	 		--[[
+			tooltip:SetCellScript(headLine, col, "OnEnter", function() 
+			  for i=0,3 do
+			    tooltip:SetColumnColor(col+i,0.5,0.5,0.5) 
+			  end
+			end)
+			tooltip:SetCellScript(headLine, col, "OnLeave", function() 
+			  for i=0,3 do
+			    tooltip:SetColumnColor(col,0,0,0) 
+			  end
+			end)
+			--]]
 		end
 	end 
 	-- we now know enough to put in the category names where necessary
@@ -1246,6 +1258,12 @@ function core:ShowTooltip(anchorframe)
 			end
 		end
 	end
+
+	for i=2,tooltip:GetLineCount() do -- row highlighting
+	  tooltip:SetLineScript(i, "OnEnter", function() end)
+	  tooltip:SetLineScript(i, "OnLeave", function() end)
+	end
+
 	-- finishing up, with hints
 	if TableLen(instancerow) == 0 then
 		local noneLine = tooltip:AddLine()
