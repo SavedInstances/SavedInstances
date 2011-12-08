@@ -492,7 +492,10 @@ function addon:UpdateInstanceData()
   end
   starttime = GetTime()-starttime
   debug("UpdateInstanceData(): completed "..count.." updates in "..string.format("%.6f",starttime).." sec.")
-  core:Refresh()
+  if addon.RefreshPending then
+    addon.RefreshPending = nil
+    core:Refresh()
+  end
 end
 
 --if LFDParentFrame then hooksecurefunc(LFDParentFrame,"Show",function() addon:UpdateInstanceData() end) end
@@ -826,20 +829,13 @@ function core:OnEnable()
 	self:RegisterEvent("CHAT_MSG_SYSTEM", "CheckSystemMessage")
 	self:RegisterEvent("CHAT_MSG_CURRENCY", "CheckSystemMessage")
 	self:RegisterEvent("CHAT_MSG_LOOT", "CheckSystemMessage")
-	self:RegisterEvent("PLAYER_ENTERING_WORLD")
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", RequestRaidInfo)
+	self:RegisterEvent("LFG_LOCK_INFO_RECEIVED", RequestRaidInfo)
 	self:RegisterEvent("LFG_COMPLETION_REWARD") -- for random daily dungeon tracking
 end
 
 function core:OnDisable()
-	self:UnregisterEvent("UPDATE_INSTANCE_INFO")
-	self:UnregisterEvent("RAID_INSTANCE_WELCOME")
-	self:UnregisterEvent("CHAT_MSG_SYSTEM")
-	self:UnregisterEvent("PLAYER_ENTERING_WORLD")
-	self:UnregisterEvent("LFG_COMPLETION_REWARD")
-end
-
-function core:PLAYER_ENTERING_WORLD()
-  addon:UpdateToonData()
+	self:UnregisterAllEvents()
 end
 
 function addon:UpdateThisLockout()
@@ -875,7 +871,7 @@ end
 function core:Refresh()
 	-- update entire database from the current character's perspective
         addon:UpdateInstanceData()
-	if not instancesUpdated then return end -- wait for UpdateInstanceData to succeed
+	if not instancesUpdated then addon.RefreshPending = true; return end -- wait for UpdateInstanceData to succeed
 	local temp = localarr("RefreshTemp")
 	for name, instance in pairs(vars.db.Instances) do -- clear current toons lockouts before refresh
 	  if instance[thisToon] then
