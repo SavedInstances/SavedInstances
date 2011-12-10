@@ -266,6 +266,7 @@ end
 
 addon.translateInstance = {
   ["Hellfire Citadel: Ramparts"] = "Hellfire Ramparts",
+  ["The Battle for Mount Hyjal"] = "Hyjal Past",
   -- [""] = "",
 }
 for k,v in pairs(addon.translateInstance) do
@@ -557,7 +558,7 @@ function addon:UpdateToonData()
 		for toon, t in pairs(vars.db.Toons) do
 			if i[toon] then
 				for difficulty, d in pairs(i[toon]) do
-					if d.Expires < time() then
+					if d.Expires and d.Expires < time() then
 					    d.Locked = false
 				            d.Expires = 0
 					    if d.ID < 0 then
