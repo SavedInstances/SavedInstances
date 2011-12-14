@@ -287,14 +287,15 @@ function addon:normalizeName(str)
   return str:gsub("%p",""):gsub("%s"," "):gsub("%s%s"," "):gsub("^%s+",""):gsub("%s+$",""):upper()
 end
 
-addon.translateInstance = {
+addon.transInstance = {
   -- lockout name (reported in error)  =  LFG/LFR name (from addon.Instances)
   ["Hellfire Citadel: Ramparts"] = "Hellfire Ramparts",
   ["The Battle for Mount Hyjal"] = "Hyjal Past",
   ["Ruins of Ahn'Qiraj"] = "Ahn'Qiraj Ruins",
   -- [""] = "",
 }
-for k,v in pairs(addon.translateInstance) do
+addon.translateInstance = {}
+for k,v in pairs(addon.transInstance) do
   addon.translateInstance[addon:normalizeName(k)] = addon:normalizeName(v)
 end
 
