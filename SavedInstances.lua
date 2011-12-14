@@ -223,16 +223,39 @@ function addon:GetServerOffset()
 	return offset
 end
 
-addon.resetDays = {}
-if GetRealmName():find("(US)") then
-  addon.resetDays["2"] = true -- tuesday
-elseif GetRealmName():find("(EU)") then
-  addon.resetDays["3"] = true -- wednesday
-else
-  addon.resetDays["2"] = true -- tuesday?
+function addon:GetRegion()
+  if not addon.region then
+    local reg
+    reg = GetCVar("portal")
+    if not reg or #reg ~= 2 then
+      reg = GetCVar("realmList"):match("^(%a+)%.")
+    end
+    if not reg or #reg ~= 2 then
+      reg = GetRealmName():match("%(%a%a%)")
+    end
+    reg = reg and reg:upper()
+    if reg and #reg == 2 then
+      addon.region = reg
+    end
+  end
+  return addon.region
 end
 
 function addon:GetNextWeeklyResetTime()
+  if not addon.resetDays then
+    local region = addon:GetRegion()
+    if not region then return nil end
+    addon.resetDays = {}
+    if region == "US" then
+      addon.resetDays["2"] = true -- tuesday
+    elseif region == "EU" then
+      addon.resetDays["3"] = true -- wednesday
+    elseif region == "CN" or region == "KR" or region == "TW" then -- XXX: codes unconfirmed
+      addon.resetDays["3"] = true -- thursday
+    else
+      addon.resetDays["2"] = true -- tuesday?
+    end
+  end
   local offset = addon:GetServerOffset() * 3600
   local resettime = GetQuestResetTime()
   if not resettime or resettime <= 0 then -- ticket 43: can fail during startup
