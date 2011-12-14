@@ -288,8 +288,10 @@ function addon:normalizeName(str)
 end
 
 addon.translateInstance = {
+  -- lockout name (reported in error)  =  LFG/LFR name (from addon.Instances)
   ["Hellfire Citadel: Ramparts"] = "Hellfire Ramparts",
   ["The Battle for Mount Hyjal"] = "Hyjal Past",
+  ["Ruins of Ahn'Qiraj"] = "Ahn'Qiraj Ruins",
   -- [""] = "",
 }
 for k,v in pairs(addon.translateInstance) do
