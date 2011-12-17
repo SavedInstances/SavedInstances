@@ -382,9 +382,14 @@ core.Options = {
 			type = "group",
 			name = L["Indicators"],
 			get = function(info)
-					return db.Indicators[info[#info]] or vars.defaultDB.Indicators[info[#info]]
+			   if db.Indicators[info[#info]] ~= nil then -- tri-state boolean logic
+			     return db.Indicators[info[#info]]
+			   else
+			     return vars.defaultDB.Indicators[info[#info]]
+			   end
 			end,
 			set = function(info, value)
+					addon.debug("Config set: "..info[#info].." = "..(value and "true" or "false"))
 					db.Indicators[info[#info]] = value
 			end,
 			args = {

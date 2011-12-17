@@ -86,6 +86,7 @@ local function debug(msg)
      DEFAULT_CHAT_FRAME:AddMessage("\124cFFFF0000"..addonName.."\124r: "..msg)
   end
 end
+addon.debug = debug
 
 vars.defaultDB = {
 	DBVersion = 10,
