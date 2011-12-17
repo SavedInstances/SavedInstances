@@ -375,35 +375,27 @@ function addon:CategorySize(category)
 	return i
 end
 
+local function instanceSort(i1, i2)
+  local instance1 = vars.db.Instances[i1]
+  local instance2 = vars.db.Instances[i2]
+  local level1 = instance1.RecLevel or 0
+  local level2 = instance2.RecLevel or 0
+  local id1 = instance1.LFDID or 0
+  local id2 = instance2.LFDID or 0
+  local key1 = level1*10000+id1
+  local key2 = level2*10000+id2
+  if vars.db.Tooltip.ReverseInstances then
+      return key1 < key2
+  else
+      return key2 < key1
+  end
+end
+
 function addon:OrderedInstances(category)
 	-- returns a table of the form { "instance1", "instance2", ... }
-	local orderedlist = { }
 	local instances = addon:InstancesInCategory(category)
-	while #instances > 0 do
-		local highest, lowest, selected
-		for i, instance in ipairs(instances) do
-			local instancelevel = vars.db.Instances[instance].RecLevel or 0
-			if vars.db.Tooltip.ReverseInstances then
-				if not lowest or (instancelevel and instancelevel < lowest) then
-					lowest = instancelevel
-					selected = i
-				end
-			else
-				if not highest or (instancelevel and instancelevel > highest) then
-					highest = instancelevel
-					selected = i
-				end
-			end
-		end
-		if vars.db.Tooltip.ReverseInstances then
-			selected = selected or 1
-		else
-			selected = selected or #instances
-		end
-		orderedlist[1+#orderedlist] = instances[selected]
-		tremove(instances, selected)
-	end
-	return orderedlist
+	table.sort(instances, instanceSort)
+	return instances
 end
 
 
