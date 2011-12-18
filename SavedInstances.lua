@@ -75,9 +75,9 @@ local currency = {
   390, -- Conquest Points
 }
 
-addon.LFRInstanceIDs = { 
-  416, -- The Siege of Wyrmrest Temple
-  417, -- Fall of Deathwing
+addon.LFRInstances = { 
+  [416] = { total=4, base=1 }, -- The Siege of Wyrmrest Temple
+  [417] = { total=4, base=5 }, -- Fall of Deathwing
 }
 
 local function debug(msg)
@@ -89,7 +89,7 @@ end
 addon.debug = debug
 
 vars.defaultDB = {
-	DBVersion = 10,
+	DBVersion = 11,
 	History = { }, -- for tracking 5 instance per hour limit
 		-- key: instance string; value: time first entered
 	Broker = {
@@ -105,31 +105,31 @@ vars.defaultDB = {
 				-- WeeklyResetTime: expiry
 	Indicators = {
 		D1Indicator = "BLANK", -- indicator: ICON_*, BLANK
-		D1Text = "5",
+		D1Text = "KILLED/TOTAL",
 		D1Color = { 0, 0.6, 0, 1, }, -- dark green
 		D1ClassColor = true,
 		D2Indicator = "BLANK", -- indicator
-		D2Text = "5+",
+		D2Text = "KILLED/TOTAL",
 		D2Color = { 0, 1, 0, 1, }, -- green
 		D2ClassColor = true,
 		R0Indicator = "BLANK", -- indicator: ICON_*, BLANK
-		R0Text = "X",
+		R0Text = "KILLED/TOTAL",
 		R0Color = { 0.6, 0.6, 0, 1, }, -- dark yellow
 		R0ClassColor = true,
 		R1Indicator = "BLANK", -- indicator: ICON_*, BLANK
-		R1Text = "10",
+		R1Text = "KILLED/TOTAL",
 		R1Color = { 0.6, 0.6, 0, 1, }, -- dark yellow
 		R1ClassColor = true,
 		R2Indicator = "BLANK", -- indicator
-		R2Text = "25",
+		R2Text = "KILLED/TOTAL",
 		R2Color = { 0.6, 0, 0, 1, }, -- dark red
 		R2ClassColor = true,
 		R3Indicator = "BLANK", -- indicator: ICON_*, BLANK
-		R3Text = "10+",
+		R3Text = "KILLED/TOTAL+",
 		R3Color = { 1, 1, 0, 1, }, -- yellow
 		R3ClassColor = true,
 		R4Indicator = "BLANK", -- indicator
-		R4Text = "25+",
+		R4Text = "KILLED/TOTAL+",
 		R4Color = { 1, 0, 0, 1, }, -- red
 		R4ClassColor = true,
 	},
@@ -171,6 +171,7 @@ vars.defaultDB = {
 							-- Expires: integer
                                                         -- Locked: boolean, whether toon is locked to the save
                                                         -- Extended: boolean, whether this is an extended raid lockout
+							-- Link: string hyperlink to the save
                                                         -- 1..numEncounters: boolean LFR isLooted
 	MinimapIcon = { },
 	--[[ REMOVED
@@ -376,6 +377,38 @@ function addon:CategorySize(category)
 	return i
 end
 
+function addon:instanceBosses(instance,toon,diff)
+  local killed,total,base = 0,0,1
+  local inst = vars.db.Instances[instance]
+  if not inst or not inst.LFDID then return 0,0,1 end
+  total = GetLFGDungeonNumEncounters(inst.LFDID)
+  local save = inst[toon] and inst[toon][diff]
+  if not save then
+      return killed, total, base
+  elseif save.Link then
+      local bits = save.Link:match(":(%d+)\124h")
+      bits = bits and tonumber(bits)
+      if bits then
+        while bits > 0 do
+	  if bit.band(bits,1) > 0 then
+	    killed = killed + 1
+	  end
+          bits = bit.rshift(bits,1)
+	end
+      end
+  elseif save.ID < 0 then
+    for i=1,-1*save.ID do
+      killed = killed + (save[i] and 1 or 0)
+    end
+    local LFR = addon.LFRInstances[inst.LFDID]
+    if LFR then
+      total = LFR.total or total
+      base = LFR.base or base
+    end
+  end 
+  return killed, total, base
+end
+
 local function instanceSort(i1, i2)
   local instance1 = vars.db.Instances[i1]
   local instance2 = vars.db.Instances[i2]
@@ -461,18 +494,18 @@ local function DifficultyString(instance, diff, toon, expired)
 	        prefs[setting.."Color"]  = prefs[setting.."Color"] or vars.defaultDB.Indicators[setting.."Color"]
 		color = prefs[setting.."Color"] 
 	end
-	prefs[setting.."Text"] = prefs[setting.."Text"] or vars.defaultDB.Indicators[setting.."Text"]
-	prefs[setting.."Indicator"] = prefs[setting.."Indicator"] or vars.defaultDB.Indicators[setting.."Indicator"]
-	if not strfind(prefs[setting.."Text"], "ICON", 1, true) then
-		return ColorCodeOpen(color) .. prefs[setting.."Text"] .. FONTEND
+	local text = prefs[setting.."Text"] or vars.defaultDB.Indicators[setting.."Text"]
+	local indicator = prefs[setting.."Indicator"] or vars.defaultDB.Indicators[setting.."Indicator"]
+	text = ColorCodeOpen(color) .. text .. FONTEND
+	if text:find("ICON", 1, true) and indicator ~= "BLANK" then
+            text = text:gsub("ICON", FONTEND .. vars.Indicators[indicator] .. ColorCodeOpen(color))
 	end
-	local iconstring
-	if prefs[setting.."Indicator"] == "BLANK" then
-		iconstring = ""
-	else
-		iconstring = FONTEND .. vars.Indicators[prefs[setting.."Indicator"]] .. ColorCodeOpen(color)
+	if text:find("KILLED", 1, true) or text:find("TOTAL", 1, true) then
+	  local killed, total = addon:instanceBosses(instance,toon,diff)
+	  text = text:gsub("KILLED",killed)
+	  text = text:gsub("TOTAL",total)
 	end
-	return ColorCodeOpen(color) .. gsub(prefs[setting.."Text"], "ICON", iconstring) .. FONTEND
+	return text
 end
 
 -- run about once per session to update our database of instance info
@@ -649,7 +682,7 @@ local function ShowIndicatorTooltip(cell, arg, ...)
 	local id = info.ID
 	local nameline, _ = indicatortip:AddHeader()
 	indicatortip:SetCell(nameline, 1, DifficultyString(instance, diff, toon) .. " " .. GOLDFONT .. instance .. FONTEND, indicatortip:GetHeaderFont(), "LEFT", 2)
-	indicatortip:AddHeader(ClassColorise(vars.db.Toons[toon].Class, strsplit(' ', toon)), (id < 0 and RAID_FINDER) or id)
+	indicatortip:AddHeader(ClassColorise(vars.db.Toons[toon].Class, strsplit(' ', toon)), addon:idtext(thisinstance,diff,info))
 	local EMPH = " !!! "
 	if info.Extended then
 	  indicatortip:SetCell(indicatortip:AddLine(),1,WHITEFONT .. EMPH .. L["Extended Lockout - Not yet saved"] .. EMPH .. FONTEND,"CENTER",2)
@@ -667,16 +700,21 @@ local function ShowIndicatorTooltip(cell, arg, ...)
 	  local name = scantt:GetName()
 	  for i=2,scantt:NumLines() do
 	    local left,right = _G[name.."TextLeft"..i], _G[name.."TextRight"..i]
-	    indicatortip:AddLine(coloredText(left), coloredText(right))
+	    if right and right:GetText() then
+	      indicatortip:AddLine(coloredText(left), coloredText(right))
+	    else
+	      indicatortip:SetCell(indicatortip:AddLine(),1,coloredText(left),"CENTER",2)
+	    end
 	  end
 	end
 	if info.ID < 0 then
-          for i=1,(-1*info.ID) do
+	  local killed, total, base = addon:instanceBosses(instance,toon,diff)
+          for i=base,base+total-1 do
             local bossname, texture = GetLFGDungeonEncounterInfo(thisinstance.LFDID, i);
             if info[i] then 
               indicatortip:AddLine(bossname, REDFONT..ERR_LOOT_GONE..FONTEND)
             else
-              --indicatortip:AddLine(bossname, GREENFONT..AVAILABLE..FONTEND)
+              indicatortip:AddLine(bossname, GREENFONT..AVAILABLE..FONTEND)
             end
           end
         end
@@ -759,33 +797,11 @@ end
 function core:OnInitialize()
 	SavedInstancesDB = SavedInstancesDB or vars.defaultDB
 	-- begin backwards compatibility
-	if not SavedInstancesDB.DBVersion then
+	if not SavedInstancesDB.DBVersion or SavedInstancesDB.DBVersion < 10 then
 		SavedInstancesDB = vars.defaultDB
 	end
-	if SavedInstancesDB.DBVersion == 6 then
-		SavedInstancesDB.DBVersion = 7
-		SavedInstancesDB.Tooltip.ShowHints = true
-	end
-	if SavedInstancesDB.DBVersion == 7 then
-		SavedInstancesDB.DBVersion = 8
-		SavedInstancesDB.Tooltip = vars.defaultDB.Tooltip
-		SavedInstancesDB.Broker = vars.defaultDB.Broker
-	end
-	if SavedInstancesDB.DBVersion == 8 then
-		SavedInstancesDB.DBVersion = 9
-		SavedInstancesDB.Tooltip.CategorySort = vars.defaultDB.Tooltip.CategorySort
-		SavedInstancesDB.Categories = vars.defaultDB.Categories
-		SavedInstancesDB.Broker = vars.defaultDB.Broker
-	end
-	if SavedInstancesDB.DBVersion == 9 then
-		SavedInstancesDB.DBVersion = 10
-		for instance, i in pairs(SavedInstancesDB.Instances) do
-			i.Order = nil
-		end
-		SavedInstancesDB.Categories = nil
-	end
-	if SavedInstancesDB.DBVersion ~= 10 then
-		SavedInstancesDB = vars.defaultDB
+	if SavedInstancesDB.DBVersion < 11 then
+		SavedInstancesDB.Indicators = vars.defaultDB.Indicators
 	end
 	-- end backwards compatibilty
 	db = db or SavedInstancesDB
@@ -925,7 +941,7 @@ function core:Refresh()
 		end
 	end
 
-	for _,id in pairs(addon.LFRInstanceIDs) do
+	for id,_ in pairs(addon.LFRInstances) do
 	  local numEncounters, numCompleted = GetLFGDungeonNumEncounters(id);
 	  if ( numCompleted > 0 ) then
             local truename, instance = addon:LookupInstance(id, nil, true)

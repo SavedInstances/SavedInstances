@@ -43,6 +43,18 @@ end
 
 -- general helper functions
 
+function addon:idtext(instance,diff,info)
+  if info.ID < 0 then 
+    return RAID_FINDER
+  elseif instance.Raid and instance.Expansion == 0 then
+    return EXPANSION_NAME0 .. " " .. LFG_TYPE_RAID
+  elseif instance.Raid then
+    return _G["RAID_DIFFICULTY"..diff]
+  else
+    return _G["DUNGEON_DIFFICULTY"..diff]
+  end
+end
+
 local function TableLen(table)
 	local i = 0
 	for _, _ in pairs(table) do
@@ -396,7 +408,7 @@ core.Options = {
 				Instructions = {
 					order = 1,
 					type = "description",
-					name = L["You can combine icons and text in a single indicator if you wish. Simply choose an icon, and insert the word ICON into the text field. Anywhere the word ICON is found, the icon you chose will be substituted in."],
+					name = L["You can combine icons and text in a single indicator if you wish. Simply choose an icon, and insert the word ICON into the text field. Anywhere the word ICON is found, the icon you chose will be substituted in."].." "..L["Similarly, the words KILLED and TOTAL will be substituted with the number of bosses killed and total in the lockout."],
 				},
 
 				D1 = {
