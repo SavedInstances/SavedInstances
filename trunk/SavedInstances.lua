@@ -101,7 +101,8 @@ vars.defaultDB = {
 				-- AlwaysShow: boolean
 				-- Daily1: expiry (normal) REMOVED
 				-- Daily2: expiry (heroic) REMOVED
-				-- LFG1: expiry 
+				-- LFG1: expiry (random dungeon)
+				-- LFG2: expiry (deserter)
 				-- WeeklyResetTime: expiry
 	Indicators = {
 		D1Indicator = "BLANK", -- indicator: ICON_*, BLANK
@@ -604,6 +605,24 @@ function addon:UpdateInstance(id)
   return newinst, true, name
 end
 
+function addon:updateSpellTip(spellid)
+  local slot 
+  vars.db.spelltip = vars.db.spelltip or {}
+  vars.db.spelltip[spellid] = vars.db.spelltip[spellid] or {}
+  for i=1,20 do
+    local id = select(11,UnitDebuff("player",i))
+    if id == spellid then slot = i end
+  end
+  if slot then
+    scantt:SetOwner(UIParent,"ANCHOR_NONE")
+    scantt:SetUnitDebuff("player",slot)
+    for i=1,scantt:NumLines()-1 do
+      local left = _G[scantt:GetName().."TextLeft"..i]
+      vars.db.spelltip[spellid][i] = left:GetText()
+    end
+  end
+end
+
 -- run regularly to update lockouts and cached data for this toon
 function addon:UpdateToonData()
 	for instance, i in pairs(vars.db.Instances) do
@@ -624,13 +643,13 @@ function addon:UpdateToonData()
 	-- update random toon info
 	local t = vars.db.Toons[thisToon]
         t.LFG1 = GetLFGRandomCooldownExpiration()
-	local desert = select(7,UnitDebuff("player",GetSpellInfo(71041))) -- GetLFGDeserterExpiration()
-	if desert and (not t.LFG1 or desert > t.LFG1) then
-	  t.LFG1 = desert
-	end
+	t.LFG2 = select(7,UnitDebuff("player",GetSpellInfo(71041))) -- GetLFGDeserterExpiration()
+	if t.LFG2 then addon:updateSpellTip(71041) end
 	t.pvpdesert = select(7,UnitDebuff("player",GetSpellInfo(26013))) 
+	if t.pvpdesert then addon:updateSpellTip(26013) end
 	for toon, ti in pairs(vars.db.Toons) do
 		if ti.LFG1 and (ti.LFG1 < GetTime()) then ti.LFG1 = nil end
+		if ti.LFG2 and (ti.LFG2 < GetTime()) then ti.LFG2 = nil end
 		if ti.pvpdesert and (ti.pvpdesert < GetTime()) then ti.pvpdesert = nil end
 	end
 	-- Weekly Reset
@@ -741,6 +760,30 @@ function addon:GetSeasonCurrency(idx)
   return nil
 end
 
+local function ShowSpellIDTooltip(cell, arg, ...)
+  local toon, spellid, timestr = unpack(arg)
+  if not toon or not spellid or not timestr then return end
+  indicatortip = QTip:Acquire("SavedInstancesIndicatorTooltip", 2, "LEFT", "RIGHT")
+  indicatortip:Clear()
+  indicatortip:SetHeaderFont(tooltip:GetHeaderFont())
+  indicatortip:AddHeader(ClassColorise(vars.db.Toons[toon].Class, strsplit(' ', toon)), timestr)
+  if spellid > 0 then 
+    local tip = vars.db.spelltip and vars.db.spelltip[spellid]
+    for i=1,#tip do
+      indicatortip:AddLine("")
+      indicatortip:SetCell(indicatortip:GetLineCount(),1,tip[i], nil, "LEFT",2, nil, nil, nil, 250)
+    end
+  else
+    local queuestr = LFG_RANDOM_COOLDOWN_YOU:match("^(.+)\n")
+    indicatortip:AddLine("")
+    indicatortip:SetCell(indicatortip:GetLineCount(),1,queuestr, nil, "LEFT",2, nil, nil, nil, 250)
+  end
+
+  indicatortip:SetAutoHideDelay(0.1, tooltip)
+  indicatortip:SmartAnchorTo(tooltip)
+  indicatortip:Show()
+end
+
 local function ShowCurrencyTooltip(cell, arg, ...)
   local toon, idx, ci = unpack(arg)
   if not toon or not idx or not ci then return end
@@ -749,7 +792,6 @@ local function ShowCurrencyTooltip(cell, arg, ...)
   indicatortip = QTip:Acquire("SavedInstancesIndicatorTooltip", 2, "LEFT", "RIGHT")
   indicatortip:Clear()
   indicatortip:SetHeaderFont(tooltip:GetHeaderFont())
-  local nameline, _ = indicatortip:AddHeader()
   indicatortip:AddHeader(ClassColorise(vars.db.Toons[toon].Class, strsplit(' ', toon)), "("..(ci.amount or "0")..tex..")")
 
   scantt:SetOwner(UIParent,"ANCHOR_NONE")
@@ -763,7 +805,7 @@ local function ShowCurrencyTooltip(cell, arg, ...)
       -- omit player's values
     else
       indicatortip:AddLine("")
-      indicatortip:SetCell(indicatortip:GetLineCount(),1,coloredText(left), nil, nil, nil, nil, nil, nil, 250)
+      indicatortip:SetCell(indicatortip:GetLineCount(),1,coloredText(left), nil, "LEFT",2, nil, nil, nil, 250)
     end
   end
   if ci.weeklyMax and ci.weeklyMax > 0 then
@@ -1152,32 +1194,39 @@ function core:ShowTooltip(anchorframe)
 	end
 	-- random dungeon
 	if vars.db.Tooltip.TrackLFG or showall then
-		local randomcd = false
+		local cd1,cd2 = false,false
 		for toon, t in cpairs(vars.db.Toons) do
-			if t.LFG1 then
-				randomcd = true
+			cd1 = cd1 or t.LFG1
+			cd2 = cd2 or t.LFG2
+			if t.LFG1 or t.LFG2 then
 				addColumns(columns, toon, tooltip)
 			end
 		end
 		local randomLine
-		if randomcd then
+		if cd1 or cd2 then
 			if not firstcategory and vars.db.Tooltip.CategorySpaces then
 				tooltip:AddSeparator(6,0,0,0,0)
 			end
-			randomLine = tooltip:AddLine(YELLOWFONT .. LFG_TYPE_RANDOM_DUNGEON .. FONTEND)		
+			cd1 = cd1 and tooltip:AddLine(YELLOWFONT .. LFG_TYPE_RANDOM_DUNGEON .. FONTEND)		
+			cd2 = cd2 and tooltip:AddLine(YELLOWFONT .. GetSpellInfo(71041) .. FONTEND)		
 		end
 		for toon, t in pairs(vars.db.Toons) do
-			if t.LFG1 and GetTime() < t.LFG1 then
-			        local diff = t.LFG1 - GetTime()
-				--[[
-				local hr,min,sec = math.floor(diff/3600), math.floor((diff%3600)/60), math.floor(diff%60)
-				local str = string.format(":%02d",sec)
-				if (min > 0 or hr > 0) then str = string.format("%02d",min)..str end
-				if (hr > 0) then str = string.format("%02d:",hr)..str end
-				--]]
-				local str = SecondsToTime(diff, false, false, 1)
-				tooltip:SetCell(randomLine, columns[toon..1], ClassColorise(t.Class,str), "CENTER",4)
-			end
+		    local d1 = (t.LFG1 and t.LFG1 - GetTime()) or -1
+		    local d2 = (t.LFG2 and t.LFG2 - GetTime()) or -1
+		    if d1 > 0 then
+		        local tstr = SecondsToTime(d1, false, false, 1)
+			tooltip:SetCell(cd1, columns[toon..1], ClassColorise(t.Class,tstr), "CENTER",4)
+		        tooltip:SetCellScript(cd1, columns[toon..1], "OnEnter", ShowSpellIDTooltip, {toon,-1,tstr})
+		        tooltip:SetCellScript(cd1, columns[toon..1], "OnLeave", 
+							     function() indicatortip:Hide(); GameTooltip:Hide() end)
+		    end
+		    if d2 > 0 then
+		        local tstr = SecondsToTime(d2, false, false, 1)
+			tooltip:SetCell(cd2, columns[toon..1], ClassColorise(t.Class,tstr), "CENTER",4)
+		        tooltip:SetCellScript(cd2, columns[toon..1], "OnEnter", ShowSpellIDTooltip, {toon,71041,tstr})
+		        tooltip:SetCellScript(cd2, columns[toon..1], "OnLeave", 
+							     function() indicatortip:Hide(); GameTooltip:Hide() end)
+		    end
 		end
 	end
 	if vars.db.Tooltip.TrackDeserter or showall then
@@ -1196,13 +1245,16 @@ function core:ShowTooltip(anchorframe)
 		end
 		for toon, t in pairs(vars.db.Toons) do
 			if t.pvpdesert and GetTime() < t.pvpdesert then
-			        local diff = t.pvpdesert - GetTime()
-				local str = SecondsToTime(diff, false, false, 1)
+				local tstr = SecondsToTime(t.pvpdesert - GetTime(), false, false, 1)
 				tooltip:SetCell(show, columns[toon..1], ClassColorise(t.Class,str), "CENTER",4)
+		                tooltip:SetCellScript(show, columns[toon..1], "OnEnter", ShowSpellIDTooltip, {toon,26013,tstr})
+		                tooltip:SetCellScript(show, columns[toon..1], "OnLeave", 
+							     function() indicatortip:Hide(); GameTooltip:Hide() end)
 			end
 		end
 	end
 
+	local firstcurrency = true
         for _,idx in ipairs(currency) do
 	  local setting = vars.db.Tooltip["Currency"..idx]
           if setting or showall then
@@ -1222,8 +1274,9 @@ function core:ShowTooltip(anchorframe)
 	    end
    	    local currLine
 	    if show then
-		if not firstcategory and vars.db.Tooltip.CategorySpaces then
+		if not firstcategory and vars.db.Tooltip.CategorySpaces and firstcurrency then
 			tooltip:AddSeparator(6,0,0,0,0)
+			firstcurrency = false
 		end
 		currLine = tooltip:AddLine(YELLOWFONT .. show .. FONTEND)		
 
