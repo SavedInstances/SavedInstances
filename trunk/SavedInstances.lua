@@ -775,6 +775,7 @@ local function ShowSpellIDTooltip(cell, arg, ...)
     end
   else
     local queuestr = LFG_RANDOM_COOLDOWN_YOU:match("^(.+)\n")
+    indicatortip:AddLine(LFG_TYPE_RANDOM_DUNGEON)
     indicatortip:AddLine("")
     indicatortip:SetCell(indicatortip:GetLineCount(),1,queuestr, nil, "LEFT",2, nil, nil, nil, 250)
   end
@@ -1246,7 +1247,7 @@ function core:ShowTooltip(anchorframe)
 		for toon, t in pairs(vars.db.Toons) do
 			if t.pvpdesert and GetTime() < t.pvpdesert then
 				local tstr = SecondsToTime(t.pvpdesert - GetTime(), false, false, 1)
-				tooltip:SetCell(show, columns[toon..1], ClassColorise(t.Class,str), "CENTER",4)
+				tooltip:SetCell(show, columns[toon..1], ClassColorise(t.Class,tstr), "CENTER",4)
 		                tooltip:SetCellScript(show, columns[toon..1], "OnEnter", ShowSpellIDTooltip, {toon,26013,tstr})
 		                tooltip:SetCellScript(show, columns[toon..1], "OnLeave", 
 							     function() indicatortip:Hide(); GameTooltip:Hide() end)
