@@ -1196,8 +1196,8 @@ function core:ShowTooltip(anchorframe)
 	if vars.db.Tooltip.TrackLFG or showall then
 		local cd1,cd2 = false,false
 		for toon, t in cpairs(vars.db.Toons) do
-			cd1 = cd1 or t.LFG1
 			cd2 = cd2 or t.LFG2
+			cd1 = cd1 or (t.LFG1 and (not t.LFG2 or showall))
 			if t.LFG1 or t.LFG2 then
 				addColumns(columns, toon, tooltip)
 			end
@@ -1213,7 +1213,7 @@ function core:ShowTooltip(anchorframe)
 		for toon, t in pairs(vars.db.Toons) do
 		    local d1 = (t.LFG1 and t.LFG1 - GetTime()) or -1
 		    local d2 = (t.LFG2 and t.LFG2 - GetTime()) or -1
-		    if d1 > 0 then
+		    if d1 > 0 and (d2 < 0 or showall) then
 		        local tstr = SecondsToTime(d1, false, false, 1)
 			tooltip:SetCell(cd1, columns[toon..1], ClassColorise(t.Class,tstr), "CENTER",4)
 		        tooltip:SetCellScript(cd1, columns[toon..1], "OnEnter", ShowSpellIDTooltip, {toon,-1,tstr})
