@@ -360,7 +360,7 @@ core.Options = {
 					get = function(info) return db.Broker.HistoryText end,
 					set = function(info, value)
 						db.Broker.HistoryText = value
-						UpdateLDBTextMode()
+						addon:HistoryUpdate()
 					end,
 				},
 				RecentHistory = {

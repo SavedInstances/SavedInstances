@@ -60,7 +60,6 @@ vars.Categories = {
 }
 
 local tooltip, indicatortip
-local history = { }
 local thisToon = UnitName("player") .. " - " .. GetRealmName()
 local maxlvl = MAX_PLAYER_LEVEL_TABLE[#MAX_PLAYER_LEVEL_TABLE]
 
@@ -80,10 +79,14 @@ addon.LFRInstances = {
   [417] = { total=4, base=5 }, -- Fall of Deathwing
 }
 
+
+local function chatMsg(msg)
+     DEFAULT_CHAT_FRAME:AddMessage("\124cFFFF0000"..addonName.."\124r: "..msg)
+end
 local function debug(msg)
   --addon.db.dbg = true
   if addon.db.dbg then
-     DEFAULT_CHAT_FRAME:AddMessage("\124cFFFF0000"..addonName.."\124r: "..msg)
+     chatMsg(msg)
   end
 end
 addon.debug = debug
@@ -316,7 +319,7 @@ function addon:FindInstance(name, raid)
     local tname = addon:normalizeName(truename)
     if (tname:find(nname, 1, true) or nname:find(tname, 1, true)) and
        vars.db.Instances[truename].Raid == raid then -- Tempest Keep: The Botanica
-      debug("FindInstance("..name..") => "..truename)
+      --debug("FindInstance("..name..") => "..truename)
       return truename, info.LFDID
     end
   end
@@ -652,6 +655,7 @@ function addon:UpdateToonData()
 		if ti.LFG2 and (ti.LFG2 < GetTime()) then ti.LFG2 = nil end
 		if ti.pvpdesert and (ti.pvpdesert < GetTime()) then ti.pvpdesert = nil end
 	end
+	t.IL, t.ILe = GetAverageItemLevel()
 	-- Weekly Reset
 	local nextreset = addon:GetNextWeeklyResetTime()
 	if nextreset and nextreset > time() then
@@ -686,6 +690,21 @@ local function coloredText(fontstring)
   local textR, textG, textB, textAlpha = fontstring:GetTextColor() 
   return string.format("|c%02x%02x%02x%02x"..text.."|r", 
                        textAlpha*255, textR*255, textG*255, textB*255)
+end
+
+local function ShowToonTooltip(cell, arg, ...)
+	local toon = arg[1]
+	if not toon then return end
+	indicatortip = QTip:Acquire("SavedInstancesIndicatorTooltip", 1, "LEFT")
+	indicatortip:Clear()
+	indicatortip:SetHeaderFont(tooltip:GetHeaderFont())
+	indicatortip:AddHeader(ClassColorise(vars.db.Toons[toon].Class, toon))
+	indicatortip:AddLine(LEVEL.." "..vars.db.Toons[toon].Level.." "..(vars.db.Toons[toon].LClass or ""))
+        local il,ile = vars.db.Toons[toon].IL or 0, vars.db.Toons[toon].ILe or 0
+	indicatortip:AddLine((STAT_AVERAGE_ITEM_LEVEL..": %d "):format(il)..STAT_AVERAGE_ITEM_LEVEL_EQUIPPED:format(ile))
+	indicatortip:SetAutoHideDelay(0.1, tooltip)
+	indicatortip:SmartAnchorTo(tooltip)
+	indicatortip:Show()
 end
 
 local function ShowIndicatorTooltip(cell, arg, ...)
@@ -824,16 +843,6 @@ local function ShowCurrencyTooltip(cell, arg, ...)
   indicatortip:Show()
 end
 
-local function UpdateLDBTextMode()
-	if db.Broker.HistoryText then
-		--vars.dataobject.type = "data source"
-		core:ScheduleRepeatingTimer("UpdateLDBText", 5, nil)
-	else
-		--vars.dataobject.type = "launcher"
-		vars.dataobject.text = addonName
-		core:CancelAllTimers()
-	end
-end
 
 -- global addon code below
 
@@ -851,7 +860,7 @@ function core:OnInitialize()
 	vars.db = db
 	config = vars.config
 	db.Toons[thisToon] = db.Toons[thisToon] or { }
-	db.Toons[thisToon].Class = db.Toons[thisToon].Class or select(2, UnitClass("player"))
+	db.Toons[thisToon].LClass, db.Toons[thisToon].Class = UnitClass("player")
 	db.Toons[thisToon].Level = UnitLevel("player")
 	db.Toons[thisToon].AlwaysShow = db.Toons[thisToon].AlwaysShow or false
 	db.Lockouts = nil -- deprecated
@@ -877,7 +886,6 @@ function core:OnInitialize()
 	if vars.icon then
 		vars.icon:Register("SavedInstances", vars.dataobject, db.MinimapIcon)
 	end
-	UpdateLDBTextMode()
 end
 
 function addon:SetupVersion()
@@ -911,10 +919,23 @@ function core:OnEnable()
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", RequestRaidInfo)
 	self:RegisterEvent("LFG_LOCK_INFO_RECEIVED", RequestRaidInfo)
 	self:RegisterEvent("LFG_COMPLETION_REWARD") -- for random daily dungeon tracking
+
+        if not addon.resetDetect then
+          addon.resetDetect = CreateFrame("Button", "SavedInstancesResetDetectHiddenFrame", UIParent)
+          for _,e in pairs({
+            "RAID_INSTANCE_WELCOME", "PLAYER_ENTERING_WORLD", "CHAT_MSG_SYSTEM",
+            "ZONE_CHANGED_NEW_AREA", 
+	    "INSTANCE_BOOT_START", "INSTANCE_BOOT_STOP", "PARTY_MEMBERS_CHANGED",
+            }) do
+            addon.resetDetect:RegisterEvent(e)
+          end
+        end
+        addon.resetDetect:SetScript("OnEvent", addon.HistoryEvent)
 end
 
 function core:OnDisable()
 	self:UnregisterAllEvents()
+        addon.resetDetect:SetScript("OnEvent", nil)
 end
 
 function addon:UpdateThisLockout()
@@ -940,6 +961,107 @@ function core:LFG_COMPLETION_REWARD()
 	addon:UpdateThisLockout()
 end
 
+local resetmsg = INSTANCE_RESET_SUCCESS:gsub("%%s",".+")
+function addon.HistoryEvent(f, evt, ...) 
+  --myprint("HistoryEvent: "..evt, ...) 
+  if evt == "CHAT_MSG_SYSTEM" then
+    local msg = ...
+    if msg:match("^"..resetmsg.."$") then
+      addon:HistoryUpdate(true)
+    elseif msg:match(TRANSFER_ABORT_TOO_MANY_INSTANCES) then
+      addon:HistoryUpdate(false,true)
+    end
+  elseif evt == "INSTANCE_BOOT_START" and addon:histZoneKey() then -- left group inside instance, resets on boot
+    addon.histBooted = true
+  elseif evt == "INSTANCE_BOOT_STOP" then
+    addon.histBooted = false
+  elseif evt == "PARTY_MEMBERS_CHANGED" and 
+         GetNumPartyMembers() == 0 and not addon:histZoneKey() then -- left group outside instance, resets now
+    addon:HistoryUpdate(true)
+  else
+    addon:HistoryUpdate()
+  end
+end
+
+addon.histReapTime = 60*60 -- 1 hour
+addon.histLimit = 5 -- instances per hour
+function addon:histZoneKey()
+  local instname, insttype, diff, diffname = GetInstanceInfo()
+  if insttype == "none" or insttype == "arena" or insttype == "pvp" then -- pvp doesnt count
+    return nil
+  end
+  local mode, submode = GetLFGMode()
+  if mode == "lfgparty" or mode == "abandonedInDungeon" then -- LFG instances don't count
+    return nil
+  end
+
+  local desc = thisToon .. ": " .. instname .. " - " .. diffname
+  local key = thisToon..":"..instname..":"..insttype..":"..diff..":"..vars.db.histGeneration
+  return key, desc
+end
+
+function addon:HistoryUpdate(forcereset, forcemesg)
+  vars.db.histGeneration = vars.db.histGeneration or 1
+  if forcereset or (addon.histBooted and not addon:histZoneKey()) then
+    debug("HistoryUpdate generation advance")
+    vars.db.histGeneration = vars.db.histGeneration + 1
+    addon.histBooted = false
+  end
+  local zoningin = false
+  local now = GetTime()
+  local newzone, newdesc = addon:histZoneKey()
+  -- touch zone we left
+  if addon.histLastZone then
+    local lz = vars.db.History[addon.histLastZone]
+    if lz then
+      lz.last = now
+    end
+  elseif newzone then
+    zoningin = true
+  end
+  addon.histLastZone = newzone
+  -- touch/create new zone
+  if newzone then
+    local nz = vars.db.History[newzone]
+    if not nz then
+      nz = { create = now, desc = newdesc }
+      vars.db.History[newzone] = nz
+    end
+    nz.last = now
+  end
+  -- reap old zones
+  local livecnt = 0
+  local oldestkey, oldesttime
+  for zk, zi in pairs(vars.db.History) do
+    if now > zi.last + addon.histReapTime then
+      debug("Reaping "..zi.desc)
+      vars.db.History[zk] = nil
+    else 
+      livecnt = livecnt + 1
+      if not oldesttime or zi.last < oldesttime then
+        oldestkey = zk
+        oldesttime = zi.last
+      end
+    end
+  end
+  local oldistexp = SecondsToTime(oldesttime+addon.histReapTime-now,false,false,1)
+  debug(livecnt.." live instances, oldest ("..oldestkey..") expires in "..oldistexp)
+  --myprint(vars.db.History)
+  -- display update
+
+  if forcemesg or (zoningin and livecnt >= addon.histLimit-1) then 
+      chatMsg(L["Warning: You've entered %i instances recently and are approaching the %i instance per hour limit for your account. More instances should be available in %s."]:format(livecnt, addon.histLimit, oldistexp))
+  end
+  if db.Broker.HistoryText then
+    if livecnt >= addon.histLimit then
+      vars.dataobject.text = oldistexp
+    else
+      vars.dataobject.text = livecnt
+    end
+  else
+    vars.dataobject.text = addonName
+  end
+end
 
 local function localarr(name) -- save on memory churn by reusing arrays in updates
   name = "localarr#"..name
@@ -1021,6 +1143,7 @@ function core:Refresh()
 	end
 	storelockout = false
 	addon:UpdateToonData()
+	addon:HistoryUpdate()
 end
 
 local function UpdateTooltip() 
@@ -1322,6 +1445,9 @@ function core:ShowTooltip(anchorframe)
 		local diff = strsub(toondiff, #toondiff, #toondiff)
 		if diff == "1" then
 			tooltip:SetCell(headLine, col, ClassColorise(vars.db.Toons[toon].Class, select(1, strsplit(" - ", toon))), tooltip:GetHeaderFont(), "CENTER", 4)
+			tooltip:SetCellScript(headLine, col, "OnEnter", ShowToonTooltip, {toon})
+			tooltip:SetCellScript(headLine, col, "OnLeave", 
+					     function() indicatortip:Hide(); GameTooltip:Hide() end)
 	 		--[[
 			tooltip:SetCellScript(headLine, col, "OnEnter", function() 
 			  for i=0,3 do
@@ -1409,12 +1535,3 @@ function core:ShowTooltip(anchorframe)
         end
 end
 
-function core:UpdateLDBText()
-	if db.History and TableLen(db.History) >= 2 then
-		-- do the stuff :)
-		-- SavedInstances.launcher.text = format(L["%s instances"], number)
-		-- SavedInstances.launcher.text = format(L["%s instances"], number)
-	else
-		vars.dataobject.text = ""
-	end	
-end
