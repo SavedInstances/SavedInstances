@@ -1044,8 +1044,8 @@ function addon:HistoryUpdate(forcereset, forcemesg)
       end
     end
   end
-  local oldistexp = SecondsToTime(oldesttime+addon.histReapTime-now,false,false,1)
-  debug(livecnt.." live instances, oldest ("..oldestkey..") expires in "..oldistexp)
+  local oldistexp = (oldesttime and SecondsToTime(oldesttime+addon.histReapTime-now,false,false,1)) or "n/a"
+  debug(livecnt.." live instances, oldest ("..(oldestkey or "none")..") expires in "..oldistexp)
   --myprint(vars.db.History)
   -- display update
 
