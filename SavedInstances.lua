@@ -962,11 +962,14 @@ function core:LFG_COMPLETION_REWARD()
 end
 
 local resetmsg = INSTANCE_RESET_SUCCESS:gsub("%%s",".+")
+local raiddiffmsg = ERR_RAID_DIFFICULTY_CHANGED_S:gsub("%%s",".+")
 function addon.HistoryEvent(f, evt, ...) 
   --myprint("HistoryEvent: "..evt, ...) 
   if evt == "CHAT_MSG_SYSTEM" then
     local msg = ...
     if msg:match("^"..resetmsg.."$") then
+      addon:HistoryUpdate(true)
+    elseif msg:match("^"..raiddiffmsg.."$") then
       addon:HistoryUpdate(true)
     elseif msg:match(TRANSFER_ABORT_TOO_MANY_INSTANCES) then
       addon:HistoryUpdate(false,true)
