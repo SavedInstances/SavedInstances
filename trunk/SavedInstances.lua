@@ -963,13 +963,14 @@ end
 
 local resetmsg = INSTANCE_RESET_SUCCESS:gsub("%%s",".+")
 local raiddiffmsg = ERR_RAID_DIFFICULTY_CHANGED_S:gsub("%%s",".+")
+local dungdiffmsg = ERR_DUNGEON_DIFFICULTY_CHANGED_S:gsub("%%s",".+")
 function addon.HistoryEvent(f, evt, ...) 
   --myprint("HistoryEvent: "..evt, ...) 
   if evt == "CHAT_MSG_SYSTEM" then
     local msg = ...
     if msg:match("^"..resetmsg.."$") then
       addon:HistoryUpdate(true)
-    elseif msg:match("^"..raiddiffmsg.."$") then
+    elseif msg:match("^"..raiddiffmsg.."$") or msg:match("^"..dungdiffmsg.."$") then
       addon:HistoryUpdate(true)
     elseif msg:match(TRANSFER_ABORT_TOO_MANY_INSTANCES) then
       addon:HistoryUpdate(false,true)
