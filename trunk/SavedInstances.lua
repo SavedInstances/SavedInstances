@@ -923,7 +923,8 @@ function core:OnEnable()
         if not addon.resetDetect then
           addon.resetDetect = CreateFrame("Button", "SavedInstancesResetDetectHiddenFrame", UIParent)
           for _,e in pairs({
-            "RAID_INSTANCE_WELCOME", "PLAYER_ENTERING_WORLD", "CHAT_MSG_SYSTEM",
+	    "RAID_INSTANCE_WELCOME", 
+	    "PLAYER_ENTERING_WORLD", "CHAT_MSG_SYSTEM",
             "ZONE_CHANGED_NEW_AREA", 
 	    "INSTANCE_BOOT_START", "INSTANCE_BOOT_STOP", "PARTY_MEMBERS_CHANGED",
             }) do
@@ -931,6 +932,7 @@ function core:OnEnable()
           end
         end
         addon.resetDetect:SetScript("OnEvent", addon.HistoryEvent)
+	addon:HistoryEvent("PLAYER_ENTERING_WORLD") -- update after initial load
 end
 
 function core:OnDisable()
@@ -961,27 +963,39 @@ function core:LFG_COMPLETION_REWARD()
 	addon:UpdateThisLockout()
 end
 
+function addon:InGroup() 
+  return GetNumRaidMembers() > 0 or GetNumPartyMembers() > 0
+end
+
 local resetmsg = INSTANCE_RESET_SUCCESS:gsub("%%s",".+")
 local raiddiffmsg = ERR_RAID_DIFFICULTY_CHANGED_S:gsub("%%s",".+")
 local dungdiffmsg = ERR_DUNGEON_DIFFICULTY_CHANGED_S:gsub("%%s",".+")
+local delaytime = 3 -- seconds to wait on zone change for settings to stabilize
 function addon.HistoryEvent(f, evt, ...) 
   --myprint("HistoryEvent: "..evt, ...) 
   if evt == "CHAT_MSG_SYSTEM" then
     local msg = ...
     if msg:match("^"..resetmsg.."$") then
       addon:HistoryUpdate(true)
-    elseif msg:match("^"..raiddiffmsg.."$") or msg:match("^"..dungdiffmsg.."$") then
+    elseif (msg:match("^"..raiddiffmsg.."$") or msg:match("^"..dungdiffmsg.."$")) and 
+       not addon:histZoneKey() then -- ignore difficulty messages when creating a party while inside an instance
       addon:HistoryUpdate(true)
     elseif msg:match(TRANSFER_ABORT_TOO_MANY_INSTANCES) then
       addon:HistoryUpdate(false,true)
     end
   elseif evt == "INSTANCE_BOOT_START" and addon:histZoneKey() then -- left group inside instance, resets on boot
     addon.histBooted = true
-  elseif evt == "INSTANCE_BOOT_STOP" then
+  elseif evt == "INSTANCE_BOOT_STOP" and addon:InGroup() then -- invited back
     addon.histBooted = false
   elseif evt == "PARTY_MEMBERS_CHANGED" and 
-         GetNumPartyMembers() == 0 and not addon:histZoneKey() then -- left group outside instance, resets now
+         addon.histInGroup and not addon:InGroup() and -- ignore failed invites when solo
+	 not IsInInstance() then -- left group outside instance, resets now (use IsInInstance to check truly outside)
+    addon.delayUpdate = GetTime() + delaytime -- delay because an LFG instance may look "real" until we are teleported out
     addon:HistoryUpdate(true)
+    core:ScheduleTimer("HistoryUpdate", delaytime+1)
+  elseif evt == "PLAYER_ENTERING_WORLD" or evt == "ZONE_CHANGED_NEW_AREA" or evt == "RAID_INSTANCE_WELCOME" then
+    addon.delayUpdate = GetTime() + delaytime
+    core:ScheduleTimer("HistoryUpdate", delaytime+1)
   else
     addon:HistoryUpdate()
   end
@@ -990,7 +1004,7 @@ end
 addon.histReapTime = 60*60 -- 1 hour
 addon.histLimit = 5 -- instances per hour
 function addon:histZoneKey()
-  local instname, insttype, diff, diffname = GetInstanceInfo()
+  local instname, insttype, diff, diffname, maxPlayers, playerDifficulty, isDynamicInstance = GetInstanceInfo()
   if insttype == "none" or insttype == "arena" or insttype == "pvp" then -- pvp doesnt count
     return nil
   end
@@ -1008,11 +1022,15 @@ function addon:HistoryUpdate(forcereset, forcemesg)
   vars.db.histGeneration = vars.db.histGeneration or 1
   if forcereset or (addon.histBooted and not addon:histZoneKey()) then
     debug("HistoryUpdate generation advance")
-    vars.db.histGeneration = vars.db.histGeneration + 1
+    vars.db.histGeneration = (vars.db.histGeneration + 1) % 100000
     addon.histBooted = false
   end
-  local zoningin = false
   local now = GetTime()
+  if addon.delayUpdate and now < addon.delayUpdate then
+    debug("HistoryUpdate delayed")
+    return
+  end
+  local zoningin = false
   local newzone, newdesc = addon:histZoneKey()
   -- touch zone we left
   if addon.histLastZone then
@@ -1024,6 +1042,7 @@ function addon:HistoryUpdate(forcereset, forcemesg)
     zoningin = true
   end
   addon.histLastZone = newzone
+  addon.histInGroup = addon:InGroup()
   -- touch/create new zone
   if newzone then
     local nz = vars.db.History[newzone]
@@ -1049,12 +1068,12 @@ function addon:HistoryUpdate(forcereset, forcemesg)
     end
   end
   local oldistexp = (oldesttime and SecondsToTime(oldesttime+addon.histReapTime-now,false,false,1)) or "n/a"
-  debug(livecnt.." live instances, oldest ("..(oldestkey or "none")..") expires in "..oldistexp)
+  debug(livecnt.." live instances, oldest ("..(oldestkey or "none")..") expires in "..oldistexp..". Current Zone="..(newzone or "nil"))
   --myprint(vars.db.History)
   -- display update
 
   if forcemesg or (zoningin and livecnt >= addon.histLimit-1) then 
-      chatMsg(L["Warning: You've entered %i instances recently and are approaching the %i instance per hour limit for your account. More instances should be available in %s."]:format(livecnt, addon.histLimit, oldistexp))
+      chatMsg(L["Warning: You've entered about %i instances recently and are approaching the %i instance per hour limit for your account. More instances should be available in %s."]:format(livecnt, addon.histLimit, oldistexp))
   end
   if db.Broker.HistoryText then
     if livecnt >= addon.histLimit then
@@ -1066,6 +1085,7 @@ function addon:HistoryUpdate(forcereset, forcemesg)
     vars.dataobject.text = addonName
   end
 end
+function core:HistoryUpdate(...) return addon:HistoryUpdate(...) end
 
 local function localarr(name) -- save on memory churn by reusing arrays in updates
   name = "localarr#"..name
@@ -1147,7 +1167,6 @@ function core:Refresh()
 	end
 	storelockout = false
 	addon:UpdateToonData()
-	addon:HistoryUpdate()
 end
 
 local function UpdateTooltip() 
