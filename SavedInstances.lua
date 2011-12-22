@@ -707,6 +707,31 @@ local function ShowToonTooltip(cell, arg, ...)
 	indicatortip:Show()
 end
 
+local function ShowHistoryTooltip(cell, arg, ...)
+        indicatortip = QTip:Acquire("SavedInstancesIndicatorTooltip", 2, "LEFT", "LEFT")
+        indicatortip:Clear()
+        local tmp = {}
+        local cnt = 0
+        for _,ii in pairs(db.History) do
+           table.insert(tmp,ii)
+        end
+        local cnt = #tmp
+        table.sort(tmp, function(i1,i2) return i1.last < i2.last end)
+        indicatortip:SetHeaderFont(tooltip:GetHeaderFont())
+        indicatortip:SetCell(indicatortip:AddHeader(),1,GOLDFONT..cnt.." "..L["Recent Instances"]..": "..FONTEND,"LEFT",2)
+        for _,ii in ipairs(tmp) do
+           local tstr = REDFONT..SecondsToTime(ii.last+addon.histReapTime - GetTime(),false,false,1)..FONTEND
+           indicatortip:AddLine(tstr, ii.desc)
+        end
+        indicatortip:AddLine("")
+        indicatortip:SetCell(indicatortip:AddLine(),1,
+           string.format(L["These are the instances that count towards the %i instances per hour account limit, and the time until they expire."],
+                         addon.histLimit),"LEFT",2,nil,nil,nil,250)
+        indicatortip:SetAutoHideDelay(0.1, tooltip)
+        indicatortip:SmartAnchorTo(tooltip)
+        indicatortip:Show()
+end
+
 local function ShowIndicatorTooltip(cell, arg, ...)
 	local instance = arg[1]
 	local toon = arg[2]
@@ -996,8 +1021,6 @@ function addon.HistoryEvent(f, evt, ...)
   elseif evt == "PLAYER_ENTERING_WORLD" or evt == "ZONE_CHANGED_NEW_AREA" or evt == "RAID_INSTANCE_WELCOME" then
     addon.delayUpdate = GetTime() + delaytime
     core:ScheduleTimer("HistoryUpdate", delaytime+1)
-  else
-    addon:HistoryUpdate()
   end
 end
 
@@ -1224,7 +1247,10 @@ function core:ShowTooltip(anchorframe)
 	hFontPath, hFontSize, _ = hFont:GetFont()
 	hFont:SetFont(hFontPath, hFontSize, "OUTLINE")
 	tooltip:SetHeaderFont(hFont)
-	local headLine, headCol = tooltip:AddHeader(GOLDFONT .. "SavedInstances" .. FONTEND)
+	local headLine = tooltip:AddHeader(GOLDFONT .. "SavedInstances" .. FONTEND)
+	tooltip:SetCellScript(headLine, 1, "OnEnter", ShowHistoryTooltip )
+	tooltip:SetCellScript(headLine, 1, "OnLeave", 
+					     function() indicatortip:Hide(); GameTooltip:Hide() end)
 	addon:UpdateToonData()
 	local columns = localarr("columns")
 	for toon,_ in cpairs(columnCache[showall]) do
