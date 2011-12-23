@@ -1002,6 +1002,8 @@ function addon.HistoryEvent(f, evt, ...)
     local msg = ...
     if msg:match("^"..resetmsg.."$") then
       addon:HistoryUpdate(true)
+    elseif msg:match("^"..INSTANCE_SAVED.."$") then
+      core:ScheduleTimer("HistoryUpdate", delaytime+1)
     elseif (msg:match("^"..raiddiffmsg.."$") or msg:match("^"..dungdiffmsg.."$")) and 
        not addon:histZoneKey() then -- ignore difficulty messages when creating a party while inside an instance
       addon:HistoryUpdate(true)
@@ -1014,11 +1016,10 @@ function addon.HistoryEvent(f, evt, ...)
     addon.histBooted = false
   elseif evt == "PARTY_MEMBERS_CHANGED" and 
          addon.histInGroup and not addon:InGroup() and -- ignore failed invites when solo
-	 not IsInInstance() then -- left group outside instance, resets now (use IsInInstance to check truly outside)
-    addon.delayUpdate = GetTime() + delaytime -- delay because an LFG instance may look "real" until we are teleported out
+	 not addon:histZoneKey() then -- left group outside instance, resets now
     addon:HistoryUpdate(true)
-    core:ScheduleTimer("HistoryUpdate", delaytime+1)
   elseif evt == "PLAYER_ENTERING_WORLD" or evt == "ZONE_CHANGED_NEW_AREA" or evt == "RAID_INSTANCE_WELCOME" then
+    -- delay updates while settings stabilize
     addon.delayUpdate = GetTime() + delaytime
     core:ScheduleTimer("HistoryUpdate", delaytime+1)
   end
@@ -1035,10 +1036,24 @@ function addon:histZoneKey()
   if mode == "lfgparty" or mode == "abandonedInDungeon" then -- LFG instances don't count
     return nil
   end
-
+  -- check if we're locked
+  local truename = addon:FindInstance(instname, insttype == "raid")
+  local locked = false
+  local save = vars.db.Instances[truename] and vars.db.Instances[truename][thisToon]
+  if save then
+    for i=1,4 do
+      local ii = save[i] 
+      if ii and ii.Locked then
+        locked = true
+      end
+    end
+  end
   local desc = thisToon .. ": " .. instname .. " - " .. diffname
-  local key = thisToon..":"..instname..":"..insttype..":"..diff..":"..vars.db.histGeneration
-  return key, desc
+  local key = thisToon..":"..instname..":"..insttype..":"..diff
+  if not locked then
+    key = key..":"..vars.db.histGeneration
+  end
+  return key, desc, locked
 end
 
 function addon:HistoryUpdate(forcereset, forcemesg)
@@ -1054,7 +1069,7 @@ function addon:HistoryUpdate(forcereset, forcemesg)
     return
   end
   local zoningin = false
-  local newzone, newdesc = addon:histZoneKey()
+  local newzone, newdesc, locked = addon:histZoneKey()
   -- touch zone we left
   if addon.histLastZone then
     local lz = vars.db.History[addon.histLastZone]
@@ -1072,6 +1087,9 @@ function addon:HistoryUpdate(forcereset, forcemesg)
     if not nz then
       nz = { create = now, desc = newdesc }
       vars.db.History[newzone] = nz
+      if locked then -- creating a locked instance, delete unlocked version
+        vars.db.History[newzone..":"..vars.db.histGeneration] = nil
+      end
     end
     nz.last = now
   end
