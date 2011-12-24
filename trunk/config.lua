@@ -339,38 +339,6 @@ core.Options = {
 					end,
 				},
 				
-				HistoryHeader = {
-					order = 41, 
-					type = "header",
-					hidden = true,
-					name = L["Recent instance activity"],
-				},
-				HistoryHelp = {
-					order = 42,
-					type = "description",
-					hidden = true,
-					name = L["Blizzard currently imposes a limit of 5 instances per hour per account. This feature will show you how many different instances you have entered in the last hour (if you have been in more than two). Once you have reached the limit, you will be shown how much time you must wait until you will be allowed to enter a new instance."],
-				},
-				BrokerHistory = {
-					type = "toggle",
-					hidden = true,
-					width = "full",
-					name = L["Show history in Broker data feed"],
-					order = 43,
-					get = function(info) return db.Broker.HistoryText end,
-					set = function(info, value)
-						db.Broker.HistoryText = value
-						addon:HistoryUpdate()
-					end,
-				},
-				RecentHistory = {
-					type = "toggle",
-					hidden = true,
-					width = "full",
-					name = L["Show history in tooltip"],
-					order = 44,
-				},
-				
 				DefaultsHeader = {
 					order = -2, 
 					type = "header",
