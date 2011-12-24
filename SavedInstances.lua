@@ -79,6 +79,11 @@ addon.LFRInstances = {
   [417] = { total=4, base=5 }, -- Fall of Deathwing
 }
 
+addon.showopts = {
+  always = "always",
+  saved = "saved",
+  never = "never",
+}
 
 local function chatMsg(msg)
      DEFAULT_CHAT_FRAME:AddMessage("\124cFFFF0000"..addonName.."\124r: "..msg)
@@ -598,7 +603,7 @@ function addon:UpdateInstance(id)
     newinst = true
   end
   vars.db.Instances[name] = instance
-  instance.Show = instance.Show
+  instance.Show = (instance.Show and addon.showopts[instance.Show]) or "saved"
   instance.Encounters = nil -- deprecated
   instance.LFDID = id
   instance.LFDupdated = currentbuild
@@ -1290,10 +1295,11 @@ function core:ShowTooltip(anchorframe)
 	for _, category in ipairs(addon:OrderedCategories()) do
 		for _, instance in ipairs(addon:OrderedInstances(category)) do
 			local inst = vars.db.Instances[instance]
-			if inst.Show then
+			if inst.Show == "always" then
 			   categoryshown[category] = true
 			end
-			for toon, t in cpairs(vars.db.Toons) do
+			if inst.Show ~= "never" or showall then
+			    for toon, t in cpairs(vars.db.Toons) do
 				for diff = 1, 4 do
 					if inst[toon] and inst[toon][diff] then
 					    if (inst[toon][diff].Expires > 0) then
@@ -1304,6 +1310,7 @@ function core:ShowTooltip(anchorframe)
 					    end
 					end
 				end
+			    end
 			end
 		end
 	end
@@ -1329,16 +1336,18 @@ function core:ShowTooltip(anchorframe)
 			end
 			for _, instance in ipairs(addon:OrderedInstances(category)) do
 			       local inst = vars.db.Instances[instance]
-				if inst.Show then
+				if inst.Show == "always" then
 			  	   instancerow[instance] = instancerow[instance] or tooltip:AddLine()
 				end
-				for toon, t in cpairs(vars.db.Toons) do
+				if inst.Show ~= "never" or showall then
+				    for toon, t in cpairs(vars.db.Toons) do
 					for diff = 1, 4 do
 					        if inst[toon] and inst[toon][diff] and (inst[toon][diff].Expires > 0 or showall) then
 							instancerow[instance] = instancerow[instance] or tooltip:AddLine()
 							addColumns(columns, toon, tooltip)
 						end
 					end
+				    end
 				end
 			end
 			firstcategory = false
