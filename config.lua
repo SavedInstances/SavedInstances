@@ -122,7 +122,7 @@ local function GroupListGUI(order, name, list)
 end
 
 -- options table below
-
+function module:BuildOptions() 
 core.Options = {
 	type = "group",
 	name = "SavedInstances",
@@ -709,67 +709,33 @@ core.Options = {
 			order = 4,
 			type = "group",
 			name = L["Characters"],
-			childGroups = "tab",
-			disabled = function()
-				return module.selectedToon == nil
-			end,
-			args = {
-				SelectedToon = {
-					order = 1,
-					type = "select",
-					width = "double",
-					name = L["Selected character"],
-					disabled = false,
-					get = function(info, toon)
-						return module.selectedToon
-					end,
-					set = function(info, toon)
-						module.selectedToon = toon
-					end,
-					values = function()
-						local table = { }
-						for toon, t in pairs(db.Toons) do
-							table[toon] = toon
-						end
-						return table
-					end,
-				},
-				
-				DetailsGroup = {
-					order = 2, 
-					type = "group",
-					name = L["Character details"],
-					args = {
-						AlwaysShow = {
-							order = 1,
-							type = "toggle",
-							width = "full",
-							name = L["Show when not saved"],
-							get = function(info)
-								if module.selectedToon then
-									return db.Toons[module.selectedToon].AlwaysShow
-								end
-							end,
-							set = function(info, value)
-								db.Toons[module.selectedToon].AlwaysShow = value
-							end,
-						},
-						DeleteButton = {
-							order = 4,
-							type = "execute",
-							name = DELETE,
-							func = function()
-								local toon = module.selectedToon
-								module.selectedToon = nil
-								db.Toons[toon] = nil
-								for _,ii in pairs(vars.db.Instances) do
-								  ii[toon] = nil
-								end
-							end,
-						},
-					},
-				},
-			},
+			args = (function ()
+			  local ret = {}
+			  for toon, info in pairs(db.Toons) do
+			    ret[toon] = {
+			      name = toon,
+			      type = "group",
+			      args = {
+			        Show = {
+				  type = "select",
+				  style = "radio",
+				  name = L["Show this character"],
+				  values = { ["always"] = L["Always show"],
+				             ["saved"] = L["Show when saved"],
+				             ["never"] = L["Never show"],
+					     },
+				  get = function(info)
+				    return db.Toons[toon].Show or "saved"
+				  end,
+				  set = function(info, value)
+				    db.Toons[toon].Show = value
+				  end,
+				}
+                              }
+			    }
+			  end
+			  return ret
+			end)()
 		},
 		--[[
 		Lockouts = {
@@ -821,6 +787,7 @@ core.Options = {
 		--]]
 	},
 }
+end
 
 -- global functions
 
@@ -835,6 +802,7 @@ local firstoptiongroup, lastoptiongroup
 function module:SetupOptions()
 	local ACD = LibStub("AceConfigDialog-3.0")
 	local namespace = "SavedInstances"
+	module:BuildOptions()
 	LibStub("AceConfigRegistry-3.0"):RegisterOptionsTable(namespace, core.Options)
 	firstoptiongroup = ACD:AddToBlizOptions(namespace, nil, nil, "General")
 	ACD:AddToBlizOptions(namespace, L["Indicators"], namespace, "Indicators")

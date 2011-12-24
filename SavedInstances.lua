@@ -101,7 +101,8 @@ vars.defaultDB = {
 	Toons = { }, 	-- table key: "Toon - Realm"; value:
 				-- Class: string
 				-- Level: integer
-				-- AlwaysShow: boolean
+				-- AlwaysShow: boolean REMOVED
+				-- Show: string "always", "never", "saved"
 				-- Daily1: expiry (normal) REMOVED
 				-- Daily2: expiry (heroic) REMOVED
 				-- LFG1: expiry (random dungeon)
@@ -887,7 +888,7 @@ function core:OnInitialize()
 	db.Toons[thisToon] = db.Toons[thisToon] or { }
 	db.Toons[thisToon].LClass, db.Toons[thisToon].Class = UnitClass("player")
 	db.Toons[thisToon].Level = UnitLevel("player")
-	db.Toons[thisToon].AlwaysShow = db.Toons[thisToon].AlwaysShow or false
+	db.Toons[thisToon].Show = db.Toons[thisToon].Show or "saved"
 	db.Lockouts = nil -- deprecated
         addon:SetupVersion()
 	RequestRaidInfo() -- get lockout data
@@ -1231,7 +1232,9 @@ end
 local function cpairs(t)
   wipe(cnext_sorted_names)
   for n,_ in pairs(t) do
-    table.insert(cnext_sorted_names, n)
+    if vars.db.Toons[n] and vars.db.Toons[n].Show ~= "never" then
+      table.insert(cnext_sorted_names, n)
+    end
   end
   table.sort(cnext_sorted_names, function (a,b) return b == thisToon or (a ~= thisToon and a > b) end)
   --myprint(cnext_sorted_names)
@@ -1272,16 +1275,12 @@ function core:ShowTooltip(anchorframe)
 	addon:UpdateToonData()
 	local columns = localarr("columns")
 	for toon,_ in cpairs(columnCache[showall]) do
-	    if vars.db.Toons[toon] then
 		addColumns(columns, toon, tooltip)
 		columnCache[showall][toon] = false
-	    else -- deleted toon
-	       columnCache[showall][toon] = nil
-	    end
         end 
 	-- allocating columns for characters
 	for toon, t in cpairs(vars.db.Toons) do
-		if vars.db.Toons[toon].AlwaysShow then
+		if vars.db.Toons[toon].Show == "always" then
 			addColumns(columns, toon, tooltip)
 		end
 	end
@@ -1291,13 +1290,18 @@ function core:ShowTooltip(anchorframe)
 	for _, category in ipairs(addon:OrderedCategories()) do
 		for _, instance in ipairs(addon:OrderedInstances(category)) do
 			local inst = vars.db.Instances[instance]
-			for toon, t in pairs(vars.db.Toons) do
+			if inst.Show then
+			   categoryshown[category] = true
+			end
+			for toon, t in cpairs(vars.db.Toons) do
 				for diff = 1, 4 do
-					if inst[toon] and inst[toon][diff] and (inst[toon][diff].Expires > 0 or showall) then
+					if inst[toon] and inst[toon][diff] then
+					    if (inst[toon][diff].Expires > 0) then
 						instancesaved[instance] = true
 						categoryshown[category] = true
-					elseif inst.Show then
+					    elseif showall then
 						categoryshown[category] = true
+					    end
 					end
 				end
 			end
@@ -1325,13 +1329,14 @@ function core:ShowTooltip(anchorframe)
 			end
 			for _, instance in ipairs(addon:OrderedInstances(category)) do
 			       local inst = vars.db.Instances[instance]
+				if inst.Show then
+			  	   instancerow[instance] = instancerow[instance] or tooltip:AddLine()
+				end
 				for toon, t in cpairs(vars.db.Toons) do
 					for diff = 1, 4 do
 					        if inst[toon] and inst[toon][diff] and (inst[toon][diff].Expires > 0 or showall) then
 							instancerow[instance] = instancerow[instance] or tooltip:AddLine()
 							addColumns(columns, toon, tooltip)
-						elseif inst.Show then
-							instancerow[instance] = instancerow[instance] or tooltip:AddLine()
 						end
 					end
 				end
@@ -1341,9 +1346,12 @@ function core:ShowTooltip(anchorframe)
 	end
 	-- now printing instance data
 	for instance, row in pairs(instancerow) do
-		if instancesaved[instance] then
+		if (not instancesaved[instance]) then
+			tooltip:SetCell(instancerow[instance], 1, GRAYFONT .. instance .. FONTEND)
+		else
 			tooltip:SetCell(instancerow[instance], 1, GOLDFONT .. instance .. FONTEND)
-			for toon, t in pairs(vars.db.Toons) do
+		end
+			for toon, t in cpairs(vars.db.Toons) do
 			        local inst = vars.db.Instances[instance]
 				if inst[toon] then
 				  local showcol = localarr("showcol")
@@ -1383,9 +1391,6 @@ function core:ShowTooltip(anchorframe)
 				  end
 				end
 			end
-		elseif (not instancesaved[instance]) and (vars.db.Instances[instance].Show) then
-			tooltip:SetCell(instancerow[instance], 1, GRAYFONT .. instance .. FONTEND)
-		end
 	end
 	-- random dungeon
 	if vars.db.Tooltip.TrackLFG or showall then
@@ -1405,7 +1410,7 @@ function core:ShowTooltip(anchorframe)
 			cd1 = cd1 and tooltip:AddLine(YELLOWFONT .. LFG_TYPE_RANDOM_DUNGEON .. FONTEND)		
 			cd2 = cd2 and tooltip:AddLine(YELLOWFONT .. GetSpellInfo(71041) .. FONTEND)		
 		end
-		for toon, t in pairs(vars.db.Toons) do
+		for toon, t in cpairs(vars.db.Toons) do
 		    local d1 = (t.LFG1 and t.LFG1 - GetTime()) or -1
 		    local d2 = (t.LFG2 and t.LFG2 - GetTime()) or -1
 		    if d1 > 0 and (d2 < 0 or showall) then
@@ -1438,7 +1443,7 @@ function core:ShowTooltip(anchorframe)
 			end
 			show = tooltip:AddLine(YELLOWFONT .. DESERTER .. FONTEND)		
 		end
-		for toon, t in pairs(vars.db.Toons) do
+		for toon, t in cpairs(vars.db.Toons) do
 			if t.pvpdesert and GetTime() < t.pvpdesert then
 				local tstr = SecondsToTime(t.pvpdesert - GetTime(), false, false, 1)
 				tooltip:SetCell(show, columns[toon..1], ClassColorise(t.Class,tstr), "CENTER",4)
@@ -1475,7 +1480,7 @@ function core:ShowTooltip(anchorframe)
 		end
 		currLine = tooltip:AddLine(YELLOWFONT .. show .. FONTEND)		
 
-   	      for toon, t in pairs(vars.db.Toons) do
+   	      for toon, t in cpairs(vars.db.Toons) do
                 local ci = t.currency and t.currency[idx] 
 		if ci and columns[toon..1] then
 		   local earned, weeklymax, totalmax = "","",""
