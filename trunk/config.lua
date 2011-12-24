@@ -509,201 +509,51 @@ core.Options = {
 			order = 4,
 			type = "group",
 			name = L["Instance options"],
-			childGroups = "tab",
-			args = {
-				SelectedCategory = {
-					order = 1,
-					type = "select",
-					name = L["Selected category"],
-					disabled = false,
-					get = function(info)
-						if not module.selectedCategory then return end
-						local index
-						for i, v in ipairs(vars.OrderedCategories()) do
-							if v == module.selectedCategory then
-								index = i
-								break
-							end
-						end
-						return index
-					end,
-					set = function(info, index)
-						local categories = vars.OrderedCategories()
-						module.selectedCategory = categories[index]
-						module.selectedInstance = nil
-						module.selectedEncounter = nil
-						--GenerateEncountersListGUI(3)
-					end,
-					values = function()
-						local table = { }
-						for i, v in ipairs(vars.OrderedCategories()) do
-							table[i] = vars.Categories[v]
-						end
-						return table
-					end,
-				},
-				SelectedInstance = {
-					order = 2,
-					type = "select",
-					name = L["Selected instance"],
-					disabled = function()
-						return (module.selectedCategory == nil) or
-							(addon:CategorySize(module.selectedCategory) == 0)
-					end,
-					get = function(info)
-						if not module.selectedCategory or not module.selectedInstance then return end
-						for i, v in ipairs(addon:OrderedInstances(module.selectedCategory)) do
-							if v == module.selectedInstance then
-								index = i
-								break
-							end
-						end
-						return index
-					end,
-					set = function(info, index)
-						local instances = addon:OrderedInstances(module.selectedCategory)
-						module.selectedInstance = instances[index]
-						module.selectedEncounter = nil
-						--GenerateEncountersListGUI(3)
-					end,
-					values = function()
-						if module.selectedCategory == nil then return { } end
-						return addon:OrderedInstances(module.selectedCategory)
-					end,
-				},
-
-				DetailsGroup = {
-					order = 4, 
-					type = "group",
-					name = L["Instance details"],
-					disabled = function()
-						return not module.selectedInstance or (addon:InstanceCategory(module.selectedInstance) ~= module.selectedCategory)
-					end,
-					args = {
-						Expansion = {
-							order = 1,
-							type = "select",
-							name = L["Expansion"],
-							get = function(info)
-								if module.selectedInstance then
-									return db.Instances[module.selectedInstance].Expansion
-								end
-							end,
-							set = function(info, expansion)
-								local instance = db.Instances[module.selectedInstance]
-								instance.Expansion = expansion
-								instance.Raid = instance.Raid or false
-								module.selectedCategory = addon:InstanceCategory(module.selectedInstance)
-							end,
-							values = {
-								[0] = EXPANSION_NAME0,
-								[1] = EXPANSION_NAME1,
-								[2] = EXPANSION_NAME2,
-								[3] = EXPANSION_NAME3,
-							},
-						},
-						--[[
-						LFDID = {
-							order = 2,
-							type = "select",
-							width = "double",
-							name = L["Dungeon Finder ID"],
-							get = function(info)
-								local instance = db.Instances[module.selectedInstance]
-								local index = 0
-								local found = false
-								for id, details in pairs(vars.instanceDB) do
-									if id > 0 and details[8] == instance.Expansion then
-										index = index + 1
-										if id == db.Instances[module.selectedInstance].LFDID then
-											found = true
-											break
-										end
-									end
-								end
-								if not found then return nil end
-								return index
-							end,
-							set = function(info, index)
-								local instance = db.Instances[module.selectedInstance]
-								local counter = 0
-								local LFDID
-								for id, details in pairs(vars.instanceDB) do
-									if id > 0 and details[8] == instance.Expansion then
-										counter = counter + 1
-										if counter == index then
-											LFDID = id
-											break
-										end
-									end
-								end
-								instance.LFDID = LFDID
-								instance.LFDupdated = select(2, GetBuildInfo())
-								instance.Expansion = vars.instanceDB[LFDID][8]
-								module.selectedCategory = addon:InstanceCategory(module.selectedInstance)
-							end,
-							values = function()
-								local instance = db.Instances[module.selectedInstance]
-								local table = { }
-								for id, details in pairs(vars.instanceDB) do
-									if id > 0 and details[8] == instance.Expansion then
-										table[1+#table] = strjoin(" ", id, details[1], details[5])
-									end
-								end
-								return table
-							end,
-						},
-						LFDLevels = {
-							order = 3,
-							type = "description",
-							name = function()
-								local LFDID = vars.db.Instances[module.selectedInstance].LFDID
-								if not LFDID then return L["No Dungeon Finder ID assigned"] end
-								local details = vars.instanceDB[LFDID]
-								if not details then return L["No data found for this Dungeon Finder ID"] end
-								return format("Levels: %d-%d; Recommended levels: %d-%d, Recommended level: %d", details[3], details[4], details[6], details[7], details[5])
-							end
-						},
-						--]]
-						AlwaysShow = {
-							order = 4,
-							type = "toggle",
-							width = "full",
-							name = L["Show when not saved"],
-							get = function(info)
-								if module.selectedInstance then
-									return db.Instances[module.selectedInstance].Show
-								end
-							end,
-							set = function(info, value)
-								db.Instances[module.selectedInstance].Show = value
-							end,
-						},
-						--[[
-						ForgetLFDID = {
-							order = -2,
-							type = "execute",
-							name = L["Forget ID"],
-							func = function()
-								vars.db.Instances[module.selectedInstance].LFDID = nil
-								vars.db.Instances[module.selectedInstance].LFDupdated = nil
-							end,
-						},
-						--]]
-						DeleteButton = {
-							order = -1,
-							type = "execute",
-							name = DELETE,
-							func = function()
-								local instance = module.selectedInstance
-								module.selectedInstance = nil
-								db.Instances[instance] = nil
-							end,
-						},
-					},
-				},
-				
-			},
+			childGroups = "select",
+			width = "double",
+			args = (function()
+			  local ret = {}
+			  local valueslist = { ["always"] = L["Always show"],
+			 		       ["saved"] = L["Show when saved"],
+			      		       ["never"] = L["Never show"],
+			     		      }
+			  for i,cat in ipairs(vars.OrderedCategories()) do
+			    ret[cat] = {
+			        order = i,
+				type = "group",
+				name = vars.Categories[cat],
+				childGroups = "tree",
+				args = (function()
+				  local iret = {}
+				  for j, inst in ipairs(addon:OrderedInstances(cat)) do
+					iret[inst] = {
+					  order = j,
+					  name = inst,
+					  type = "group",
+					  args = {
+					    Show = {
+						order = 1,
+				  		type = "select",
+				  		style = "radio",
+				  		name = L["Show this instance"],
+				  		values = valueslist,
+				  		get = function(info)
+						        local val = db.Instances[inst].Show
+				    			return (val and valueslist[val] and val) or "saved"
+				  		end,
+				  		set = function(info, value)
+				   		 	db.Instances[inst].Show = value
+				  		end,
+				            },
+					  },
+					}
+				  end 
+				  return iret
+                                 end)(),
+				} 
+			  end
+			  return ret
+			end)(),
 		},
 		Characters = {
 			order = 4,
