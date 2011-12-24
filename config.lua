@@ -762,6 +762,9 @@ core.Options = {
 								local toon = module.selectedToon
 								module.selectedToon = nil
 								db.Toons[toon] = nil
+								for _,ii in pairs(vars.db.Instances) do
+								  ii[toon] = nil
+								end
 							end,
 						},
 					},

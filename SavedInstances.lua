@@ -1272,8 +1272,12 @@ function core:ShowTooltip(anchorframe)
 	addon:UpdateToonData()
 	local columns = localarr("columns")
 	for toon,_ in cpairs(columnCache[showall]) do
+	    if vars.db.Toons[toon] then
 		addColumns(columns, toon, tooltip)
 		columnCache[showall][toon] = false
+	    else -- deleted toon
+	       columnCache[showall][toon] = nil
+	    end
         end 
 	-- allocating columns for characters
 	for toon, t in cpairs(vars.db.Toons) do
