@@ -714,6 +714,7 @@ local function ShowToonTooltip(cell, arg, ...)
 end
 
 local function ShowHistoryTooltip(cell, arg, ...)
+        addon:HistoryUpdate()
         indicatortip = QTip:Acquire("SavedInstancesIndicatorTooltip", 2, "LEFT", "LEFT")
         indicatortip:Clear()
         local tmp = {}
@@ -895,6 +896,7 @@ function core:OnInitialize()
 	db.Toons[thisToon].Level = UnitLevel("player")
 	db.Toons[thisToon].Show = db.Toons[thisToon].Show or "saved"
 	db.Lockouts = nil -- deprecated
+	db.Tooltip.ReportResets = (db.Tooltip.ReportResets == nil and true) or db.Tooltip.ReportResets
         addon:SetupVersion()
 	RequestRaidInfo() -- get lockout data
 	if LFGDungeonList_Setup then LFGDungeonList_Setup() end -- force LFG frame to populate instance list LFDDungeonList
@@ -1001,14 +1003,18 @@ function addon:InGroup()
   else return nil end
 end
 
-local function doExplicitReset(instancemsg)
+local function doExplicitReset(instancemsg, failed)
   if HasLFGRestrictions() or IsInInstance() or
      (addon:InGroup() and not IsPartyLeader() and not IsRaidLeader()) then return end
-  addon:HistoryUpdate(true)
+  if not failed then
+    addon:HistoryUpdate(true)
+  end
  
   local reportchan = addon:InGroup()
   if reportchan then
-    SendAddonMessage(addonName, "GENERATION_ADVANCE", reportchan)
+    if not failed then
+      SendAddonMessage(addonName, "GENERATION_ADVANCE", reportchan)
+    end
     if vars.db.Tooltip.ReportResets then
       SendChatMessage("<"..addonName.."> "..(instancemsg or RESET_INSTANCES), reportchan)
     end
@@ -1017,6 +1023,10 @@ end
 hooksecurefunc("ResetInstances", doExplicitReset)
 
 local resetmsg = INSTANCE_RESET_SUCCESS:gsub("%%s",".+")
+local resetfails = { INSTANCE_RESET_FAILED, INSTANCE_RESET_FAILED_OFFLINE, INSTANCE_RESET_FAILED_ZONING }
+for k,v in pairs(resetfails) do 
+  resetfails[k] = v:gsub("%%s",".+")
+end
 local raiddiffmsg = ERR_RAID_DIFFICULTY_CHANGED_S:gsub("%%s",".+")
 local dungdiffmsg = ERR_DUNGEON_DIFFICULTY_CHANGED_S:gsub("%%s",".+")
 local delaytime = 3 -- seconds to wait on zone change for settings to stabilize
@@ -1039,6 +1049,12 @@ function addon.HistoryEvent(f, evt, ...)
       addon:HistoryUpdate(true)
     elseif msg:match(TRANSFER_ABORT_TOO_MANY_INSTANCES) then
       addon:HistoryUpdate(false,true)
+    else
+      for _,m in pairs(resetfails) do 
+        if msg:match("^"..m.."$") then
+	  doExplicitReset(msg, true) -- send failure chat message
+	end
+      end
     end
   elseif evt == "INSTANCE_BOOT_START" then -- left group inside instance, resets on boot
     addon:HistoryUpdate(true)
