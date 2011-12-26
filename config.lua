@@ -169,8 +169,12 @@ core.Options = {
 				ShowHints = {
 					type = "toggle",
 					name = L["Show tooltip hints"],
-					width = "full",
 					order = 4,
+				},
+				ReportResets = {
+					type = "toggle",
+					name = L["Report instance resets to group"],
+					order = 4.5,
 				},
 				
 				CategoriesHeader = {
