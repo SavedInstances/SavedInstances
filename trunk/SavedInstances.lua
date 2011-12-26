@@ -156,7 +156,7 @@ vars.defaultDB = {
 		ShowHints = true,
 		ColumnStyle = "NORMAL", -- "NORMAL", "CLASS", "ALTERNATING"
 		AltColumnColor = { 0.2, 0.2, 0.2, 1, }, -- grey
-		RecentHistory = false,
+		ReportResets = true,
 		TrackLFG = true,
 		TrackDeserter = true,
 		Currency395 = true, -- Justice Points 
@@ -955,7 +955,7 @@ function core:OnEnable()
           addon.resetDetect = CreateFrame("Button", "SavedInstancesResetDetectHiddenFrame", UIParent)
           for _,e in pairs({
 	    "RAID_INSTANCE_WELCOME", 
-	    "PLAYER_ENTERING_WORLD", "CHAT_MSG_SYSTEM",
+	    "PLAYER_ENTERING_WORLD", "CHAT_MSG_SYSTEM", "CHAT_MSG_ADDON",
             "ZONE_CHANGED_NEW_AREA", 
 	    "INSTANCE_BOOT_START", "INSTANCE_BOOT_STOP", "PARTY_MEMBERS_CHANGED",
             }) do
@@ -963,6 +963,7 @@ function core:OnEnable()
           end
         end
         addon.resetDetect:SetScript("OnEvent", addon.HistoryEvent)
+        RegisterAddonMessagePrefix(addonName)
 	addon:HistoryEvent("PLAYER_ENTERING_WORLD") -- update after initial load
 end
 
@@ -995,8 +996,25 @@ function core:LFG_COMPLETION_REWARD()
 end
 
 function addon:InGroup() 
-  return GetNumRaidMembers() > 0 or GetNumPartyMembers() > 0
+  if GetNumRaidMembers() > 0 then return "RAID"
+  elseif GetNumPartyMembers() > 0 then return "PARTY"
+  else return nil end
 end
+
+local function doExplicitReset(instancemsg)
+  if HasLFGRestrictions() or IsInInstance() or
+     (addon:InGroup() and not IsPartyLeader() and not IsRaidLeader()) then return end
+  addon:HistoryUpdate(true)
+ 
+  local reportchan = addon:InGroup()
+  if reportchan then
+    SendAddonMessage(addonName, "GENERATION_ADVANCE", reportchan)
+    if vars.db.Tooltip.ReportResets then
+      SendChatMessage("<"..addonName.."> "..(instancemsg or RESET_INSTANCES), reportchan)
+    end
+  end
+end
+hooksecurefunc("ResetInstances", doExplicitReset)
 
 local resetmsg = INSTANCE_RESET_SUCCESS:gsub("%%s",".+")
 local raiddiffmsg = ERR_RAID_DIFFICULTY_CHANGED_S:gsub("%%s",".+")
@@ -1004,11 +1022,17 @@ local dungdiffmsg = ERR_DUNGEON_DIFFICULTY_CHANGED_S:gsub("%%s",".+")
 local delaytime = 3 -- seconds to wait on zone change for settings to stabilize
 function addon.HistoryEvent(f, evt, ...) 
   --myprint("HistoryEvent: "..evt, ...) 
-  if evt == "CHAT_MSG_SYSTEM" then
-    local msg = ...
-    if msg:match("^"..resetmsg.."$") then
+  if evt == "CHAT_MSG_ADDON" then
+    local prefix, message, channel, sender = ...
+    if prefix ~= addonName then return end
+    if message:match("^GENERATION_ADVANCE$") and not UnitIsUnit(sender,"player") then
       addon:HistoryUpdate(true)
-    elseif msg:match("^"..INSTANCE_SAVED.."$") then
+    end
+  elseif evt == "CHAT_MSG_SYSTEM" then
+    local msg = ...
+    if msg:match("^"..resetmsg.."$") then -- I performed expicit reset
+      doExplicitReset(msg)
+    elseif msg:match("^"..INSTANCE_SAVED.."$") then -- just got saved
       core:ScheduleTimer("HistoryUpdate", delaytime+1)
     elseif (msg:match("^"..raiddiffmsg.."$") or msg:match("^"..dungdiffmsg.."$")) and 
        not addon:histZoneKey() then -- ignore difficulty messages when creating a party while inside an instance
@@ -1016,10 +1040,10 @@ function addon.HistoryEvent(f, evt, ...)
     elseif msg:match(TRANSFER_ABORT_TOO_MANY_INSTANCES) then
       addon:HistoryUpdate(false,true)
     end
-  elseif evt == "INSTANCE_BOOT_START" and addon:histZoneKey() then -- left group inside instance, resets on boot
-    addon.histBooted = true
+  elseif evt == "INSTANCE_BOOT_START" then -- left group inside instance, resets on boot
+    addon:HistoryUpdate(true)
   elseif evt == "INSTANCE_BOOT_STOP" and addon:InGroup() then -- invited back
-    addon.histBooted = false
+    addon.delayedReset = false
   elseif evt == "PARTY_MEMBERS_CHANGED" and 
          addon.histInGroup and not addon:InGroup() and -- ignore failed invites when solo
 	 not addon:histZoneKey() then -- left group outside instance, resets now
@@ -1030,6 +1054,7 @@ function addon.HistoryEvent(f, evt, ...)
     core:ScheduleTimer("HistoryUpdate", delaytime+1)
   end
 end
+
 
 addon.histReapTime = 60*60 -- 1 hour
 addon.histLimit = 5 -- instances per hour
@@ -1064,10 +1089,14 @@ end
 
 function addon:HistoryUpdate(forcereset, forcemesg)
   vars.db.histGeneration = vars.db.histGeneration or 1
-  if forcereset or (addon.histBooted and not addon:histZoneKey()) then
+  if forcereset and addon:histZoneKey() then -- delay reset until we zone out
+     debug("HistoryUpdate reset delayed")
+     addon.delayedReset = true
+  end
+  if (forcereset or addon.delayedReset) and not addon:histZoneKey() then
     debug("HistoryUpdate generation advance")
     vars.db.histGeneration = (vars.db.histGeneration + 1) % 100000
-    addon.histBooted = false
+    addon.delayedReset = false
   end
   local now = GetTime()
   if addon.delayUpdate and now < addon.delayUpdate then
