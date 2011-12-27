@@ -951,6 +951,7 @@ function core:OnEnable()
 	self:RegisterEvent("CHAT_MSG_LOOT", "CheckSystemMessage")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", RequestRaidInfo)
 	self:RegisterEvent("LFG_LOCK_INFO_RECEIVED", RequestRaidInfo)
+	self:RegisterEvent("PLAYER_LOGOUT", function() addon:UpdateToonData() end) -- update currency spent
 	self:RegisterEvent("LFG_COMPLETION_REWARD") -- for random daily dungeon tracking
 
         if not addon.resetDetect then
