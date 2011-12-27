@@ -123,6 +123,10 @@ end
 
 -- options table below
 function module:BuildOptions() 
+  local valueslist = { ["always"] = GREEN_FONT_COLOR_CODE..L["Always show"]..FONTEND,
+ 		       ["saved"] = L["Show when saved"],
+      		       ["never"] = RED_FONT_COLOR_CODE..L["Never show"]..FONTEND,
+     		      }
 core.Options = {
 	type = "group",
 	name = "SavedInstances",
@@ -485,10 +489,6 @@ core.Options = {
 			width = "double",
 			args = (function()
 			  local ret = {}
-			  local valueslist = { ["always"] = L["Always show"],
-			 		       ["saved"] = L["Show when saved"],
-			      		       ["never"] = L["Never show"],
-			     		      }
 			  for i,cat in ipairs(vars.OrderedCategories()) do
 			    ret[cat] = {
 			        order = i,
@@ -501,13 +501,8 @@ core.Options = {
 					iret[inst] = {
 					  order = j,
 					  name = inst,
-					  type = "group",
-					  args = {
-					    Show = {
-						order = 1,
-				  		type = "select",
-				  		style = "radio",
-				  		name = L["Show this instance"],
+				  	        type = "select",
+						-- style = "radio",
 				  		values = valueslist,
 				  		get = function(info)
 						        local val = db.Instances[inst].Show
@@ -516,9 +511,7 @@ core.Options = {
 				  		set = function(info, value)
 				   		 	db.Instances[inst].Show = value
 				  		end,
-				            },
-					  },
-					}
+				        }
 				  end 
 				  return iret
                                  end)(),
@@ -536,24 +529,15 @@ core.Options = {
 			  for toon, info in pairs(db.Toons) do
 			    ret[toon] = {
 			      name = toon,
-			      type = "group",
-			      args = {
-			        Show = {
 				  type = "select",
-				  style = "radio",
-				  name = L["Show this character"],
-				  values = { ["always"] = L["Always show"],
-				             ["saved"] = L["Show when saved"],
-				             ["never"] = L["Never show"],
-					     },
+				  -- style = "radio",
+				  values = valueslist,
 				  get = function(info)
 				    return db.Toons[toon].Show or "saved"
 				  end,
 				  set = function(info, value)
 				    db.Toons[toon].Show = value
 				  end,
-				}
-                              }
 			    }
 			  end
 			  return ret
