@@ -157,6 +157,7 @@ vars.defaultDB = {
 		ColumnStyle = "NORMAL", -- "NORMAL", "CLASS", "ALTERNATING"
 		AltColumnColor = { 0.2, 0.2, 0.2, 1, }, -- grey
 		ReportResets = true,
+		ShowServer = false,
 		TrackLFG = true,
 		TrackDeserter = true,
 		Currency395 = true, -- Justice Points 
@@ -661,7 +662,10 @@ function addon:UpdateToonData()
 		if ti.LFG2 and (ti.LFG2 < GetTime()) then ti.LFG2 = nil end
 		if ti.pvpdesert and (ti.pvpdesert < GetTime()) then ti.pvpdesert = nil end
 	end
-	t.IL, t.ILe = GetAverageItemLevel()
+	local IL,ILe = GetAverageItemLevel()
+	if IL > 0 then -- can fail during logout
+	  t.IL, t.ILe = IL, ILe
+	end
 	-- Weekly Reset
 	local nextreset = addon:GetNextWeeklyResetTime()
 	if nextreset and nextreset > time() then
@@ -752,7 +756,8 @@ local function ShowIndicatorTooltip(cell, arg, ...)
 	local id = info.ID
 	local nameline, _ = indicatortip:AddHeader()
 	indicatortip:SetCell(nameline, 1, DifficultyString(instance, diff, toon) .. " " .. GOLDFONT .. instance .. FONTEND, indicatortip:GetHeaderFont(), "LEFT", 2)
-	indicatortip:AddHeader(ClassColorise(vars.db.Toons[toon].Class, strsplit(' ', toon)), addon:idtext(thisinstance,diff,info))
+	local toonstr = (db.Tooltip.ShowServer and toon) or strsplit(' ', toon)
+	indicatortip:AddHeader(ClassColorise(vars.db.Toons[toon].Class, toonstr), addon:idtext(thisinstance,diff,info))
 	local EMPH = " !!! "
 	if info.Extended then
 	  indicatortip:SetCell(indicatortip:AddLine(),1,WHITEFONT .. EMPH .. L["Extended Lockout - Not yet saved"] .. EMPH .. FONTEND,"CENTER",2)
@@ -1096,7 +1101,11 @@ function addon:histZoneKey()
       end
     end
   end
-  local desc = thisToon .. ": " .. instname .. " - " .. diffname
+  local toonstr = thisToon
+  if not db.Tooltip.ShowServer then
+    toonstr = strsplit(" - ", toonstr)
+  end
+  local desc = toonstr .. ": " .. instname .. " - " .. diffname
   local key = thisToon..":"..instname..":"..insttype..":"..diff
   if not locked then
     key = key..":"..vars.db.histGeneration
@@ -1575,7 +1584,13 @@ function core:ShowTooltip(anchorframe)
 		local toon = strsub(toondiff, 1, #toondiff-1)
 		local diff = strsub(toondiff, #toondiff, #toondiff)
 		if diff == "1" then
-			tooltip:SetCell(headLine, col, ClassColorise(vars.db.Toons[toon].Class, select(1, strsplit(" - ", toon))), tooltip:GetHeaderFont(), "CENTER", 4)
+		        local toonname, _,_, toonserver = strsplit(" - ", toon)
+			local toonstr = toonname
+			if db.Tooltip.ShowServer then
+			  toonstr = toonstr .. "\n" .. toonserver
+			end
+			tooltip:SetCell(headLine, col, ClassColorise(vars.db.Toons[toon].Class, toonstr), 
+			                tooltip:GetHeaderFont(), "CENTER", 4)
 			tooltip:SetCellScript(headLine, col, "OnEnter", ShowToonTooltip, {toon})
 			tooltip:SetCellScript(headLine, col, "OnLeave", 
 					     function() indicatortip:Hide(); GameTooltip:Hide() end)
