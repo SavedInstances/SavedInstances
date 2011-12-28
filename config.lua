@@ -180,6 +180,11 @@ core.Options = {
 					name = L["Report instance resets to group"],
 					order = 4.5,
 				},
+				ShowServer = {
+					type = "toggle",
+					name = L["Show server name"],
+					order = 5,
+				},
 				
 				CategoriesHeader = {
 					order = 11, 
