@@ -1,6 +1,6 @@
 ## Interface: 40300
 ## Title: SavedInstances
-## Notes: Tracks raid/instance lockouts on your characters, and related currencies and cooldowns.
+## Notes: Tracks raid/instance lockouts on your characters, related currencies and cooldowns.
 ## Author: @project-author@
 ## Version: @project-version@
 ## X-Build: @project-revision@
