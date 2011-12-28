@@ -1105,7 +1105,10 @@ function addon:histZoneKey()
   if not db.Tooltip.ShowServer then
     toonstr = strsplit(" - ", toonstr)
   end
-  local desc = toonstr .. ": " .. instname .. " - " .. diffname
+  local desc = toonstr .. ": " .. instname
+  if diffname and #diffname > 0 then
+    desc = desc .. " - " .. diffname
+  end
   local key = thisToon..":"..instname..":"..insttype..":"..diff
   if not locked then
     key = key..":"..vars.db.histGeneration
