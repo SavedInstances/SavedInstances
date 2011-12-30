@@ -301,34 +301,44 @@ function addon:normalizeName(str)
 end
 
 addon.transInstance = {
-  -- lockout name (reported in error)  =  LFG/LFR name (from addon.Instances)
-  ["Hellfire Citadel: Ramparts"] = "Hellfire Ramparts",
-  ["The Battle for Mount Hyjal"] = "Hyjal Past",
-  ["Ruins of Ahn'Qiraj"] = "Ahn'Qiraj Ruins",
-  -- [""] = "",
+  -- lockout hyperlink id = LFDID
+  [543] = 188, 	-- Hellfire Citadel: Ramparts
+  [534] = 195, 	-- The Battle for Mount Hyjal
+  [509] = 160, 	-- Ruins of Ahn'Qiraj
 }
-addon.translateInstance = {}
-for k,v in pairs(addon.transInstance) do
-  addon.translateInstance[addon:normalizeName(k)] = addon:normalizeName(v)
-end
 
 -- some instances (like sethekk halls) are named differently by GetSavedInstanceInfo() and LFGGetDungeonInfoByID()
 -- we use the latter name to key our database, and this function to convert as needed
 function addon:FindInstance(name, raid)
   if not name or #name == 0 then return nil end
+  -- first pass, direct match
   local info = vars.db.Instances[name]
   if info then
     return name, info.LFDID
   end
+  -- second pass, normalized substring match
   local nname = addon:normalizeName(name)
-  nname = addon.translateInstance[nname] or nname
   for truename, info in pairs(vars.db.Instances) do
     local tname = addon:normalizeName(truename)
     if (tname:find(nname, 1, true) or nname:find(tname, 1, true)) and
-       vars.db.Instances[truename].Raid == raid then -- Tempest Keep: The Botanica
+       info.Raid == raid then -- Tempest Keep: The Botanica
       --debug("FindInstance("..name..") => "..truename)
       return truename, info.LFDID
     end
+  end
+  -- final pass, hyperlink id lookup
+  for i = 1, GetNumSavedInstances() do
+     local link = GetSavedInstanceChatLink(i) or ""
+     local lid,lname = link:match(":(%d+):%d+:%d+\124h%[(.+)%]\124h")
+     lname = lname and addon:normalizeName(lname) 
+     lid = lid and tonumber(lid)
+     local lfdid = lid and addon.transInstance[lid]
+     if lname == nname and lfdid then
+       local truename = select(3,addon:UpdateInstance(lfdid))
+       if truename then
+         return truename, lfdid
+       end
+     end
   end
   return nil
 end
@@ -350,7 +360,13 @@ function addon:LookupInstance(id, name, raid)
     addon.warned = addon.warned or {}
     if not addon.warned[name] then
       addon.warned[name] = true
-      print("SavedInstances: ERROR: Refresh() failed to find instance: "..name.." : "..GetLocale())
+      local lid
+      for i = 1, GetNumSavedInstances() do
+        local link = GetSavedInstanceChatLink(i) or ""
+        local tlid,tlname = link:match(":(%d+):%d+:%d+\124h%[(.+)%]\124h")
+	if tlname == name then lid = tlid end
+      end
+      print("SavedInstances: ERROR: Refresh() failed to find instance: "..name.." : "..GetLocale().." : "..(lid or "x"))
       print(" Please report this bug at: http://www.wowace.com/addons/saved_instances/tickets/")
     end
     instance = {}
@@ -663,8 +679,8 @@ function addon:UpdateToonData()
 		if ti.pvpdesert and (ti.pvpdesert < GetTime()) then ti.pvpdesert = nil end
 	end
 	local IL,ILe = GetAverageItemLevel()
-	if IL > 0 then -- can fail during logout
-	  t.IL, t.ILe = IL, ILe
+	if IL and tonumber(IL) and tonumber(IL) > 0 then -- can fail during logout
+	  t.IL, t.ILe = tonumber(IL), tonumber(ILe)
 	end
 	-- Weekly Reset
 	local nextreset = addon:GetNextWeeklyResetTime()
@@ -1089,16 +1105,14 @@ function addon:histZoneKey()
   if mode == "lfgparty" or mode == "abandonedInDungeon" then -- LFG instances don't count
     return nil
   end
-  -- check if we're locked
+  -- check if we're locked (using FindInstance so we don't complain about unsaved unknown instances)
   local truename = addon:FindInstance(instname, insttype == "raid")
   local locked = false
-  local save = vars.db.Instances[truename] and vars.db.Instances[truename][thisToon]
-  if save then
-    for i=1,4 do
-      local ii = save[i] 
-      if ii and ii.Locked then
+  local inst = truename and vars.db.Instances[truename] 
+  inst = inst and inst[thisToon]
+  for d=1,4 do
+    if inst and inst[d] and inst[d].Locked then
         locked = true
-      end
     end
   end
   local toonstr = thisToon
