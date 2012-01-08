@@ -180,6 +180,11 @@ core.Options = {
 					name = L["Report instance resets to group"],
 					order = 4.5,
 				},
+				LimitWarn = {
+					type = "toggle",
+					name = L["Warn about instance limit"],
+					order = 4.7,
+				},
 				ShowServer = {
 					type = "toggle",
 					name = L["Show server name"],

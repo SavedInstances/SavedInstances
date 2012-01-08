@@ -96,6 +96,12 @@ local function debug(msg)
 end
 addon.debug = debug
 
+local GTToffset = time() - GetTime()
+local function GetTimeToTime(val)
+  if not val then return nil end
+  return val + GTToffset
+end
+
 vars.defaultDB = {
 	DBVersion = 11,
 	History = { }, -- for tracking 5 instance per hour limit
@@ -157,6 +163,7 @@ vars.defaultDB = {
 		ColumnStyle = "NORMAL", -- "NORMAL", "CLASS", "ALTERNATING"
 		AltColumnColor = { 0.2, 0.2, 0.2, 1, }, -- grey
 		ReportResets = true,
+		LimitWarn = true,
 		ShowServer = false,
 		TrackLFG = true,
 		TrackDeserter = true,
@@ -545,7 +552,7 @@ function addon:UpdateInstanceData()
   instancesUpdated = true
   core:UnregisterEvent("LFG_UPDATE_RANDOM_INFO")
   local count = 0
-  local starttime = GetTime()
+  local starttime = debugprofilestop()
   local maxid = 500
   for id=1,maxid do -- start with brute force
     if addon:UpdateInstance(id) then
@@ -570,8 +577,8 @@ function addon:UpdateInstanceData()
       end
     end
   end
-  starttime = GetTime()-starttime
-  debug("UpdateInstanceData(): completed "..count.." updates in "..string.format("%.6f",starttime).." sec.")
+  starttime = debugprofilestop()-starttime
+  debug("UpdateInstanceData(): completed "..count.." updates in "..string.format("%.6f",starttime/1000.0).." sec.")
   if addon.RefreshPending then
     addon.RefreshPending = nil
     core:Refresh()
@@ -668,15 +675,16 @@ function addon:UpdateToonData()
 	end
 	-- update random toon info
 	local t = vars.db.Toons[thisToon]
-        t.LFG1 = GetLFGRandomCooldownExpiration()
-	t.LFG2 = select(7,UnitDebuff("player",GetSpellInfo(71041))) -- GetLFGDeserterExpiration()
+	local now = time()
+        t.LFG1 = GetTimeToTime(GetLFGRandomCooldownExpiration()) or t.LFG1
+	t.LFG2 = GetTimeToTime(select(7,UnitDebuff("player",GetSpellInfo(71041)))) or t.LFG2 -- GetLFGDeserterExpiration()
 	if t.LFG2 then addon:updateSpellTip(71041) end
-	t.pvpdesert = select(7,UnitDebuff("player",GetSpellInfo(26013))) 
+	t.pvpdesert = GetTimeToTime(select(7,UnitDebuff("player",GetSpellInfo(26013)))) or t.pvpdesert
 	if t.pvpdesert then addon:updateSpellTip(26013) end
 	for toon, ti in pairs(vars.db.Toons) do
-		if ti.LFG1 and (ti.LFG1 < GetTime()) then ti.LFG1 = nil end
-		if ti.LFG2 and (ti.LFG2 < GetTime()) then ti.LFG2 = nil end
-		if ti.pvpdesert and (ti.pvpdesert < GetTime()) then ti.pvpdesert = nil end
+		if ti.LFG1 and (ti.LFG1 < now) then ti.LFG1 = nil end
+		if ti.LFG2 and (ti.LFG2 < now) then ti.LFG2 = nil end
+		if ti.pvpdesert and (ti.pvpdesert < now) then ti.pvpdesert = nil end
 	end
 	local IL,ILe = GetAverageItemLevel()
 	if IL and tonumber(IL) and tonumber(IL) > 0 then -- can fail during logout
@@ -747,7 +755,7 @@ local function ShowHistoryTooltip(cell, arg, ...)
         indicatortip:SetHeaderFont(tooltip:GetHeaderFont())
         indicatortip:SetCell(indicatortip:AddHeader(),1,GOLDFONT..cnt.." "..L["Recent Instances"]..": "..FONTEND,"LEFT",2)
         for _,ii in ipairs(tmp) do
-           local tstr = REDFONT..SecondsToTime(ii.last+addon.histReapTime - GetTime(),false,false,1)..FONTEND
+           local tstr = REDFONT..SecondsToTime(ii.last+addon.histReapTime - time(),false,false,1)..FONTEND
            indicatortip:AddLine(tstr, ii.desc)
         end
         indicatortip:AddLine("")
@@ -918,6 +926,7 @@ function core:OnInitialize()
 	db.Toons[thisToon].Show = db.Toons[thisToon].Show or "saved"
 	db.Lockouts = nil -- deprecated
 	db.Tooltip.ReportResets = (db.Tooltip.ReportResets == nil and true) or db.Tooltip.ReportResets
+	db.Tooltip.LimitWarn = (db.Tooltip.LimitWarn == nil and true) or db.Tooltip.LimitWarn
         addon:SetupVersion()
 	RequestRaidInfo() -- get lockout data
 	if LFGDungeonList_Setup then LFGDungeonList_Setup() end -- force LFG frame to populate instance list LFDDungeonList
@@ -1088,7 +1097,7 @@ function addon.HistoryEvent(f, evt, ...)
     addon:HistoryUpdate(true)
   elseif evt == "PLAYER_ENTERING_WORLD" or evt == "ZONE_CHANGED_NEW_AREA" or evt == "RAID_INSTANCE_WELCOME" then
     -- delay updates while settings stabilize
-    addon.delayUpdate = GetTime() + delaytime
+    addon.delayUpdate = time() + delaytime
     core:ScheduleTimer("HistoryUpdate", delaytime+1)
   end
 end
@@ -1141,7 +1150,7 @@ function addon:HistoryUpdate(forcereset, forcemesg)
     vars.db.histGeneration = (vars.db.histGeneration + 1) % 100000
     addon.delayedReset = false
   end
-  local now = GetTime()
+  local now = time()
   if addon.delayUpdate and now < addon.delayUpdate then
     debug("HistoryUpdate delayed")
     return
@@ -1175,7 +1184,8 @@ function addon:HistoryUpdate(forcereset, forcemesg)
   local livecnt = 0
   local oldestkey, oldesttime
   for zk, zi in pairs(vars.db.History) do
-    if now > zi.last + addon.histReapTime then
+    if now > zi.last + addon.histReapTime or
+       zi.last > (now + 3600) then -- temporary bug fix
       debug("Reaping "..zi.desc)
       vars.db.History[zk] = nil
     else 
@@ -1191,7 +1201,7 @@ function addon:HistoryUpdate(forcereset, forcemesg)
   --myprint(vars.db.History)
   -- display update
 
-  if forcemesg or (zoningin and livecnt >= addon.histLimit-1) then 
+  if forcemesg or (vars.db.Tooltip.LimitWarn and zoningin and livecnt >= addon.histLimit-1) then 
       chatMsg(L["Warning: You've entered about %i instances recently and are approaching the %i instance per hour limit for your account. More instances should be available in %s."]:format(livecnt, addon.histLimit, oldistexp))
   end
   if db.Broker.HistoryText then
@@ -1492,8 +1502,8 @@ function core:ShowTooltip(anchorframe)
 			cd2 = cd2 and tooltip:AddLine(YELLOWFONT .. GetSpellInfo(71041) .. FONTEND)		
 		end
 		for toon, t in cpairs(vars.db.Toons) do
-		    local d1 = (t.LFG1 and t.LFG1 - GetTime()) or -1
-		    local d2 = (t.LFG2 and t.LFG2 - GetTime()) or -1
+		    local d1 = (t.LFG1 and t.LFG1 - time()) or -1
+		    local d2 = (t.LFG2 and t.LFG2 - time()) or -1
 		    if d1 > 0 and (d2 < 0 or showall) then
 		        local tstr = SecondsToTime(d1, false, false, 1)
 			tooltip:SetCell(cd1, columns[toon..1], ClassColorise(t.Class,tstr), "CENTER",4)
@@ -1525,8 +1535,8 @@ function core:ShowTooltip(anchorframe)
 			show = tooltip:AddLine(YELLOWFONT .. DESERTER .. FONTEND)		
 		end
 		for toon, t in cpairs(vars.db.Toons) do
-			if t.pvpdesert and GetTime() < t.pvpdesert then
-				local tstr = SecondsToTime(t.pvpdesert - GetTime(), false, false, 1)
+			if t.pvpdesert and time() < t.pvpdesert then
+				local tstr = SecondsToTime(t.pvpdesert - time(), false, false, 1)
 				tooltip:SetCell(show, columns[toon..1], ClassColorise(t.Class,tstr), "CENTER",4)
 		                tooltip:SetCellScript(show, columns[toon..1], "OnEnter", ShowSpellIDTooltip, {toon,26013,tstr})
 		                tooltip:SetCellScript(show, columns[toon..1], "OnLeave", 
