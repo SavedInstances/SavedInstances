@@ -1554,12 +1554,13 @@ function core:ShowTooltip(anchorframe)
    	    for toon, t in cpairs(vars.db.Toons) do
 		-- ci.name, ci.amount, ci.earnedThisWeek, ci.weeklyMax, ci.totalMax
                 local ci = t.currency and t.currency[idx] 
-		if ci and (((ci.earnedThisWeek or 0) > 0 and (ci.weeklyMax or 0) > 0) or ((ci.amount or 0) > 0 and showall)
+		local gotsome = ((ci.earnedThisWeek or 0) > 0 and (ci.weeklyMax or 0) > 0) or
+		                ((ci.amount or 0) > 0 and showall)
 		       -- or ((ci.amount or 0) > 0 and ci.weeklyMax == 0 and t.Level == maxlvl)
-		       ) then
+		if ci and gotsome then
 		  addColumns(columns, toon, tooltip)
 		end
-		if ci and (ci.amount or 0) > 0 and columns[toon..1] then
+		if ci and (gotsome or (ci.amount or 0) > 0) and columns[toon..1] then
 		  local name,_,tex = GetCurrencyInfo(idx)
 		  show = name.." \124TInterface\\Icons\\"..tex..":0\124t"
 		end
