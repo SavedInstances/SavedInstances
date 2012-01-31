@@ -628,7 +628,11 @@ function module:SetupOptions()
 end
 
 function module:ShowConfig()
+   if InterfaceOptionsFrame:IsShown() then
+        InterfaceOptionsFrame:Hide()
+   else
 	InterfaceOptionsFrame_OpenToCategory(lastoptiongroup)
 	InterfaceOptionsFrame_OpenToCategory(firstoptiongroup)
+   end
 end
 
