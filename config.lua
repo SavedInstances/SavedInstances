@@ -41,6 +41,10 @@ function module:OnInitialize()
 	addon:SetupVersion()
 end
 
+BINDING_NAME_SAVEDINSTANCES = L["Show/Hide the SavedInstances tooltip"]
+BINDING_HEADER_SAVEDINSTANCES = "SavedInstances"
+
+
 -- general helper functions
 
 function addon:idtext(instance,diff,info)
@@ -372,7 +376,21 @@ core.Options = {
 						db.MinimapIcon = vars.defaultDB.MinimapIcon
 					end,
 				},
-
+                                ToggleBind = {
+      					desc = L["Bind a key to toggle the SavedInstances tooltip"],
+     	 				type = "keybinding",
+      					name = L["Show/Hide the SavedInstances tooltip"],
+      					cmdHidden = true,
+      					order = -0.5,
+      					set = function(info,val)
+         					local b1, b2 = GetBindingKey("SAVEDINSTANCES")
+         					if b1 then SetBinding(b1) end
+         					if b2 then SetBinding(b2) end
+         					SetBinding(val, "SAVEDINSTANCES")
+         					SaveBindings(GetCurrentBindingSet())
+      					end,
+      					get = function(info) return GetBindingKey("SAVEDINSTANCES") end
+    				},
 			},
 		},
 		Indicators = {
