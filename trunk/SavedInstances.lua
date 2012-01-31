@@ -936,12 +936,17 @@ function core:OnInitialize()
 		type = "launcher",
 		icon = "Interface\\Addons\\SavedInstances\\icon.tga",
 		OnEnter = function(frame)
+		      if not addon:IsDetached() then
 			core:ShowTooltip(frame)
+	              end
 		end,
+		OnLeave = function(frame) end,
 		OnClick = function(frame, button)
-			if button == "LeftButton" then
+			if button == "MiddleButton" then
 				ToggleFriendsFrame(4) -- open Blizzard Raid window
 				RaidInfoFrame:Show()
+			elseif button == "LeftButton" then
+			   addon:ToggleDetached()
 			else
 				config:ShowConfig()
 			end
@@ -1329,6 +1334,51 @@ local function cpairs(t)
   return cnext, t, nil
 end
 
+function addon:IsDetached()
+  return addon.detachframe and addon.detachframe:IsShown()
+end
+function addon:HideDetached()
+  addon.detachframe:Hide()
+end
+function addon:ToggleDetached()
+   if addon:IsDetached() then
+     addon:HideDetached()
+   else
+     addon:ShowDetached()
+   end
+end
+
+function addon:ShowDetached()
+    if not addon.detachframe then
+      local f = CreateFrame("Frame","SavedInstancesDetachHeader",UIParent,"BasicFrameTemplate")
+      f:SetMovable(true)
+      f:SetClampedToScreen(true)
+      f:EnableMouse(true)
+      f:SetUserPlaced(true)
+      f:SetAlpha(0.5)
+      if f:GetNumPoints() == 0 then
+        f:SetPoint("CENTER")
+      end
+      f:SetScript("OnMouseDown", function() f:StartMoving() end)
+      f:SetScript("OnMouseUp", function() f:StopMovingOrSizing() end )
+      f:SetScript("OnHide", function() if tooltip then QTip:Release(tooltip); tooltip = nil end  end )
+      f:SetScript("OnUpdate", function(self)
+		  if not tooltip then return end
+		  self:SetScale(tooltip:GetScale())
+		  local w,h = tooltip:GetSize()
+		  self:SetSize(w,h+20)
+		  tooltip:ClearAllPoints()
+		  tooltip:SetPoint("BOTTOMLEFT",addon.detachframe)
+	          tooltip:Show()
+		end)
+      addon.detachframe = f
+    end
+    addon.detachframe:Show()
+    if tooltip then tooltip:Hide() end
+    core:ShowTooltip(addon.detachframe)
+end
+
+
 local function ShowAll()
   	return (IsAltKeyDown() and true) or false
 end
@@ -1659,10 +1709,14 @@ function core:ShowTooltip(anchorframe)
 	if vars.db.Tooltip.ShowHints then
 		tooltip:AddSeparator(8,0,0,0,0)
 		local hintLine, hintCol
+	     if not addon:IsDetached() then
 		hintLine, hintCol = tooltip:AddLine()
-		tooltip:SetCell(hintLine, hintCol, L["|cffffff00Left-click|r to show Blizzard's Raid Information"], "LEFT", tooltip:GetColumnCount())
+		tooltip:SetCell(hintLine, hintCol, L["|cffffff00Left-click|r to detach tooltip"], "LEFT", tooltip:GetColumnCount())
+		hintLine, hintCol = tooltip:AddLine()
+		tooltip:SetCell(hintLine, hintCol, L["|cffffff00Middle-click|r to show Blizzard's Raid Information"], "LEFT", tooltip:GetColumnCount())
 		hintLine, hintCol = tooltip:AddLine()
 		tooltip:SetCell(hintLine, hintCol, L["|cffffff00Right-click|r to configure SavedInstances"], "LEFT", tooltip:GetColumnCount())
+	     end
 		hintLine, hintCol = tooltip:AddLine()
 		tooltip:SetCell(hintLine, hintCol, L["Hover mouse on indicator for details"], "LEFT", tooltip:GetColumnCount())
 		if not showall then
@@ -1704,9 +1758,16 @@ function core:ShowTooltip(anchorframe)
 		debug("Tooltip cache miss")
 		core:ShowTooltip(anchorframe)
         else -- render it
+	   if addon:IsDetached() then
+	        tooltip.anchorframe = UIParent
+	        tooltip:SmartAnchorTo(UIParent)
+		tooltip:SetAutoHideDelay(nil, UIParent)
+		--tooltip:UpdateScrolling(100000)
+	   else
+	        tooltip:SmartAnchorTo(anchorframe)
 		tooltip:SetAutoHideDelay(0.1, anchorframe)
-		tooltip:SmartAnchorTo(anchorframe)
-		tooltip:Show()
+	        tooltip:Show()
+	   end
         end
 end
 
