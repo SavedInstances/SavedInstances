@@ -271,7 +271,7 @@ function addon:GetNextWeeklyResetTime()
     elseif region == "EU" then
       addon.resetDays["3"] = true -- wednesday
     elseif region == "CN" or region == "KR" or region == "TW" then -- XXX: codes unconfirmed
-      addon.resetDays["3"] = true -- thursday
+      addon.resetDays["4"] = true -- thursday
     else
       addon.resetDays["2"] = true -- tuesday?
     end
