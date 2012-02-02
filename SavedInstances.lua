@@ -1053,7 +1053,9 @@ local function doExplicitReset(instancemsg, failed)
       SendAddonMessage(addonName, "GENERATION_ADVANCE", reportchan)
     end
     if vars.db.Tooltip.ReportResets then
-      SendChatMessage("<"..addonName.."> "..(instancemsg or RESET_INSTANCES), reportchan)
+      local msg = instancemsg or RESET_INSTANCES
+      msg = msg:gsub("\1241.+;.+;","") -- ticket 76, remove |1;; escapes on koKR
+      SendChatMessage("<"..addonName.."> "..msg, reportchan)
     end
   end
 end
