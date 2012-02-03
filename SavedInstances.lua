@@ -1105,8 +1105,9 @@ function addon.HistoryEvent(f, evt, ...)
     addon:HistoryUpdate(true)
   elseif evt == "PLAYER_ENTERING_WORLD" or evt == "ZONE_CHANGED_NEW_AREA" or evt == "RAID_INSTANCE_WELCOME" then
     -- delay updates while settings stabilize
-    addon.delayUpdate = time() + delaytime
-    core:ScheduleTimer("HistoryUpdate", delaytime+1)
+    local waittime = delaytime + math.max(0,10 - GetFramerate())
+    addon.delayUpdate = time() + waittime
+    core:ScheduleTimer("HistoryUpdate", waittime+1)
   end
 end
 
@@ -1354,6 +1355,7 @@ function addon:ShowDetached()
     if not addon.detachframe then
       local f = CreateFrame("Frame","SavedInstancesDetachHeader",UIParent,"BasicFrameTemplate")
       f:SetMovable(true)
+      f:SetFrameStrata("HIGH")
       f:SetClampedToScreen(true)
       f:EnableMouse(true)
       f:SetUserPlaced(true)
