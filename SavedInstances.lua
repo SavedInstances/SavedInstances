@@ -1375,9 +1375,17 @@ function addon:ShowDetached()
 		  tooltip:SetPoint("BOTTOMLEFT",addon.detachframe)
 	          tooltip:Show()
 		end)
+      f:SetScript("OnKeyDown", function(self,key) 
+        if key == "ESCAPE" then 
+	   f:SetPropagateKeyboardInput(false)
+	   f:Hide(); 
+	end 
+      end)
+      f:EnableKeyboard(true)
       addon.detachframe = f
     end
     addon.detachframe:Show()
+    addon.detachframe:SetPropagateKeyboardInput(true)
     if tooltip then tooltip:Hide() end
     core:ShowTooltip(addon.detachframe)
 end
