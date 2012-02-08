@@ -153,6 +153,7 @@ vars.defaultDB = {
 		Details = false,
 		ReverseInstances = false,
 		ShowExpired = false,
+		ShowHoliday = true,
 		ShowCategories = false,
 		CategorySpaces = false,
 		NewFirst = true,
@@ -177,10 +178,11 @@ vars.defaultDB = {
 	Instances = { }, 	-- table key: "Instance name"; value:
 					-- Show: boolean
 					-- Raid: boolean
+					-- Holiday: boolean
 					-- Expansion: integer
 					-- RecLevel: integer
 					-- LFDID: integer
-					-- LFDupdated: integer
+					-- LFDupdated: integer REMOVED
 					-- REMOVED Encounters[integer] = { GUID : integer, Name : string }
 					-- table key: "Toon - Realm"; value:
 						-- table key: "Difficulty"; value:
@@ -386,6 +388,7 @@ end
 function addon:InstanceCategory(instance)
 	if not instance then return nil end
 	local instance = vars.db.Instances[instance]
+	if instance.Holiday then return "H" end
 	return ((instance.Raid and "R") or ((not instance.Raid) and "D")) .. instance.Expansion
 end
 
@@ -617,7 +620,7 @@ function addon:UpdateInstance(id)
   -- name is nil for non-existent ids
   -- maxPlayers == 0 for non-instance zones (WotLK zones all have an entry for some reason)
   -- isHoliday is for single-boss holiday instances that don't generate raid saves
-  if not name or not expansionLevel or not recLevel or not maxPlayers or maxPlayers == 0 or isHoliday then return end
+  if not name or not expansionLevel or not recLevel or not maxPlayers or maxPlayers == 0 then return end
   if name:find(PVP_RATED_BATTLEGROUND) then return end -- ignore 10v10 rated bg
 
   local instance = vars.db.Instances[name]
@@ -630,8 +633,10 @@ function addon:UpdateInstance(id)
   vars.db.Instances[name] = instance
   instance.Show = (instance.Show and addon.showopts[instance.Show]) or "saved"
   instance.Encounters = nil -- deprecated
+  --instance.LFDupdated = currentbuild
+  instance.LFDupdated = nil
   instance.LFDID = id
-  instance.LFDupdated = currentbuild
+  instance.Holiday = isHoliday or nil
   instance.Expansion = expansionLevel
   instance.RecLevel = instance.RecLevel or recLevel
   if recLevel < instance.RecLevel then instance.RecLevel = recLevel end -- favor non-heroic RecLevel
@@ -659,6 +664,17 @@ end
 
 -- run regularly to update lockouts and cached data for this toon
 function addon:UpdateToonData()
+        addon.activeHolidays = addon.activeHolidays or {}
+        wipe(addon.activeHolidays)
+	-- blizz internally conflates all the holiday flags, so we have to detect which is really active
+        for i=1, GetNumRandomDungeons() do 
+	   local id, name = GetLFGRandomDungeonInfo(i);
+	   local d = vars.db.Instances[name]
+	   if d and d.Holiday then
+	     addon.activeHolidays[name] = true
+	   end
+	end
+
 	for instance, i in pairs(vars.db.Instances) do
 		for toon, t in pairs(vars.db.Toons) do
 			if i[toon] then
@@ -672,6 +688,19 @@ function addon:UpdateToonData()
 					end
 				end
 			end
+		end
+		if i.Holiday and addon.activeHolidays[instance] then
+		  local id = i.LFDID
+		  GetLFGDungeonInfo(id) -- forces update
+		  local donetoday = GetLFGDungeonRewards(id)
+		  if donetoday then
+		    i[thisToon] = i[thisToon] or {}
+		    i[thisToon][1] = i[thisToon][1] or {}
+		    local d = i[thisToon][1]
+		    d.ID = -1
+		    d.Locked = false
+		    d.Expires = GetQuestResetTime() + time()
+		  end
 		end
 	end
 	-- update random toon info
@@ -928,6 +957,7 @@ function core:OnInitialize()
 	db.Lockouts = nil -- deprecated
 	db.Tooltip.ReportResets = (db.Tooltip.ReportResets == nil and true) or db.Tooltip.ReportResets
 	db.Tooltip.LimitWarn = (db.Tooltip.LimitWarn == nil and true) or db.Tooltip.LimitWarn
+	db.Tooltip.ShowHoliday = (db.Tooltip.ShowHoliday == nil and true) or db.Tooltip.ShowHoliday
         addon:SetupVersion()
 	RequestRaidInfo() -- get lockout data
 	if LFGDungeonList_Setup then LFGDungeonList_Setup() end -- force LFG frame to populate instance list LFDDungeonList
@@ -1546,6 +1576,29 @@ function core:ShowTooltip(anchorframe)
 				end
 			end
 	end
+
+	if vars.db.Tooltip.ShowHoliday or showall then
+	  local holidayinst = localarr("holidayinst")
+	  for instance, info in pairs(vars.db.Instances) do
+	    if info.Holiday then
+		for toon, t in cpairs(vars.db.Toons) do
+		  local d = info[toon] and info[toon][1]
+		  if d then
+		    addColumns(columns, toon, tooltip)
+		    if not holidayinst[instance] then
+		      if not firstcategory and vars.db.Tooltip.CategorySpaces then
+		         tooltip:AddSeparator(6,0,0,0,0)
+		      end
+		      holidayinst[instance] = tooltip:AddLine(YELLOWFONT .. instance .. FONTEND)
+		    end
+		    local tstr = SecondsToTime(d.Expires - time(), false, false, 1)
+     		    tooltip:SetCell(holidayinst[instance], columns[toon..1], ClassColorise(t.Class,tstr), "CENTER",4)
+		  end
+		end
+	    end
+	  end
+	end
+
 	-- random dungeon
 	if vars.db.Tooltip.TrackLFG or showall then
 		local cd1,cd2 = false,false

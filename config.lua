@@ -262,6 +262,12 @@ core.Options = {
 					desc = L["Show expired instance lockouts"],
 					order = 23.5,
 				},
+				ShowHoliday = {
+					type = "toggle",
+					name = L["Show Holiday"],
+					desc = L["Show holiday boss rewards"],
+					order = 23.75,
+				},
 				TrackLFG = {
 					type = "toggle",
 					order = 24,
