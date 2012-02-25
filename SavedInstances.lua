@@ -1163,6 +1163,9 @@ function addon:histZoneKey()
         locked = true
     end
   end
+  if diff == 1 and maxPlayers == 5 then -- never locked to 5-man regs
+    locked = false
+  end
   local toonstr = thisToon
   if not db.Tooltip.ShowServer then
     toonstr = strsplit(" - ", toonstr)
