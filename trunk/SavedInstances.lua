@@ -956,6 +956,7 @@ function core:OnInitialize()
 	db.Toons[thisToon].Level = UnitLevel("player")
 	db.Toons[thisToon].Show = db.Toons[thisToon].Show or "saved"
 	db.Lockouts = nil -- deprecated
+	db.History = db.History or {}
 	db.Tooltip.ReportResets = (db.Tooltip.ReportResets == nil and true) or db.Tooltip.ReportResets
 	db.Tooltip.LimitWarn = (db.Tooltip.LimitWarn == nil and true) or db.Tooltip.LimitWarn
 	db.Tooltip.ShowHoliday = (db.Tooltip.ShowHoliday == nil and true) or db.Tooltip.ShowHoliday
