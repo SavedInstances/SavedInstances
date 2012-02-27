@@ -312,6 +312,7 @@ end
 addon.transInstance = {
   -- lockout hyperlink id = LFDID
   [543] = 188, 	-- Hellfire Citadel: Ramparts
+  [540] = 189, 	-- Hellfire Citadel: Shattered Halls : deDE
   [534] = 195, 	-- The Battle for Mount Hyjal
   [509] = 160, 	-- Ruins of Ahn'Qiraj
   [557] = 179,  -- Auchindoun: Mana-Tombs : ticket 72 zhTW
