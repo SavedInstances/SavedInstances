@@ -204,6 +204,31 @@ vars.defaultDB = {
 	--]]
 }
 
+-- skinning support
+-- skinning addons should hook this function, eg:
+--   hooksecurefunc(SavedInstances,"SkinFrame",function(self,frame,name) frame:SetWhatever() end)
+function addon:SkinFrame(frame,name)
+  -- default behavior (ticket 81)
+  if IsAddOnLoaded("ElvUI") or IsAddOnLoaded("Tukui") then
+    if frame.StripTextures then
+      frame:StripTextures()
+    end
+    if frame.SetTemplate then
+      frame:SetTemplate("Transparent")
+    end
+    local close = _G[name.."CloseButton"]
+    if close and close.SetAlpha then
+      if ElvUI then
+        ElvUI[1]:GetModule('Skins'):HandleCloseButton(close)
+      end
+      if Tukui and Tukui[1] and Tukui[1].SkinCloseButton then
+        Tukui[1].SkinCloseButton(close)
+      end
+      close:SetAlpha(1)
+    end
+  end
+end
+
 -- general helper functions below
 
 local function ColorCodeOpen(color)
@@ -769,6 +794,7 @@ local function ShowToonTooltip(cell, arg, ...)
 	indicatortip:AddLine((STAT_AVERAGE_ITEM_LEVEL..": %d "):format(il)..STAT_AVERAGE_ITEM_LEVEL_EQUIPPED:format(ile))
 	indicatortip:SetAutoHideDelay(0.1, tooltip)
 	indicatortip:SmartAnchorTo(tooltip)
+	addon:SkinFrame(indicatortip,"SavedInstancesIndicatorTooltip")
 	indicatortip:Show()
 end
 
@@ -795,6 +821,7 @@ local function ShowHistoryTooltip(cell, arg, ...)
                          addon.histLimit),"LEFT",2,nil,nil,nil,250)
         indicatortip:SetAutoHideDelay(0.1, tooltip)
         indicatortip:SmartAnchorTo(tooltip)
+	addon:SkinFrame(indicatortip,"SavedInstancesIndicatorTooltip")
         indicatortip:Show()
 end
 
@@ -848,6 +875,7 @@ local function ShowIndicatorTooltip(cell, arg, ...)
             end
           end
         end
+	addon:SkinFrame(indicatortip,"SavedInstancesIndicatorTooltip")
 	indicatortip:Show()
 end
 
@@ -893,6 +921,7 @@ local function ShowSpellIDTooltip(cell, arg, ...)
 
   indicatortip:SetAutoHideDelay(0.1, tooltip)
   indicatortip:SmartAnchorTo(tooltip)
+  addon:SkinFrame(indicatortip,"SavedInstancesIndicatorTooltip")
   indicatortip:Show()
 end
 
@@ -932,6 +961,7 @@ local function ShowCurrencyTooltip(cell, arg, ...)
 
   indicatortip:SetAutoHideDelay(0.1, tooltip)
   indicatortip:SmartAnchorTo(tooltip)
+  addon:SkinFrame(indicatortip,"SavedInstancesIndicatorTooltip")
   indicatortip:Show()
 end
 
@@ -1419,10 +1449,12 @@ function addon:ShowDetached()
       f:EnableKeyboard(true)
       addon.detachframe = f
     end
-    addon.detachframe:Show()
-    addon.detachframe:SetPropagateKeyboardInput(true)
+    local f = addon.detachframe
+    f:Show()
+    addon:SkinFrame(f,f:GetName())
+    f:SetPropagateKeyboardInput(true)
     if tooltip then tooltip:Hide() end
-    core:ShowTooltip(addon.detachframe)
+    core:ShowTooltip(f)
 end
 
 
@@ -1828,6 +1860,7 @@ function core:ShowTooltip(anchorframe)
 		debug("Tooltip cache miss")
 		core:ShowTooltip(anchorframe)
         else -- render it
+	   addon:SkinFrame(tooltip,"SavedInstancesTooltip")
 	   if addon:IsDetached() then
 	        tooltip.anchorframe = UIParent
 	        tooltip:SmartAnchorTo(UIParent)
