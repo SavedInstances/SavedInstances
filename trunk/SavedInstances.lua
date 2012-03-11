@@ -119,6 +119,14 @@ vars.defaultDB = {
 				-- LFG1: expiry (random dungeon)
 				-- LFG2: expiry (deserter)
 				-- WeeklyResetTime: expiry
+				-- DailyResetTime: expiry
+				-- DailyCount: integer
+				-- Quests:  key: QuestID  value:
+				   -- Title: string
+				   -- Link: hyperlink 
+                                   -- Zone: string
+				   -- isDaily: boolean
+
 	Indicators = {
 		D1Indicator = "BLANK", -- indicator: ICON_*, BLANK
 		D1Text = "KILLED/TOTAL",
@@ -154,6 +162,8 @@ vars.defaultDB = {
 		ReverseInstances = false,
 		ShowExpired = false,
 		ShowHoliday = true,
+		TrackDailyQuests = true,
+		TrackWeeklyQuests = true,
 		ShowCategories = false,
 		CategorySpaces = false,
 		NewFirst = true,
@@ -288,6 +298,14 @@ function addon:GetRegion()
   return addon.region
 end
 
+function addon:GetNextDailyResetTime()
+  local resettime = GetQuestResetTime()
+  if not resettime or resettime <= 0 then -- ticket 43: can fail during startup
+    return nil
+  end
+  return time() + resettime
+end
+
 function addon:GetNextWeeklyResetTime()
   if not addon.resetDays then
     local region = addon:GetRegion()
@@ -304,11 +322,8 @@ function addon:GetNextWeeklyResetTime()
     end
   end
   local offset = addon:GetServerOffset() * 3600
-  local resettime = GetQuestResetTime()
-  if not resettime or resettime <= 0 then -- ticket 43: can fail during startup
-    return nil
-  end
-  local nightlyReset = time() + resettime
+  local nightlyReset = addon:GetNextDailyResetTime()
+  if not nightlyReset then return nil end
   --while date("%A",nightlyReset+offset) ~= WEEKDAY_TUESDAY do 
   while not addon.resetDays[date("%w",nightlyReset+offset)] do
     nightlyReset = nightlyReset + 24 * 3600
@@ -719,13 +734,14 @@ function addon:UpdateToonData()
 		  local id = i.LFDID
 		  GetLFGDungeonInfo(id) -- forces update
 		  local donetoday = GetLFGDungeonRewards(id)
-		  if donetoday then
+		  local expires = addon:GetNextDailyResetTime()
+		  if donetoday and expires then
 		    i[thisToon] = i[thisToon] or {}
 		    i[thisToon][1] = i[thisToon][1] or {}
 		    local d = i[thisToon][1]
 		    d.ID = -1
 		    d.Locked = false
-		    d.Expires = GetQuestResetTime() + time()
+		    d.Expires = expires
 		  end
 		end
 	end
@@ -741,10 +757,26 @@ function addon:UpdateToonData()
 		if ti.LFG1 and (ti.LFG1 < now) then ti.LFG1 = nil end
 		if ti.LFG2 and (ti.LFG2 < now) then ti.LFG2 = nil end
 		if ti.pvpdesert and (ti.pvpdesert < now) then ti.pvpdesert = nil end
+	        ti.Quests = ti.Quests or {}
 	end
 	local IL,ILe = GetAverageItemLevel()
 	if IL and tonumber(IL) and tonumber(IL) > 0 then -- can fail during logout
 	  t.IL, t.ILe = tonumber(IL), tonumber(ILe)
+	end
+	-- Daily Reset
+	local nextreset = addon:GetNextDailyResetTime()
+	if nextreset and nextreset > time() then
+	 for toon, ti in pairs(vars.db.Toons) do
+	  if not ti.DailyResetTime or (ti.DailyResetTime < time()) then 
+	    ti.DailyCount = 0
+	    for id,qi in pairs(ti.Quests) do
+	      if qi.isDaily then
+	        ti.Quests[id] = nil
+	      end
+	    end
+          end 
+	  ti.DailyResetTime = nextreset
+	 end
 	end
 	-- Weekly Reset
 	local nextreset = addon:GetNextWeeklyResetTime()
@@ -756,10 +788,12 @@ function addon:UpdateToonData()
 	      ti.currency[idx] = ti.currency[idx] or {}
 	      ti.currency[idx].earnedThisWeek = 0
 	    end
+	    wipe(ti.Quests)
           end 
 	  ti.WeeklyResetTime = nextreset
 	 end
 	end
+	t.DailyCount = GetDailyQuestsCompleted() or 0
 	t.currency = t.currency or {}
 	for _,idx in pairs(currency) do
 	  local ci = t.currency[idx] or {}
@@ -772,6 +806,29 @@ function addon:UpdateToonData()
 	  t.currency[idx] = ci
 	end
 end
+
+local function SI_GetQuestReward()
+  local t = vars and vars.db.Toons[thisToon]
+  if not t then return end
+  local id = GetQuestID() or -1
+  local title = GetTitleText() or "<unknown>"
+  local link = nil
+  local isWeekly = QuestIsWeekly()
+  local isDaily = QuestIsDaily()
+  for index = 1, GetNumQuestLogEntries() do
+     local questLogTitleText, level, questTag, suggestedGroup, isHeader, 
+           isCollapsed, isComplete, isDaily, questID, startEvent = GetQuestLogTitle(index)
+     if questID == id then
+        link = GetQuestLink(index)
+        break
+     end
+  end
+  debug("Quest Complete: "..(link or title).." "..id.." : "..title.." "..(isWeekly and "(Weekly)" or isDaily and "(Daily)" or "(Regular)"))
+  if not isWeekly and not isDaily then return end
+  t.Quests = t.Quests or {}
+  t.Quests[id] = { ["Title"] = title, ["Link"] = link, ["isDaily"] = isDaily, ["Zone"] = GetRealZoneText() }
+end
+hooksecurefunc("GetQuestReward", SI_GetQuestReward)
 
 local function coloredText(fontstring)
   if not fontstring then return nil end
@@ -792,6 +849,33 @@ local function ShowToonTooltip(cell, arg, ...)
 	indicatortip:AddLine(LEVEL.." "..vars.db.Toons[toon].Level.." "..(vars.db.Toons[toon].LClass or ""))
         local il,ile = vars.db.Toons[toon].IL or 0, vars.db.Toons[toon].ILe or 0
 	indicatortip:AddLine((STAT_AVERAGE_ITEM_LEVEL..": %d "):format(il)..STAT_AVERAGE_ITEM_LEVEL_EQUIPPED:format(ile))
+	indicatortip:SetAutoHideDelay(0.1, tooltip)
+	indicatortip:SmartAnchorTo(tooltip)
+	addon:SkinFrame(indicatortip,"SavedInstancesIndicatorTooltip")
+	indicatortip:Show()
+end
+
+local function ShowQuestTooltip(cell, arg, ...)
+	local toon,qstr,isDaily = unpack(arg)
+	if not toon then return end
+	indicatortip = QTip:Acquire("SavedInstancesIndicatorTooltip", 2, "LEFT", "RIGHT")
+	indicatortip:Clear()
+	indicatortip:SetHeaderFont(tooltip:GetHeaderFont())
+	indicatortip:AddHeader(ClassColorise(vars.db.Toons[toon].Class, toon), qstr)
+        local ql = {}
+        for id,qi in pairs(vars.db.Toons[toon].Quests) do
+          if (not isDaily) == (not qi.isDaily) then
+	     table.insert(ql,(qi.Zone or "").." # "..id)
+          end
+        end
+        table.sort(ql)
+        for _,e in ipairs(ql) do
+          local id = tonumber(e:match("# (%d+)"))
+          local qi = id and vars.db.Toons[toon].Quests[id]
+          local line = indicatortip:AddLine()
+	  indicatortip:SetCell(line,1,(qi.Zone or ""),"LEFT")
+          indicatortip:SetCell(line,2,(qi.Link or qi.Title),"RIGHT")
+        end
 	indicatortip:SetAutoHideDelay(0.1, tooltip)
 	indicatortip:SmartAnchorTo(tooltip)
 	addon:SkinFrame(indicatortip,"SavedInstancesIndicatorTooltip")
@@ -990,6 +1074,8 @@ function core:OnInitialize()
 	db.Tooltip.ReportResets = (db.Tooltip.ReportResets == nil and true) or db.Tooltip.ReportResets
 	db.Tooltip.LimitWarn = (db.Tooltip.LimitWarn == nil and true) or db.Tooltip.LimitWarn
 	db.Tooltip.ShowHoliday = (db.Tooltip.ShowHoliday == nil and true) or db.Tooltip.ShowHoliday
+	db.Tooltip.TrackDailyQuests = (db.Tooltip.TrackDailyQuests == nil and true) or db.Tooltip.TrackDailyQuests
+	db.Tooltip.TrackWeeklyQuests = (db.Tooltip.TrackWeeklyQuests == nil and true) or db.Tooltip.TrackWeeklyQuests
         addon:SetupVersion()
 	RequestRaidInfo() -- get lockout data
 	if LFGDungeonList_Setup then LFGDungeonList_Setup() end -- force LFG frame to populate instance list LFDDungeonList
@@ -1697,6 +1783,52 @@ function core:ShowTooltip(anchorframe)
 			end
 		end
 	end
+
+        do
+                local weeklycnt = localarr("weeklycnt")
+                local showd, showw 
+                for toon, t in cpairs(vars.db.Toons) do
+			weeklycnt[toon] = 0
+			for _,qi in pairs(t.Quests) do
+				if not qi.isDaily then
+					weeklycnt[toon] = weeklycnt[toon] + 1
+				end
+                        end
+                        if (t.DailyCount > 0 and vars.db.Tooltip.TrackDailyQuests) or showall then
+                                showd = true
+                                addColumns(columns, toon, tooltip)
+                        end
+                        if (weeklycnt[toon] > 0 and vars.db.Tooltip.TrackWeeklyQuests) or showall then
+                                showw = true
+                                addColumns(columns, toon, tooltip)
+                        end
+                end
+                if not firstcategory and vars.db.Tooltip.CategorySpaces and (showd or showw) then
+                        tooltip:AddSeparator(6,0,0,0,0)
+                end
+                if showd then
+                        showd = tooltip:AddLine(YELLOWFONT .. L["Daily Quests"] .. FONTEND)
+                end
+                if showw then
+                        showw = tooltip:AddLine(YELLOWFONT .. L["Weekly Quests"] .. FONTEND)
+                end
+                for toon, t in cpairs(vars.db.Toons) do
+                        if showd and columns[toon..1] and t.DailyCount > 0 then
+				local qstr = t.DailyCount.."/"..GetMaxDailyQuests()
+                                tooltip:SetCell(showd, columns[toon..1], ClassColorise(t.Class,qstr), "CENTER",4)
+                                tooltip:SetCellScript(showd, columns[toon..1], "OnEnter", ShowQuestTooltip, {toon,qstr.." "..L["Daily Quests"],true})
+                                tooltip:SetCellScript(showd, columns[toon..1], "OnLeave",
+                                                             function() indicatortip:Hide(); GameTooltip:Hide() end)
+                        end
+                        if showw and columns[toon..1] and weeklycnt[toon] > 0 then
+				local qstr = weeklycnt[toon]
+                                tooltip:SetCell(showw, columns[toon..1], ClassColorise(t.Class,qstr), "CENTER",4)
+                                tooltip:SetCellScript(showw, columns[toon..1], "OnEnter", ShowQuestTooltip, {toon,qstr.." "..L["Weekly Quests"],false})
+                                tooltip:SetCellScript(showw, columns[toon..1], "OnLeave",
+                                                             function() indicatortip:Hide(); GameTooltip:Hide() end)
+                        end
+                end
+        end
 
 	local firstcurrency = true
         for _,idx in ipairs(currency) do
