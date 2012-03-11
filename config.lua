@@ -268,16 +268,31 @@ core.Options = {
 					desc = L["Show holiday boss rewards"],
 					order = 23.75,
 				},
+				MiscHeader = {
+					order = 30, 
+					type = "header",
+					name = L["Miscellaneous"],
+				},
+				TrackDailyQuests = {
+					type = "toggle",
+					order = 33,
+					name = L["Track Daily Quests"],
+				},
+				TrackWeeklyQuests = {
+					type = "toggle",
+					order = 34,
+					name = L["Track Weekly Quests"],
+				},
 				TrackLFG = {
 					type = "toggle",
-					order = 24,
+					order = 34,
 					width = "double",
 					name = L["Track LFG dungeon cooldown"],
 					desc = L["Show cooldown for characters to use LFG dungeon system"],
 				},
 				TrackDeserter = {
 					type = "toggle",
-					order = 25,
+					order = 35,
 					width = "double",
 					name = L["Track Battleground Deserter cooldown"],
 					desc = L["Show cooldown for characters to use battleground system"],
