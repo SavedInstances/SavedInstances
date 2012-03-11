@@ -793,7 +793,10 @@ function addon:UpdateToonData()
 	  ti.WeeklyResetTime = nextreset
 	 end
 	end
-	t.DailyCount = GetDailyQuestsCompleted() or 0
+	local dc = GetDailyQuestsCompleted()
+	if dc > 0 then -- zero during logout
+	  t.DailyCount = dc
+	end
 	t.currency = t.currency or {}
 	for _,idx in pairs(currency) do
 	  local ci = t.currency[idx] or {}
