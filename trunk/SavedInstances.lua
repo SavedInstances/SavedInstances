@@ -1509,7 +1509,7 @@ function addon:ShowDetached()
     if not addon.detachframe then
       local f = CreateFrame("Frame","SavedInstancesDetachHeader",UIParent,"BasicFrameTemplate")
       f:SetMovable(true)
-      f:SetFrameStrata("HIGH")
+      f:SetFrameStrata("TOOLTIP")
       f:SetClampedToScreen(true)
       f:EnableMouse(true)
       f:SetUserPlaced(true)
@@ -1527,6 +1527,7 @@ function addon:ShowDetached()
 		  self:SetSize(w,h+20)
 		  tooltip:ClearAllPoints()
 		  tooltip:SetPoint("BOTTOMLEFT",addon.detachframe)
+		  tooltip:SetFrameLevel(addon.detachframe:GetFrameLevel()+1)
 	          tooltip:Show()
 		end)
       f:SetScript("OnKeyDown", function(self,key) 
@@ -1797,11 +1798,11 @@ function core:ShowTooltip(anchorframe)
 					weeklycnt[toon] = weeklycnt[toon] + 1
 				end
                         end
-                        if (t.DailyCount > 0 and vars.db.Tooltip.TrackDailyQuests) or showall then
+                        if t.DailyCount > 0 and (vars.db.Tooltip.TrackDailyQuests or showall) then
                                 showd = true
                                 addColumns(columns, toon, tooltip)
                         end
-                        if (weeklycnt[toon] > 0 and vars.db.Tooltip.TrackWeeklyQuests) or showall then
+                        if weeklycnt[toon] > 0 and (vars.db.Tooltip.TrackWeeklyQuests or showall) then
                                 showw = true
                                 addColumns(columns, toon, tooltip)
                         end
