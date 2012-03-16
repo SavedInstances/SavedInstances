@@ -121,6 +121,17 @@ vars.defaultDB = {
 				-- WeeklyResetTime: expiry
 				-- DailyResetTime: expiry
 				-- DailyCount: integer
+				-- PlayedLevel: integer
+				-- PlayedTotal: integer
+				-- Money: integer
+
+				-- currency: key: currencyID  value:
+				    -- amount: integer
+				    -- earnedThisWeek: integer 
+				    -- weeklyMax: integer
+				    -- totalMax: integer
+				    -- season: integer
+
 				-- Quests:  key: QuestID  value:
 				   -- Title: string
 				   -- Link: hyperlink 
@@ -748,6 +759,18 @@ function addon:UpdateToonData()
 	-- update random toon info
 	local t = vars.db.Toons[thisToon]
 	local now = time()
+	if addon.logout then
+	  if addon.PlayedTime then
+	    local more = now - addon.PlayedTime
+	    t.PlayedTotal = t.PlayedTotal + more
+	    t.PlayedLevel = t.PlayedLevel + more
+	    addon.PlayedTime = now
+	  end
+	elseif not addon.playedpending then
+	  addon.playedpending = true
+	  ChatFrame1:UnregisterEvent("TIME_PLAYED_MSG") -- prevent spam
+	  RequestTimePlayed()
+	end
         t.LFG1 = GetTimeToTime(GetLFGRandomCooldownExpiration()) or t.LFG1
 	t.LFG2 = GetTimeToTime(select(7,UnitDebuff("player",GetSpellInfo(71041)))) or t.LFG2 -- GetLFGDeserterExpiration()
 	if t.LFG2 then addon:updateSpellTip(71041) end
@@ -808,6 +831,9 @@ function addon:UpdateToonData()
           ci.season = addon:GetSeasonCurrency(idx)
 	  t.currency[idx] = ci
 	end
+        if not addon.logout then
+	  t.Money = GetMoney()
+	end
 end
 
 local function SI_GetQuestReward()
@@ -845,13 +871,23 @@ end
 local function ShowToonTooltip(cell, arg, ...)
 	local toon = arg[1]
 	if not toon then return end
-	indicatortip = QTip:Acquire("SavedInstancesIndicatorTooltip", 1, "LEFT")
+	local t = vars.db.Toons[toon]
+	if not t then return end
+	indicatortip = QTip:Acquire("SavedInstancesIndicatorTooltip", 2, "LEFT","RIGHT")
 	indicatortip:Clear()
 	indicatortip:SetHeaderFont(tooltip:GetHeaderFont())
-	indicatortip:AddHeader(ClassColorise(vars.db.Toons[toon].Class, toon))
-	indicatortip:AddLine(LEVEL.." "..vars.db.Toons[toon].Level.." "..(vars.db.Toons[toon].LClass or ""))
-        local il,ile = vars.db.Toons[toon].IL or 0, vars.db.Toons[toon].ILe or 0
-	indicatortip:AddLine((STAT_AVERAGE_ITEM_LEVEL..": %d "):format(il)..STAT_AVERAGE_ITEM_LEVEL_EQUIPPED:format(ile))
+	indicatortip:SetCell(indicatortip:AddHeader(),1,ClassColorise(t.Class, toon))
+	indicatortip:SetCell(1,2,ClassColorise(t.Class, LEVEL.." "..t.Level.." "..(t.LClass or "")))
+	indicatortip:AddLine(STAT_AVERAGE_ITEM_LEVEL,("%d "):format(t.IL or 0)..STAT_AVERAGE_ITEM_LEVEL_EQUIPPED:format(t.ILe or 0))
+	if t.Money then
+	  indicatortip:AddLine(MONEY,GetMoneyString(t.Money))
+	end
+	if t.PlayedTotal and t.PlayedLevel and ChatFrame_TimeBreakDown then
+	  --indicatortip:AddLine((TIME_PLAYED_TOTAL):format((TIME_DAYHOURMINUTESECOND):format(ChatFrame_TimeBreakDown(t.PlayedTotal))))
+	  --indicatortip:AddLine((TIME_PLAYED_LEVEL):format((TIME_DAYHOURMINUTESECOND):format(ChatFrame_TimeBreakDown(t.PlayedLevel))))
+	  indicatortip:AddLine((TIME_PLAYED_TOTAL):format(""),SecondsToTime(t.PlayedTotal))
+	  indicatortip:AddLine((TIME_PLAYED_LEVEL):format(""),SecondsToTime(t.PlayedLevel))
+	end
 	indicatortip:SetAutoHideDelay(0.1, tooltip)
 	indicatortip:SmartAnchorTo(tooltip)
 	addon:SkinFrame(indicatortip,"SavedInstancesIndicatorTooltip")
@@ -1138,8 +1174,18 @@ function core:OnEnable()
 	self:RegisterEvent("CHAT_MSG_LOOT", "CheckSystemMessage")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", RequestRaidInfo)
 	self:RegisterEvent("LFG_LOCK_INFO_RECEIVED", RequestRaidInfo)
-	self:RegisterEvent("PLAYER_LOGOUT", function() addon:UpdateToonData() end) -- update currency spent
+	self:RegisterEvent("PLAYER_LOGOUT", function() addon.logout = true ; addon:UpdateToonData() end) -- update currency spent
 	self:RegisterEvent("LFG_COMPLETION_REWARD") -- for random daily dungeon tracking
+	self:RegisterEvent("TIME_PLAYED_MSG", function(_,total,level) 
+	                      local t = thisToon and vars and vars.db and vars.db.Toons[thisToon]
+	                      if total > 0 and t then
+			        t.PlayedTotal = total
+			        t.PlayedLevel = level
+			      end
+			      addon.PlayedTime = time()
+			      addon.playedpending = false
+			      ChatFrame1:RegisterEvent("TIME_PLAYED_MSG") -- Restore default 
+	                   end)
 
         if not addon.resetDetect then
           addon.resetDetect = CreateFrame("Button", "SavedInstancesResetDetectHiddenFrame", UIParent)
