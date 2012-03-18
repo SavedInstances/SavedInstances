@@ -759,16 +759,23 @@ function addon:UpdateToonData()
 	-- update random toon info
 	local t = vars.db.Toons[thisToon]
 	local now = time()
-	if addon.logout then
+	if addon.logout or addon.PlayedTime or addon.playedpending then
 	  if addon.PlayedTime then
 	    local more = now - addon.PlayedTime
 	    t.PlayedTotal = t.PlayedTotal + more
 	    t.PlayedLevel = t.PlayedLevel + more
 	    addon.PlayedTime = now
 	  end
-	elseif not addon.playedpending then
+	else
 	  addon.playedpending = true
-	  ChatFrame1:UnregisterEvent("TIME_PLAYED_MSG") -- prevent spam
+	  addon.playedreg = {}
+	  for i=1,10 do
+	    local c = _G["ChatFrame"..i]
+	    if c and c:IsEventRegistered("TIME_PLAYED_MSG") then
+	      c:UnregisterEvent("TIME_PLAYED_MSG") -- prevent spam
+	      addon.playedreg[c] = true
+	    end
+	  end
 	  RequestTimePlayed()
 	end
         t.LFG1 = GetTimeToTime(GetLFGRandomCooldownExpiration()) or t.LFG1
@@ -1183,8 +1190,12 @@ function core:OnEnable()
 			        t.PlayedLevel = level
 			      end
 			      addon.PlayedTime = time()
-			      addon.playedpending = false
-			      ChatFrame1:RegisterEvent("TIME_PLAYED_MSG") -- Restore default 
+			      if addon.playedpending then
+			        for c,_ in pairs(addon.playedreg) do
+				  c:RegisterEvent("TIME_PLAYED_MSG") -- Restore default 
+			        end
+			        addon.playedpending = false
+			      end
 	                   end)
 
         if not addon.resetDetect then
