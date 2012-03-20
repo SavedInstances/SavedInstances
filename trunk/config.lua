@@ -189,10 +189,26 @@ core.Options = {
 					name = L["Warn about instance limit"],
 					order = 4.7,
 				},
+
+				CharactersHeader = {
+					order = 4.9, 
+					type = "header",
+					name = L["Characters"],
+				},
 				ShowServer = {
 					type = "toggle",
 					name = L["Show server name"],
 					order = 5,
+				},
+				ServerSort = {
+					type = "toggle",
+					name = L["Sort by server"],
+					order = 6,
+				},
+				SelfFirst = {
+					type = "toggle",
+					name = L["Show self first"],
+					order = 7,
 				},
 				
 				CategoriesHeader = {

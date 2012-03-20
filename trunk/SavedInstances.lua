@@ -187,6 +187,8 @@ vars.defaultDB = {
 		ReportResets = true,
 		LimitWarn = true,
 		ShowServer = false,
+		ServerSort = true,
+		SelfFirst = true,
 		TrackLFG = true,
 		TrackDeserter = true,
 		Currency395 = true, -- Justice Points 
@@ -1122,6 +1124,8 @@ function core:OnInitialize()
 	db.Tooltip.ShowHoliday = (db.Tooltip.ShowHoliday == nil and true) or db.Tooltip.ShowHoliday
 	db.Tooltip.TrackDailyQuests = (db.Tooltip.TrackDailyQuests == nil and true) or db.Tooltip.TrackDailyQuests
 	db.Tooltip.TrackWeeklyQuests = (db.Tooltip.TrackWeeklyQuests == nil and true) or db.Tooltip.TrackWeeklyQuests
+	db.Tooltip.ServerSort = (db.Tooltip.ServerSort == nil and true) or db.Tooltip.ServerSort
+	db.Tooltip.SelfFirst = (db.Tooltip.SelfFirst == nil and true) or db.Tooltip.SelfFirst
         addon:SetupVersion()
 	RequestRaidInfo() -- get lockout data
 	if LFGDungeonList_Setup then LFGDungeonList_Setup() end -- force LFG frame to populate instance list LFDDungeonList
@@ -1536,6 +1540,19 @@ local function cnext(t,i)
       return n, t[n]
    end
 end
+local function cpairs_sort(a,b)
+  local an, _,_, as = strsplit(" - ",a)
+  local bn, _,_, bs = strsplit(" - ",b)
+  if db.Tooltip.SelfFirst and b == thisToon then
+    return true
+  elseif db.Tooltip.SelfFirst and a == thisToon then
+    return false
+  elseif db.Tooltip.ServerSort and as ~= bs then
+    return as > bs
+  else
+    return a > b
+  end
+end
 local function cpairs(t)
   wipe(cnext_sorted_names)
   for n,_ in pairs(t) do
@@ -1543,7 +1560,7 @@ local function cpairs(t)
       table.insert(cnext_sorted_names, n)
     end
   end
-  table.sort(cnext_sorted_names, function (a,b) return b == thisToon or (a ~= thisToon and a > b) end)
+  table.sort(cnext_sorted_names, cpairs_sort)
   --myprint(cnext_sorted_names)
   return cnext, t, nil
 end
