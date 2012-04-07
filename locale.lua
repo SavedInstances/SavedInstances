@@ -3,14 +3,13 @@
 -- To help with missing translations please go here:
 -- http://www.wowace.com/addons/saved_instances/localization/
 
+local addonName, vars = ...
 local Ld, La = {}, {}
 local locale = GAME_LOCALE or GetLocale()
 
-function SavedInstances_locale()
-  return setmetatable({},{
+vars.L = setmetatable({},{
     __index = function(t, s) return La[s] or Ld[s] or rawget(t,s) or s end
-  })
-end
+})
 
 --@localization(locale="enUS", format="lua_additive_table", table-name="Ld")@
 
@@ -32,4 +31,6 @@ elseif locale == "zhTW" then do end
 --@localization(locale="zhTW", format="lua_additive_table", table-name="La")@
 elseif locale == "ptBR" then do end
 --@localization(locale="ptBR", format="lua_additive_table", table-name="La")@
+elseif locale == "itIT" then do end
+--@localization(locale="itIT", format="lua_additive_table", table-name="La")@
 end
