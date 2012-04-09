@@ -281,7 +281,7 @@ function addon:GetServerOffset()
 	local localHour, localMinute = tonumber(date("%H")), tonumber(date("%M"))
 	local server = serverHour + serverMinute / 60
 	local localT = localHour + localMinute / 60
-	offset = floor((server - localT) * 2 + 0.5) / 2
+	local offset = floor((server - localT) * 2 + 0.5) / 2
 	if raw then return offset end
 	if offset >= 12 then
 		offset = offset - 24
