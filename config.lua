@@ -3,7 +3,7 @@ local core = vars.core
 local L = vars.L
 local addon = vars
 vars.config = core:NewModule("Config")
-module = vars.config
+local module = vars.config
 
 local Config = LibStub("AceConfig-3.0")
 
