@@ -14,16 +14,13 @@ addon.svnrev = {}
 addon.svnrev["SavedInstances.lua"] = tonumber(("$Revision$"):match("%d+"))
 
 -- local (optimal) references to provided functions
-local GetExpansionLevel = GetExpansionLevel
-local GetInstanceDifficulty = GetInstanceDifficulty
-local GetNumSavedInstances = GetNumSavedInstances
-local GetSavedInstanceInfo = GetSavedInstanceInfo
-local IsInInstance = IsInInstance
-local SecondsToTime = SecondsToTime
+local table, math, bit, string, pairs, ipairs, unpack, strsplit, time, type, wipe, tonumber, select, strsub = 
+      table, math, bit, string, pairs, ipairs, unpack, strsplit, time, type, wipe, tonumber, select, strsub
+local GetSavedInstanceInfo, GetNumSavedInstances, GetSavedInstanceChatLink, GetLFGDungeonNumEncounters, GetLFGDungeonEncounterInfo, GetNumRandomDungeons, GetLFGRandomDungeonInfo, GetLFGDungeonInfo, LFGGetDungeonInfoByID, GetLFGDungeonRewards, GetTime, UnitIsUnit, GetInstanceInfo, GetLFGMode, IsInInstance, SecondsToTime, GetQuestResetTime, GetGameTime, GetCurrencyInfo, GetNumRaidMembers, GetNumPartyMembers = 
+      GetSavedInstanceInfo, GetNumSavedInstances, GetSavedInstanceChatLink, GetLFGDungeonNumEncounters, GetLFGDungeonEncounterInfo, GetNumRandomDungeons, GetLFGRandomDungeonInfo, GetLFGDungeonInfo, LFGGetDungeonInfoByID, GetLFGDungeonRewards, GetTime, UnitIsUnit, GetInstanceInfo, GetLFGMode, IsInInstance, SecondsToTime, GetQuestResetTime, GetGameTime, GetCurrencyInfo, GetNumRaidMembers, GetNumPartyMembers
 
 -- local (optimal) references to Blizzard's strings
 local RAID_CLASS_COLORS = RAID_CLASS_COLORS
-local NO_RAID_INSTANCES_SAVED = NO_RAID_INSTANCES_SAVED -- "You are not saved to any instances"
 local RAID_FINDER = PLAYER_DIFFICULTY3
 local FONTEND = FONT_COLOR_CODE_CLOSE
 local GOLDFONT = NORMAL_FONT_COLOR_CODE
@@ -33,6 +30,8 @@ local GREENFONT = GREEN_FONT_COLOR_CODE
 local WHITEFONT = HIGHLIGHT_FONT_COLOR_CODE
 local GRAYFONT = GRAY_FONT_COLOR_CODE
 local LFD_RANDOM_REWARD_EXPLANATION2 = LFD_RANDOM_REWARD_EXPLANATION2
+local INSTANCE_SAVED, TRANSFER_ABORT_TOO_MANY_INSTANCES, NO_RAID_INSTANCES_SAVED = 
+      INSTANCE_SAVED, TRANSFER_ABORT_TOO_MANY_INSTANCES, NO_RAID_INSTANCES_SAVED
 
 vars.Indicators = {
 	ICON_STAR = ICON_LIST[1] .. "16:16:0:0|t",
