@@ -558,7 +558,7 @@ function addon:OrderedCategories()
 end
 
 local function DifficultyString(instance, diff, toon, expired)
-	local setting
+	local setting,color
 	if not instance then
 		setting = "D" .. diff
 	else
@@ -1643,7 +1643,7 @@ function core:ShowTooltip(anchorframe)
 	tooltip:SetScript("OnUpdate", UpdateTooltip)
 	tooltip:Clear()
 	local hFont = tooltip:GetHeaderFont()
-	local hFontPath, hFontSize
+	local hFontPath, hFontSize,_
 	hFontPath, hFontSize, _ = hFont:GetFont()
 	hFont:SetFont(hFontPath, hFontSize, "OUTLINE")
 	tooltip:SetHeaderFont(hFont)
