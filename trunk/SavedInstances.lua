@@ -803,8 +803,8 @@ function addon:UpdateToonData()
 	        ti.Quests[id] = nil
 	      end
 	    end
+	    ti.DailyResetTime = nextreset
           end 
-	  ti.DailyResetTime = nextreset
 	 end
 	end
 	-- Weekly Reset
