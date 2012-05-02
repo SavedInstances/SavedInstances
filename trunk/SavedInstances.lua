@@ -1480,15 +1480,16 @@ function core:Refresh()
 		end
 	end
 
+        local weeklyreset = addon:GetNextWeeklyResetTime()
 	for id,_ in pairs(addon.LFRInstances) do
 	  local numEncounters, numCompleted = GetLFGDungeonNumEncounters(id);
-	  if ( numCompleted > 0 ) then
+	  if ( numCompleted > 0 and weeklyreset ) then
             local truename, instance = addon:LookupInstance(id, nil, true)
             instance[thisToon] = instance[thisToon] or temp[truename] or { }
 	    local info = instance[thisToon][2] or {}
 	    wipe(info)
             instance[thisToon][2] = info
-  	    info.Expires = addon:GetNextWeeklyResetTime()
+  	    info.Expires = weeklyreset
             info.ID = -1*numEncounters
 	    for i=1, numEncounters do
 	      local bossName, texture, isKilled = GetLFGDungeonEncounterInfo(id, i);
