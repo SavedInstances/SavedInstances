@@ -14,7 +14,7 @@
 ## X-Embeds: Ace3, CallbackHandler-1.0, LibDataBroker-1.1, LibDBIcon-1.0, LibQTip-1.0
 #@end-no-lib-strip@ 
 ## SavedVariables: SavedInstancesDB
-## LoadManagers: AddonLoader
+# ## LoadManagers: AddonLoader
 ## X-LoadOn-Always: delayed
 
 
@@ -22,7 +22,6 @@
 libs\LibStub\LibStub.lua
 libs\CallbackHandler-1.0\CallbackHandler-1.0.xml
 libs\AceAddon-3.0\AceAddon-3.0.xml
-libs\AceLocale-3.0\AceLocale-3.0.xml
 libs\AceEvent-3.0\AceEvent-3.0.xml
 libs\AceTimer-3.0\AceTimer-3.0.xml
 libs\AceGUI-3.0\AceGUI-3.0.xml
