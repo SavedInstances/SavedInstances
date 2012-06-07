@@ -1586,17 +1586,21 @@ function addon:ShowDetached()
       f:EnableMouse(true)
       f:SetUserPlaced(true)
       f:SetAlpha(0.5)
-      if f:GetNumPoints() == 0 then
+      if vars.db.Tooltip.posx and vars.db.Tooltip.posy then
+        f:SetPoint("TOPLEFT",vars.db.Tooltip.posx,-vars.db.Tooltip.posy)
+      else
         f:SetPoint("CENTER")
       end
       f:SetScript("OnMouseDown", function() f:StartMoving() end)
-      f:SetScript("OnMouseUp", function() f:StopMovingOrSizing() end )
+      f:SetScript("OnMouseUp", function() f:StopMovingOrSizing()
+                      vars.db.Tooltip.posx = f:GetLeft()
+                      vars.db.Tooltip.posy = UIParent:GetTop() - (f:GetTop()*f:GetScale())
+                  end)
       f:SetScript("OnHide", function() if tooltip then QTip:Release(tooltip); tooltip = nil end  end )
       f:SetScript("OnUpdate", function(self)
 		  if not tooltip then return end
-		  self:SetScale(tooltip:GetScale())
 		  local w,h = tooltip:GetSize()
-		  self:SetSize(w,h+20)
+		  self:SetSize(w*tooltip:GetScale(),(h+20)*tooltip:GetScale())
 		  tooltip:ClearAllPoints()
 		  tooltip:SetPoint("BOTTOMLEFT",addon.detachframe)
 		  tooltip:SetFrameLevel(addon.detachframe:GetFrameLevel()+1)
