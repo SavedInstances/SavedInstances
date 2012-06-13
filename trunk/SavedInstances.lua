@@ -818,8 +818,8 @@ function addon:UpdateToonData()
 	      ti.currency[idx].earnedThisWeek = 0
 	    end
 	    wipe(ti.Quests)
+	    ti.WeeklyResetTime = nextreset
           end 
-	  ti.WeeklyResetTime = nextreset
 	 end
 	end
 	local dc = GetDailyQuestsCompleted()
