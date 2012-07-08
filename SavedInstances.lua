@@ -134,6 +134,7 @@ vars.defaultDB = {
 				   -- Link: hyperlink 
                                    -- Zone: string
 				   -- isDaily: boolean
+				   -- Expires: expiration (non-daily)
 
 	Indicators = {
 		D1Indicator = "BLANK", -- indicator: ICON_*, BLANK
@@ -339,6 +340,22 @@ function addon:GetNextWeeklyResetTime()
     nightlyReset = nightlyReset + 24 * 3600
   end
   return nightlyReset
+end
+
+do
+local saturday_night = {hour=23, min=59}
+function addon:GetNextDarkmoonResetTime()
+  -- Darkmoon faire runs from first Sunday of each month to following Saturday
+  -- this function only returns valid date during the faire
+  local weekday, month, day, year = CalendarGetDate() -- date in server timezone (Sun==1)
+  saturday_night.year = year
+  saturday_night.month = month
+  saturday_night.day = day + (7-weekday)
+  local ret = time(saturday_night)
+  local offset = addon:GetServerOffset() * 3600
+  ret = ret - offset
+  return ret
+end
 end
 
 -- local addon functions below
@@ -817,10 +834,16 @@ function addon:UpdateToonData()
 	      ti.currency[idx] = ti.currency[idx] or {}
 	      ti.currency[idx].earnedThisWeek = 0
 	    end
-	    wipe(ti.Quests)
 	    ti.WeeklyResetTime = nextreset
           end 
 	 end
+	end
+	for toon, ti in pairs(vars.db.Toons) do
+	  for id,qi in pairs(ti.Quests) do
+	      if not qi.isDaily and (qi.Expires or 0) < time() then
+	        ti.Quests[id] = nil
+	      end
+	  end
 	end
 	local dc = GetDailyQuestsCompleted()
 	if dc > 0 then -- zero during logout
@@ -842,12 +865,29 @@ function addon:UpdateToonData()
 	end
 end
 
+local special_weekly_defaults = {
+     -- Darkmoon Faire "weekly" quests
+     [29433] = true, -- Test Your Strength
+  }
+
+function addon:QuestIsDarkmoonMonthly()
+  if QuestIsDaily() then return false end
+  for i=1,GetNumRewardCurrencies() do
+    local name,texture,amount = GetQuestCurrencyInfo("reward",i)
+    if texture:find("_ticket_darkmoon_") then
+      return true
+    end
+  end
+  return false
+end
+
 local function SI_GetQuestReward()
   local t = vars and vars.db.Toons[thisToon]
   if not t then return end
   local id = GetQuestID() or -1
   local title = GetTitleText() or "<unknown>"
   local link = nil
+  local isMonthly = addon:QuestIsDarkmoonMonthly()
   local isWeekly = QuestIsWeekly()
   local isDaily = QuestIsDaily()
   for index = 1, GetNumQuestLogEntries() do
@@ -858,10 +898,21 @@ local function SI_GetQuestReward()
         break
      end
   end
-  debug("Quest Complete: "..(link or title).." "..id.." : "..title.." "..(isWeekly and "(Weekly)" or isDaily and "(Daily)" or "(Regular)"))
-  if not isWeekly and not isDaily then return end
+  local expires
+  if isWeekly then
+    expires = addon:GetNextWeeklyResetTime()
+  elseif isMonthly then 
+    expires = addon:GetNextDarkmoonResetTime()
+  end
+  debug("Quest Complete: "..(link or title).." "..id.." : "..title.." "..
+        (isMonthly and "(Monthly)" or isWeekly and "(Weekly)" or isDaily and "(Daily)" or "(Regular)").."  "..
+	(expires and date("%c",expires) or ""))
+  if not isMonthly and not isWeekly and not isDaily then return end
   t.Quests = t.Quests or {}
-  t.Quests[id] = { ["Title"] = title, ["Link"] = link, ["isDaily"] = isDaily, ["Zone"] = GetRealZoneText() }
+  t.Quests[id] = { ["Title"] = title, ["Link"] = link, 
+                   ["isDaily"] = isDaily, 
+		   ["Expires"] = expires,
+		   ["Zone"] = GetRealZoneText() }
 end
 hooksecurefunc("GetQuestReward", SI_GetQuestReward)
 
