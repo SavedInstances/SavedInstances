@@ -1697,11 +1697,13 @@ function core:ShowTooltip(anchorframe)
 	tooltip.anchorframe = anchorframe
 	tooltip:SetScript("OnUpdate", UpdateTooltip)
 	tooltip:Clear()
-	local hFont = tooltip:GetHeaderFont()
-	local hFontPath, hFontSize,_
-	hFontPath, hFontSize, _ = hFont:GetFont()
-	hFont:SetFont(hFontPath, hFontSize, "OUTLINE")
-	tooltip:SetHeaderFont(hFont)
+	if not addon.headerfont then
+	  addon.headerfont = CreateFont("SavedInstancedTooltipHeaderFont")
+	  local hFont = tooltip:GetHeaderFont()
+	  local hFontPath, hFontSize,_ hFontPath, hFontSize, _ = hFont:GetFont()
+	  addon.headerfont:SetFont(hFontPath, hFontSize, "OUTLINE")
+	end
+	tooltip:SetHeaderFont(addon.headerfont)
 	local headLine = tooltip:AddHeader(GOLDFONT .. "SavedInstances" .. FONTEND)
 	tooltip:SetCellScript(headLine, 1, "OnEnter", ShowHistoryTooltip )
 	tooltip:SetCellScript(headLine, 1, "OnLeave", 
