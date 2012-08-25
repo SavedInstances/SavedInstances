@@ -16,8 +16,8 @@ addon.svnrev["SavedInstances.lua"] = tonumber(("$Revision$"):match("%d+"))
 -- local (optimal) references to provided functions
 local table, math, bit, string, pairs, ipairs, unpack, strsplit, time, type, wipe, tonumber, select, strsub = 
       table, math, bit, string, pairs, ipairs, unpack, strsplit, time, type, wipe, tonumber, select, strsub
-local GetSavedInstanceInfo, GetNumSavedInstances, GetSavedInstanceChatLink, GetLFGDungeonNumEncounters, GetLFGDungeonEncounterInfo, GetNumRandomDungeons, GetLFGRandomDungeonInfo, GetLFGDungeonInfo, LFGGetDungeonInfoByID, GetLFGDungeonRewards, GetTime, UnitIsUnit, GetInstanceInfo, GetLFGMode, IsInInstance, SecondsToTime, GetQuestResetTime, GetGameTime, GetCurrencyInfo, GetNumRaidMembers, GetNumPartyMembers = 
-      GetSavedInstanceInfo, GetNumSavedInstances, GetSavedInstanceChatLink, GetLFGDungeonNumEncounters, GetLFGDungeonEncounterInfo, GetNumRandomDungeons, GetLFGRandomDungeonInfo, GetLFGDungeonInfo, LFGGetDungeonInfoByID, GetLFGDungeonRewards, GetTime, UnitIsUnit, GetInstanceInfo, GetLFGMode, IsInInstance, SecondsToTime, GetQuestResetTime, GetGameTime, GetCurrencyInfo, GetNumRaidMembers, GetNumPartyMembers
+local GetSavedInstanceInfo, GetNumSavedInstances, GetSavedInstanceChatLink, GetLFGDungeonNumEncounters, GetLFGDungeonEncounterInfo, GetNumRandomDungeons, GetLFGRandomDungeonInfo, GetLFGDungeonInfo, LFGGetDungeonInfoByID, GetLFGDungeonRewards, GetTime, UnitIsUnit, GetInstanceInfo, GetLFGMode, IsInInstance, SecondsToTime, GetQuestResetTime, GetGameTime, GetCurrencyInfo, GetNumGroupMembers = 
+      GetSavedInstanceInfo, GetNumSavedInstances, GetSavedInstanceChatLink, GetLFGDungeonNumEncounters, GetLFGDungeonEncounterInfo, GetNumRandomDungeons, GetLFGRandomDungeonInfo, GetLFGDungeonInfo, LFGGetDungeonInfoByID, GetLFGDungeonRewards, GetTime, UnitIsUnit, GetInstanceInfo, GetLFGMode, IsInInstance, SecondsToTime, GetQuestResetTime, GetGameTime, GetCurrencyInfo, GetNumGroupMembers
 
 -- local (optimal) references to Blizzard's strings
 local RAID_CLASS_COLORS = RAID_CLASS_COLORS
@@ -1256,7 +1256,7 @@ function core:OnEnable()
 	    "RAID_INSTANCE_WELCOME", 
 	    "PLAYER_ENTERING_WORLD", "CHAT_MSG_SYSTEM", "CHAT_MSG_ADDON",
             "ZONE_CHANGED_NEW_AREA", 
-	    "INSTANCE_BOOT_START", "INSTANCE_BOOT_STOP", "PARTY_MEMBERS_CHANGED",
+	    "INSTANCE_BOOT_START", "INSTANCE_BOOT_STOP", "GROUP_ROSTER_UPDATE",
             }) do
             addon.resetDetect:RegisterEvent(e)
           end
@@ -1295,14 +1295,14 @@ function core:LFG_COMPLETION_REWARD()
 end
 
 function addon:InGroup() 
-  if GetNumRaidMembers() > 0 then return "RAID"
-  elseif GetNumPartyMembers() > 0 then return "PARTY"
+  if IsInRaid() then return "RAID"
+  elseif GetNumGroupMembers() > 0 then return "PARTY"
   else return nil end
 end
 
 local function doExplicitReset(instancemsg, failed)
   if HasLFGRestrictions() or IsInInstance() or
-     (addon:InGroup() and not IsPartyLeader() and not IsRaidLeader()) then return end
+     (addon:InGroup() and not UnitIsGroupLeader("player")) then return end
   if not failed then
     addon:HistoryUpdate(true)
   end
@@ -1359,7 +1359,7 @@ function addon.HistoryEvent(f, evt, ...)
     addon:HistoryUpdate(true)
   elseif evt == "INSTANCE_BOOT_STOP" and addon:InGroup() then -- invited back
     addon.delayedReset = false
-  elseif evt == "PARTY_MEMBERS_CHANGED" and 
+  elseif evt == "GROUP_ROSTER_UPDATE" and 
          addon.histInGroup and not addon:InGroup() and -- ignore failed invites when solo
 	 not addon:histZoneKey() then -- left group outside instance, resets now
     addon:HistoryUpdate(true)
