@@ -1379,8 +1379,7 @@ function addon:histZoneKey()
   if insttype == "none" or insttype == "arena" or insttype == "pvp" then -- pvp doesnt count
     return nil
   end
-  local mode, submode = GetLFGMode()
-  if mode == "lfgparty" or mode == "abandonedInDungeon" then -- LFG instances don't count
+  if IsInLFGDungeon() then -- LFG instances don't count
     return nil
   end
   -- check if we're locked (using FindInstance so we don't complain about unsaved unknown instances)
@@ -1707,7 +1706,7 @@ function core:ShowTooltip(anchorframe)
 	local headLine = tooltip:AddHeader(GOLDFONT .. "SavedInstances" .. FONTEND)
 	tooltip:SetCellScript(headLine, 1, "OnEnter", ShowHistoryTooltip )
 	tooltip:SetCellScript(headLine, 1, "OnLeave", 
-					     function() indicatortip:Hide(); GameTooltip:Hide() end)
+					     function() if indicatortip then indicatortip:Hide(); end GameTooltip:Hide() end)
 	addon:UpdateToonData()
 	local columns = localarr("columns")
 	for toon,_ in cpairs(columnCache[showall]) do
@@ -1947,7 +1946,7 @@ function core:ShowTooltip(anchorframe)
                 end
                 for toon, t in cpairs(vars.db.Toons) do
                         if showd and columns[toon..1] and t.DailyCount > 0 then
-				local qstr = t.DailyCount.."/"..GetMaxDailyQuests()
+				local qstr = t.DailyCount
                                 tooltip:SetCell(showd, columns[toon..1], ClassColorise(t.Class,qstr), "CENTER",4)
                                 tooltip:SetCellScript(showd, columns[toon..1], "OnEnter", ShowQuestTooltip, {toon,qstr.." "..L["Daily Quests"],true})
                                 tooltip:SetCellScript(showd, columns[toon..1], "OnLeave",
