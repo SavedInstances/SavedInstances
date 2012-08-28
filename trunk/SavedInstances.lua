@@ -1477,7 +1477,7 @@ function addon:HistoryUpdate(forcereset, forcemesg)
   if forcemesg or (vars.db.Tooltip.LimitWarn and zoningin and livecnt >= addon.histLimit-1) then 
       chatMsg(L["Warning: You've entered about %i instances recently and are approaching the %i instance per hour limit for your account. More instances should be available in %s."]:format(livecnt, addon.histLimit, oldistexp))
   end
-  if db.Broker.HistoryText then
+  if db.Broker.HistoryText and vars.dataobject then
     if livecnt >= addon.histLimit then
       vars.dataobject.text = oldistexp
     else
