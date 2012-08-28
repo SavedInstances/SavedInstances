@@ -13,7 +13,6 @@ addon.svnrev["config.lua"] = tonumber(("$Revision$"):match("%d+"))
 
 -- local (optimal) references to Blizzard's strings
 local COLOR = COLOR -- "Color"
-local DEFAULTS = DEFAULTS -- "Defaults"
 local DELETE = DELETE -- "DELETE"
 local DUNGEON_DIFFICULTY1 = DUNGEON_DIFFICULTY1 -- 5 man
 local DUNGEON_DIFFICULTY2 = DUNGEON_DIFFICULTY2 -- 5 man (Heroic)
@@ -29,7 +28,6 @@ local RAID_DIFFICULTY1 = RAID_DIFFICULTY1 -- "10 man"
 local RAID_DIFFICULTY2 = RAID_DIFFICULTY2 -- "25 man"
 local RAID_DIFFICULTY3 = RAID_DIFFICULTY3 -- "10 man (Heroic)"
 local RAID_DIFFICULTY4 = RAID_DIFFICULTY4 -- "25 man (Heroic)"
-local RESET_TO_DEFAULT = RESET_TO_DEFAULT -- "Reset to Default"
 local FONTEND = FONT_COLOR_CODE_CLOSE
 local GOLDFONT = NORMAL_FONT_COLOR_CODE
 
@@ -398,21 +396,6 @@ core.Options = {
 					end,
 				},
 				
-				DefaultsHeader = {
-					order = -2, 
-					type = "header",
-					name = DEFAULTS,
-				},
-				ResetButton = {
-					order = -1,
-					type = "execute",
-					name = RESET_TO_DEFAULT,
-					func = function()
-						db.Tooltip = vars.defaultDB.Tooltip
-						db.Broker = vars.defaultDB.Broker
-						db.MinimapIcon = vars.defaultDB.MinimapIcon
-					end,
-				},
                                 ToggleBind = {
       					desc = L["Bind a key to toggle the SavedInstances tooltip"],
      	 				type = "keybinding",
@@ -536,14 +519,6 @@ core.Options = {
 					},
 				},
 
-				ResetButton = {
-					order = -1,
-					type = "execute",
-					name = RESET_TO_DEFAULT,
-					func = function()
-						db.Indicators = vars.defaultDB.Indicators
-					end,
-				},
 			},
 		},
 		Instances = {
@@ -669,17 +644,69 @@ local lockoutgroup
 --	InterfaceOptionsFrame_OpenToCategory(lockoutgroup)
 --end
 
+function module:table_clone(t)
+  if not t then return nil end
+  local r = {}
+  for k,v in pairs(t) do
+    local nk,nv = k,v
+    if type(k) == "table" then
+      nk = module:table_clone(k)
+    end
+    if type(v) == "table" then
+      nv = module:table_clone(v)
+    end
+    r[nk] = nv
+  end
+  return r
+end
+
 local firstoptiongroup, lastoptiongroup
+function module:ReopenConfigDisplay(f)
+   if InterfaceOptionsFrame:IsShown() then
+      InterfaceOptionsFrame:Hide();
+      InterfaceOptionsFrame_OpenToCategory(lastoptiongroup)
+      InterfaceOptionsFrame_OpenToCategory(firstoptiongroup)
+      InterfaceOptionsFrame_OpenToCategory(f)
+   end
+end
+
 function module:SetupOptions()
 	local ACD = LibStub("AceConfigDialog-3.0")
 	local namespace = "SavedInstances"
 	module:BuildOptions()
 	LibStub("AceConfigRegistry-3.0"):RegisterOptionsTable(namespace, core.Options)
-	firstoptiongroup = ACD:AddToBlizOptions(namespace, nil, nil, "General")
-	ACD:AddToBlizOptions(namespace, L["Indicators"], namespace, "Indicators")
-	ACD:AddToBlizOptions(namespace, L["Instances"], namespace, "Instances")
+        local fgen = ACD:AddToBlizOptions(namespace, nil, nil, "General")
+	firstoptiongroup = fgen
+        fgen.default = function() 
+                       addon.debug("RESET: General")
+                       db.Tooltip = module:table_clone(vars.defaultDB.Tooltip) 
+                       db.MinimapIcon = module:table_clone(vars.defaultDB.MinimapIcon) 
+                       module:ReopenConfigDisplay(fgen)
+                    end
+	local find = ACD:AddToBlizOptions(namespace, L["Indicators"], namespace, "Indicators")
+        find.default = function() 
+                       addon.debug("RESET: Indicators")
+                       db.Indicators = module:table_clone(vars.defaultDB.Indicators) 
+                       module:ReopenConfigDisplay(find)
+                    end
+	local finst = ACD:AddToBlizOptions(namespace, L["Instances"], namespace, "Instances")
+        finst.default = function() 
+                       addon.debug("RESET: Instances")
+                       for _,i in pairs(db.Instances) do
+                          i.Show = "saved"
+                       end
+                       module:ReopenConfigDisplay(finst)
+                    end
 	--ACD:AddToBlizOptions(namespace, L["Lockouts"], namespace, "Lockouts")
-	lastoptiongroup = ACD:AddToBlizOptions(namespace, L["Characters"], namespace, "Characters")
+	local ftoon = ACD:AddToBlizOptions(namespace, L["Characters"], namespace, "Characters")
+	lastoptiongroup = ftoon
+        ftoon.default = function() 
+                       addon.debug("RESET: Toons")
+                       for _,i in pairs(db.Toons) do
+                          i.Show = "saved"
+                       end
+                       module:ReopenConfigDisplay(ftoon)
+                    end
 end
 
 function module:ShowConfig()

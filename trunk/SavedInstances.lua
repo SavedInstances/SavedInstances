@@ -854,9 +854,9 @@ function addon:UpdateToonData()
 	  local ci = t.currency[idx] or {}
 	  _, ci.amount, _, ci.earnedThisWeek, ci.weeklyMax, ci.totalMax = GetCurrencyInfo(idx)
           if idx == 396 then -- VP x 100, CP x 1
-            ci.weeklyMax = ci.weeklyMax and ci.weeklyMax/100
+            ci.weeklyMax = ci.weeklyMax and math.floor(ci.weeklyMax/100)
           end
-          ci.totalMax = ci.totalMax and ci.totalMax/100
+          ci.totalMax = ci.totalMax and math.floor(ci.totalMax/100)
           ci.season = addon:GetSeasonCurrency(idx)
 	  t.currency[idx] = ci
 	end
