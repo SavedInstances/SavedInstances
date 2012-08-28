@@ -54,6 +54,8 @@ vars.Categories = {
 	R2 = EXPANSION_NAME2 .. ": " .. LFG_TYPE_RAID,
 	D3 = EXPANSION_NAME3 .. ": " .. LFG_TYPE_DUNGEON,
 	R3 = EXPANSION_NAME3 .. ": " .. LFG_TYPE_RAID,
+	D4 = EXPANSION_NAME4 .. ": " .. LFG_TYPE_DUNGEON,
+	R4 = EXPANSION_NAME4 .. ": " .. LFG_TYPE_RAID,
 }
 
 local tooltip, indicatortip
