@@ -425,6 +425,7 @@ end
 
 -- provide either id or name/raid to get the instance truename and db entry
 function addon:LookupInstance(id, name, raid)
+  debug("LookupInstance("..(id or "nil")..","..(name or "nil")..","..(raid and "true" or "false")..")")
   local truename, instance
   if name then
     truename, id = addon:FindInstance(name, raid)
@@ -627,7 +628,7 @@ function addon:UpdateInstanceData()
   core:UnregisterEvent("LFG_UPDATE_RANDOM_INFO")
   local count = 0
   local starttime = debugprofilestop()
-  local maxid = 500
+  local maxid = 600
   for id=1,maxid do -- start with brute force
     if addon:UpdateInstance(id) then
       count = count + 1
@@ -688,9 +689,9 @@ function addon:UpdateInstance(id)
     return
   end
   -- name is nil for non-existent ids
-  -- maxPlayers == 0 for non-instance zones (WotLK zones all have an entry for some reason)
   -- isHoliday is for single-boss holiday instances that don't generate raid saves
-  if not name or not expansionLevel or not recLevel or not maxPlayers or maxPlayers == 0 then return end
+  -- typeID 4 = outdoor area, typeID 6 = random
+  if not name or not expansionLevel or not recLevel or typeID > 2 then return end
   if name:find(PVP_RATED_BATTLEGROUND) then return end -- ignore 10v10 rated bg
 
   local instance = vars.db.Instances[name]
@@ -710,7 +711,7 @@ function addon:UpdateInstance(id)
   instance.Expansion = expansionLevel
   instance.RecLevel = instance.RecLevel or recLevel
   if recLevel < instance.RecLevel then instance.RecLevel = recLevel end -- favor non-heroic RecLevel
-  instance.Raid = (tonumber(maxPlayers) > 5)
+  instance.Raid = (tonumber(maxPlayers) > 5 or (tonumber(maxPlayers) == 0 and typeID == 2))
   return newinst, true, name
 end
 
@@ -1519,6 +1520,7 @@ function core:Refresh()
 			else
 			  expires = 0
 			end
+			while diff > 4 do diff = diff - 4 end -- XXX filthy hack
 			instance.Raid = instance.Raid or raid
 			instance[thisToon] = instance[thisToon] or temp[truename] or { }
 			local info = instance[thisToon][diff] or {}
