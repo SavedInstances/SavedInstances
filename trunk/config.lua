@@ -52,6 +52,7 @@ function addon:idtext(instance,diff,info)
   elseif instance.Raid and instance.Expansion == 0 then
     return EXPANSION_NAME0 .. " " .. LFG_TYPE_RAID
   elseif instance.Raid then
+    diff = diff - 2 
     return _G["RAID_DIFFICULTY"..diff]
   else
     return _G["DUNGEON_DIFFICULTY"..diff]
