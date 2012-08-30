@@ -9,6 +9,8 @@ vars.icon = vars.LDB and LibStub("LibDBIcon-1.0", true)
 
 local QTip = LibStub("LibQTip-1.0")
 local dataobject, db, config
+local maxdiff = 10 -- max number of instance difficulties
+local maxcol = 4 -- max columns per player+instance
 
 addon.svnrev = {}
 addon.svnrev["SavedInstances.lua"] = tonumber(("$Revision$"):match("%d+"))
@@ -16,8 +18,8 @@ addon.svnrev["SavedInstances.lua"] = tonumber(("$Revision$"):match("%d+"))
 -- local (optimal) references to provided functions
 local table, math, bit, string, pairs, ipairs, unpack, strsplit, time, type, wipe, tonumber, select, strsub = 
       table, math, bit, string, pairs, ipairs, unpack, strsplit, time, type, wipe, tonumber, select, strsub
-local GetSavedInstanceInfo, GetNumSavedInstances, GetSavedInstanceChatLink, GetLFGDungeonNumEncounters, GetLFGDungeonEncounterInfo, GetNumRandomDungeons, GetLFGRandomDungeonInfo, GetLFGDungeonInfo, LFGGetDungeonInfoByID, GetLFGDungeonRewards, GetTime, UnitIsUnit, GetInstanceInfo, GetLFGMode, IsInInstance, SecondsToTime, GetQuestResetTime, GetGameTime, GetCurrencyInfo, GetNumGroupMembers = 
-      GetSavedInstanceInfo, GetNumSavedInstances, GetSavedInstanceChatLink, GetLFGDungeonNumEncounters, GetLFGDungeonEncounterInfo, GetNumRandomDungeons, GetLFGRandomDungeonInfo, GetLFGDungeonInfo, LFGGetDungeonInfoByID, GetLFGDungeonRewards, GetTime, UnitIsUnit, GetInstanceInfo, GetLFGMode, IsInInstance, SecondsToTime, GetQuestResetTime, GetGameTime, GetCurrencyInfo, GetNumGroupMembers
+local GetSavedInstanceInfo, GetNumSavedInstances, GetSavedInstanceChatLink, GetLFGDungeonNumEncounters, GetLFGDungeonEncounterInfo, GetNumRandomDungeons, GetLFGRandomDungeonInfo, GetLFGDungeonInfo, LFGGetDungeonInfoByID, GetLFGDungeonRewards, GetTime, UnitIsUnit, GetInstanceInfo, IsInInstance, SecondsToTime, GetQuestResetTime, GetGameTime, GetCurrencyInfo, GetNumGroupMembers = 
+      GetSavedInstanceInfo, GetNumSavedInstances, GetSavedInstanceChatLink, GetLFGDungeonNumEncounters, GetLFGDungeonEncounterInfo, GetNumRandomDungeons, GetLFGRandomDungeonInfo, GetLFGDungeonInfo, LFGGetDungeonInfoByID, GetLFGDungeonRewards, GetTime, UnitIsUnit, GetInstanceInfo, IsInInstance, SecondsToTime, GetQuestResetTime, GetGameTime, GetCurrencyInfo, GetNumGroupMembers
 
 -- local (optimal) references to Blizzard's strings
 local RAID_CLASS_COLORS = RAID_CLASS_COLORS
@@ -425,7 +427,7 @@ end
 
 -- provide either id or name/raid to get the instance truename and db entry
 function addon:LookupInstance(id, name, raid)
-  debug("LookupInstance("..(id or "nil")..","..(name or "nil")..","..(raid and "true" or "false")..")")
+  --debug("LookupInstance("..(id or "nil")..","..(name or "nil")..","..(raid and "true" or "false")..")")
   local truename, instance
   if name then
     truename, id = addon:FindInstance(name, raid)
@@ -584,8 +586,10 @@ local function DifficultyString(instance, diff, toon, expired)
 		local inst = vars.db.Instances[instance]
 		if inst.Expansion == 0 and inst.Raid then
 		  setting = "R0"
+		elseif inst.Raid then
+		  setting = "R"..(diff-2)
 		else
-		  setting = ((inst.Raid and "R") or ((not inst.Raid) and "D")) .. diff
+		  setting = "D"..diff
 		end
 	end
 	local prefs = vars.db.Indicators
@@ -1390,7 +1394,7 @@ function addon:histZoneKey()
   local locked = false
   local inst = truename and vars.db.Instances[truename] 
   inst = inst and inst[thisToon]
-  for d=1,4 do
+  for d=1,maxdiff do
     if inst and inst[d] and inst[d].Locked then
         locked = true
     end
@@ -1520,7 +1524,6 @@ function core:Refresh()
 			else
 			  expires = 0
 			end
-			while diff > 4 do diff = diff - 4 end -- XXX filthy hack
 			instance.Raid = instance.Raid or raid
 			instance[thisToon] = instance[thisToon] or temp[truename] or { }
 			local info = instance[thisToon][diff] or {}
@@ -1684,8 +1687,8 @@ end
 
 local columnCache = { [true] = {}, [false] = {} }
 local function addColumns(columns, toon, tooltip)
-	for diff = 1, 4 do
-		columns[toon..diff] = columns[toon..diff] or tooltip:AddColumn("CENTER")
+	for c = 1, maxcol do
+		columns[toon..c] = columns[toon..c] or tooltip:AddColumn("CENTER")
 	end
 	columnCache[ShowAll()][toon] = true
 end
@@ -1697,6 +1700,7 @@ function core:ShowTooltip(anchorframe)
 	local showexpired = showall or vars.db.Tooltip.ShowExpired
 	if tooltip then QTip:Release(tooltip) end
 	tooltip = QTip:Acquire("SavedInstancesTooltip", 1, "LEFT")
+	tooltip:SetCellMarginH(0)
 	tooltip.anchorframe = anchorframe
 	tooltip:SetScript("OnUpdate", UpdateTooltip)
 	tooltip:Clear()
@@ -1734,7 +1738,7 @@ function core:ShowTooltip(anchorframe)
 			end
 			if inst.Show ~= "never" or showall then
 			    for toon, t in cpairs(vars.db.Toons) do
-				for diff = 1, 4 do
+				for diff = 1, maxdiff do
 					if inst[toon] and inst[toon][diff] then
 					    if (inst[toon][diff].Expires > 0) then
 						instancesaved[instance] = true
@@ -1775,7 +1779,7 @@ function core:ShowTooltip(anchorframe)
 				end
 				if inst.Show ~= "never" or showall then
 				    for toon, t in cpairs(vars.db.Toons) do
-					for diff = 1, 4 do
+					for diff = 1, maxdiff do
 					        if inst[toon] and inst[toon][diff] and (inst[toon][diff].Expires > 0 or showall) then
 							instancerow[instance] = instancerow[instance] or tooltip:AddLine()
 							addColumns(columns, toon, tooltip)
@@ -1799,21 +1803,23 @@ function core:ShowTooltip(anchorframe)
 				if inst[toon] then
 				  local showcol = localarr("showcol")
 				  local showcnt = 0
-				  for diff = 1, 4 do
-				    if instancerow[instance] and columns[toon..diff] and 
+				  for diff = 1, maxdiff do
+				    if instancerow[instance] and 
 				      inst[toon][diff] and (inst[toon][diff].Expires > 0 or showexpired) then
-				      showcol[diff] = true
 				      showcnt = showcnt + 1
+				      showcol[diff] = true
 				    end
 				  end
-				  for diff = 1, 4 do
+				  local base = 1
+				  local span = maxcol
+				  if showcnt > 1 then
+				    span = 1
+				  end
+				  if showcnt > maxcol then
+                                     chatMsg("Column overflow! Please report this bug! showcnt="..showcnt)
+				  end
+				  for diff = 1, maxdiff do
 				    if showcol[diff] then
-				      local base = diff
-				      local span = 1
-				      if showcnt == 1 then
-				        base = 1
-					span = 4
-				      end
 					tooltip:SetCell(instancerow[instance], columns[toon..base], 
 					    DifficultyString(instance, diff, toon, inst[toon][diff].Expires == 0), span)
 					tooltip:SetCellScript(instancerow[instance], columns[toon..base], "OnEnter", ShowIndicatorTooltip, {instance, toon, diff})
@@ -1828,6 +1834,7 @@ function core:ShowTooltip(anchorframe)
 					          ChatFrame_OpenChat(link, DEFAULT_CHAT_FRAME)
 					       end
 					     end)
+					base = base + 1
 				    elseif columns[toon..diff] and showcnt > 1 then
 					tooltip:SetCell(instancerow[instance], columns[toon..diff], "")
 				    end
@@ -1851,7 +1858,7 @@ function core:ShowTooltip(anchorframe)
 		      holidayinst[instance] = tooltip:AddLine(YELLOWFONT .. instance .. FONTEND)
 		    end
 		    local tstr = SecondsToTime(d.Expires - time(), false, false, 1)
-     		    tooltip:SetCell(holidayinst[instance], columns[toon..1], ClassColorise(t.Class,tstr), "CENTER",4)
+     		    tooltip:SetCell(holidayinst[instance], columns[toon..1], ClassColorise(t.Class,tstr), "CENTER",maxcol)
 		  end
 		end
 	    end
@@ -1881,14 +1888,14 @@ function core:ShowTooltip(anchorframe)
 		    local d2 = (t.LFG2 and t.LFG2 - time()) or -1
 		    if d1 > 0 and (d2 < 0 or showall) then
 		        local tstr = SecondsToTime(d1, false, false, 1)
-			tooltip:SetCell(cd1, columns[toon..1], ClassColorise(t.Class,tstr), "CENTER",4)
+			tooltip:SetCell(cd1, columns[toon..1], ClassColorise(t.Class,tstr), "CENTER",maxcol)
 		        tooltip:SetCellScript(cd1, columns[toon..1], "OnEnter", ShowSpellIDTooltip, {toon,-1,tstr})
 		        tooltip:SetCellScript(cd1, columns[toon..1], "OnLeave", 
 							     function() indicatortip:Hide(); GameTooltip:Hide() end)
 		    end
 		    if d2 > 0 then
 		        local tstr = SecondsToTime(d2, false, false, 1)
-			tooltip:SetCell(cd2, columns[toon..1], ClassColorise(t.Class,tstr), "CENTER",4)
+			tooltip:SetCell(cd2, columns[toon..1], ClassColorise(t.Class,tstr), "CENTER",maxcol)
 		        tooltip:SetCellScript(cd2, columns[toon..1], "OnEnter", ShowSpellIDTooltip, {toon,71041,tstr})
 		        tooltip:SetCellScript(cd2, columns[toon..1], "OnLeave", 
 							     function() indicatortip:Hide(); GameTooltip:Hide() end)
@@ -1912,7 +1919,7 @@ function core:ShowTooltip(anchorframe)
 		for toon, t in cpairs(vars.db.Toons) do
 			if t.pvpdesert and time() < t.pvpdesert then
 				local tstr = SecondsToTime(t.pvpdesert - time(), false, false, 1)
-				tooltip:SetCell(show, columns[toon..1], ClassColorise(t.Class,tstr), "CENTER",4)
+				tooltip:SetCell(show, columns[toon..1], ClassColorise(t.Class,tstr), "CENTER",maxcol)
 		                tooltip:SetCellScript(show, columns[toon..1], "OnEnter", ShowSpellIDTooltip, {toon,26013,tstr})
 		                tooltip:SetCellScript(show, columns[toon..1], "OnLeave", 
 							     function() indicatortip:Hide(); GameTooltip:Hide() end)
@@ -1951,14 +1958,14 @@ function core:ShowTooltip(anchorframe)
                 for toon, t in cpairs(vars.db.Toons) do
                         if showd and columns[toon..1] and t.DailyCount > 0 then
 				local qstr = t.DailyCount
-                                tooltip:SetCell(showd, columns[toon..1], ClassColorise(t.Class,qstr), "CENTER",4)
+                                tooltip:SetCell(showd, columns[toon..1], ClassColorise(t.Class,qstr), "CENTER",maxcol)
                                 tooltip:SetCellScript(showd, columns[toon..1], "OnEnter", ShowQuestTooltip, {toon,qstr.." "..L["Daily Quests"],true})
                                 tooltip:SetCellScript(showd, columns[toon..1], "OnLeave",
                                                              function() indicatortip:Hide(); GameTooltip:Hide() end)
                         end
                         if showw and columns[toon..1] and weeklycnt[toon] > 0 then
 				local qstr = weeklycnt[toon]
-                                tooltip:SetCell(showw, columns[toon..1], ClassColorise(t.Class,qstr), "CENTER",4)
+                                tooltip:SetCell(showw, columns[toon..1], ClassColorise(t.Class,qstr), "CENTER",maxcol)
                                 tooltip:SetCellScript(showw, columns[toon..1], "OnEnter", ShowQuestTooltip, {toon,qstr.." "..L["Weekly Quests"],false})
                                 tooltip:SetCellScript(showw, columns[toon..1], "OnLeave",
                                                              function() indicatortip:Hide(); GameTooltip:Hide() end)
@@ -2017,7 +2024,7 @@ function core:ShowTooltip(anchorframe)
 		     end
                    end
 		  if str then
-		   tooltip:SetCell(currLine, columns[toon..1], ClassColorise(t.Class,str), "CENTER",4)
+		   tooltip:SetCell(currLine, columns[toon..1], ClassColorise(t.Class,str), "CENTER",maxcol)
 		   tooltip:SetCellScript(currLine, columns[toon..1], "OnEnter", ShowCurrencyTooltip, {toon, idx, ci})
 		   tooltip:SetCellScript(currLine, columns[toon..1], "OnLeave", 
 							     function() indicatortip:Hide(); GameTooltip:Hide() end)
@@ -2039,7 +2046,7 @@ function core:ShowTooltip(anchorframe)
 			  toonstr = toonstr .. "\n" .. toonserver
 			end
 			tooltip:SetCell(headLine, col, ClassColorise(vars.db.Toons[toon].Class, toonstr), 
-			                tooltip:GetHeaderFont(), "CENTER", 4)
+			                tooltip:GetHeaderFont(), "CENTER", maxcol)
 			tooltip:SetCellScript(headLine, col, "OnEnter", ShowToonTooltip, {toon})
 			tooltip:SetCellScript(headLine, col, "OnLeave", 
 					     function() indicatortip:Hide(); GameTooltip:Hide() end)
@@ -2091,11 +2098,11 @@ function core:ShowTooltip(anchorframe)
 		tooltip:SetCell(hintLine, hintCol, L["Hover mouse on indicator for details"], "LEFT", tooltip:GetColumnCount())
 		if not showall then
 		  hintLine, hintCol = tooltip:AddLine()
-		  tooltip:SetCell(hintLine, hintCol, L["Hold Alt to show all data"], "LEFT", math.max(1,tooltip:GetColumnCount()-4))
-		  if tooltip:GetColumnCount() < 5 then
+		  tooltip:SetCell(hintLine, hintCol, L["Hold Alt to show all data"], "LEFT", math.max(1,tooltip:GetColumnCount()-maxcol))
+		  if tooltip:GetColumnCount() < maxcol+1 then
 		    tooltip:AddLine(addonName.." version "..addon.version)
 		  else
-		    tooltip:SetCell(hintLine, tooltip:GetColumnCount()-3, addon.version, "RIGHT", 4)
+		    tooltip:SetCell(hintLine, tooltip:GetColumnCount()-maxcol+1, addon.version, "RIGHT", maxcol)
 		  end
 		end
 	end
