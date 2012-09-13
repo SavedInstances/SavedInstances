@@ -1780,7 +1780,7 @@ function core:ShowTooltip(anchorframe)
 				if inst.Show ~= "never" or showall then
 				    for toon, t in cpairs(vars.db.Toons) do
 					for diff = 1, maxdiff do
-					        if inst[toon] and inst[toon][diff] and (inst[toon][diff].Expires > 0 or showall) then
+					        if inst[toon] and inst[toon][diff] and (inst[toon][diff].Expires > 0 or showexpired) then
 							instancerow[instance] = instancerow[instance] or tooltip:AddLine()
 							addColumns(columns, toon, tooltip)
 						end
