@@ -586,6 +586,8 @@ local function DifficultyString(instance, diff, toon, expired)
 		local inst = vars.db.Instances[instance]
 		if inst.Expansion == 0 and inst.Raid then
 		  setting = "R0"
+		elseif inst.Raid and diff <= 2 then -- ticket 94: temporary hack for old 4.8.1 data
+		  setting = "R"..diff
 		elseif inst.Raid then
 		  setting = "R"..(diff-2)
 		else
