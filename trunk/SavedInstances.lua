@@ -387,6 +387,7 @@ addon.transInstance = {
   [534] = 195, 	-- The Battle for Mount Hyjal
   [509] = 160, 	-- Ruins of Ahn'Qiraj
   [557] = 179,  -- Auchindoun: Mana-Tombs : ticket 72 zhTW
+  [568] = 340,  -- Zul'Aman: frFR 
 }
 
 -- some instances (like sethekk halls) are named differently by GetSavedInstanceInfo() and LFGGetDungeonInfoByID()
