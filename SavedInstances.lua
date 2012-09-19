@@ -1389,7 +1389,7 @@ function addon:histZoneKey()
   if insttype == "none" or insttype == "arena" or insttype == "pvp" then -- pvp doesnt count
     return nil
   end
-  if IsInLFGDungeon() then -- LFG instances don't count
+  if IsInLFGDungeon() or IsInScenarioGroup() then -- LFG instances don't count
     return nil
   end
   -- check if we're locked (using FindInstance so we don't complain about unsaved unknown instances)
