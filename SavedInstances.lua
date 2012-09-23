@@ -923,6 +923,9 @@ local function SI_GetQuestReward()
                    ["isDaily"] = isDaily, 
 		   ["Expires"] = expires,
 		   ["Zone"] = GetRealZoneText() }
+  if isDaily then
+    t.DailyCount = GetDailyQuestsCompleted()
+  end
 end
 hooksecurefunc("GetQuestReward", SI_GetQuestReward)
 
