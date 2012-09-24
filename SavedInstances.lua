@@ -1389,7 +1389,7 @@ addon.histReapTime = 60*60 -- 1 hour
 addon.histLimit = 5 -- instances per hour
 function addon:histZoneKey()
   local instname, insttype, diff, diffname, maxPlayers, playerDifficulty, isDynamicInstance = GetInstanceInfo()
-  if insttype == "none" or insttype == "arena" or insttype == "pvp" then -- pvp doesnt count
+  if insttype == nil or insttype == "none" or insttype == "arena" or insttype == "pvp" then -- pvp doesnt count
     return nil
   end
   if IsInLFGDungeon() or IsInScenarioGroup() then -- LFG instances don't count
