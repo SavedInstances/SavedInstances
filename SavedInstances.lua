@@ -924,7 +924,14 @@ local function SI_GetQuestReward()
 		   ["Expires"] = expires,
 		   ["Zone"] = GetRealZoneText() }
   if isDaily then
-    t.DailyCount = GetDailyQuestsCompleted()
+    local c = 0 -- ticket 96: GetDailyQuestsCompleted() unreliable
+    for _,info in pairs(t.Quests) do
+      if info.isDaily then 
+        c = c + 1
+      end
+    end
+    debug("DailyCount: "..t.DailyCount.." => "..c)
+    t.DailyCount = c
   end
 end
 hooksecurefunc("GetQuestReward", SI_GetQuestReward)
