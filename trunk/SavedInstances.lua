@@ -78,6 +78,11 @@ local currency = {
 addon.LFRInstances = { 
   [416] = { total=4, base=1 }, -- The Siege of Wyrmrest Temple
   [417] = { total=4, base=5 }, -- Fall of Deathwing
+  [527] = { total=3, base=1 }, -- Guardians of Mogu'shan
+  [528] = { total=3, base=4 }, -- The Vault of Mysteries
+  [529] = { total=3, base=1 }, -- The Dread Approach
+  [530] = { total=3, base=4 }, -- Nightmare of Shek'zeer
+  [536] = { total=4, base=1 }, -- Terrace of Endless Spring
 }
 
 addon.showopts = {
