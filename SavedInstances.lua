@@ -400,6 +400,7 @@ addon.transInstance = {
 -- we use the latter name to key our database, and this function to convert as needed
 function addon:FindInstance(name, raid)
   if not name or #name == 0 then return nil end
+  local nname = addon:normalizeName(name)
   -- first pass, direct match
   local info = vars.db.Instances[name]
   if info then
@@ -421,7 +422,6 @@ function addon:FindInstance(name, raid)
      end
   end
   -- normalized substring match
-  local nname = addon:normalizeName(name)
   for truename, info in pairs(vars.db.Instances) do
     local tname = addon:normalizeName(truename)
     if (tname:find(nname, 1, true) or nname:find(tname, 1, true)) and
