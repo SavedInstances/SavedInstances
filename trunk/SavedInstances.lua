@@ -405,17 +405,8 @@ function addon:FindInstance(name, raid)
   if info then
     return name, info.LFDID
   end
-  -- second pass, normalized substring match
-  local nname = addon:normalizeName(name)
-  for truename, info in pairs(vars.db.Instances) do
-    local tname = addon:normalizeName(truename)
-    if (tname:find(nname, 1, true) or nname:find(tname, 1, true)) and
-       info.Raid == raid then -- Tempest Keep: The Botanica
-      --debug("FindInstance("..name..") => "..truename)
-      return truename, info.LFDID
-    end
-  end
-  -- final pass, hyperlink id lookup
+  -- hyperlink id lookup: must precede substring match for ticket 99
+  -- (so transInstance can override incorrect substring matches)
   for i = 1, GetNumSavedInstances() do
      local link = GetSavedInstanceChatLink(i) or ""
      local lid,lname = link:match(":(%d+):%d+:%d+\124h%[(.+)%]\124h")
@@ -428,6 +419,16 @@ function addon:FindInstance(name, raid)
          return truename, lfdid
        end
      end
+  end
+  -- normalized substring match
+  local nname = addon:normalizeName(name)
+  for truename, info in pairs(vars.db.Instances) do
+    local tname = addon:normalizeName(truename)
+    if (tname:find(nname, 1, true) or nname:find(tname, 1, true)) and
+       info.Raid == raid then -- Tempest Keep: The Botanica
+      --debug("FindInstance("..name..") => "..truename)
+      return truename, info.LFDID
+    end
   end
   return nil
 end
