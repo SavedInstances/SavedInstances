@@ -82,7 +82,12 @@ addon.LFRInstances = {
   [528] = { total=3, base=4 }, -- The Vault of Mysteries
   [529] = { total=3, base=1 }, -- The Dread Approach
   [530] = { total=3, base=4 }, -- Nightmare of Shek'zeer
-  [536] = { total=4, base=1 }, -- Terrace of Endless Spring
+  [535] = { total=4, base=1 }, -- Terrace of Endless Spring
+}
+
+addon.WorldBosses = {
+  [691] = { quest=32099, expansion=4, level=90 }, -- Sha of Anger
+  [725] = { quest=32098, expansion=4, level=90 }, -- Galleon
 }
 
 addon.showopts = {
@@ -499,9 +504,12 @@ end
 function addon:instanceBosses(instance,toon,diff)
   local killed,total,base = 0,0,1
   local inst = vars.db.Instances[instance]
+  local save = inst and inst[toon] and inst[toon][diff]
+  if inst.WorldBoss then
+    return (save[1] and 1 or 0), 1, 1
+  end
   if not inst or not inst.LFDID then return 0,0,1 end
   total = GetLFGDungeonNumEncounters(inst.LFDID)
-  local save = inst[toon] and inst[toon][diff]
   if not save then
       return killed, total, base
   elseif save.Link then
@@ -535,8 +543,12 @@ local function instanceSort(i1, i2)
   local level2 = instance2.RecLevel or 0
   local id1 = instance1.LFDID or 0
   local id2 = instance2.LFDID or 0
-  local key1 = level1*10000+id1
-  local key2 = level2*10000+id2
+  local key1 = level1*1000000+id1
+  local key2 = level2*1000000+id2
+  if instance1.WorldBoss then key1 = key1 - 10000 end
+  if instance2.WorldBoss then key2 = key2 - 10000 end
+  if i1:match("^"..L["LFR"]) then key1 = key1 - 20000 end
+  if i2:match("^"..L["LFR"]) then key2 = key2 - 20000 end
   if vars.db.Tooltip.ReverseInstances then
       return key1 < key2
   else
@@ -666,6 +678,17 @@ function addon:UpdateInstanceData()
       end
     end
   end
+  for eid,info in pairs(addon.WorldBosses) do
+    info.eid = eid
+    info.cid,info.name = EJ_GetCreatureInfo(1,eid)
+    local instance = vars.db.Instances[info.name] or {}
+    vars.db.Instances[info.name] = instance
+    instance.Show = (instance.Show and addon.showopts[instance.Show]) or "saved"
+    instance.WorldBoss = eid
+    instance.Expansion = info.expansion
+    instance.RecLevel = info.level
+    instance.Raid = true
+  end
   starttime = debugprofilestop()-starttime
   debug("UpdateInstanceData(): completed "..count.." updates in "..string.format("%.6f",starttime/1000.0).." sec.")
   if addon.RefreshPending then
@@ -707,6 +730,12 @@ function addon:UpdateInstance(id)
   -- typeID 4 = outdoor area, typeID 6 = random
   if not name or not expansionLevel or not recLevel or typeID > 2 then return end
   if name:find(PVP_RATED_BATTLEGROUND) then return end -- ignore 10v10 rated bg
+  if addon.LFRInstances[id] then -- ensure uniqueness (eg TeS LFR)
+    if vars.db.Instances[name] and vars.db.Instances[name].LFDID == id then
+      vars.db.Instances[name] = nil -- clean old LFR entries
+    end
+    name = L["LFR"]..": "..name
+  end
 
   local instance = vars.db.Instances[name]
   local newinst = false
@@ -1041,10 +1070,12 @@ local function ShowIndicatorTooltip(cell, arg, ...)
 	indicatortip:Clear()
 	indicatortip:SetHeaderFont(tooltip:GetHeaderFont())
 	local thisinstance = vars.db.Instances[instance]
+        local worldboss = thisinstance and thisinstance.WorldBoss
         local info = thisinstance[toon][diff]
 	local id = info.ID
 	local nameline, _ = indicatortip:AddHeader()
-	indicatortip:SetCell(nameline, 1, DifficultyString(instance, diff, toon) .. " " .. GOLDFONT .. instance .. FONTEND, indicatortip:GetHeaderFont(), "LEFT", 2)
+	indicatortip:SetCell(nameline, 1, DifficultyString(instance, diff, toon), indicatortip:GetHeaderFont(), "LEFT", 1)
+	indicatortip:SetCell(nameline, 2, GOLDFONT .. instance .. FONTEND, indicatortip:GetHeaderFont(), "RIGHT", 1)
 	local toonstr = (db.Tooltip.ShowServer and toon) or strsplit(' ', toon)
 	indicatortip:AddHeader(ClassColorise(vars.db.Toons[toon].Class, toonstr), addon:idtext(thisinstance,diff,info))
 	local EMPH = " !!! "
@@ -1074,7 +1105,12 @@ local function ShowIndicatorTooltip(cell, arg, ...)
 	if info.ID < 0 then
 	  local killed, total, base = addon:instanceBosses(instance,toon,diff)
           for i=base,base+total-1 do
-            local bossname, texture = GetLFGDungeonEncounterInfo(thisinstance.LFDID, i);
+            local bossname
+            if worldboss then
+              bossname = addon.WorldBosses[worldboss].name or "UNKNOWN"
+            else
+              bossname = GetLFGDungeonEncounterInfo(thisinstance.LFDID, i);
+            end
             if info[i] then 
               indicatortip:AddLine(bossname, REDFONT..ERR_LOOT_GONE..FONTEND)
             else
@@ -1253,6 +1289,7 @@ end
 
 function core:OnEnable()
 	self:RegisterEvent("UPDATE_INSTANCE_INFO", "Refresh")
+	self:RegisterEvent("QUEST_QUERY_COMPLETE", "Refresh")
 	self:RegisterEvent("LFG_UPDATE_RANDOM_INFO", function() addon:UpdateInstanceData() end)
 	self:RegisterEvent("RAID_INSTANCE_WELCOME", RequestRaidInfo)
 	self:RegisterEvent("CHAT_MSG_SYSTEM", "CheckSystemMessage")
@@ -1574,6 +1611,21 @@ function core:Refresh()
 	    end
 	  end
 	end
+
+        local quests = GetQuestsCompleted()
+        for _,einfo in pairs(addon.WorldBosses) do
+           if quests and quests[einfo.quest] and weeklyreset then
+             local truename = einfo.name
+             local instance = vars.db.Instances[truename] 
+             instance[thisToon] = instance[thisToon] or temp[truename] or { }
+	     local info = instance[thisToon][2] or {}
+	     wipe(info)
+             instance[thisToon][2] = info
+  	     info.Expires = weeklyreset
+             info.ID = -1
+             info[1] = true
+           end
+        end
 
 	for name, _ in pairs(temp) do
 	 if vars.db.Instances[name][thisToon] then
