@@ -47,7 +47,9 @@ BINDING_HEADER_SAVEDINSTANCES = "SavedInstances"
 -- general helper functions
 
 function addon:idtext(instance,diff,info)
-  if info.ID < 0 then 
+  if instance.WorldBoss then
+    return L["World Boss"]
+  elseif info.ID < 0 then 
     return RAID_FINDER
   elseif instance.Raid and instance.Expansion == 0 then
     return EXPANSION_NAME0 .. " " .. LFG_TYPE_RAID
