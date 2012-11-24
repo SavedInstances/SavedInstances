@@ -207,6 +207,11 @@ core.Options = {
 					name = L["Sort by server"],
 					order = 6,
 				},
+				SelfAlways = {
+					type = "toggle",
+					name = L["Show self always"],
+					order = 6.5,
+				},
 				SelfFirst = {
 					type = "toggle",
 					name = L["Show self first"],

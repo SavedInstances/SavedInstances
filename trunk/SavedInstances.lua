@@ -201,6 +201,7 @@ vars.defaultDB = {
 		ShowServer = false,
 		ServerSort = true,
 		SelfFirst = true,
+		SelfAlways = false,
 		TrackLFG = true,
 		TrackDeserter = true,
 		Currency395 = true, -- Justice Points 
@@ -1248,6 +1249,7 @@ function core:OnInitialize()
 	db.Tooltip.TrackWeeklyQuests = (db.Tooltip.TrackWeeklyQuests == nil and true) or db.Tooltip.TrackWeeklyQuests
 	db.Tooltip.ServerSort = (db.Tooltip.ServerSort == nil and true) or db.Tooltip.ServerSort
 	db.Tooltip.SelfFirst = (db.Tooltip.SelfFirst == nil and true) or db.Tooltip.SelfFirst
+	db.Tooltip.SelfAlways = (db.Tooltip.SelfAlways == nil and false) or db.Tooltip.SelfAlways
         addon:SetupVersion()
 	RequestRaidInfo() -- get lockout data
 	if LFGDungeonList_Setup then pcall(LFGDungeonList_Setup) end -- try to force LFG frame to populate instance list LFDDungeonList
@@ -1806,7 +1808,8 @@ function core:ShowTooltip(anchorframe)
         end 
 	-- allocating columns for characters
 	for toon, t in cpairs(vars.db.Toons) do
-		if vars.db.Toons[toon].Show == "always" then
+		if vars.db.Toons[toon].Show == "always" or
+		   (toon == thisToon and vars.db.Tooltip.SelfAlways) then
 			addColumns(columns, toon, tooltip)
 		end
 	end
