@@ -1066,26 +1066,28 @@ local function ShowIndicatorTooltip(cell, arg, ...)
 	local toon = arg[2]
 	local diff = arg[3]
 	if not instance or not toon or not diff then return end
-	indicatortip = QTip:Acquire("SavedInstancesIndicatorTooltip", 2, "LEFT", "RIGHT")
+	indicatortip = QTip:Acquire("SavedInstancesIndicatorTooltip", 3, "LEFT", "LEFT", "RIGHT")
 	indicatortip:Clear()
 	indicatortip:SetHeaderFont(tooltip:GetHeaderFont())
 	local thisinstance = vars.db.Instances[instance]
         local worldboss = thisinstance and thisinstance.WorldBoss
         local info = thisinstance[toon][diff]
 	local id = info.ID
-	local nameline, _ = indicatortip:AddHeader()
+	local nameline = indicatortip:AddHeader()
 	indicatortip:SetCell(nameline, 1, DifficultyString(instance, diff, toon), indicatortip:GetHeaderFont(), "LEFT", 1)
-	indicatortip:SetCell(nameline, 2, GOLDFONT .. instance .. FONTEND, indicatortip:GetHeaderFont(), "RIGHT", 1)
+	indicatortip:SetCell(nameline, 2, GOLDFONT .. instance .. FONTEND, indicatortip:GetHeaderFont(), "RIGHT", 2)
+	local toonline = indicatortip:AddHeader()
 	local toonstr = (db.Tooltip.ShowServer and toon) or strsplit(' ', toon)
-	indicatortip:AddHeader(ClassColorise(vars.db.Toons[toon].Class, toonstr), addon:idtext(thisinstance,diff,info))
+	indicatortip:SetCell(toonline, 1, ClassColorise(vars.db.Toons[toon].Class, toonstr), indicatortip:GetHeaderFont(), "LEFT", 1)
+	indicatortip:SetCell(toonline, 2, addon:idtext(thisinstance,diff,info), "RIGHT", 2)
 	local EMPH = " !!! "
 	if info.Extended then
-	  indicatortip:SetCell(indicatortip:AddLine(),1,WHITEFONT .. EMPH .. L["Extended Lockout - Not yet saved"] .. EMPH .. FONTEND,"CENTER",2)
+	  indicatortip:SetCell(indicatortip:AddLine(),1,WHITEFONT .. EMPH .. L["Extended Lockout - Not yet saved"] .. EMPH .. FONTEND,"CENTER",3)
 	elseif info.Locked == false and info.ID > 0 then
-	  indicatortip:SetCell(indicatortip:AddLine(),1,WHITEFONT .. EMPH .. L["Expired Lockout - Can be extended"] .. EMPH .. FONTEND,"CENTER",2)
+	  indicatortip:SetCell(indicatortip:AddLine(),1,WHITEFONT .. EMPH .. L["Expired Lockout - Can be extended"] .. EMPH .. FONTEND,"CENTER",3)
 	end
 	if info.Expires > 0 then
-	  indicatortip:AddLine(YELLOWFONT .. L["Time Left"] .. ":" .. FONTEND, SecondsToTime(thisinstance[toon][diff].Expires - time()))
+	  indicatortip:AddLine(YELLOWFONT .. L["Time Left"] .. ":" .. FONTEND, nil, SecondsToTime(thisinstance[toon][diff].Expires - time()))
 	end
 	indicatortip:SetAutoHideDelay(0.1, tooltip)
 	indicatortip:SmartAnchorTo(tooltip)
@@ -1096,9 +1098,11 @@ local function ShowIndicatorTooltip(cell, arg, ...)
 	  for i=2,scantt:NumLines() do
 	    local left,right = _G[name.."TextLeft"..i], _G[name.."TextRight"..i]
 	    if right and right:GetText() then
-	      indicatortip:AddLine(coloredText(left), coloredText(right))
+	      local n = indicatortip:AddLine()
+	      indicatortip:SetCell(n, 1, coloredText(left), "LEFT", 2)
+	      indicatortip:SetCell(n, 3, coloredText(right), "RIGHT", 1)
 	    else
-	      indicatortip:SetCell(indicatortip:AddLine(),1,coloredText(left),"CENTER",2)
+	      indicatortip:SetCell(indicatortip:AddLine(),1,coloredText(left),"CENTER",3)
 	    end
 	  end
 	end
@@ -1111,10 +1115,12 @@ local function ShowIndicatorTooltip(cell, arg, ...)
             else
               bossname = GetLFGDungeonEncounterInfo(thisinstance.LFDID, i);
             end
+	    local n = indicatortip:AddLine()
+	    indicatortip:SetCell(n, 1, bossname, "LEFT", 2)
             if info[i] then 
-              indicatortip:AddLine(bossname, REDFONT..ERR_LOOT_GONE..FONTEND)
+              indicatortip:SetCell(n, 3, REDFONT..ERR_LOOT_GONE..FONTEND, "RIGHT", 1)
             else
-              indicatortip:AddLine(bossname, GREENFONT..AVAILABLE..FONTEND)
+              indicatortip:SetCell(n, 3, GREENFONT..AVAILABLE..FONTEND, "RIGHT", 1)
             end
           end
         end
