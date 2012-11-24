@@ -1089,6 +1089,11 @@ local function ShowIndicatorTooltip(cell, arg, ...)
 	if info.Expires > 0 then
 	  indicatortip:AddLine(YELLOWFONT .. L["Time Left"] .. ":" .. FONTEND, nil, SecondsToTime(thisinstance[toon][diff].Expires - time()))
 	end
+	if thisinstance.Raid and info.ID > 0 and diff == 5 or diff == 6 then -- heroic raid
+	  local n = indicatortip:AddLine()
+	  indicatortip:SetCell(n, 1, YELLOWFONT .. ID .. ":" .. FONTEND, "LEFT", 1)
+	  indicatortip:SetCell(n, 2, info.ID, "RIGHT", 2)
+	end
 	indicatortip:SetAutoHideDelay(0.1, tooltip)
 	indicatortip:SmartAnchorTo(tooltip)
 	if info.Link then
