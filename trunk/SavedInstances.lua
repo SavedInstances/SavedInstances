@@ -1576,7 +1576,9 @@ function core:Refresh()
 	if not instancesUpdated then addon.RefreshPending = true; return end -- wait for UpdateInstanceData to succeed
 	local temp = localarr("RefreshTemp")
 	for name, instance in pairs(vars.db.Instances) do -- clear current toons lockouts before refresh
-	  if instance[thisToon] then
+	  local id = instance.LFDID
+	  if instance[thisToon] and 
+	    not (id and addon.LFRInstances[id] and select(2,GetLFGDungeonNumEncounters(id)) == 0) then -- ticket 103
 	    temp[name] = instance[thisToon] -- use a temp to reduce memory churn
 	    for diff,info in pairs(temp[name]) do
 	      wipe(info)
