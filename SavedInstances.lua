@@ -400,6 +400,7 @@ addon.transInstance = {
   [557] = 179,  -- Auchindoun: Mana-Tombs : ticket 72 zhTW
   [568] = 340,  -- Zul'Aman: frFR 
   [1004] = 474, -- Scarlet Monastary: deDE
+  [600] = 215,  -- Drak'Tharon: ticket 105 deDE
 }
 
 -- some instances (like sethekk halls) are named differently by GetSavedInstanceInfo() and LFGGetDungeonInfoByID()
