@@ -1016,6 +1016,10 @@ local function ShowQuestTooltip(cell, arg, ...)
 	indicatortip:Clear()
 	indicatortip:SetHeaderFont(tooltip:GetHeaderFont())
 	indicatortip:AddHeader(ClassColorise(vars.db.Toons[toon].Class, toon), qstr)
+	if isDaily then
+	  indicatortip:AddLine(YELLOWFONT .. L["Time Left"] .. ":" .. FONTEND,
+	      SecondsToTime(addon:GetNextDailyResetTime() - time()))
+	end
         local ql = {}
         for id,qi in pairs(vars.db.Toons[toon].Quests) do
           if (not isDaily) == (not qi.isDaily) then
