@@ -1634,7 +1634,8 @@ function core:Refresh()
 
         local quests = GetQuestsCompleted()
         for _,einfo in pairs(addon.WorldBosses) do
-           if quests and quests[einfo.quest] and weeklyreset then
+           if weeklyreset and (IsQuestFlaggedCompleted(einfo.quest) or 
+	      (quests and quests[einfo.quest])) then
              local truename = einfo.name
              local instance = vars.db.Instances[truename] 
              instance[thisToon] = instance[thisToon] or temp[truename] or { }
