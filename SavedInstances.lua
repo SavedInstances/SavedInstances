@@ -373,6 +373,23 @@ function addon:GetNextDarkmoonResetTime()
 end
 end
 
+function addon:QuestCount(toonname)
+  local t = vars and vars.db.Toons and vars.db.Toons[toonname]
+  if not t then return 0,0 end
+  local dailycount, weeklycount = 0,0
+  -- ticket 96: GetDailyQuestsCompleted() is unreliable, the response is laggy and it fails to count some quests
+  for _,info in pairs(t.Quests) do
+    if info.isDaily then 
+      dailycount = dailycount + 1
+    else
+      weeklycount = weeklycount + 1
+    end
+  end
+  dailycount = math.max(t.DailyCount, dailycount) -- include unrecorded quests (completed while addon was off)
+  t.DailyCount = dailycount
+  return dailycount, weeklycount
+end
+
 -- local addon functions below
 
 local function GetLastLockedInstance()
@@ -894,7 +911,7 @@ function addon:UpdateToonData()
 	  end
 	end
 	local dc = GetDailyQuestsCompleted()
-	if dc > 0 then -- zero during logout
+	if dc > t.DailyCount then -- zero during logout, and may undercount quests
 	  t.DailyCount = dc
 	end
 	t.currency = t.currency or {}
@@ -961,16 +978,8 @@ local function SI_GetQuestReward()
                    ["isDaily"] = isDaily, 
 		   ["Expires"] = expires,
 		   ["Zone"] = GetRealZoneText() }
-  if isDaily then
-    local c = 0 -- ticket 96: GetDailyQuestsCompleted() unreliable
-    for _,info in pairs(t.Quests) do
-      if info.isDaily then 
-        c = c + 1
-      end
-    end
-    debug("DailyCount: "..t.DailyCount.." => "..c)
-    t.DailyCount = c
-  end
+  local dc, wc = addon:QuestCount(thisToon)
+  debug("DailyCount: "..dc.."  WeeklyCount: "..wc)
 end
 hooksecurefunc("GetQuestReward", SI_GetQuestReward)
 
@@ -2022,20 +2031,14 @@ function core:ShowTooltip(anchorframe)
 	end
 
         do
-                local weeklycnt = localarr("weeklycnt")
                 local showd, showw 
                 for toon, t in cpairs(vars.db.Toons) do
-			weeklycnt[toon] = 0
-			for _,qi in pairs(t.Quests) do
-				if not qi.isDaily then
-					weeklycnt[toon] = weeklycnt[toon] + 1
-				end
-                        end
-                        if t.DailyCount > 0 and (vars.db.Tooltip.TrackDailyQuests or showall) then
+                        local dc, wc = addon:QuestCount(toon)
+                        if dc > 0 and (vars.db.Tooltip.TrackDailyQuests or showall) then
                                 showd = true
                                 addColumns(columns, toon, tooltip)
                         end
-                        if weeklycnt[toon] > 0 and (vars.db.Tooltip.TrackWeeklyQuests or showall) then
+                        if wc > 0 and (vars.db.Tooltip.TrackWeeklyQuests or showall) then
                                 showw = true
                                 addColumns(columns, toon, tooltip)
                         end
@@ -2050,15 +2053,16 @@ function core:ShowTooltip(anchorframe)
                         showw = tooltip:AddLine(YELLOWFONT .. L["Weekly Quests"] .. FONTEND)
                 end
                 for toon, t in cpairs(vars.db.Toons) do
-                        if showd and columns[toon..1] and t.DailyCount > 0 then
-				local qstr = t.DailyCount
+                        local dc, wc = addon:QuestCount(toon)
+                        if showd and columns[toon..1] and dc > 0 then
+				local qstr = dc
                                 tooltip:SetCell(showd, columns[toon..1], ClassColorise(t.Class,qstr), "CENTER",maxcol)
                                 tooltip:SetCellScript(showd, columns[toon..1], "OnEnter", ShowQuestTooltip, {toon,qstr.." "..L["Daily Quests"],true})
                                 tooltip:SetCellScript(showd, columns[toon..1], "OnLeave",
                                                              function() indicatortip:Hide(); GameTooltip:Hide() end)
                         end
-                        if showw and columns[toon..1] and weeklycnt[toon] > 0 then
-				local qstr = weeklycnt[toon]
+                        if showw and columns[toon..1] and wc > 0 then
+				local qstr = wc
                                 tooltip:SetCell(showw, columns[toon..1], ClassColorise(t.Class,qstr), "CENTER",maxcol)
                                 tooltip:SetCellScript(showw, columns[toon..1], "OnEnter", ShowQuestTooltip, {toon,qstr.." "..L["Weekly Quests"],false})
                                 tooltip:SetCellScript(showw, columns[toon..1], "OnLeave",
