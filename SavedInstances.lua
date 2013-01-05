@@ -73,7 +73,13 @@ local currency = {
   396, -- Valor Points
   392, -- Honor Points
   390, -- Conquest Points
+  738, -- Lesser Charm of Good Fortune
+  697, -- Elder Charm of Good Fortune
+  402, -- Ironpaw Token
+  81, -- Epicurean Award
+  515, -- Darkmoon Prize Ticket
 }
+addon.currency = currency
 
 addon.LFRInstances = { 
   [416] = { total=4, base=1 }, -- The Siege of Wyrmrest Temple
@@ -206,8 +212,6 @@ vars.defaultDB = {
 		TrackDeserter = true,
 		Currency395 = true, -- Justice Points 
 		Currency396 = true, -- Valor Points
-		Currency392 = false, -- Honor Points
-		Currency390 = false, -- Conquest Points
 		CurrencyMax = false,
 		CurrencyEarned = true,
 	},
@@ -2081,9 +2085,12 @@ function core:ShowTooltip(anchorframe)
    	    for toon, t in cpairs(vars.db.Toons) do
 		-- ci.name, ci.amount, ci.earnedThisWeek, ci.weeklyMax, ci.totalMax
                 local ci = t.currency and t.currency[idx] 
-		local gotsome = ((ci.earnedThisWeek or 0) > 0 and (ci.weeklyMax or 0) > 0) or
+		local gotsome
+		if ci then
+		  gotsome = ((ci.earnedThisWeek or 0) > 0 and (ci.weeklyMax or 0) > 0) or
 		                ((ci.amount or 0) > 0 and showall)
 		       -- or ((ci.amount or 0) > 0 and ci.weeklyMax == 0 and t.Level == maxlvl)
+		end
 		if ci and gotsome then
 		  addColumns(columns, toon, tooltip)
 		end
