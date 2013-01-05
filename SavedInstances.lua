@@ -1630,9 +1630,11 @@ function core:Refresh()
             local truename, instance = addon:LookupInstance(id, nil, true)
             instance[thisToon] = instance[thisToon] or temp[truename] or { }
 	    local info = instance[thisToon][2] or {}
-	    wipe(info)
             instance[thisToon][2] = info
-  	    info.Expires = weeklyreset
+	    if not (info.Expires and info.Expires < (time() + 300)) then -- ticket 109: don't refresh expiration close to reset
+	      wipe(info)
+  	      info.Expires = weeklyreset
+	    end
             info.ID = -1*numEncounters
 	    for i=1, numEncounters do
 	      local bossName, texture, isKilled = GetLFGDungeonEncounterInfo(id, i);
