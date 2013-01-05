@@ -133,6 +133,7 @@ function module:BuildOptions()
  		       ["saved"] = L["Show when saved"],
       		       ["never"] = RED_FONT_COLOR_CODE..L["Never show"]..FONTEND,
      		      }
+
 core.Options = {
 	type = "group",
 	name = "SavedInstances",
@@ -325,37 +326,16 @@ core.Options = {
 					type = "header",
 					name = CURRENCY,
 				},
-				Currency395 = { -- Justice Points
-					type = "toggle",
-					order = 51,
-					name = L["Track"].." "..GetCurrencyInfo(395),
-				},
-				Currency396 = { -- Valor Points
-					type = "toggle",
-					order = 52,
-					name = L["Track"].." "..GetCurrencyInfo(396),
-				},
-				Currency392 = { -- Honor Points
-					type = "toggle",
-					order = 53,
-					name = L["Track"].." "..GetCurrencyInfo(392),
-				},
-				Currency390 = { -- Conquest Points
-					type = "toggle",
-					order = 54,
-					name = L["Track"].." "..GetCurrencyInfo(390),
-				},
 				CurrencyMax = {
 					type = "toggle",
-					order = 55,
+					order = 50.2,
 					name = L["Show currency max"]
 				},
 				CurrencyEarned = {
 					type = "toggle",
-					order = 56,
+					order = 50.4,
 					name = L["Show currency earned"]
 				},
-				
 				ToonHeader = {
 					order = 31, 
 					type = "header",
@@ -404,11 +384,19 @@ core.Options = {
 						db.Tooltip[info[#info]][4] = a
 					end,
 				},
-				
+
+				BindHeader = {
+					order = -0.6, 
+					type = "header",
+					name = "",
+					cmdHidden = true,
+				},
+			  	
                                 ToggleBind = {
       					desc = L["Bind a key to toggle the SavedInstances tooltip"],
      	 				type = "keybinding",
       					name = L["Show/Hide the SavedInstances tooltip"],
+					width = "double",
       					cmdHidden = true,
       					order = -0.5,
       					set = function(info,val)
@@ -642,6 +630,13 @@ core.Options = {
 		--]]
 	},
 }
+  for i, curr in ipairs(addon.currency) do
+    core.Options.args.General.args["Currency"..curr] = { 
+	type = "toggle",
+	order = 50+i,
+	name = GetCurrencyInfo(curr),
+    }
+  end
 end
 
 -- global functions
