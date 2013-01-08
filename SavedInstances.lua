@@ -932,14 +932,12 @@ function addon:UpdateToonData()
 	end
         if not addon.logout then
 	  t.Money = GetMoney()
-	  t.Zone = GetRealZoneText()
+	end
+	local zone = GetRealZoneText()
+	if zone and #zone > 0 then
+	  t.Zone = zone
 	end
 end
-
-local special_weekly_defaults = {
-     -- Darkmoon Faire "weekly" quests
-     [29433] = true, -- Test Your Strength
-  }
 
 function addon:QuestIsDarkmoonMonthly()
   if QuestIsDaily() then return false end
