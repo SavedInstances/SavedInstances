@@ -141,6 +141,7 @@ vars.defaultDB = {
 				-- PlayedLevel: integer
 				-- PlayedTotal: integer
 				-- Money: integer
+				-- Zone: string
 
 				-- currency: key: currencyID  value:
 				    -- amount: integer
@@ -931,6 +932,7 @@ function addon:UpdateToonData()
 	end
         if not addon.logout then
 	  t.Money = GetMoney()
+	  t.Zone = GetRealZoneText()
 	end
 end
 
@@ -1009,6 +1011,9 @@ local function ShowToonTooltip(cell, arg, ...)
 	indicatortip:AddLine(STAT_AVERAGE_ITEM_LEVEL,("%d "):format(t.IL or 0)..STAT_AVERAGE_ITEM_LEVEL_EQUIPPED:format(t.ILe or 0))
 	if t.Money then
 	  indicatortip:AddLine(MONEY,GetMoneyString(t.Money))
+	end
+	if t.Zone then
+	  indicatortip:AddLine(ZONE,t.Zone)
 	end
 	if t.PlayedTotal and t.PlayedLevel and ChatFrame_TimeBreakDown then
 	  --indicatortip:AddLine((TIME_PLAYED_TOTAL):format((TIME_DAYHOURMINUTESECOND):format(ChatFrame_TimeBreakDown(t.PlayedTotal))))
