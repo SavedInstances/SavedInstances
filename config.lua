@@ -139,6 +139,19 @@ core.Options = {
 	name = "SavedInstances",
 	handler = SavedInstances,
 	args = {
+		debug = { 
+			name = "debug",
+			cmdHidden = true,
+			guiHidden = true,
+			type = "execute",
+			func = function() db.dbg = not db.dbg; addon.debug("Debug set to: "..(db.dbg and "true" or "false")) end,
+		},
+		config = { 
+			name = L["Open config"],
+			guiHidden = true,
+			type = "execute",
+			func = function() module:ShowConfig() end,
+		},
 		General = {
 			order = 1,
 			type = "group",
@@ -147,6 +160,7 @@ core.Options = {
 					return db.Tooltip[info[#info]]
 			end,
 			set = function(info, value)
+					addon.debug(info[#info].." set to: "..tostring(value))
 					db.Tooltip[info[#info]] = value
 			end,
 			args = {
@@ -678,7 +692,7 @@ function module:SetupOptions()
 	local ACD = LibStub("AceConfigDialog-3.0")
 	local namespace = "SavedInstances"
 	module:BuildOptions()
-	LibStub("AceConfigRegistry-3.0"):RegisterOptionsTable(namespace, core.Options)
+	LibStub("AceConfig-3.0"):RegisterOptionsTable(namespace, core.Options, { "si", "savedinstances" })
         local fgen = ACD:AddToBlizOptions(namespace, nil, nil, "General")
 	firstoptiongroup = fgen
         fgen.default = function() 
