@@ -94,6 +94,8 @@ addon.LFRInstances = {
 addon.WorldBosses = {
   [691] = { quest=32099, expansion=4, level=90 }, -- Sha of Anger
   [725] = { quest=32098, expansion=4, level=90 }, -- Galleon
+  --[814] = { quest=32211, expansion=4, level=90 }, -- Nalak
+  --[826] = { quest=?, expansion=4, level=90 }, -- Oondasta
 }
 
 addon.showopts = {
@@ -1013,9 +1015,10 @@ local function ShowQuestTooltip(cell, arg, ...)
 	indicatortip:Clear()
 	indicatortip:SetHeaderFont(tooltip:GetHeaderFont())
 	indicatortip:AddHeader(ClassColorise(vars.db.Toons[toon].Class, toon), qstr)
-	if isDaily then
+        local nightlyReset = addon:GetNextDailyResetTime()
+	if isDaily and nightlyReset then
 	  indicatortip:AddLine(YELLOWFONT .. L["Time Left"] .. ":" .. FONTEND,
-	      SecondsToTime(addon:GetNextDailyResetTime() - time()))
+	      SecondsToTime(nightlyReset - time()))
 	end
         local ql = {}
         for id,qi in pairs(vars.db.Toons[toon].Quests) do
