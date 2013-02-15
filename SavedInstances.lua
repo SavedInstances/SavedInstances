@@ -94,8 +94,8 @@ addon.LFRInstances = {
 addon.WorldBosses = {
   [691] = { quest=32099, expansion=4, level=90 }, -- Sha of Anger
   [725] = { quest=32098, expansion=4, level=90 }, -- Galleon
-  --[814] = { quest=32211, expansion=4, level=90 }, -- Nalak
-  --[826] = { quest=?, expansion=4, level=90 }, -- Oondasta
+  -- [814] = { quest=32518, expansion=4, level=90 }, -- Nalak (32211?)
+  -- [826] = { quest=32519, expansion=4, level=90 }, -- Oondasta
 }
 
 addon.showopts = {
@@ -297,19 +297,22 @@ local function TableLen(table)
 	return i
 end
 
+-- returns how many hours the server time is ahead of local time
+-- convert local time -> server time: add this value
+-- convert server time -> local time: subtract this value
 function addon:GetServerOffset()
-	-- this function was borrowed from Broker Currency with Azethoth
+	local serverDay = CalendarGetDate() - 1 -- 1-based starts on Sun
+	local localDay = tonumber(date("%w")) -- 0-based starts on Sun
 	local serverHour, serverMinute = GetGameTime()
 	local localHour, localMinute = tonumber(date("%H")), tonumber(date("%M"))
+	if serverDay == (localDay + 1)%7 then -- server is a day ahead
+	  serverHour = serverHour + 24
+	elseif localDay == (serverDay + 1)%7 then -- local is a day ahead
+	  localHour = localHour + 24
+	end
 	local server = serverHour + serverMinute / 60
 	local localT = localHour + localMinute / 60
 	local offset = floor((server - localT) * 2 + 0.5) / 2
-	if raw then return offset end
-	if offset >= 12 then
-		offset = offset - 24
-	elseif offset < -12 then
-		offset = offset + 24
-	end
 	return offset
 end
 
