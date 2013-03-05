@@ -78,6 +78,7 @@ local currency = {
   402, -- Ironpaw Token
   81, -- Epicurean Award
   515, -- Darkmoon Prize Ticket
+  752, -- Mogu Rune of Fate
 }
 addon.currency = currency
 
@@ -94,8 +95,8 @@ addon.LFRInstances = {
 addon.WorldBosses = {
   [691] = { quest=32099, expansion=4, level=90 }, -- Sha of Anger
   [725] = { quest=32098, expansion=4, level=90 }, -- Galleon
-  -- [814] = { quest=32518, expansion=4, level=90 }, -- Nalak (32211?)
-  -- [826] = { quest=32519, expansion=4, level=90 }, -- Oondasta
+  [814] = { quest=32518, expansion=4, level=90 }, -- Nalak (32211?)
+  [826] = { quest=32519, expansion=4, level=90 }, -- Oondasta
 }
 
 addon.showopts = {

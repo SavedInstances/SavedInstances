@@ -1,4 +1,4 @@
-## Interface: 50100
+## Interface: 50200
 ## Title: SavedInstances
 ## Notes: Tracks raid/instance lockouts on your characters, related currencies and cooldowns.
 ## Author: @project-author@
