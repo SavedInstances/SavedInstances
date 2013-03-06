@@ -1193,7 +1193,7 @@ local function ShowCurrencyTooltip(cell, arg, ...)
   local toon, idx, ci = unpack(arg)
   if not toon or not idx or not ci then return end
   local name,_,tex = GetCurrencyInfo(idx)
-  tex = " \124TInterface\\Icons\\"..tex..":0\124t"
+  tex = " \124T"..tex..":0\124t"
   indicatortip = QTip:Acquire("SavedInstancesIndicatorTooltip", 2, "LEFT", "RIGHT")
   indicatortip:Clear()
   indicatortip:SetHeaderFont(tooltip:GetHeaderFont())
@@ -2102,7 +2102,7 @@ function core:ShowTooltip(anchorframe)
 		end
 		if ci and (gotsome or (ci.amount or 0) > 0) and columns[toon..1] then
 		  local name,_,tex = GetCurrencyInfo(idx)
-		  show = name.." \124TInterface\\Icons\\"..tex..":0\124t"
+		  show = name.." \124T"..tex..":0\124t"
 		end
 	    end
    	    local currLine
