@@ -199,6 +199,7 @@ vars.defaultDB = {
 		TrackWeeklyQuests = true,
 		ShowCategories = false,
 		CategorySpaces = false,
+		RowHighlight = 0.1,
 		NewFirst = true,
 		RaidsFirst = true,
 		CategorySort = "EXPANSION", -- "EXPANSION", "TYPE"
@@ -1259,6 +1260,7 @@ function core:OnInitialize()
 	db.Tooltip.ServerSort = (db.Tooltip.ServerSort == nil and true) or db.Tooltip.ServerSort
 	db.Tooltip.SelfFirst = (db.Tooltip.SelfFirst == nil and true) or db.Tooltip.SelfFirst
 	db.Tooltip.SelfAlways = (db.Tooltip.SelfAlways == nil and false) or db.Tooltip.SelfAlways
+	db.Tooltip.RowHighlight = db.Tooltip.RowHighlight or 0.1
         addon:SetupVersion()
 	RequestRaidInfo() -- get lockout data
 	if LFGDungeonList_Setup then pcall(LFGDungeonList_Setup) end -- try to force LFG frame to populate instance list LFDDungeonList
@@ -1877,15 +1879,18 @@ function core:ShowTooltip(anchorframe)
 	-- allocating tooltip space for instances, categories, and space between categories
 	local categoryrow = localarr("categoryrow") -- remember where each category heading goes
 	local instancerow = localarr("instancerow") -- remember where each instance goes
+	local blankrow = localarr("blankrow") -- track blank lines
 	local firstcategory = true -- use this to skip spacing before the first category
 	for _, category in ipairs(addon:OrderedCategories()) do
 		if categoryshown[category] then
 			if not firstcategory and vars.db.Tooltip.CategorySpaces then
-				tooltip:AddSeparator(6,0,0,0,0)
+				local line = tooltip:AddSeparator(6,0,0,0,0)
+				blankrow[line] = true
 			end
 			if (categories > 1 or vars.db.Tooltip.ShowSoloCategory) and categoryshown[category] then
-				categoryrow[category], _ = tooltip:AddLine()
-
+				local line = tooltip:AddLine()
+				categoryrow[category] = line
+				blankrow[line] = true
 			end
 			for _, instance in ipairs(addon:OrderedInstances(category)) do
 			       local inst = vars.db.Instances[instance]
@@ -2108,7 +2113,8 @@ function core:ShowTooltip(anchorframe)
    	    local currLine
 	    if show then
 		if not firstcategory and vars.db.Tooltip.CategorySpaces and firstcurrency then
-			tooltip:AddSeparator(6,0,0,0,0)
+			local line = tooltip:AddSeparator(6,0,0,0,0)
+		        blankrow[line] = true
 			firstcurrency = false
 		end
 		currLine = tooltip:AddLine(YELLOWFONT .. show .. FONTEND)		
@@ -2186,9 +2192,18 @@ function core:ShowTooltip(anchorframe)
 		end
 	end
 
+	local hi = true
 	for i=2,tooltip:GetLineCount() do -- row highlighting
 	  tooltip:SetLineScript(i, "OnEnter", function() end)
 	  tooltip:SetLineScript(i, "OnLeave", function() end)
+
+          if hi and not blankrow[i] then
+	    tooltip:SetLineColor(i, 1,1,1, db.Tooltip.RowHighlight)
+	    hi = false
+	  else
+	    tooltip:SetLineColor(i, 0,0,0, 0)
+	    hi = true
+	  end
 	end
 
 	-- finishing up, with hints
