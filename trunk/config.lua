@@ -222,6 +222,11 @@ core.Options = {
 					name = L["Sort by server"],
 					order = 6,
 				},
+				ServerOnly = {
+					type = "toggle",
+					name = L["Show only current server"],
+					order = 6.25,
+				},
 				SelfAlways = {
 					type = "toggle",
 					name = L["Show self always"],
