@@ -211,6 +211,7 @@ vars.defaultDB = {
 		LimitWarn = true,
 		ShowServer = false,
 		ServerSort = true,
+		ServerOnly = false,
 		SelfFirst = true,
 		SelfAlways = false,
 		TrackLFG = true,
@@ -1266,6 +1267,7 @@ function core:OnInitialize()
 	db.Tooltip.TrackDailyQuests = (db.Tooltip.TrackDailyQuests == nil and true) or db.Tooltip.TrackDailyQuests
 	db.Tooltip.TrackWeeklyQuests = (db.Tooltip.TrackWeeklyQuests == nil and true) or db.Tooltip.TrackWeeklyQuests
 	db.Tooltip.ServerSort = (db.Tooltip.ServerSort == nil and true) or db.Tooltip.ServerSort
+	db.Tooltip.ServerOnly = (db.Tooltip.ServerOnly == nil and false) or db.Tooltip.ServerOnly
 	db.Tooltip.SelfFirst = (db.Tooltip.SelfFirst == nil and true) or db.Tooltip.SelfFirst
 	db.Tooltip.SelfAlways = (db.Tooltip.SelfAlways == nil and false) or db.Tooltip.SelfAlways
 	db.Tooltip.RowHighlight = db.Tooltip.RowHighlight or 0.1
@@ -1735,7 +1737,9 @@ end
 local function cpairs(t)
   wipe(cnext_sorted_names)
   for n,_ in pairs(t) do
-    if vars.db.Toons[n] and vars.db.Toons[n].Show ~= "never" then
+    local tn, _,_, ts = strsplit(" - ",n)
+    if vars.db.Toons[n] and vars.db.Toons[n].Show ~= "never" and
+       (ts == GetRealmName() or not db.Tooltip.ServerOnly) then
       table.insert(cnext_sorted_names, n)
     end
   end
