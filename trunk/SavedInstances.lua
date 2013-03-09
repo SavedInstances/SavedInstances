@@ -740,8 +740,16 @@ function addon:UpdateInstance(id)
   -- name is nil for non-existent ids
   -- isHoliday is for single-boss holiday instances that don't generate raid saves
   -- typeID 4 = outdoor area, typeID 6 = random
+  maxPlayers = tonumber(maxPlayers)
   if not name or not expansionLevel or not recLevel or typeID > 2 then return end
   if name:find(PVP_RATED_BATTLEGROUND) then return end -- ignore 10v10 rated bg
+  if subtypeID == LFG_SUBTYPEID_SCENARIO and 
+     (maxPlayers == 3 or maxPlayers == 1) then -- ignore scenarios
+     if vars.db.Instances[name] and vars.db.Instances[name].LFDID == id then
+       vars.db.Instances[name] = nil -- clean old scenario entries
+     end
+     return 
+  end
   if addon.LFRInstances[id] then -- ensure uniqueness (eg TeS LFR)
     if vars.db.Instances[name] and vars.db.Instances[name].LFDID == id then
       vars.db.Instances[name] = nil -- clean old LFR entries
@@ -765,7 +773,7 @@ function addon:UpdateInstance(id)
   instance.Expansion = expansionLevel
   instance.RecLevel = instance.RecLevel or recLevel
   if recLevel < instance.RecLevel then instance.RecLevel = recLevel end -- favor non-heroic RecLevel
-  instance.Raid = (tonumber(maxPlayers) > 5 or (tonumber(maxPlayers) == 0 and typeID == 2))
+  instance.Raid = (maxPlayers > 5 or (maxPlayers == 0 and typeID == 2))
   return newinst, true, name
 end
 
