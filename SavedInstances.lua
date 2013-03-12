@@ -920,10 +920,12 @@ function addon:UpdateToonData()
 	for _,idx in pairs(currency) do
 	  local ci = t.currency[idx] or {}
 	  _, ci.amount, _, ci.earnedThisWeek, ci.weeklyMax, ci.totalMax = GetCurrencyInfo(idx)
-          if idx == 396 then -- VP x 100, CP x 1
+          if idx == 396 then -- VP has a weekly max scaled by 100
             ci.weeklyMax = ci.weeklyMax and math.floor(ci.weeklyMax/100)
           end
-          ci.totalMax = ci.totalMax and math.floor(ci.totalMax/100)
+	  if idx == 390 or idx == 392 or idx == 395 or idx == 396 then -- these have a total max scaled by 100
+            ci.totalMax = ci.totalMax and math.floor(ci.totalMax/100)
+	  end
           ci.season = addon:GetSeasonCurrency(idx)
 	  t.currency[idx] = ci
 	end
