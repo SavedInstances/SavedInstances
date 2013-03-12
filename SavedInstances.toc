@@ -14,7 +14,7 @@
 ## X-Embeds: Ace3, CallbackHandler-1.0, LibDataBroker-1.1, LibDBIcon-1.0, LibQTip-1.0
 #@end-no-lib-strip@ 
 ## SavedVariables: SavedInstancesDB
-# ## LoadManagers: AddonLoader
+## LoadManagers: AddonLoader
 ## X-LoadOn-Always: delayed
 
 
