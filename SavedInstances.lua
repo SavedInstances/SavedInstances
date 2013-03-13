@@ -105,6 +105,27 @@ addon.showopts = {
   never = "never",
 }
 
+local _specialWeeklyQuests = {
+  [32611] = { zid=928, lid=94221 }, -- Shan'ze Ritual Stone looted
+  [32626] = { zid=928, lid=94222 }, -- Key to the Palace of Lei Shen looted
+}
+function addon:specialWeeklyQuests()
+  for qid, qinfo in pairs(_specialWeeklyQuests) do
+    qinfo.quest = qid
+    if not qinfo.name and qinfo.lid then
+      local _,itemname = GetItemInfo(qinfo.lid)
+      if itemname then
+        qinfo.name = itemname.." ("..LOOT..")"
+      end
+    end
+    if not qinfo.zone and qinfo.zid then
+      qinfo.zone = GetMapNameByID(qinfo.zid)
+    end
+  end
+  return _specialWeeklyQuests
+end
+addon:specialWeeklyQuests()
+
 local function chatMsg(msg)
      DEFAULT_CHAT_FRAME:AddMessage("\124cFFFF0000"..addonName.."\124r: "..msg)
 end
@@ -1677,6 +1698,21 @@ function core:Refresh()
              info[1] = true
            end
         end
+	local tiq = vars.db.Toons[thisToon]
+	tiq = tiq and tiq.Quests
+	if tiq then
+	  for _, qinfo in pairs(addon:specialWeeklyQuests()) do
+	    local qid = qinfo.quest
+            if weeklyreset and (IsQuestFlaggedCompleted(qid) or 
+	      (quests and quests[qid])) then
+              local q = tiq[qid] or {}
+	      tiq[qid] = q
+	      q.Title = qinfo.name
+	      q.Zone = qinfo.zone
+	      q.Expires = weeklyreset
+	    end
+	  end
+	end
 
         local icnt, dcnt = 0,0
 	for name, _ in pairs(temp) do
