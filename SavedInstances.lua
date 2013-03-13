@@ -90,6 +90,10 @@ addon.LFRInstances = {
   [529] = { total=3, base=1 }, -- The Dread Approach
   [530] = { total=3, base=4 }, -- Nightmare of Shek'zeer
   [526] = { total=4, base=1 }, -- Terrace of Endless Spring
+  [610] = { total=3, base=1 }, -- Throne of Thunder pt 1
+  [611] = { total=3, base=4 }, -- Throne of Thunder pt 2
+  [612] = { total=3, base=7 }, -- Throne of Thunder pt 3
+  [613] = { total=3, base=10}, -- Throne of Thunder pt 4
 }
 
 addon.WorldBosses = {
