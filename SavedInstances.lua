@@ -112,6 +112,7 @@ addon.showopts = {
 local _specialWeeklyQuests = {
   [32611] = { zid=928, lid=94221 }, -- Shan'ze Ritual Stone looted
   [32626] = { zid=928, lid=94222 }, -- Key to the Palace of Lei Shen looted
+  [32609] = { zid=928, aid=8104  }, -- Trove of the Thunder King (outdoor chest)
 }
 function addon:specialWeeklyQuests()
   for qid, qinfo in pairs(_specialWeeklyQuests) do
@@ -120,6 +121,15 @@ function addon:specialWeeklyQuests()
       local _,itemname = GetItemInfo(qinfo.lid)
       if itemname then
         qinfo.name = itemname.." ("..LOOT..")"
+      end
+    end
+    if not qinfo.name and qinfo.aid then
+      scantt:SetOwner(UIParent,"ANCHOR_NONE")
+      scantt:SetAchievementByID(qinfo.aid)
+      local l = _G[scantt:GetName().."TextLeft5"]
+      l = l and l:GetText()
+      if l then
+        qinfo.name = l:gsub("%p","")
       end
     end
     if not qinfo.zone and qinfo.zid then
