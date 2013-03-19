@@ -1774,8 +1774,8 @@ local function cnext(t,i)
    end
 end
 local function cpairs_sort(a,b)
-  local an, _,_, as = strsplit(" - ",a)
-  local bn, _,_, bs = strsplit(" - ",b)
+  local an, as = a:match('^(.*) [-] (.*)$')
+  local bn, bs = b:match('^(.*) [-] (.*)$')
   if db.Tooltip.SelfFirst and b == thisToon then
     return true
   elseif db.Tooltip.SelfFirst and a == thisToon then
@@ -1789,7 +1789,7 @@ end
 local function cpairs(t)
   wipe(cnext_sorted_names)
   for n,_ in pairs(t) do
-    local tn, _,_, ts = strsplit(" - ",n)
+    local tn, ts = n:match('^(.*) [-] (.*)$')
     if vars.db.Toons[n] and vars.db.Toons[n].Show ~= "never" and
        (ts == GetRealmName() or not db.Tooltip.ServerOnly) then
       table.insert(cnext_sorted_names, n)
@@ -2223,7 +2223,7 @@ function core:ShowTooltip(anchorframe)
 		local toon = strsub(toondiff, 1, #toondiff-1)
 		local diff = strsub(toondiff, #toondiff, #toondiff)
 		if diff == "1" then
-		        local toonname, _,_, toonserver = strsplit(" - ", toon)
+		        local toonname, toonserver = toon:match('^(.*) [-] (.*)$')
 			local toonstr = toonname
 			if db.Tooltip.ShowServer then
 			  toonstr = toonstr .. "\n" .. toonserver
