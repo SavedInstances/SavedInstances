@@ -320,6 +320,12 @@ core.Options = {
 					desc = L["Show holiday boss rewards"],
 					order = 23.75,
 				},
+				ShowRandom = {
+					type = "toggle",
+					name = L["Show Random"],
+					desc = L["Show random dungeon bonus reward"],
+					order = 23.75,
+				},
 				MiscHeader = {
 					order = 30, 
 					type = "header",

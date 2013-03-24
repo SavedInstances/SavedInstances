@@ -230,6 +230,7 @@ vars.defaultDB = {
 		ReverseInstances = false,
 		ShowExpired = false,
 		ShowHoliday = true,
+		ShowRandom = true,
 		TrackDailyQuests = true,
 		TrackWeeklyQuests = true,
 		ShowCategories = false,
@@ -260,6 +261,7 @@ vars.defaultDB = {
 					-- Show: boolean
 					-- Raid: boolean
 					-- Holiday: boolean
+					-- Random: boolean
 					-- Expansion: integer
 					-- RecLevel: integer
 					-- LFDID: integer
@@ -542,6 +544,7 @@ function addon:InstanceCategory(instance)
 	if not instance then return nil end
 	local instance = vars.db.Instances[instance]
 	if instance.Holiday then return "H" end
+	if instance.Random then return "N" end
 	return ((instance.Raid and "R") or ((not instance.Raid) and "D")) .. instance.Expansion
 end
 
@@ -718,7 +721,6 @@ function addon:UpdateInstanceData()
                     LFDDungeonList -- lazily updated
   if not dungeonDB or instancesUpdated then return end  -- nil before first use in UI
   instancesUpdated = true
-  core:UnregisterEvent("LFG_UPDATE_RANDOM_INFO")
   local count = 0
   local starttime = debugprofilestop()
   local maxid = 600
@@ -777,7 +779,7 @@ function addon:UpdateInstance(id)
   -- isHoliday is for single-boss holiday instances that don't generate raid saves
   -- typeID 4 = outdoor area, typeID 6 = random
   maxPlayers = tonumber(maxPlayers)
-  if not name or not expansionLevel or not recLevel or typeID > 2 then return end
+  if not name or not expansionLevel or not recLevel or (typeID > 2 and typeID ~= 6) then return end
   if name:find(PVP_RATED_BATTLEGROUND) then return end -- ignore 10v10 rated bg
   if subtypeID == LFG_SUBTYPEID_SCENARIO and 
      (maxPlayers == 3 or maxPlayers == 1) then -- ignore scenarios
@@ -810,6 +812,9 @@ function addon:UpdateInstance(id)
   instance.RecLevel = instance.RecLevel or recLevel
   if recLevel < instance.RecLevel then instance.RecLevel = recLevel end -- favor non-heroic RecLevel
   instance.Raid = (maxPlayers > 5 or (maxPlayers == 0 and typeID == 2))
+  if typeID == 6 then
+    instance.Random = true 
+  end
   return newinst, true, name
 end
 
@@ -858,12 +863,12 @@ function addon:UpdateToonData()
 				end
 			end
 		end
-		if i.Holiday and addon.activeHolidays[instance] then
+		if (i.Holiday and addon.activeHolidays[instance]) or (i.Random) then
 		  local id = i.LFDID
 		  GetLFGDungeonInfo(id) -- forces update
-		  local donetoday = GetLFGDungeonRewards(id)
+		  local donetoday, money = GetLFGDungeonRewards(id)
 		  local expires = addon:GetNextDailyResetTime()
-		  if donetoday and expires then
+		  if expires and donetoday and (i.Holiday or (money and money > 0)) then
 		    i[thisToon] = i[thisToon] or {}
 		    i[thisToon][1] = i[thisToon][1] or {}
 		    local d = i[thisToon][1]
@@ -1301,6 +1306,7 @@ function core:OnInitialize()
 	db.Tooltip.ReportResets = (db.Tooltip.ReportResets == nil and true) or db.Tooltip.ReportResets
 	db.Tooltip.LimitWarn = (db.Tooltip.LimitWarn == nil and true) or db.Tooltip.LimitWarn
 	db.Tooltip.ShowHoliday = (db.Tooltip.ShowHoliday == nil and true) or db.Tooltip.ShowHoliday
+	db.Tooltip.ShowRandom = (db.Tooltip.ShowRandom == nil and true) or db.Tooltip.ShowRandom
 	db.Tooltip.TrackDailyQuests = (db.Tooltip.TrackDailyQuests == nil and true) or db.Tooltip.TrackDailyQuests
 	db.Tooltip.TrackWeeklyQuests = (db.Tooltip.TrackWeeklyQuests == nil and true) or db.Tooltip.TrackWeeklyQuests
 	db.Tooltip.ServerSort = (db.Tooltip.ServerSort == nil and true) or db.Tooltip.ServerSort
@@ -1310,6 +1316,7 @@ function core:OnInitialize()
 	db.Tooltip.RowHighlight = db.Tooltip.RowHighlight or 0.1
         addon:SetupVersion()
 	RequestRaidInfo() -- get lockout data
+	RequestLFDPlayerLockInfo()
 	if LFGDungeonList_Setup then pcall(LFGDungeonList_Setup) end -- try to force LFG frame to populate instance list LFDDungeonList
 	vars.dataobject = vars.LDB and vars.LDB:NewDataObject("SavedInstances", {
 		text = "",
@@ -1361,7 +1368,8 @@ end
 function core:OnEnable()
 	self:RegisterEvent("UPDATE_INSTANCE_INFO", "Refresh")
 	self:RegisterEvent("QUEST_QUERY_COMPLETE", "Refresh")
-	self:RegisterEvent("LFG_UPDATE_RANDOM_INFO", function() addon:UpdateInstanceData() end)
+	self:RegisterEvent("LFG_UPDATE_RANDOM_INFO", function() addon:UpdateInstanceData(); addon:UpdateToonData() end)
+	self:RegisterEvent("LFG_COMPLETION_REWARD", function() RequestLFDPlayerLockInfo() end)
 	self:RegisterEvent("RAID_INSTANCE_WELCOME", RequestRaidInfo)
 	self:RegisterEvent("CHAT_MSG_SYSTEM", "CheckSystemMessage")
 	self:RegisterEvent("CHAT_MSG_CURRENCY", "CheckSystemMessage")
@@ -2027,10 +2035,11 @@ function core:ShowTooltip(anchorframe)
 			end
 	end
 
-	if vars.db.Tooltip.ShowHoliday or showall then
-	  local holidayinst = localarr("holidayinst")
-	  for instance, info in pairs(vars.db.Instances) do
-	    if info.Holiday then
+	local holidayinst = localarr("holidayinst")
+	for instance, info in pairs(vars.db.Instances) do
+	  if showall or 
+	     (info.Holiday and vars.db.Tooltip.ShowHoliday) or
+	     (info.Random and vars.db.Tooltip.ShowRandom) then
 		for toon, t in cpairs(vars.db.Toons) do
 		  local d = info[toon] and info[toon][1]
 		  if d then
@@ -2045,7 +2054,6 @@ function core:ShowTooltip(anchorframe)
      		    tooltip:SetCell(holidayinst[instance], columns[toon..1], ClassColorise(t.Class,tstr), "CENTER",maxcol)
 		  end
 		end
-	    end
 	  end
 	end
 
