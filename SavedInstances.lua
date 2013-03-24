@@ -779,10 +779,10 @@ function addon:UpdateInstance(id)
   -- isHoliday is for single-boss holiday instances that don't generate raid saves
   -- typeID 4 = outdoor area, typeID 6 = random
   maxPlayers = tonumber(maxPlayers)
-  if not name or not expansionLevel or not recLevel or (typeID > 2 and typeID ~= 6) then return end
+  if not name or not expansionLevel or not recLevel or (typeID > 2 and typeID ~= TYPEID_RANDOM_DUNGEON) then return end
   if name:find(PVP_RATED_BATTLEGROUND) then return end -- ignore 10v10 rated bg
-  if subtypeID == LFG_SUBTYPEID_SCENARIO and 
-     (maxPlayers == 3 or maxPlayers == 1) then -- ignore scenarios
+  if subtypeID == LFG_SUBTYPEID_SCENARIO and typeID ~= TYPEID_RANDOM_DUNGEON and
+     (maxPlayers == 3 or maxPlayers == 1) then -- ignore non-random scenarios
      if vars.db.Instances[name] and vars.db.Instances[name].LFDID == id then
        vars.db.Instances[name] = nil -- clean old scenario entries
      end
@@ -812,7 +812,7 @@ function addon:UpdateInstance(id)
   instance.RecLevel = instance.RecLevel or recLevel
   if recLevel < instance.RecLevel then instance.RecLevel = recLevel end -- favor non-heroic RecLevel
   instance.Raid = (maxPlayers > 5 or (maxPlayers == 0 and typeID == 2))
-  if typeID == 6 then
+  if typeID == TYPEID_RANDOM_DUNGEON then
     instance.Random = true 
   end
   return newinst, true, name
@@ -1953,11 +1953,15 @@ function core:ShowTooltip(anchorframe)
 	local instancerow = localarr("instancerow") -- remember where each instance goes
 	local blankrow = localarr("blankrow") -- track blank lines
 	local firstcategory = true -- use this to skip spacing before the first category
+	local function addsep() 
+   		local line = tooltip:AddSeparator(6,0,0,0,0)
+		blankrow[line] = true
+		return line
+	end
 	for _, category in ipairs(addon:OrderedCategories()) do
 		if categoryshown[category] then
 			if not firstcategory and vars.db.Tooltip.CategorySpaces then
-				local line = tooltip:AddSeparator(6,0,0,0,0)
-				blankrow[line] = true
+				addsep()
 			end
 			if (categories > 1 or vars.db.Tooltip.ShowSoloCategory) and categoryshown[category] then
 				local line = tooltip:AddLine()
@@ -2036,6 +2040,7 @@ function core:ShowTooltip(anchorframe)
 	end
 
 	local holidayinst = localarr("holidayinst")
+	local firstlfd = true
 	for instance, info in pairs(vars.db.Instances) do
 	  if showall or 
 	     (info.Holiday and vars.db.Tooltip.ShowHoliday) or
@@ -2045,8 +2050,9 @@ function core:ShowTooltip(anchorframe)
 		  if d then
 		    addColumns(columns, toon, tooltip)
 		    if not holidayinst[instance] then
-		      if not firstcategory and vars.db.Tooltip.CategorySpaces then
-		         tooltip:AddSeparator(6,0,0,0,0)
+		      if not firstcategory and vars.db.Tooltip.CategorySpaces and firstlfd then
+			 addsep()
+			 firstlfd = false
 		      end
 		      holidayinst[instance] = tooltip:AddLine(YELLOWFONT .. instance .. FONTEND)
 		    end
@@ -2069,10 +2075,12 @@ function core:ShowTooltip(anchorframe)
 		end
 		local randomLine
 		if cd1 or cd2 then
-			if not firstcategory and vars.db.Tooltip.CategorySpaces then
-				tooltip:AddSeparator(6,0,0,0,0)
+			if not firstcategory and vars.db.Tooltip.CategorySpaces and firstlfd then
+				addsep()
+			        firstlfd = false
 			end
-			cd1 = cd1 and tooltip:AddLine(YELLOWFONT .. LFG_TYPE_RANDOM_DUNGEON .. FONTEND)		
+			local cooldown = ITEM_COOLDOWN_TOTAL:gsub("%%s",""):gsub("%p","")
+			cd1 = cd1 and tooltip:AddLine(YELLOWFONT .. LFG_TYPE_RANDOM_DUNGEON..cooldown .. FONTEND)		
 			cd2 = cd2 and tooltip:AddLine(YELLOWFONT .. GetSpellInfo(71041) .. FONTEND)		
 		end
 		for toon, t in cpairs(vars.db.Toons) do
@@ -2103,8 +2111,9 @@ function core:ShowTooltip(anchorframe)
 			end
 		end
 		if show then
-			if not firstcategory and vars.db.Tooltip.CategorySpaces then
-				tooltip:AddSeparator(6,0,0,0,0)
+			if not firstcategory and vars.db.Tooltip.CategorySpaces and firstlfd then
+				addsep()
+			        firstlfd = false
 			end
 			show = tooltip:AddLine(YELLOWFONT .. DESERTER .. FONTEND)		
 		end
@@ -2133,7 +2142,7 @@ function core:ShowTooltip(anchorframe)
                         end
                 end
                 if not firstcategory and vars.db.Tooltip.CategorySpaces and (showd or showw) then
-                        tooltip:AddSeparator(6,0,0,0,0)
+			addsep()
                 end
                 if showd then
                         showd = tooltip:AddLine(YELLOWFONT .. L["Daily Quests"] .. FONTEND)
@@ -2185,8 +2194,7 @@ function core:ShowTooltip(anchorframe)
    	    local currLine
 	    if show then
 		if not firstcategory and vars.db.Tooltip.CategorySpaces and firstcurrency then
-			local line = tooltip:AddSeparator(6,0,0,0,0)
-		        blankrow[line] = true
+			addsep()
 			firstcurrency = false
 		end
 		currLine = tooltip:AddLine(YELLOWFONT .. show .. FONTEND)		
