@@ -1284,6 +1284,13 @@ end
 
 -- global addon code below
 
+function core:toonInit()
+	db.Toons[thisToon] = db.Toons[thisToon] or { }
+	db.Toons[thisToon].LClass, db.Toons[thisToon].Class = UnitClass("player")
+	db.Toons[thisToon].Level = UnitLevel("player")
+	db.Toons[thisToon].Show = db.Toons[thisToon].Show or "saved"
+end
+
 function core:OnInitialize()
 	SavedInstancesDB = SavedInstancesDB or vars.defaultDB
 	-- begin backwards compatibility
@@ -1297,10 +1304,7 @@ function core:OnInitialize()
 	db = db or SavedInstancesDB
 	vars.db = db
 	config = vars.config
-	db.Toons[thisToon] = db.Toons[thisToon] or { }
-	db.Toons[thisToon].LClass, db.Toons[thisToon].Class = UnitClass("player")
-	db.Toons[thisToon].Level = UnitLevel("player")
-	db.Toons[thisToon].Show = db.Toons[thisToon].Show or "saved"
+	core:toonInit()
 	db.Lockouts = nil -- deprecated
 	db.History = db.History or {}
 	db.Tooltip.ReportResets = (db.Tooltip.ReportResets == nil and true) or db.Tooltip.ReportResets
@@ -2356,4 +2360,34 @@ function core:ShowTooltip(anchorframe)
 	   end
         end
 end
+
+local function ResetConfirmed()
+  debug("Resetting characters")
+  -- clear saves
+  for instance, i in pairs(vars.db.Instances) do
+	for toon, t in pairs(vars.db.Toons) do
+		i[toon] = nil
+	end
+  end
+  wipe(vars.db.Toons) -- clear toon db
+  addon.PlayedTime = nil -- reset played cache
+  core:toonInit() -- rebuild thisToon
+  core:Refresh() 
+  vars.config:BuildOptions() -- refresh config table
+  vars.config:ReopenConfigDisplay(vars.config.ftoon)
+end
+
+
+StaticPopupDialogs["SAVEDINSTANCES_RESET"] = {
+  preferredIndex = 3, -- reduce the chance of UI taint
+  text = L["Are you sure you want to reset the SavedInstances character database? Characters will be re-populated as you log into them."],
+  button1 = OKAY,
+  button2 = CANCEL,
+  OnAccept = ResetConfirmed,
+  timeout = 0,
+  whileDead = true,
+  hideOnEscape = true,
+  enterClicksFirstButton = false,
+  showAlert = true,
+}
 

@@ -133,8 +133,7 @@ function module:BuildOptions()
  		       ["saved"] = L["Show when saved"],
       		       ["never"] = RED_FONT_COLOR_CODE..L["Never show"]..FONTEND,
      		      }
-
-core.Options = {
+  local opts = {
 	type = "group",
 	name = "SavedInstances",
 	handler = SavedInstances,
@@ -595,20 +594,49 @@ core.Options = {
 			order = 4,
 			type = "group",
 			name = L["Characters"],
+			childGroups = "select",
+			width = "double",
 			args = (function ()
+			  local toons = {} 
+			  for toon, _ in pairs(db.Toons) do
+			    local tn, ts = toon:match('^(.*) [-] (.*)$')
+			    toons[ts] = toons[ts] or {}
+			    toons[ts][tn] = toon
+			  end
 			  local ret = {}
-			  for toon, info in pairs(db.Toons) do
-			    ret[toon] = {
-			      name = toon,
-				  type = "select",
-				  -- style = "radio",
-				  values = valueslist,
-				  get = function(info)
-				    return db.Toons[toon].Show or "saved"
-				  end,
-				  set = function(info, value)
-				    db.Toons[toon].Show = value
-				  end,
+			  ret.reset = {
+			    order = 0.1,
+			    name = L["Reset Characters"],
+			    type = "execute",
+			    func = function()
+			    	StaticPopup_Show("SAVEDINSTANCES_RESET")
+			    end
+			  }
+			  local scnt = 0;
+			  for server, stoons in pairs(toons) do
+			    scnt = scnt + 1;
+			    ret[server] = {
+			      order = (server == GetRealmName() and 0.5 or scnt),
+			      type = "group",
+			      name = server,
+		  	      childGroups = "tree",
+			      args = (function()
+				local tret = {}
+			        for tn, toon in pairs(stoons) do
+				  tret[toon] = {
+			            name = tn,
+				    type = "select",
+				    values = valueslist,
+				    get = function(info)
+				      return db.Toons[toon].Show or "saved"
+				    end,
+				    set = function(info, value)
+				      db.Toons[toon].Show = value
+				    end,
+				  }
+				end
+				return tret
+		              end)(),
 			    }
 			  end
 			  return ret
@@ -664,6 +692,10 @@ core.Options = {
 		--]]
 	},
 }
+  core.Options = core.Options or {} -- allow option table rebuild
+  for k,v in pairs(opts) do
+    core.Options[k] = v
+  end
   for i, curr in ipairs(addon.currency) do
     core.Options.args.General.args["Currency"..curr] = { 
 	type = "toggle",
@@ -738,6 +770,7 @@ function module:SetupOptions()
 	--ACD:AddToBlizOptions(namespace, L["Lockouts"], namespace, "Lockouts")
 	local ftoon = ACD:AddToBlizOptions(namespace, L["Characters"], namespace, "Characters")
 	lastoptiongroup = ftoon
+	module.ftoon = ftoon
         ftoon.default = function() 
                        addon.debug("RESET: Toons")
                        for _,i in pairs(db.Toons) do
