@@ -2380,7 +2380,8 @@ end
 
 StaticPopupDialogs["SAVEDINSTANCES_RESET"] = {
   preferredIndex = 3, -- reduce the chance of UI taint
-  text = L["Are you sure you want to reset the SavedInstances character database? Characters will be re-populated as you log into them."],
+  text = L["Are you sure you want to reset the SavedInstances character database? Characters will be re-populated as you log into them."].." "..
+         L["Note this will also reset daily/weekly quest tracking."],
   button1 = OKAY,
   button2 = CANCEL,
   OnAccept = ResetConfirmed,
