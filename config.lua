@@ -151,6 +151,12 @@ function module:BuildOptions()
 			type = "execute",
 			func = function() module:ShowConfig() end,
 		},
+		show = { 
+			name = L["Show/Hide the SavedInstances tooltip"],
+			guiHidden = true,
+			type = "execute",
+			func = function() addon:ToggleDetached() end,
+		},
 		General = {
 			order = 1,
 			type = "group",
