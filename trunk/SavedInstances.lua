@@ -1232,7 +1232,7 @@ local function ShowIndicatorTooltip(cell, arg, ...)
 	if info.Expires > 0 then
 	  indicatortip:AddLine(YELLOWFONT .. L["Time Left"] .. ":" .. FONTEND, nil, SecondsToTime(thisinstance[toon][diff].Expires - time()))
 	end
-	if thisinstance.Raid and info.ID > 0 and diff == 5 or diff == 6 then -- heroic raid
+	if thisinstance.Raid and info.ID > 0 and (diff == 5 or diff == 6) then -- heroic raid
 	  local n = indicatortip:AddLine()
 	  indicatortip:SetCell(n, 1, YELLOWFONT .. ID .. ":" .. FONTEND, "LEFT", 1)
 	  indicatortip:SetCell(n, 2, info.ID, "RIGHT", 2)
@@ -1243,15 +1243,22 @@ local function ShowIndicatorTooltip(cell, arg, ...)
 	  scantt:SetOwner(UIParent,"ANCHOR_NONE")
 	  scantt:SetHyperlink(thisinstance[toon][diff].Link)
 	  local name = scantt:GetName()
+	  local gotbossinfo
 	  for i=2,scantt:NumLines() do
 	    local left,right = _G[name.."TextLeft"..i], _G[name.."TextRight"..i]
 	    if right and right:GetText() then
 	      local n = indicatortip:AddLine()
 	      indicatortip:SetCell(n, 1, coloredText(left), "LEFT", 2)
 	      indicatortip:SetCell(n, 3, coloredText(right), "RIGHT", 1)
+	      gotbossinfo = true
 	    else
 	      indicatortip:SetCell(indicatortip:AddLine(),1,coloredText(left),"CENTER",3)
 	    end
+	  end
+	  if not gotbossinfo and info.Link:find(":0|h[",1,true) then
+	      indicatortip:SetCell(indicatortip:AddLine(),1,WHITEFONT .. 
+	          L["Boss kill information is missing for this lockout.\nThis is a Blizzard bug affecting certain old raids."] .. 
+		  FONTEND,"CENTER",3)
 	  end
 	end
 	if info.ID < 0 then
@@ -2522,7 +2529,6 @@ end
 StaticPopupDialogs["SAVEDINSTANCES_RESET"] = {
   preferredIndex = 3, -- reduce the chance of UI taint
   text = L["Are you sure you want to reset the SavedInstances character database? Characters will be re-populated as you log into them."],
-         --.." "..L["Note this will also reset daily/weekly quest tracking."],
   button1 = OKAY,
   button2 = CANCEL,
   OnAccept = ResetConfirmed,
