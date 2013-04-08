@@ -1066,6 +1066,9 @@ local function SI_GetQuestReward()
     isWeekly = 	qe:find("Weekly")
     isMonthly =	qe:find("Darkmoon")
   end
+  if not link then 
+    isAccount = db.QuestDB.AccountDaily[id] or db.QuestDB.AccountWeekly[id]
+  end
   local expires
   local questDB
   if isWeekly then
@@ -1412,6 +1415,12 @@ function core:OnInitialize()
 	db.Tooltip.SelfAlways = (db.Tooltip.SelfAlways == nil and false) or db.Tooltip.SelfAlways
 	db.Tooltip.RowHighlight = db.Tooltip.RowHighlight or 0.1
 	db.QuestDB = db.QuestDB or vars.defaultDB.QuestDB
+	for qid, _ in pairs(db.QuestDB.Daily) do
+	  if db.QuestDB.AccountDaily[qid] then
+	    debug("Removing duplicate questDB entry: "..qid)
+	    db.QuestDB.Daily[qid] = nil
+	  end
+	end
 	for qid, escope in pairs(QuestExceptions) do -- upgrade QuestDB with new exceptions
 	  local val = 862 -- default to a blank zone
 	  for scope, qdb in pairs(db.QuestDB) do
