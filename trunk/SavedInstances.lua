@@ -100,7 +100,9 @@ addon.WorldBosses = {
   [691] = { quest=32099, expansion=4, level=90 }, -- Sha of Anger
   [725] = { quest=32098, expansion=4, level=90 }, -- Galleon
   [814] = { quest=32518, expansion=4, level=90 }, -- Nalak (32211?)
-  [826] = { quest=32519, expansion=4, level=90 }, -- Oondasta
+  -- Oondasta is disabled for now until Blizzard fixes the quest flag
+  -- please complain here: http://us.battle.net/wow/en/forum/topic/8518311880
+  -- [826] = { quest=32519, expansion=4, level=90 }, -- Oondasta 
 }
 
 addon.showopts = {
@@ -1061,13 +1063,14 @@ local function SI_GetQuestReward()
   end
   if QuestExceptions[id] then
     local qe = QuestExceptions[id]
-    isAccount = qe:find("Account")
-    isDaily = 	qe:find("Daily")
-    isWeekly = 	qe:find("Weekly")
-    isMonthly =	qe:find("Darkmoon")
+    isAccount = qe:find("Account") and true
+    isDaily = 	qe:find("Daily") and true
+    isWeekly = 	qe:find("Weekly") and true
+    isMonthly =	qe:find("Darkmoon") and true
   end
   if not link then 
     isAccount = db.QuestDB.AccountDaily[id] or db.QuestDB.AccountWeekly[id]
+    debug("Fetched isAccount")
   end
   local expires
   local questDB
