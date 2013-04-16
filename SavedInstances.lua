@@ -2363,7 +2363,7 @@ function core:ShowTooltip(anchorframe)
 		end
 		if ci and (gotsome or (ci.amount or 0) > 0) and columns[toon..1] then
 		  local name,_,tex = GetCurrencyInfo(idx)
-		  show = name.." \124T"..tex..":0\124t"
+		  show = " \124T"..tex..":0\124t"..name
 		end
 	    end
    	    local currLine
