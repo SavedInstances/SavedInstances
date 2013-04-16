@@ -113,16 +113,22 @@ addon.showopts = {
 
 local _specialWeeklyQuests = {
   [32610] = { zid=928, lid=94221 }, -- Shan'ze Ritual Stone looted
+  [32611] = { zid=928, lid1=95350 },-- Incantation of X looted
   [32626] = { zid=928, lid=94222 }, -- Key to the Palace of Lei Shen looted
   [32609] = { zid=928, aid=8104  }, -- Trove of the Thunder King (outdoor chest)
 }
 function addon:specialWeeklyQuests()
   for qid, qinfo in pairs(_specialWeeklyQuests) do
     qinfo.quest = qid
-    if not qinfo.name and qinfo.lid then
-      local _,itemname = GetItemInfo(qinfo.lid)
-      if itemname then
-        qinfo.name = itemname.." ("..LOOT..")"
+    if not qinfo.name and (qinfo.lid or qinfo.lid1) then
+      local itemname, itemlink = GetItemInfo(qinfo.lid or qinfo.lid1)
+      if itemlink and qinfo.lid then
+        qinfo.name = itemlink.." ("..LOOT..")"
+      elseif itemname and qinfo.lid1 then
+        local name = itemname:match("^[^%s]+")
+	if name and #name > 0 then
+          qinfo.name = name.." ("..LOOT..")"
+	end
       end
     end
     if not qinfo.name and qinfo.aid then
