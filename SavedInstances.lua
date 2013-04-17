@@ -64,8 +64,6 @@ local tooltip, indicatortip
 local thisToon = UnitName("player") .. " - " .. GetRealmName()
 local maxlvl = MAX_PLAYER_LEVEL_TABLE[#MAX_PLAYER_LEVEL_TABLE]
 
-local storelockout = false -- when true, store the details against the current lockout
-
 local scantt = CreateFrame("GameTooltip", "SavedInstancesScanTooltip", UIParent, "GameTooltipTemplate")
 
 local currency = { 
@@ -1499,7 +1497,6 @@ function core:OnEnable()
 	self:RegisterEvent("UPDATE_INSTANCE_INFO", "Refresh")
 	self:RegisterEvent("QUEST_QUERY_COMPLETE", "Refresh")
 	self:RegisterEvent("LFG_UPDATE_RANDOM_INFO", function() addon:UpdateInstanceData(); addon:UpdateToonData() end)
-	self:RegisterEvent("LFG_COMPLETION_REWARD", function() RequestLFDPlayerLockInfo() end)
 	self:RegisterEvent("RAID_INSTANCE_WELCOME", RequestRaidInfo)
 	self:RegisterEvent("CHAT_MSG_SYSTEM", "CheckSystemMessage")
 	self:RegisterEvent("CHAT_MSG_CURRENCY", "CheckSystemMessage")
@@ -1544,10 +1541,6 @@ function core:OnDisable()
         addon.resetDetect:SetScript("OnEvent", nil)
 end
 
-function addon:UpdateThisLockout()
-	storelockout = true
-	RequestRaidInfo()
-end
 local currency_msg = CURRENCY_GAINED:gsub(":.*$","")
 function core:CheckSystemMessage(event, msg)
         local inst, t = IsInInstance()
@@ -1557,14 +1550,13 @@ function core:CheckSystemMessage(event, msg)
 	   (msg:find(INSTANCE_SAVED) or -- first boss kill
 	    msg:find(currency_msg)) -- subsequent boss kills (unless capped or over level)
 	   then
-	   addon:UpdateThisLockout()
+	   RequestRaidInfo()
 	end
 end
 
 function core:LFG_COMPLETION_REWARD()
-	--local _, _, diff = GetInstanceInfo()
-	--vars.db.Toons[thisToon]["Daily"..diff] = time() + GetQuestResetTime() + addon:GetServerOffset() * 3600
-	addon:UpdateThisLockout()
+	RequestRaidInfo()
+	RequestLFDPlayerLockInfo()
 end
 
 function addon:InGroup() 
@@ -1780,6 +1772,11 @@ function core:Refresh()
 	-- update entire database from the current character's perspective
         addon:UpdateInstanceData()
 	if not instancesUpdated then addon.RefreshPending = true; return end -- wait for UpdateInstanceData to succeed
+        if (GetQuestResetTime() or 0) > (24*3600 - 5*60) then  -- allow 5 minutes for quest DB to update after daily rollover
+	  debug("Skipping core:Refresh() right after daily reset")
+	  addon:UpdateToonData()
+	  return
+	end
 	local temp = localarr("RefreshTemp")
 	for name, instance in pairs(vars.db.Instances) do -- clear current toons lockouts before refresh
 	  local id = instance.LFDID
@@ -1915,15 +1912,6 @@ function core:Refresh()
 	end
 	--debug("Refresh temp reaped "..icnt.." instances and "..dcnt.." diffs")
 	wipe(temp)
-	-- update the lockout-specific details for the current instance if necessary
-	if storelockout then
-		local thisname, _, thisdiff = GetInstanceInfo()
-		local name, id, _, diff, locked, _, _, raid = GetLastLockedInstance()
-		if thisname == name and thisdiff == diff then
-			--vars.db.Lockouts[id]
-		end
-	end
-	storelockout = false
 	addon:UpdateToonData()
 end
 
