@@ -1494,8 +1494,8 @@ function addon:SetupVersion()
 end
 
 function core:OnEnable()
-	self:RegisterEvent("UPDATE_INSTANCE_INFO", "Refresh")
-	self:RegisterEvent("QUEST_QUERY_COMPLETE", "Refresh")
+	self:RegisterEvent("UPDATE_INSTANCE_INFO", function() core:Refresh(nil) end)
+	self:RegisterEvent("QUEST_QUERY_COMPLETE", function() core:Refresh(nil) end)
 	self:RegisterEvent("LFG_UPDATE_RANDOM_INFO", function() addon:UpdateInstanceData(); addon:UpdateToonData() end)
 	self:RegisterEvent("RAID_INSTANCE_WELCOME", RequestRaidInfo)
 	self:RegisterEvent("CHAT_MSG_SYSTEM", "CheckSystemMessage")
@@ -1768,7 +1768,7 @@ function core:memcheck(context)
   end
 end
 
-function core:Refresh()
+function core:Refresh(recoverdaily)
 	-- update entire database from the current character's perspective
         addon:UpdateInstanceData()
 	if not instancesUpdated then addon.RefreshPending = true; return end -- wait for UpdateInstanceData to succeed
@@ -1870,7 +1870,8 @@ function core:Refresh()
 	    if scope:find("Account") then
 	      questlist = db.Quests
 	    end
-            for qid, mapid in pairs(list) do
+	    if recoverdaily or (scope ~= "Daily") then
+             for qid, mapid in pairs(list) do
               if tonumber(qid) and (IsQuestFlaggedCompleted(qid) or
 	        (quests and quests[qid])) and not questlist[qid] and -- recovering a lost quest
 		(list.expires == nil or list.expires > now) then -- don't repop darkmoon quests from last faire
@@ -1892,6 +1893,7 @@ function core:Refresh()
 		    end
                  end
               end
+	     end
             end
           end
           addon:QuestCount(thisToon)
@@ -2522,6 +2524,9 @@ end
 
 local function ResetConfirmed()
   debug("Resetting characters")
+  if addon:IsDetached() then
+    addon:HideDetached()
+  end
   -- clear saves
   for instance, i in pairs(vars.db.Instances) do
 	for toon, t in pairs(vars.db.Toons) do
