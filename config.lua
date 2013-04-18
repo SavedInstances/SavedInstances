@@ -618,6 +618,15 @@ function module:BuildOptions()
 			    	StaticPopup_Show("SAVEDINSTANCES_RESET")
 			    end
 			  }
+			  ret.recover = {
+			    order = 0.2,
+			    name = L["Recover Dailies"],
+			    desc = L["Attempt to recover completed daily quests for this character. Note this may recover some additional, linked daily quests that were not actually completed today."],
+			    type = "execute", 
+			    func = function()
+			        core:Refresh(true)
+			    end
+			  }
 			  local scnt = 0;
 			  for server, stoons in pairs(toons) do
 			    scnt = scnt + 1;
