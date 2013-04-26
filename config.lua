@@ -343,8 +343,14 @@ function module:BuildOptions()
 				},
 				TrackWeeklyQuests = {
 					type = "toggle",
-					order = 34,
+					order = 33.5,
 					name = L["Track Weekly Quests"],
+				},
+				TrackSkills = {
+					type = "toggle",
+					order = 33.75,
+					width = "double",
+					name = L["Track trade skill cooldowns"],
 				},
 				TrackLFG = {
 					type = "toggle",
