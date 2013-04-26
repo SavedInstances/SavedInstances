@@ -221,6 +221,11 @@ vars.defaultDB = {
 				   -- isDaily: boolean
 				   -- Expires: expiration (non-daily)
 
+				-- Skills: key: SpellID or CDID value: 
+				   -- Title: string
+				   -- Link: hyperlink 
+				   -- Expires: expiration
+
 	Indicators = {
 		D1Indicator = "BLANK", -- indicator: ICON_*, BLANK
 		D1Text = "KILLED/TOTAL",
@@ -414,6 +419,20 @@ function addon:GetNextDailyResetTime()
     return nil
   end
   return time() + resettime
+end
+
+function addon:GetNextDailySkillResetTime() -- trade skill reset time
+  -- this is just a "best guess" because in reality, 
+  -- different trade skills reset at up to 3 different times
+  local rt = addon:GetNextDailyResetTime()
+  local info = date("*t")
+  if info.isdst then -- most trade skills ignore daylight savings
+    rt = rt - 3600
+    if time() > rt then -- past trade reset but before daily reset, next day
+      rt = rt + 24*3600
+    end
+  end
+  return rt
 end
 
 function addon:GetNextWeeklyResetTime()
@@ -979,6 +998,16 @@ function addon:UpdateToonData()
 	    db.DailyResetTime = nextreset
          end 
 	end
+	-- Skill Reset
+	for toon, ti in pairs(vars.db.Toons) do
+	  if ti.Skills then
+	    for spellid, sinfo in pairs(ti.Skills) do
+	      if sinfo.Expires and sinfo.Expires < time() then
+	        ti.Skills[spellid] = nil
+	      end
+	    end
+          end 
+        end
 	-- Weekly Reset
 	local nextreset = addon:GetNextWeeklyResetTime()
 	if nextreset and nextreset > time() then
@@ -1191,6 +1220,45 @@ local function ShowQuestTooltip(cell, arg, ...)
 	indicatortip:Show()
 end
 
+local function skillsort(s1, s2)
+  if s1.Expires ~= s2.Expires then
+    return (s1.Expires or 0) < (s2.Expires or 0)
+  else
+    return (s1.Title or "") < (s2.Title or "")
+  end
+end
+
+local function ShowSkillTooltip(cell, arg, ...)
+        local toon, cstr = unpack(arg)
+        local t = vars.db.Toons[toon]
+        if not t then return end
+        indicatortip = QTip:Acquire("SavedInstancesIndicatorTooltip", 3, "LEFT", "RIGHT")
+        indicatortip:Clear()
+        indicatortip:SetHeaderFont(tooltip:GetHeaderFont())
+	local tname = ClassColorise(t.Class, toon)
+        indicatortip:AddHeader()
+	indicatortip:SetCell(1,1,tname,"LEFT")
+	indicatortip:SetCell(1,2,cstr,"RIGHT",2)
+
+        local tmp = {}
+        for _,sinfo in pairs(t.Skills) do
+	  table.insert(tmp,sinfo)
+        end
+	table.sort(tmp, skillsort)
+
+        for _,sinfo in ipairs(tmp) do
+          local line = indicatortip:AddLine()
+	  local title = sinfo.Link or sinfo.Title or "???"
+	  local tstr = SecondsToTime((sinfo.Expires or 0) - time())
+	  indicatortip:SetCell(line,1,title,"LEFT",2)
+	  indicatortip:SetCell(line,3,tstr,"RIGHT")
+        end
+        indicatortip:SetAutoHideDelay(0.1, tooltip)
+        indicatortip:SmartAnchorTo(tooltip)
+        addon:SkinFrame(indicatortip,"SavedInstancesIndicatorTooltip")
+        indicatortip:Show()
+end
+
 local function ShowHistoryTooltip(cell, arg, ...)
         addon:HistoryUpdate()
         indicatortip = QTip:Acquire("SavedInstancesIndicatorTooltip", 2, "LEFT", "LEFT")
@@ -1393,6 +1461,7 @@ function core:toonInit()
 	ti.Level = UnitLevel("player")
 	ti.Show = ti.Show or "saved"
 	ti.Quests = ti.Quests or {}
+	ti.Skills = ti.Skills or {}
 	ti.DailyResetTime = ti.DailyResetTime or addon:GetNextDailyResetTime()
 	ti.WeeklyResetTime = ti.WeeklyResetTime or addon:GetNextWeeklyResetTime()
 end
@@ -1418,6 +1487,7 @@ function core:OnInitialize()
 	db.Tooltip.LimitWarn = (db.Tooltip.LimitWarn == nil and true) or db.Tooltip.LimitWarn
 	db.Tooltip.ShowHoliday = (db.Tooltip.ShowHoliday == nil and true) or db.Tooltip.ShowHoliday
 	db.Tooltip.ShowRandom = (db.Tooltip.ShowRandom == nil and true) or db.Tooltip.ShowRandom
+	db.Tooltip.TrackSkills = (db.Tooltip.TrackSkills == nil and true) or db.Tooltip.TrackSkills
 	db.Tooltip.TrackDailyQuests = (db.Tooltip.TrackDailyQuests == nil and true) or db.Tooltip.TrackDailyQuests
 	db.Tooltip.TrackWeeklyQuests = (db.Tooltip.TrackWeeklyQuests == nil and true) or db.Tooltip.TrackWeeklyQuests
 	db.Tooltip.ServerSort = (db.Tooltip.ServerSort == nil and true) or db.Tooltip.ServerSort
@@ -1501,6 +1571,8 @@ function core:OnEnable()
 	self:RegisterEvent("CHAT_MSG_SYSTEM", "CheckSystemMessage")
 	self:RegisterEvent("CHAT_MSG_CURRENCY", "CheckSystemMessage")
 	self:RegisterEvent("CHAT_MSG_LOOT", "CheckSystemMessage")
+	self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
+	self:RegisterEvent("TRADE_SKILL_UPDATE")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", RequestRaidInfo)
 	self:RegisterEvent("LFG_LOCK_INFO_RECEIVED", RequestRaidInfo)
 	self:RegisterEvent("PLAYER_LOGOUT", function() addon.logout = true ; addon:UpdateToonData() end) -- update currency spent
@@ -2334,6 +2406,32 @@ function core:ShowTooltip(anchorframe)
                 end
         end
 
+	if vars.db.Tooltip.TrackSkills or showall then
+		local show = false
+		for toon, t in cpairs(vars.db.Toons) do
+			if next(t.Skills) then
+				show = true
+				addColumns(columns, toon, tooltip)
+			end
+		end
+		if show then
+			if not firstcategory and vars.db.Tooltip.CategorySpaces then
+				addsep()
+			end
+			show = tooltip:AddLine(YELLOWFONT .. L["Trade Skill Cooldowns"] .. FONTEND)		
+		end
+		for toon, t in cpairs(vars.db.Toons) do
+			local cnt = 0
+			for _ in pairs(t.Skills) do cnt = cnt + 1 end
+			if cnt > 0 then
+				tooltip:SetCell(show, columns[toon..1], ClassColorise(t.Class,cnt), "CENTER",maxcol)
+		                tooltip:SetCellScript(show, columns[toon..1], "OnEnter", ShowSkillTooltip, {toon, cnt.." "..L["Trade Skill Cooldowns"]})
+		                tooltip:SetCellScript(show, columns[toon..1], "OnLeave", 
+							     function() indicatortip:Hide(); GameTooltip:Hide() end)
+			end
+		end
+        end
+
 	local firstcurrency = true
         for _,idx in ipairs(currency) do
 	  local setting = vars.db.Tooltip["Currency"..idx]
@@ -2554,4 +2652,166 @@ StaticPopupDialogs["SAVEDINSTANCES_RESET"] = {
   enterClicksFirstButton = false,
   showAlert = true,
 }
+
+local trade_spells = {
+        -- Alchemy
+        -- Vanilla
+        [11479] = "xmute", 	-- Transmute: Iron to Gold
+        [11480] = "xmute", 	-- Transmute: Mithril to Truesilver
+        [17559] = "xmute", 	-- Transmute: Air to Fire
+        [17566] = "xmute", 	-- Transmute: Earth to Life
+        [17561] = "xmute", 	-- Transmute: Earth to Water
+        [17560] = "xmute", 	-- Transmute: Fire to Earth
+        [17565] = "xmute", 	-- Transmute: Life to Earth
+        [17563] = "xmute", 	-- Transmute: Undeath to Water
+        [17562] = "xmute", 	-- Transmute: Water to Air
+        [17564] = "xmute", 	-- Transmute: Water to Undeath
+        -- BC
+        [28566] = "xmute", 	-- Transmute: Primal Air to Fire
+        [28585] = "xmute", 	-- Transmute: Primal Earth to Life
+        [28567] = "xmute", 	-- Transmute: Primal Earth to Water
+        [28568] = "xmute", 	-- Transmute: Primal Fire to Earth
+        [28583] = "xmute", 	-- Transmute: Primal Fire to Mana
+        [28584] = "xmute", 	-- Transmute: Primal Life to Earth
+        [28582] = "xmute", 	-- Transmute: Primal Mana to Fire
+        [28580] = "xmute", 	-- Transmute: Primal Shadow to Water
+        [28569] = "xmute", 	-- Transmute: Primal Water to Air
+        [28581] = "xmute", 	-- Transmute: Primal Water to Shadow
+        -- WotLK
+        [60893] = 3, 		-- Northrend Alchemy Research: 3 days
+        [53777] = "xmute", 	-- Transmute: Eternal Air to Earth
+        [52776] = "xmute", 	-- Transmute: Eternal Air to Water
+        [53781] = "xmute", 	-- Transmute: Eternal Earth to Air
+        [53782] = "xmute", 	-- Transmute: Eternal Earth to Shadow
+        [53775] = "xmute", 	-- Transmute: Eternal Fire to Life
+        [53774] = "xmute", 	-- Transmute: Eternal Fire to Water
+        [53773] = "xmute", 	-- Transmute: Eternal Life to Fire
+        [53771] = "xmute", 	-- Transmute: Eternal Life to Shadow
+        [54020] = "xmute", 	-- Transmute: Eternal Might
+        [53779] = "xmute", 	-- Transmute: Eternal Shadow to Earth
+        [52780] = "xmute", 	-- Transmute: Eternal Shadow to Life
+        [53783] = "xmute", 	-- Transmute: Eternal Water to Air
+        [53784] = "xmute", 	-- Transmute: Eternal Water to Fire
+        [66658] = "xmute", 	-- Transmute: Ametrine
+        [66659] = "xmute", 	-- Transmute: Cardinal Ruby
+        [66660] = "xmute", 	-- Transmute: King's Amber
+        [66662] = "xmute", 	-- Transmute: Dreadstone
+        [66663] = "xmute", 	-- Transmute: Majestic Zircon
+        [66664] = "xmute", 	-- Transmute: Eye of Zul
+        -- Cata
+        [78866] = "xmute", 	-- Transmute: Living Elements
+        [80243] = "xmute", 	-- Transmute: Truegold
+        [80244] = "xmute", 	-- Transmute: Pyrium Bar
+        -- MoP
+        [114780] = "xmute", 	-- Transmute: Living Steel
+
+        -- Enchanting
+        [28027] = "sphere", 	-- Prismatic Sphere (2-day shared, 5.2.0 verified)
+        [28028] = "sphere", 	-- Void Sphere (2-day shared, 5.2.0 verified)
+        [116499] = true, 	-- Sha Crystal
+
+        -- Jewelcrafting
+        [47280] = true, 	-- Brilliant Glass, still has a cd (5.2.0 verified)
+        --[62242] = true, 	-- Icy Prism, cd removed (5.2.0 verified)
+        [73478] = true, 	-- Fire Prism, still has a cd (5.2.0 verified)
+        [131691] = "facet", 	-- Imperial Amethyst/Facets of Research
+        [131686] = "facet", 	-- Primordial Ruby/Facets of Research
+        [131593] = "facet", 	-- River's Heart/Facets of Research
+        [131695] = "facet", 	-- Sun's Radiance/Facets of Research
+        [131690] = "facet", 	-- Vermilion Onyx/Facets of Research
+        [131688] = "facet", 	-- Wild Jade/Facets of Research
+
+        -- Tailoring
+        [125557] = true, 	-- Imperial Silk
+        [56005] = 7, 		-- Glacial Bag (5.2.0 verified)
+	-- Dreamcloth
+        [75141] = 7, 		-- Dream of Skywall
+        [75145] = 7, 		-- Dream of Ragnaros
+        [75144] = 7, 		-- Dream of Hyjal
+        [75142] = 7,	 	-- Dream of Deepholm
+        [75146] = 7, 		-- Dream of Azshara
+	--[18560] = true,	-- Mooncloth, cd removed (5.2.0 verified, tooltip is wrong)
+        
+        -- Inscription
+        [61288] = true, 	-- Minor Inscription Research
+        [61177] = true, 	-- Northrend Inscription Research
+        [86654] = true, 	-- Horde Forged Documents
+        [89244] = true, 	-- Alliance Forged Documents
+        [112996] = true, 	-- Scroll of Wisdom
+
+	-- Blacksmithing
+	[138646] = true, 	-- Lightning Steel Ingot
+
+	-- Leatherworking
+	[140040] = "magni", 	-- Magnificence of Leather
+	[140041] = "magni",	-- Magnificence of Scales
+}
+
+local cdname = {
+	["xmute"] =  GetSpellInfo(2259).. ": "..L["Transmute"],
+	["facet"] =  GetSpellInfo(25229)..": "..L["Facets of Research"],
+	["sphere"] = GetSpellInfo(7411).. ": "..GetSpellInfo(28027),
+	["magni"] =  GetSpellInfo(2108).. ": "..GetSpellInfo(140040)
+}
+
+function core:record_skill(spellID, expires)
+  if not spellID then return end
+  local cdinfo = trade_spells[spellID]
+  if not cdinfo then return end
+  local t = vars and vars.db.Toons[thisToon]
+  if not t then return end
+  local spellName = GetSpellInfo(spellID)
+  t.Skills = t.Skills or {}
+  local idx = spellID
+  local title = spellName
+  local link = nil
+  if type(cdinfo) == "string" then
+    idx = cdinfo
+    title = cdname[cdinfo] or title
+  else
+    local slink = GetSpellLink(spellID)
+    if slink and #slink > 0 then  -- tt scan for the full name with profession
+      scantt:SetOwner(UIParent,"ANCHOR_NONE")
+      scantt:SetHyperlink(slink) 
+      local l = _G[scantt:GetName().."TextLeft1"]
+      l = l and l:GetText()
+      if l and #l > 0 then 
+        title = l
+        link = "\124cffffd000\124Henchant:"..spellID.."\124h["..l.."]\124h\124r"
+      end
+    end
+  end
+  if not expires then
+    expires = addon:GetNextDailySkillResetTime()
+    if type(cdinfo) == "number" then -- over a day, make a rough guess
+      expires = expires + (cdinfo-1)*24*60*60 
+    end
+  end
+  local sinfo = t.Skills[idx] or {}
+  t.Skills[idx] = sinfo
+  if not sinfo.Expires or math.abs(sinfo.Expires - expires) > 60 then -- updating expiration guess
+    debug("Trade skill cd: "..(link or title).." ("..spellID..")")
+  end
+  sinfo.Title = title
+  sinfo.Link = link
+  sinfo.Expires = expires
+end
+
+function core:UNIT_SPELLCAST_SUCCEEDED(evt, unit, spellName, rank, lineID, spellID)
+  if unit ~= "player" then return end
+  if not trade_spells[spellID] then return end -- for performance
+  core:record_skill(spellID)
+end
+
+function core:TRADE_SKILL_UPDATE()
+ if IsTradeSkillLinked() or IsTradeSkillGuild() then return end
+ for i = 1, GetNumTradeSkills() do
+   local cd = GetTradeSkillCooldown(i)
+   if cd then
+     local link = GetTradeSkillRecipeLink(i)
+     local spellid = link and tonumber(link:match("\124Henchant:(%d+)\124h"))
+     core:record_skill(spellid, time()+cd)
+   end
+ end
+end
 
