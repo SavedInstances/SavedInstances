@@ -2745,6 +2745,9 @@ local trade_spells = {
 	-- Leatherworking
 	[140040] = "magni", 	-- Magnificence of Leather
 	[140041] = "magni",	-- Magnificence of Scales
+
+	-- Engineering
+	[139176] = true,	-- Stabilized Lightning Source
 }
 
 local cdname = {
