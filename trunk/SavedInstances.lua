@@ -2409,7 +2409,7 @@ function core:ShowTooltip(anchorframe)
 	if vars.db.Tooltip.TrackSkills or showall then
 		local show = false
 		for toon, t in cpairs(vars.db.Toons) do
-			if next(t.Skills) then
+			if t.Skills and next(t.Skills) then
 				show = true
 				addColumns(columns, toon, tooltip)
 			end
@@ -2422,7 +2422,9 @@ function core:ShowTooltip(anchorframe)
 		end
 		for toon, t in cpairs(vars.db.Toons) do
 			local cnt = 0
-			for _ in pairs(t.Skills) do cnt = cnt + 1 end
+			if t.Skills then
+				for _ in pairs(t.Skills) do cnt = cnt + 1 end
+			end
 			if cnt > 0 then
 				tooltip:SetCell(show, columns[toon..1], ClassColorise(t.Class,cnt), "CENTER",maxcol)
 		                tooltip:SetCellScript(show, columns[toon..1], "OnEnter", ShowSkillTooltip, {toon, cnt.." "..L["Trade Skill Cooldowns"]})
