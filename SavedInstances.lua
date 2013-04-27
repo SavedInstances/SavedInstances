@@ -2702,7 +2702,7 @@ local trade_spells = {
         [66664] = "xmute", 	-- Transmute: Eye of Zul
         -- Cata
         [78866] = "xmute", 	-- Transmute: Living Elements
-        [80243] = "xmute", 	-- Transmute: Truegold
+        --[80243] = "xmute", 	-- Transmute: Truegold, cd removed (5.2.0 verified)
         [80244] = "xmute", 	-- Transmute: Pyrium Bar
         -- MoP
         [114780] = "xmute", 	-- Transmute: Living Steel
