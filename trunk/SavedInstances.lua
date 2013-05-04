@@ -368,6 +368,24 @@ local function ClassColorise(class, targetstring)
 	return ColorCodeOpen(color) .. targetstring .. FONTEND
 end
 
+local function CurrencyColor(amt, max)
+  amt = amt or 0
+  if max == nil or max == 0 then
+    return amt
+  end
+  if vars.db.Tooltip.CurrencyValueColor then
+    local pct = amt / max
+    local color = GREENFONT
+    if pct == 1 then
+      color = REDFONT
+    elseif pct > 0.75 then
+      color = GOLDFONT
+    end
+    amt = color .. amt .. FONTEND
+  end
+  return amt
+end
+
 local function TableLen(table)
 	local i = 0
 	for _, _ in pairs(table) do
@@ -1494,6 +1512,7 @@ function core:OnInitialize()
 	db.Tooltip.ServerOnly = (db.Tooltip.ServerOnly == nil and false) or db.Tooltip.ServerOnly
 	db.Tooltip.SelfFirst = (db.Tooltip.SelfFirst == nil and true) or db.Tooltip.SelfFirst
 	db.Tooltip.SelfAlways = (db.Tooltip.SelfAlways == nil and false) or db.Tooltip.SelfAlways
+	db.Tooltip.CurrencyValueColor = (db.Tooltip.CurrencyValueColor == nil and true) or db.Tooltip.CurrencyValueColor
 	db.Tooltip.RowHighlight = db.Tooltip.RowHighlight or 0.1
 	db.QuestDB = db.QuestDB or vars.defaultDB.QuestDB
 	for qid, _ in pairs(db.QuestDB.Daily) do
@@ -2477,18 +2496,21 @@ function core:ShowTooltip(anchorframe)
 		     end
 		   end
 		   if vars.db.Tooltip.CurrencyEarned or showall then
-		     earned = "("..(ci.amount or "0")..totalmax..")"
+		     earned = "("..CurrencyColor(ci.amount,ci.totalMax)..totalmax..")"
 		   end
                    local str
 		   if (ci.amount or 0) > 0 or (ci.earnedThisWeek or 0) > 0 then
                      if (ci.weeklyMax or 0) > 0 then
-                       str = (ci.earnedThisWeek or "0")..weeklymax.." "..earned
+                       str = CurrencyColor(ci.earnedThisWeek,ci.weeklyMax)..weeklymax.." "..earned
 		     elseif (ci.amount or 0) > 0 then
-                       str = "("..(ci.amount or "0")..totalmax..")"
+                       str = "("..CurrencyColor(ci.amount,ci.totalMax)..totalmax..")"
 		     end
                    end
 		  if str then
-		   tooltip:SetCell(currLine, columns[toon..1], ClassColorise(t.Class,str), "CENTER",maxcol)
+		   if not vars.db.Tooltip.CurrencyValueColor then
+		     str = ClassColorise(t.Class,str)
+		   end
+		   tooltip:SetCell(currLine, columns[toon..1], str, "CENTER",maxcol)
 		   tooltip:SetCellScript(currLine, columns[toon..1], "OnEnter", ShowCurrencyTooltip, {toon, idx, ci})
 		   tooltip:SetCellScript(currLine, columns[toon..1], "OnLeave", 
 							     function() indicatortip:Hide(); GameTooltip:Hide() end)
@@ -2762,7 +2784,15 @@ local cdname = {
 function core:record_skill(spellID, expires)
   if not spellID then return end
   local cdinfo = trade_spells[spellID]
-  if not cdinfo then return end
+  if not cdinfo then 
+    addon.skillwarned = addon.skillwarned or {}
+    if expires and expires > 0 and not addon.skillwarned[spellID] then
+      addon.skillwarned[spellID] = true
+      chatMsg("Warning: Unrecognized trade skill cd "..(GetSpellInfo(spellID) or "??")..
+              " ("..spellID.."). Please report this bug!")
+    end
+    return 
+  end
   local t = vars and vars.db.Toons[thisToon]
   if not t then return end
   local spellName = GetSpellInfo(spellID)
@@ -2773,7 +2803,7 @@ function core:record_skill(spellID, expires)
   if type(cdinfo) == "string" then
     idx = cdinfo
     title = cdname[cdinfo] or title
-  else
+  elseif expires ~= 0 then
     local slink = GetSpellLink(spellID)
     if slink and #slink > 0 then  -- tt scan for the full name with profession
       scantt:SetOwner(UIParent,"ANCHOR_NONE")
@@ -2786,7 +2816,13 @@ function core:record_skill(spellID, expires)
       end
     end
   end
-  if not expires then
+  if expires == 0 then 
+    if t.Skills[idx] then -- a cd ended early
+      debug("Clearing Trade skill cd: "..spellName.." ("..spellID..")")
+    end
+    t.Skills[idx] = nil 
+    return
+  elseif not expires then
     expires = addon:GetNextDailySkillResetTime()
     if type(cdinfo) == "number" then -- over a day, make a rough guess
       expires = expires + (cdinfo-1)*24*60*60 
@@ -2811,11 +2847,16 @@ end
 function core:TRADE_SKILL_UPDATE()
  if IsTradeSkillLinked() or IsTradeSkillGuild() then return end
  for i = 1, GetNumTradeSkills() do
-   local cd = GetTradeSkillCooldown(i)
-   if cd then
-     local link = GetTradeSkillRecipeLink(i)
-     local spellid = link and tonumber(link:match("\124Henchant:(%d+)\124h"))
-     core:record_skill(spellid, time()+cd)
+   local link = GetTradeSkillRecipeLink(i)
+   local spellid = link and tonumber(link:match("\124Henchant:(%d+)\124h"))
+   if spellid then
+     local cd = GetTradeSkillCooldown(i)
+     if cd then
+       cd = time() + cd  -- on cd
+     else
+       cd = 0 -- off cd or no cd
+     end
+     core:record_skill(spellid, cd)
    end
  end
 end

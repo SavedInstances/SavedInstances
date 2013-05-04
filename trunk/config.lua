@@ -381,6 +381,11 @@ function module:BuildOptions()
 					order = 50.4,
 					name = L["Show currency earned"]
 				},
+				CurrencyValueColor = {
+					type = "toggle",
+					order = 50.5,
+					name = L["Color currency by cap"]
+				},
 				ToonHeader = {
 					order = 31, 
 					type = "header",
