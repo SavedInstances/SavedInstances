@@ -2704,7 +2704,7 @@ local trade_spells = {
         -- WotLK
         [60893] = 3, 		-- Northrend Alchemy Research: 3 days
         [53777] = "xmute", 	-- Transmute: Eternal Air to Earth
-        [52776] = "xmute", 	-- Transmute: Eternal Air to Water
+        [53776] = "xmute", 	-- Transmute: Eternal Air to Water
         [53781] = "xmute", 	-- Transmute: Eternal Earth to Air
         [53782] = "xmute", 	-- Transmute: Eternal Earth to Shadow
         [53775] = "xmute", 	-- Transmute: Eternal Fire to Life
@@ -2713,7 +2713,7 @@ local trade_spells = {
         [53771] = "xmute", 	-- Transmute: Eternal Life to Shadow
         [54020] = "xmute", 	-- Transmute: Eternal Might
         [53779] = "xmute", 	-- Transmute: Eternal Shadow to Earth
-        [52780] = "xmute", 	-- Transmute: Eternal Shadow to Life
+        [53780] = "xmute", 	-- Transmute: Eternal Shadow to Life
         [53783] = "xmute", 	-- Transmute: Eternal Water to Air
         [53784] = "xmute", 	-- Transmute: Eternal Water to Fire
         [66658] = "xmute", 	-- Transmute: Ametrine
@@ -2744,6 +2744,7 @@ local trade_spells = {
         [131695] = "facet", 	-- Sun's Radiance/Facets of Research
         [131690] = "facet", 	-- Vermilion Onyx/Facets of Research
         [131688] = "facet", 	-- Wild Jade/Facets of Research
+	[140050] = true,	-- Serpent's Heart
 
         -- Tailoring
         [125557] = true, 	-- Imperial Silk
