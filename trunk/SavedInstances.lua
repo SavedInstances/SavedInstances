@@ -439,18 +439,30 @@ function addon:GetNextDailyResetTime()
   return time() + resettime
 end
 
+do
+local midnight = {hour=23, min=59, sec=59}
 function addon:GetNextDailySkillResetTime() -- trade skill reset time
   -- this is just a "best guess" because in reality, 
   -- different trade skills reset at up to 3 different times
-  local rt = addon:GetNextDailyResetTime()
-  local info = date("*t")
-  if info.isdst then -- most trade skills ignore daylight savings
-    rt = rt - 3600
-    if time() > rt then -- past trade reset but before daily reset, next day
-      rt = rt + 24*3600
+
+  if true then -- at next server midnight
+    midnight.month, midnight.day, midnight.year = select(2,CalendarGetDate()) -- date in server timezone 
+    local ret = time(midnight)
+    local offset = addon:GetServerOffset() * 3600
+    ret = ret - offset
+    return ret
+  else -- at next daily quest reset time
+    local rt = addon:GetNextDailyResetTime()
+    local info = date("*t")
+    if info.isdst then -- most trade skills ignore daylight savings
+      rt = rt - 3600
+      if time() > rt then -- past trade reset but before daily reset, next day
+        rt = rt + 24*3600
+      end
     end
+    return rt
   end
-  return rt
+end
 end
 
 function addon:GetNextWeeklyResetTime()
@@ -2831,21 +2843,46 @@ function core:record_skill(spellID, expires)
   end
   local sinfo = t.Skills[idx] or {}
   t.Skills[idx] = sinfo
-  if not sinfo.Expires or math.abs(sinfo.Expires - expires) > 60 then -- updating expiration guess
-    debug("Trade skill cd: "..(link or title).." ("..spellID..")")
+  local change = expires - (sinfo.Expires or 0)
+  if math.abs(change) > 180 then -- updating expiration guess (more than 3 min update lag)
+    debug("Trade skill cd: "..(link or title).." ("..spellID..") "..(sinfo.Expires and string.format("%d",change).." sec" or "(new)"))
   end
   sinfo.Title = title
   sinfo.Link = link
   sinfo.Expires = expires
+  return true
 end
 
 function core:UNIT_SPELLCAST_SUCCEEDED(evt, unit, spellName, rank, lineID, spellID)
   if unit ~= "player" then return end
   if not trade_spells[spellID] then return end -- for performance
-  core:record_skill(spellID)
+  if not core:record_skill(spellID) then return end
+  core:ScheduleTimer("TradeSkillRescan", 0.5, spellID)
+end
+
+function core:TradeSkillRescan(spellid)
+  local scan = core:TRADE_SKILL_UPDATE()
+  if TradeSkillFrame and TradeSkillFrame.filterTbl and 
+     (scan == 0 or not addon.seencds or not addon.seencds[spellid]) then 
+    -- scan failed, probably because the skill is hidden - try again
+    addon.filtertmp = wipe(addon.filtertmp or {})
+    for k,v in pairs(TradeSkillFrame.filterTbl) do addon.filtertmp[k] = v end
+    TradeSkillOnlyShowMakeable(false)
+    TradeSkillOnlyShowSkillUps(false)
+    SetTradeSkillCategoryFilter(-1)
+    SetTradeSkillInvSlotFilter(-1, 1, 1)
+    ExpandTradeSkillSubClass(0)
+      local rescan = core:TRADE_SKILL_UPDATE()
+      debug("Rescan: "..(rescan==scan and "Failed" or "Success"))
+    TradeSkillOnlyShowMakeable(addon.filtertmp.hasMaterials);
+    TradeSkillOnlyShowSkillUps(addon.filtertmp.hasSkillUp);
+    SetTradeSkillCategoryFilter(addon.filtertmp.subClassValue or -1)
+    SetTradeSkillInvSlotFilter(addon.filtertmp.slotValue or -1, 1, 1)
+  end
 end
 
 function core:TRADE_SKILL_UPDATE()
+ local cnt = 0
  if IsTradeSkillLinked() or IsTradeSkillGuild() then return end
  for i = 1, GetNumTradeSkills() do
    local link = GetTradeSkillRecipeLink(i)
@@ -2854,11 +2891,16 @@ function core:TRADE_SKILL_UPDATE()
      local cd = GetTradeSkillCooldown(i)
      if cd then
        cd = time() + cd  -- on cd
+       addon.seencds = addon.seencds or {}
+       addon.seencds[spellid] = true
+       cnt = cnt + 1
      else
        cd = 0 -- off cd or no cd
      end
      core:record_skill(spellid, cd)
    end
  end
+ return cnt
 end
+
 
