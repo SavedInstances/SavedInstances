@@ -558,6 +558,7 @@ addon.transInstance = {
   [568] = 340,  -- Zul'Aman: frFR 
   [1004] = 474, -- Scarlet Monastary: deDE
   [600] = 215,  -- Drak'Tharon: ticket 105 deDE
+  [560] = 183,  -- Escape from Durnholde Keep: ticket 124 deDE
 }
 
 -- some instances (like sethekk halls) are named differently by GetSavedInstanceInfo() and LFGGetDungeonInfoByID()
