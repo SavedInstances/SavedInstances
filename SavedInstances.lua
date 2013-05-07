@@ -445,7 +445,7 @@ function addon:GetNextDailySkillResetTime() -- trade skill reset time
   -- this is just a "best guess" because in reality, 
   -- different trade skills reset at up to 3 different times
 
-  if true then -- at next server midnight
+  if false then -- at next server midnight
     midnight.month, midnight.day, midnight.year = select(2,CalendarGetDate()) -- date in server timezone 
     local ret = time(midnight)
     local offset = addon:GetServerOffset() * 3600
@@ -2845,7 +2845,9 @@ function core:record_skill(spellID, expires)
   t.Skills[idx] = sinfo
   local change = expires - (sinfo.Expires or 0)
   if math.abs(change) > 180 then -- updating expiration guess (more than 3 min update lag)
-    debug("Trade skill cd: "..(link or title).." ("..spellID..") "..(sinfo.Expires and string.format("%d",change).." sec" or "(new)"))
+    debug("Trade skill cd: "..(link or title).." ("..spellID..") "..
+          (sinfo.Expires and string.format("%d",change).." sec" or "(new)")..
+	  " Local time: "..date("%c",expires))
   end
   sinfo.Title = title
   sinfo.Link = link
@@ -2888,16 +2890,20 @@ function core:TRADE_SKILL_UPDATE()
    local link = GetTradeSkillRecipeLink(i)
    local spellid = link and tonumber(link:match("\124Henchant:(%d+)\124h"))
    if spellid then
-     local cd = GetTradeSkillCooldown(i)
-     if cd then
+     local cd, daily = GetTradeSkillCooldown(i)
+     if cd and daily then -- GetTradeSkillCooldown often returns WRONG answers for daily cds
+       cd = addon:GetNextDailySkillResetTime()
+     elseif cd then
        cd = time() + cd  -- on cd
-       addon.seencds = addon.seencds or {}
-       addon.seencds[spellid] = true
-       cnt = cnt + 1
      else
        cd = 0 -- off cd or no cd
      end
      core:record_skill(spellid, cd)
+     if cd then
+       addon.seencds = addon.seencds or {}
+       addon.seencds[spellid] = true
+       cnt = cnt + 1
+     end
    end
  end
  return cnt
