@@ -453,6 +453,7 @@ function addon:GetNextDailySkillResetTime() -- trade skill reset time
     return ret
   else -- at next daily quest reset time
     local rt = addon:GetNextDailyResetTime()
+    if not rt then return nil end
     local info = date("*t")
     if info.isdst then -- most trade skills ignore daylight savings
       rt = rt - 3600
@@ -2838,6 +2839,7 @@ function core:record_skill(spellID, expires)
     return
   elseif not expires then
     expires = addon:GetNextDailySkillResetTime()
+    if not expires then return end -- ticket 127
     if type(cdinfo) == "number" then -- over a day, make a rough guess
       expires = expires + (cdinfo-1)*24*60*60 
     end
