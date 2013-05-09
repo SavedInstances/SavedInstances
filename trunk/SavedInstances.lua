@@ -2842,6 +2842,7 @@ function core:record_skill(spellID, expires)
       expires = expires + (cdinfo-1)*24*60*60 
     end
   end
+  expires = math.floor(expires)
   local sinfo = t.Skills[idx] or {}
   t.Skills[idx] = sinfo
   local change = expires - (sinfo.Expires or 0)
@@ -2892,7 +2893,8 @@ function core:TRADE_SKILL_UPDATE()
    local spellid = link and tonumber(link:match("\124Henchant:(%d+)\124h"))
    if spellid then
      local cd, daily = GetTradeSkillCooldown(i)
-     if cd and daily then -- GetTradeSkillCooldown often returns WRONG answers for daily cds
+     if cd and daily -- GetTradeSkillCooldown often returns WRONG answers for daily cds
+       and not tonumber(trade_spells[spellid]) then -- daily flag incorrectly set for some multi-day cds (Northrend Alchemy Research)
        cd = addon:GetNextDailySkillResetTime()
      elseif cd then
        cd = time() + cd  -- on cd
