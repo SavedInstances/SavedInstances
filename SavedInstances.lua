@@ -2095,7 +2095,10 @@ function core:Refresh(recoverdaily)
 	addon:UpdateToonData()
 end
 
-local function UpdateTooltip() 
+local function UpdateTooltip(self,elap) 
+ 	addon.updatetooltip_throttle = (addon.updatetooltip_throttle or 10) + elap 
+	if addon.updatetooltip_throttle < 0.5 then return end
+	addon.updatetooltip_throttle = 0
 	if tooltip:IsShown() and tooltip.anchorframe then 
 	   core:ShowTooltip(tooltip.anchorframe) 
 	end
