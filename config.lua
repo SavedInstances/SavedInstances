@@ -352,6 +352,12 @@ function module:BuildOptions()
 					width = "double",
 					name = L["Track trade skill cooldowns"],
 				},
+				TrackFarm = {
+					type = "toggle",
+					order = 33.80,
+					width = "double",
+					name = L["Track farm crops"],
+				},
 				TrackLFG = {
 					type = "toggle",
 					order = 34,
