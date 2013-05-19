@@ -1015,6 +1015,7 @@ function addon:UpdateToonData()
 	if IL and tonumber(IL) and tonumber(IL) > 0 then -- can fail during logout
 	  t.IL, t.ILe = tonumber(IL), tonumber(ILe)
 	end
+	t.RBGrating = tonumber((GetPersonalRatedBGInfo())) or t.RBGrating
 	-- Daily Reset
 	local nextreset = addon:GetNextDailyResetTime()
 	if nextreset and nextreset > time() then
@@ -1212,6 +1213,9 @@ local function ShowToonTooltip(cell, arg, ...)
 	indicatortip:SetCell(indicatortip:AddHeader(),1,ClassColorise(t.Class, toon))
 	indicatortip:SetCell(1,2,ClassColorise(t.Class, LEVEL.." "..t.Level.." "..(t.LClass or "")))
 	indicatortip:AddLine(STAT_AVERAGE_ITEM_LEVEL,("%d "):format(t.IL or 0)..STAT_AVERAGE_ITEM_LEVEL_EQUIPPED:format(t.ILe or 0))
+	if t.RBGrating and t.RBGrating > 0 then
+	  indicatortip:AddLine(BATTLEGROUND_RATING, t.RBGrating)
+	end
 	if t.Money then
 	  indicatortip:AddLine(MONEY,GetMoneyString(t.Money))
 	end
