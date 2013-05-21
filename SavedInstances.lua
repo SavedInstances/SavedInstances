@@ -98,9 +98,7 @@ addon.WorldBosses = {
   [691] = { quest=32099, expansion=4, level=90 }, -- Sha of Anger
   [725] = { quest=32098, expansion=4, level=90 }, -- Galleon
   [814] = { quest=32518, expansion=4, level=90 }, -- Nalak (32211?)
-  -- Oondasta is disabled for now until Blizzard fixes the quest flag
-  -- please complain here: http://us.battle.net/wow/en/forum/topic/8518311880
-  -- [826] = { quest=32519, expansion=4, level=90 }, -- Oondasta 
+  [826] = { quest=32519, expansion=4, level=90 }, -- Oondasta 
 }
 
 addon.showopts = {
