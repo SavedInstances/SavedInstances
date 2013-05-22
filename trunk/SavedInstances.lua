@@ -460,7 +460,9 @@ function addon:GetNextDailySkillResetTime() -- trade skill reset time
     local rt = addon:GetNextDailyResetTime()
     if not rt then return nil end
     local info = date("*t")
-    if info.isdst then -- most trade skills ignore daylight savings
+    if false and info.isdst then 
+      -- Blizzard's ridiculous reset crap:
+      -- trade skills ignore daylight savings after the date it changes UNTIL the next major patch occurs, then go back to observing it
       rt = rt - 3600
       if time() > rt then -- past trade reset but before daily reset, next day
         rt = rt + 24*3600
