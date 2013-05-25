@@ -1917,6 +1917,8 @@ function addon:HistoryUpdate(forcereset, forcemesg)
   if forcemesg or (vars.db.Tooltip.LimitWarn and zoningin and livecnt >= addon.histLimit-1) then 
       chatMsg(L["Warning: You've entered about %i instances recently and are approaching the %i instance per hour limit for your account. More instances should be available in %s."]:format(livecnt, addon.histLimit, oldistexp))
   end
+  addon.histLiveCount = livecnt
+  addon.histOldest = oldistexp
   if db.Broker.HistoryText and vars.dataobject then
     if livecnt >= addon.histLimit then
       vars.dataobject.text = oldistexp
@@ -2234,7 +2236,12 @@ function core:ShowTooltip(anchorframe)
 	  addon.headerfont:SetFont(hFontPath, hFontSize, "OUTLINE")
 	end
 	tooltip:SetHeaderFont(addon.headerfont)
-	local headLine = tooltip:AddHeader(GOLDFONT .. "SavedInstances" .. FONTEND)
+	addon:HistoryUpdate()
+	local histinfo = ""
+	if addon.histLiveCount and addon.histLiveCount > 0 then
+	  histinfo = "  ("..addon.histLiveCount.."/"..(addon.histOldest or "?")..")"
+	end
+	local headLine = tooltip:AddHeader(GOLDFONT .. addonName .. histinfo .. FONTEND)
 	tooltip:SetCellScript(headLine, 1, "OnEnter", ShowHistoryTooltip )
 	tooltip:SetCellScript(headLine, 1, "OnLeave", 
 					     function() if indicatortip then indicatortip:Hide(); end GameTooltip:Hide() end)
