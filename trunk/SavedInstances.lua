@@ -73,10 +73,11 @@ local currency = {
   390, -- Conquest Points
   738, -- Lesser Charm of Good Fortune
   697, -- Elder Charm of Good Fortune
+  752, -- Mogu Rune of Fate
   402, -- Ironpaw Token
   81, -- Epicurean Award
   515, -- Darkmoon Prize Ticket
-  752, -- Mogu Rune of Fate
+  241, -- Champion's Seal
 }
 addon.currency = currency
 

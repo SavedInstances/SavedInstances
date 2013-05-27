@@ -729,10 +729,12 @@ function module:BuildOptions()
     core.Options[k] = v
   end
   for i, curr in ipairs(addon.currency) do
+    local name,_,tex = GetCurrencyInfo(curr)
+    tex = "\124T"..tex..":0\124t "
     core.Options.args.General.args["Currency"..curr] = { 
 	type = "toggle",
 	order = 50+i,
-	name = GetCurrencyInfo(curr),
+	name = tex..name,
     }
   end
 end
