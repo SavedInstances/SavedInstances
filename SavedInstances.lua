@@ -152,6 +152,8 @@ local QuestExceptions = {
   [32641] = "Weekly",  -- Champions of the Thunder King
   [32718] = "Weekly",  -- Mogu Runes of Fate
   [32719] = "Weekly",  -- Mogu Runes of Fate
+  [32862] = "Weekly",  -- Battlefield: Barrens
+  [32872] = "Weekly",  -- Battlefield: Barrens
 }
 
 function addon:QuestInfo(questid)
@@ -1670,7 +1672,6 @@ end
 
 function core:OnEnable()
 	self:RegisterEvent("UPDATE_INSTANCE_INFO", function() core:Refresh(nil) end)
-	self:RegisterEvent("QUEST_QUERY_COMPLETE", function() core:Refresh(nil) end)
 	self:RegisterEvent("LFG_UPDATE_RANDOM_INFO", function() addon:UpdateInstanceData(); addon:UpdateToonData() end)
 	self:RegisterEvent("RAID_INSTANCE_WELCOME", RequestRaidInfo)
 	self:RegisterEvent("CHAT_MSG_SYSTEM", "CheckSystemMessage")
