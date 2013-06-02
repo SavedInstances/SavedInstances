@@ -3022,7 +3022,6 @@ end
 local farm_spells = {
 
  [111102]="plant", -- Plant Green Cabbage
- [114430]="plant", -- Plant Spores
  [123361]="plant", -- Plant Juicycrunch Carrot
  [123388]="plant", -- Plant Scallions
  [123485]="plant", -- Plant Mogu Pumpkin
