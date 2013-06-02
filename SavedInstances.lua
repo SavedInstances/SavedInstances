@@ -78,6 +78,7 @@ local currency = {
   81, -- Epicurean Award
   515, -- Darkmoon Prize Ticket
   241, -- Champion's Seal
+  391, -- Tol Barad Commendation
 }
 addon.currency = currency
 
