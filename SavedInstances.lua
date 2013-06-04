@@ -1206,14 +1206,26 @@ local function coloredText(fontstring)
                        textAlpha*255, textR*255, textG*255, textB*255)
 end
 
+local function openIndicator(...)
+  indicatortip = QTip:Acquire("SavedInstancesIndicatorTooltip", ...)
+  indicatortip:Clear()
+  indicatortip:SetHeaderFont(tooltip:GetHeaderFont())
+end
+
+local function finishIndicator()
+  indicatortip:SetAutoHideDelay(0.1, tooltip)
+  indicatortip:SmartAnchorTo(tooltip)
+  indicatortip:SetFrameLevel(200) -- ensure visibility when forced to overlap main tooltip
+  addon:SkinFrame(indicatortip,"SavedInstancesIndicatorTooltip")
+  indicatortip:Show()
+end
+
 local function ShowToonTooltip(cell, arg, ...)
 	local toon = arg[1]
 	if not toon then return end
 	local t = vars.db.Toons[toon]
 	if not t then return end
-	indicatortip = QTip:Acquire("SavedInstancesIndicatorTooltip", 2, "LEFT","RIGHT")
-	indicatortip:Clear()
-	indicatortip:SetHeaderFont(tooltip:GetHeaderFont())
+	openIndicator(2, "LEFT","RIGHT")
 	indicatortip:SetCell(indicatortip:AddHeader(),1,ClassColorise(t.Class, toon))
 	indicatortip:SetCell(1,2,ClassColorise(t.Class, LEVEL.." "..t.Level.." "..(t.LClass or "")))
 	indicatortip:AddLine(STAT_AVERAGE_ITEM_LEVEL,("%d "):format(t.IL or 0)..STAT_AVERAGE_ITEM_LEVEL_EQUIPPED:format(t.ILe or 0))
@@ -1232,10 +1244,7 @@ local function ShowToonTooltip(cell, arg, ...)
 	  indicatortip:AddLine((TIME_PLAYED_TOTAL):format(""),SecondsToTime(t.PlayedTotal))
 	  indicatortip:AddLine((TIME_PLAYED_LEVEL):format(""),SecondsToTime(t.PlayedLevel))
 	end
-	indicatortip:SetAutoHideDelay(0.1, tooltip)
-	indicatortip:SmartAnchorTo(tooltip)
-	addon:SkinFrame(indicatortip,"SavedInstancesIndicatorTooltip")
-	indicatortip:Show()
+	finishIndicator()
 end
 
 local function ShowQuestTooltip(cell, arg, ...)
@@ -1247,9 +1256,7 @@ local function ShowQuestTooltip(cell, arg, ...)
 	  if not t then return end
 	  scopestr = ClassColorise(vars.db.Toons[toon].Class, toon)
 	end
-	indicatortip = QTip:Acquire("SavedInstancesIndicatorTooltip", 2, "LEFT", "RIGHT")
-	indicatortip:Clear()
-	indicatortip:SetHeaderFont(tooltip:GetHeaderFont())
+	openIndicator(2, "LEFT","RIGHT")
 	indicatortip:AddHeader(scopestr, qstr)
         local nightlyReset = addon:GetNextDailyResetTime()
 	if isDaily and nightlyReset then
@@ -1270,10 +1277,7 @@ local function ShowQuestTooltip(cell, arg, ...)
 	  indicatortip:SetCell(line,1,(qi.Zone or ""),"LEFT")
           indicatortip:SetCell(line,2,(qi.Link or qi.Title),"RIGHT")
         end
-	indicatortip:SetAutoHideDelay(0.1, tooltip)
-	indicatortip:SmartAnchorTo(tooltip)
-	addon:SkinFrame(indicatortip,"SavedInstancesIndicatorTooltip")
-	indicatortip:Show()
+	finishIndicator()
 end
 
 local function skillsort(s1, s2)
@@ -1288,9 +1292,7 @@ local function ShowSkillTooltip(cell, arg, ...)
         local toon, cstr = unpack(arg)
         local t = vars.db.Toons[toon]
         if not t then return end
-        indicatortip = QTip:Acquire("SavedInstancesIndicatorTooltip", 3, "LEFT", "RIGHT")
-        indicatortip:Clear()
-        indicatortip:SetHeaderFont(tooltip:GetHeaderFont())
+	openIndicator(3, "LEFT","RIGHT","RIGHT")
 	local tname = ClassColorise(t.Class, toon)
         indicatortip:AddHeader()
 	indicatortip:SetCell(1,1,tname,"LEFT")
@@ -1309,10 +1311,7 @@ local function ShowSkillTooltip(cell, arg, ...)
 	  indicatortip:SetCell(line,1,title,"LEFT",2)
 	  indicatortip:SetCell(line,3,tstr,"RIGHT")
         end
-        indicatortip:SetAutoHideDelay(0.1, tooltip)
-        indicatortip:SmartAnchorTo(tooltip)
-        addon:SkinFrame(indicatortip,"SavedInstancesIndicatorTooltip")
-        indicatortip:Show()
+	finishIndicator()
 end
 
 function addon:plantName(spellid)
@@ -1330,9 +1329,7 @@ local function ShowFarmTooltip(cell, arg, ...)
         local toon, cstr = unpack(arg)
         local t = vars.db.Toons[toon]
         if not t then return end
-        indicatortip = QTip:Acquire("SavedInstancesIndicatorTooltip", 2, "LEFT", "RIGHT")
-        indicatortip:Clear()
-        indicatortip:SetHeaderFont(tooltip:GetHeaderFont())
+	openIndicator(2, "LEFT","RIGHT")
 	local tname = ClassColorise(t.Class, toon)
         indicatortip:AddHeader()
 	indicatortip:SetCell(1,1,tname,"LEFT")
@@ -1359,17 +1356,12 @@ local function ShowFarmTooltip(cell, arg, ...)
 	    indicatortip:SetCell(line,2,"x"..cnt,"RIGHT")
           end
 	end
-
-        indicatortip:SetAutoHideDelay(0.1, tooltip)
-        indicatortip:SmartAnchorTo(tooltip)
-        addon:SkinFrame(indicatortip,"SavedInstancesIndicatorTooltip")
-        indicatortip:Show()
+	finishIndicator()
 end
 
 local function ShowHistoryTooltip(cell, arg, ...)
         addon:HistoryUpdate()
-        indicatortip = QTip:Acquire("SavedInstancesIndicatorTooltip", 2, "LEFT", "LEFT")
-        indicatortip:Clear()
+	openIndicator(2, "LEFT","RIGHT")
         local tmp = {}
         local cnt = 0
         for _,ii in pairs(db.History) do
@@ -1387,10 +1379,7 @@ local function ShowHistoryTooltip(cell, arg, ...)
         indicatortip:SetCell(indicatortip:AddLine(),1,
            string.format(L["These are the instances that count towards the %i instances per hour account limit, and the time until they expire."],
                          addon.histLimit),"LEFT",2,nil,nil,nil,250)
-        indicatortip:SetAutoHideDelay(0.1, tooltip)
-        indicatortip:SmartAnchorTo(tooltip)
-	addon:SkinFrame(indicatortip,"SavedInstancesIndicatorTooltip")
-        indicatortip:Show()
+	finishIndicator()
 end
 
 local function ShowIndicatorTooltip(cell, arg, ...)
@@ -1398,9 +1387,7 @@ local function ShowIndicatorTooltip(cell, arg, ...)
 	local toon = arg[2]
 	local diff = arg[3]
 	if not instance or not toon or not diff then return end
-	indicatortip = QTip:Acquire("SavedInstancesIndicatorTooltip", 3, "LEFT", "LEFT", "RIGHT")
-	indicatortip:Clear()
-	indicatortip:SetHeaderFont(tooltip:GetHeaderFont())
+	openIndicator(3, "LEFT", "LEFT","RIGHT")
 	local thisinstance = vars.db.Instances[instance]
         local worldboss = thisinstance and thisinstance.WorldBoss
         local info = thisinstance[toon][diff]
@@ -1426,8 +1413,6 @@ local function ShowIndicatorTooltip(cell, arg, ...)
 	  indicatortip:SetCell(n, 1, YELLOWFONT .. ID .. ":" .. FONTEND, "LEFT", 1)
 	  indicatortip:SetCell(n, 2, info.ID, "RIGHT", 2)
 	end
-	indicatortip:SetAutoHideDelay(0.1, tooltip)
-	indicatortip:SmartAnchorTo(tooltip)
 	if info.Link then
 	  scantt:SetOwner(UIParent,"ANCHOR_NONE")
 	  scantt:SetHyperlink(thisinstance[toon][diff].Link)
@@ -1468,8 +1453,7 @@ local function ShowIndicatorTooltip(cell, arg, ...)
             end
           end
         end
-	addon:SkinFrame(indicatortip,"SavedInstancesIndicatorTooltip")
-	indicatortip:Show()
+	finishIndicator()
 end
 
 local colorpat = "\124c%c%c%c%c%c%c%c%c"
@@ -1495,9 +1479,7 @@ end
 local function ShowSpellIDTooltip(cell, arg, ...)
   local toon, spellid, timestr = unpack(arg)
   if not toon or not spellid or not timestr then return end
-  indicatortip = QTip:Acquire("SavedInstancesIndicatorTooltip", 2, "LEFT", "RIGHT")
-  indicatortip:Clear()
-  indicatortip:SetHeaderFont(tooltip:GetHeaderFont())
+  openIndicator(2, "LEFT","RIGHT")
   indicatortip:AddHeader(ClassColorise(vars.db.Toons[toon].Class, strsplit(' ', toon)), timestr)
   if spellid > 0 then 
     local tip = vars.db.spelltip and vars.db.spelltip[spellid]
@@ -1511,11 +1493,7 @@ local function ShowSpellIDTooltip(cell, arg, ...)
     indicatortip:AddLine("")
     indicatortip:SetCell(indicatortip:GetLineCount(),1,queuestr, nil, "LEFT",2, nil, nil, nil, 250)
   end
-
-  indicatortip:SetAutoHideDelay(0.1, tooltip)
-  indicatortip:SmartAnchorTo(tooltip)
-  addon:SkinFrame(indicatortip,"SavedInstancesIndicatorTooltip")
-  indicatortip:Show()
+  finishIndicator()
 end
 
 local function ShowCurrencyTooltip(cell, arg, ...)
@@ -1523,9 +1501,7 @@ local function ShowCurrencyTooltip(cell, arg, ...)
   if not toon or not idx or not ci then return end
   local name,_,tex = GetCurrencyInfo(idx)
   tex = " \124T"..tex..":0\124t"
-  indicatortip = QTip:Acquire("SavedInstancesIndicatorTooltip", 2, "LEFT", "RIGHT")
-  indicatortip:Clear()
-  indicatortip:SetHeaderFont(tooltip:GetHeaderFont())
+  openIndicator(2, "LEFT","RIGHT")
   indicatortip:AddHeader(ClassColorise(vars.db.Toons[toon].Class, strsplit(' ', toon)), "("..(ci.amount or "0")..tex..")")
 
   scantt:SetOwner(UIParent,"ANCHOR_NONE")
@@ -1551,11 +1527,7 @@ local function ShowCurrencyTooltip(cell, arg, ...)
   if ci.season and #ci.season > 0 then
     indicatortip:AddLine(ci.season)
   end
-
-  indicatortip:SetAutoHideDelay(0.1, tooltip)
-  indicatortip:SmartAnchorTo(tooltip)
-  addon:SkinFrame(indicatortip,"SavedInstancesIndicatorTooltip")
-  indicatortip:Show()
+  finishIndicator()
 end
 
 
