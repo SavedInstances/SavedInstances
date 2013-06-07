@@ -1020,6 +1020,7 @@ function addon:UpdateToonData()
 	  t.IL, t.ILe = tonumber(IL), tonumber(ILe)
 	end
 	t.RBGrating = tonumber((GetPersonalRatedBGInfo())) or t.RBGrating
+	core:scan_item_cds()
 	-- Daily Reset
 	local nextreset = addon:GetNextDailyResetTime()
 	if nextreset and nextreset > time() then
@@ -2872,6 +2873,9 @@ local trade_spells = {
 
 	-- Engineering
 	[139176] = true,	-- Stabilized Lightning Source
+	[126459] = "item",	-- Blingtron
+	[54710]  = "item",	-- MOLL-E
+	[67826]  = "item",	-- Jeeves
 }
 
 local cdname = {
@@ -2880,6 +2884,21 @@ local cdname = {
 	["sphere"] = GetSpellInfo(7411).. ": "..GetSpellInfo(28027),
 	["magni"] =  GetSpellInfo(2108).. ": "..GetSpellInfo(140040)
 }
+
+local itemcds = { -- [itemid] = spellid
+	[87214] = 126459, 	-- Blingtron
+	[40768] = 54710, 	-- MOLL-E
+	[49040] = 67826, 	-- Jeeves
+}
+
+function core:scan_item_cds()
+  for itemid, spellid in pairs(itemcds) do
+    local start, duration = GetItemCooldown(itemid)
+    if start and duration and start > 0 then
+      core:record_skill(spellid, GetTimeToTime(start+duration))
+    end
+  end
+end
 
 function core:record_skill(spellID, expires)
   if not spellID then return end
@@ -2900,7 +2919,12 @@ function core:record_skill(spellID, expires)
   local idx = spellID
   local title = spellName
   local link = nil
-  if type(cdinfo) == "string" then
+  if cdinfo == "item" then
+    if not expires then 
+      core:ScheduleTimer("scan_item_cds", 2) -- theres a delay for the item to go on cd
+      return
+    end
+  elseif type(cdinfo) == "string" then
     idx = cdinfo
     title = cdname[cdinfo] or title
   elseif expires ~= 0 then
