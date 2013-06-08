@@ -1108,6 +1108,7 @@ function addon:UpdateToonData()
 	if zone and #zone > 0 then
 	  t.Zone = zone
 	end
+	t.LastSeen = time()
 end
 
 function addon:QuestIsDarkmoonMonthly()
@@ -1238,6 +1239,10 @@ local function ShowToonTooltip(cell, arg, ...)
 	end
 	if t.Zone then
 	  indicatortip:AddLine(ZONE,t.Zone)
+	end
+	if t.LastSeen then
+	  local when = date("%c",t.LastSeen)
+	  indicatortip:AddLine(L["Last updated"],when)
 	end
 	if t.PlayedTotal and t.PlayedLevel and ChatFrame_TimeBreakDown then
 	  --indicatortip:AddLine((TIME_PLAYED_TOTAL):format((TIME_DAYHOURMINUTESECOND):format(ChatFrame_TimeBreakDown(t.PlayedTotal))))
