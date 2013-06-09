@@ -185,6 +185,15 @@ local function GetTimeToTime(val)
   return val + GTToffset
 end
 
+-- abbreviate expansion names (which apparently are not localized in any western character set)
+local function abbreviate(iname)
+  iname = iname:gsub("Burning Crusade", "BC")
+  iname = iname:gsub("Wrath of the Lich King", "WotLK")
+  iname = iname:gsub("Cataclysm", "Cata")
+  iname = iname:gsub("Mists of Pandaria", "MoP")
+  return iname
+end
+
 vars.defaultDB = {
 	DBVersion = 11,
 	History = { }, -- for tracking 5 instance per hour limit
@@ -826,7 +835,7 @@ function addon:UpdateInstanceData()
   instancesUpdated = true
   local count = 0
   local starttime = debugprofilestop()
-  local maxid = 600
+  local maxid = 700
   for id=1,maxid do -- start with brute force
     if addon:UpdateInstance(id) then
       count = count + 1
@@ -2377,7 +2386,7 @@ function core:ShowTooltip(anchorframe)
 			 addsep()
 			 firstlfd = false
 		      end
-		      holidayinst[instance] = tooltip:AddLine(YELLOWFONT .. instance .. FONTEND)
+		      holidayinst[instance] = tooltip:AddLine(YELLOWFONT .. abbreviate(instance) .. FONTEND)
 		    end
 		    local tstr = SecondsToTime(d.Expires - time(), false, false, 1)
      		    tooltip:SetCell(holidayinst[instance], columns[toon..1], ClassColorise(t.Class,tstr), "CENTER",maxcol)
