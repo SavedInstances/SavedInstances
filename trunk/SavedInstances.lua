@@ -1591,6 +1591,7 @@ function core:OnInitialize()
 	db.Tooltip.SelfAlways = (db.Tooltip.SelfAlways == nil and false) or db.Tooltip.SelfAlways
 	db.Tooltip.CurrencyValueColor = (db.Tooltip.CurrencyValueColor == nil and true) or db.Tooltip.CurrencyValueColor
 	db.Tooltip.RowHighlight = db.Tooltip.RowHighlight or 0.1
+	db.Tooltip.Scale = db.Tooltip.Scale or 1
 	db.QuestDB = db.QuestDB or vars.defaultDB.QuestDB
 	for qid, _ in pairs(db.QuestDB.Daily) do
 	  if db.QuestDB.AccountDaily[qid] then
@@ -2210,7 +2211,12 @@ end
 
 function core:ShowTooltip(anchorframe)
 	local showall = ShowAll()
-	if tooltip and tooltip:IsShown() and core.showall == showall then return end
+	if tooltip and tooltip:IsShown() and 
+	   core.showall == showall and
+	   core.scale == vars.db.Tooltip.Scale
+	   then return -- skip update
+	end
+	core.scale = vars.db.Tooltip.Scale
 	core.showall = showall
 	local showexpired = showall or vars.db.Tooltip.ShowExpired
 	if tooltip then QTip:Release(tooltip) end
@@ -2219,6 +2225,7 @@ function core:ShowTooltip(anchorframe)
 	tooltip.anchorframe = anchorframe
 	tooltip:SetScript("OnUpdate", UpdateTooltip)
 	tooltip:Clear()
+	tooltip:SetScale(vars.db.Tooltip.Scale)
 	if not addon.headerfont then
 	  addon.headerfont = CreateFont("SavedInstancedTooltipHeaderFont")
 	  local hFont = tooltip:GetHeaderFont()

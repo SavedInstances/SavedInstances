@@ -291,6 +291,14 @@ function module:BuildOptions()
 					desc = L["List raid categories before dungeon categories"],
 					order = 17,
 				},
+			        Scale = {
+					type = "range",
+					name = L["Tooltip Scale"],
+					order = 17.5,
+					min = 0.1,
+					max = 5,
+					bigStep = 0.1,
+				},
 			        RowHighlight = {
 					type = "range",
 					name = L["Row Highlight"],
