@@ -1221,6 +1221,7 @@ local function openIndicator(...)
   indicatortip = QTip:Acquire("SavedInstancesIndicatorTooltip", ...)
   indicatortip:Clear()
   indicatortip:SetHeaderFont(tooltip:GetHeaderFont())
+  indicatortip:SetScale(vars.db.Tooltip.Scale)
 end
 
 local function finishIndicator()
