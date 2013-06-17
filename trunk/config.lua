@@ -196,6 +196,12 @@ function module:BuildOptions()
 						if value then vars.icon:Show("SavedInstances") else vars.icon:Hide("SavedInstances") end
 					end,
 				},
+				DisableMouseover = {
+					type = "toggle",
+					name = L["Disable mouseover"],
+					desc = L["Disable tooltip display on icon mouseover"],
+					order = 3.5,
+				},
 				ShowHints = {
 					type = "toggle",
 					name = L["Show tooltip hints"],

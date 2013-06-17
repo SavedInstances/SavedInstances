@@ -1619,7 +1619,7 @@ function core:OnInitialize()
 		type = "launcher",
 		icon = "Interface\\Addons\\SavedInstances\\icon.tga",
 		OnEnter = function(frame)
-		      if not addon:IsDetached() then
+		      if not addon:IsDetached() and not db.Tooltip.DisableMouseover then
 			core:ShowTooltip(frame)
 	              end
 		end,
