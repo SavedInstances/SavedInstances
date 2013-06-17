@@ -1274,10 +1274,10 @@ local function ShowQuestTooltip(cell, arg, ...)
 	end
 	openIndicator(2, "LEFT","RIGHT")
 	indicatortip:AddHeader(scopestr, qstr)
-        local nightlyReset = addon:GetNextDailyResetTime()
-	if isDaily and nightlyReset then
+        local reset = (isDaily and addon:GetNextDailyResetTime()) or (not isDaily and addon:GetNextWeeklyResetTime())
+	if reset then
 	  indicatortip:AddLine(YELLOWFONT .. L["Time Left"] .. ":" .. FONTEND,
-	      SecondsToTime(nightlyReset - time()))
+	      SecondsToTime(reset - time()))
 	end
         local ql = {}
         for id,qi in pairs(t.Quests) do
@@ -2497,7 +2497,7 @@ function core:ShowTooltip(anchorframe)
                 if showw then
                         showw = tooltip:AddLine(YELLOWFONT .. L["Weekly Quests"] .. (awc > 0 and " ("..awc..")" or "") .. FONTEND)
 			if awc > 0 then
-                          tooltip:SetCellScript(showw, 1, "OnEnter", ShowQuestTooltip, {nil,awc.." "..L["Weekly Quests"],true})
+                          tooltip:SetCellScript(showw, 1, "OnEnter", ShowQuestTooltip, {nil,awc.." "..L["Weekly Quests"],false})
                           tooltip:SetCellScript(showw, 1, "OnLeave", function() indicatortip:Hide(); GameTooltip:Hide() end)
 			end
                 end
