@@ -2206,21 +2206,33 @@ function addon:ShowDetached()
 end
 
 local function OpenLFD(self, instanceid, button)
-    ToggleLFDParentFrame()
+    if LFDParentFrame and LFDParentFrame:IsVisible() and LFDQueueFrame.type ~= instanceid then
+      -- changing entries
+    else
+      ToggleLFDParentFrame()
+    end
     if LFDParentFrame and LFDParentFrame:IsVisible() and LFDQueueFrame_SetType then
       LFDQueueFrame_SetType(instanceid)
     end
 end
 
 local function OpenLFR(self, instanceid, button)
-    PVEFrame_ToggleFrame("GroupFinderFrame", RaidFinderFrame)
+    if RaidFinderFrame and RaidFinderFrame:IsVisible() and RaidFinderQueueFrame.raid ~= instanceid then
+      -- changing entries
+    else
+      PVEFrame_ToggleFrame("GroupFinderFrame", RaidFinderFrame)
+    end
     if RaidFinderFrame and RaidFinderFrame:IsVisible() and RaidFinderQueueFrame_SetRaid then
       RaidFinderQueueFrame_SetRaid(instanceid)
     end
 end
 
 local function OpenLFS(self, instanceid, button)
-    PVEFrame_ToggleFrame("GroupFinderFrame", ScenarioFinderFrame)
+    if ScenarioFinderFrame and ScenarioFinderFrame:IsVisible() and ScenarioQueueFrame.type ~= instanceid then
+      -- changing entries
+    else
+      PVEFrame_ToggleFrame("GroupFinderFrame", ScenarioFinderFrame)
+    end
     if ScenarioFinderFrame and ScenarioFinderFrame:IsVisible() and ScenarioQueueFrame_SetType then
       ScenarioQueueFrame_SetType(instanceid)
     end
