@@ -980,6 +980,11 @@ function addon:UpdateToonData()
 		  GetLFGDungeonInfo(id) -- forces update
 		  local donetoday, money = GetLFGDungeonRewards(id)
 		  local expires = addon:GetNextDailyResetTime()
+		  if donetoday and i.Random and (
+		    (UnitLevel("player") == 85 and (i.LFDID == 300 or i.LFDID == 434)) -- reg cata and HoT
+		   ) then -- donetoday flag is falsely set for some level/dungeon combos where no daily incentive is available
+		     donetoday = false
+		  end
 		  if expires and donetoday and (i.Holiday or (money and money > 0)) then
 		    i[thisToon] = i[thisToon] or {}
 		    i[thisToon][1] = i[thisToon][1] or {}
@@ -2197,6 +2202,15 @@ function addon:ShowDetached()
     core:ShowTooltip(f)
 end
 
+local function OpenLFD(self, instanceid, button)
+    ToggleLFDParentFrame()
+    if LFDParentFrame and LFDParentFrame:IsVisible() and LFDQueueFrame_SetType then
+      LFDQueueFrame_SetType(instanceid)
+    end
+end
+local function OpenCurrency(self, _, button)
+  ToggleCharacter("TokenFrame")
+end
 
 local function ShowAll()
   	return (IsAltKeyDown() and true) or false
@@ -2398,6 +2412,7 @@ function core:ShowTooltip(anchorframe)
 		    end
 		    local tstr = SecondsToTime(d.Expires - time(), false, false, 1)
      		    tooltip:SetCell(holidayinst[instance], columns[toon..1], ClassColorise(t.Class,tstr), "CENTER",maxcol)
+		    tooltip:SetLineScript(holidayinst[instance], "OnMouseDown", OpenLFD, info.LFDID)
 		  end
 		end
 	  end
@@ -2636,6 +2651,8 @@ function core:ShowTooltip(anchorframe)
 		   tooltip:SetCellScript(currLine, columns[toon..1], "OnEnter", ShowCurrencyTooltip, {toon, idx, ci})
 		   tooltip:SetCellScript(currLine, columns[toon..1], "OnLeave", 
 							     function() indicatortip:Hide(); GameTooltip:Hide() end)
+		   tooltip:SetCellScript(currLine, columns[toon..1], "OnMouseDown", OpenCurrency)
+		   tooltip:SetLineScript(currLine, "OnMouseDown", OpenCurrency)
 		  end
                 end
               end
