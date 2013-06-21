@@ -2205,6 +2205,9 @@ function addon:ShowDetached()
     core:ShowTooltip(f)
 end
 
+-----------------------------------------------------------------------------------------------
+-- tooltip event handlers
+
 local function OpenLFD(self, instanceid, button)
     if LFDParentFrame and LFDParentFrame:IsVisible() and LFDQueueFrame.type ~= instanceid then
       -- changing entries
@@ -2242,12 +2245,25 @@ local function OpenCurrency(self, _, button)
   ToggleCharacter("TokenFrame")
 end
 
+local function ChatLink(self, link, button)
+  if not link then return end
+  if ChatEdit_GetActiveWindow() then
+     ChatEdit_InsertLink(link)
+  else
+     ChatFrame_OpenChat(link, DEFAULT_CHAT_FRAME)
+  end
+end
+
 local function CloseTooltips()
   GameTooltip:Hide()
   if indicatortip then
      indicatortip:Hide()
   end
 end
+
+local function DoNothing() end
+
+-----------------------------------------------------------------------------------------------
 
 local function ShowAll()
   	return (IsAltKeyDown() and true) or false
@@ -2413,17 +2429,14 @@ function core:ShowTooltip(anchorframe)
 					    DifficultyString(instance, diff, toon, inst[toon][diff].Expires == 0), span)
 					tooltip:SetCellScript(instancerow[instance], columns[toon..base], "OnEnter", ShowIndicatorTooltip, {instance, toon, diff})
 					tooltip:SetCellScript(instancerow[instance], columns[toon..base], "OnLeave", CloseTooltips)
-					tooltip:SetCellScript(instancerow[instance], columns[toon..base], "OnMouseDown", 
-					     function()
-					       local link = inst[toon][diff].Link
-					       if addon.LFRInstances[inst.LFDID] then
-					          OpenLFR(nil,inst.LFDID)
-					       elseif link and ChatEdit_GetActiveWindow() then
-					          ChatEdit_InsertLink(link)
-					       elseif link then
-					          ChatFrame_OpenChat(link, DEFAULT_CHAT_FRAME)
-					       end
-					     end)
+					if addon.LFRInstances[inst.LFDID] then
+					  tooltip:SetCellScript(instancerow[instance], columns[toon..base], "OnMouseDown", OpenLFR, inst.LFDID)
+					else
+					  local link = inst[toon][diff].Link
+					  if link then
+					    tooltip:SetCellScript(instancerow[instance], columns[toon..base], "OnMouseDown", ChatLink, link)
+					  end
+				        end
 					base = base + 1
 				    elseif columns[toon..diff] and showcnt > 1 then
 					tooltip:SetCell(instancerow[instance], columns[toon..diff], "")
@@ -2735,8 +2748,8 @@ function core:ShowTooltip(anchorframe)
 
 	local hi = true
 	for i=2,tooltip:GetLineCount() do -- row highlighting
-	  tooltip:SetLineScript(i, "OnEnter", function() end)
-	  tooltip:SetLineScript(i, "OnLeave", function() end)
+	  tooltip:SetLineScript(i, "OnEnter", DoNothing)
+	  tooltip:SetLineScript(i, "OnLeave", DoNothing)
 
           if hi and not blankrow[i] then
 	    tooltip:SetLineColor(i, 1,1,1, db.Tooltip.RowHighlight)
