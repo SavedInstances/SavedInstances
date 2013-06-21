@@ -31,6 +31,7 @@ local REDFONT = RED_FONT_COLOR_CODE
 local GREENFONT = GREEN_FONT_COLOR_CODE
 local WHITEFONT = HIGHLIGHT_FONT_COLOR_CODE
 local GRAYFONT = GRAY_FONT_COLOR_CODE
+local GRAY_COLOR = { 0.5, 0.5, 0.5, 1 }
 local LFD_RANDOM_REWARD_EXPLANATION2 = LFD_RANDOM_REWARD_EXPLANATION2
 local INSTANCE_SAVED, TRANSFER_ABORT_TOO_MANY_INSTANCES, NO_RAID_INSTANCES_SAVED = 
       INSTANCE_SAVED, TRANSFER_ABORT_TOO_MANY_INSTANCES, NO_RAID_INSTANCES_SAVED
@@ -370,19 +371,25 @@ end
 
 -- general helper functions below
 
+local function ColorCodeOpenRGB(r,g,b,a)
+	return format("|c%02x%02x%02x%02x", math.floor(a * 255), math.floor(r * 255), math.floor(g * 255), math.floor(b * 255))
+end
+
 local function ColorCodeOpen(color)
-	return format("|c%02x%02x%02x%02x", math.floor(color[4] * 255), math.floor(color[1] * 255), math.floor(color[2] * 255), math.floor(color[3] * 255))
+	return ColorCodeOpenRGB(color[1] or color.r, 
+	                        color[2] or color.g,
+				color[3] or color.b,
+				color[4] or color.a or 1)
 end
 
 local function ClassColorise(class, targetstring)
-	local RAID_CLASS_COLORS = CUSTOM_CLASS_COLORS or RAID_CLASS_COLORS
-	local color = {
-		RAID_CLASS_COLORS[class].r,
-		RAID_CLASS_COLORS[class].g,
-		RAID_CLASS_COLORS[class].b,
-		1,
-	}
-	return ColorCodeOpen(color) .. targetstring .. FONTEND
+	local c = (CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[class]) or RAID_CLASS_COLORS[class]
+	if c.colorStr then
+	  c = "|c"..c.colorStr
+	else
+	  c = ColorCodeOpen( c )
+	end
+	return c .. targetstring .. FONTEND
 end
 
 local function CurrencyColor(amt, max)
@@ -798,15 +805,9 @@ local function DifficultyString(instance, diff, toon, expired)
 	end
 	local prefs = vars.db.Indicators
 	if expired then
-	  color = { 0.5, 0.5, 0.5, 1 }
+	  	color = GRAY_COLOR
 	elseif prefs[setting .. "ClassColor"] then
-		local RAID_CLASS_COLORS = CUSTOM_CLASS_COLORS or RAID_CLASS_COLORS
-		color = {
-		RAID_CLASS_COLORS[vars.db.Toons[toon].Class].r,
-		RAID_CLASS_COLORS[vars.db.Toons[toon].Class].g,
-		RAID_CLASS_COLORS[vars.db.Toons[toon].Class].b,
-		1,
-	}
+		color = (CUSTOM_CLASS_COLORS or RAID_CLASS_COLORS)[vars.db.Toons[toon].Class]
 	else
 	        prefs[setting.."Color"]  = prefs[setting.."Color"] or vars.defaultDB.Indicators[setting.."Color"]
 		color = prefs[setting.."Color"] 
