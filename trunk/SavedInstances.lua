@@ -3202,6 +3202,10 @@ function core:record_farm(spellID)
     t.FarmCropPlanted = t.FarmCropPlanted or {}
     t.FarmCropPlanted[spellID] = (t.FarmCropPlanted[spellID] or 0) + amt
   elseif ft == "harvest" then
+    if t.FarmExpires and time() + 60 > t.FarmExpires then -- assume this is a fresh day 
+      t.FarmExpires = t.FarmExpires - 60
+      addon:UpdateToonData() -- ticket 132: ensure refresh if we're harvesting right after reset
+    end
     t.FarmHarvested = (t.FarmHarvested or 0) + 1
     t.FarmCropReady = nil
   end
