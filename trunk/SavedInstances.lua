@@ -1038,7 +1038,9 @@ function addon:UpdateToonData()
 	if IL and tonumber(IL) and tonumber(IL) > 0 then -- can fail during logout
 	  t.IL, t.ILe = tonumber(IL), tonumber(ILe)
 	end
-	t.RBGrating = tonumber((GetPersonalRatedBGInfo())) or t.RBGrating
+	local rating = (GetPersonalRatedBGInfo and GetPersonalRatedBGInfo()) -- 5.3
+	            or (GetPersonalRatedInfo and GetPersonalRatedInfo(4))
+	t.RBGrating = tonumber(rating) or t.RBGrating
 	core:scan_item_cds()
 	-- Daily Reset
 	local nextreset = addon:GetNextDailyResetTime()
