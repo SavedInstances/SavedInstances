@@ -1718,15 +1718,16 @@ function core:OnEnable()
         RegisterAddonMessagePrefix(addonName)
 	addon:HistoryEvent("PLAYER_ENTERING_WORLD") -- update after initial load
 
-	if BigWigsLoader then
-		BigWigsLoader.RegisterMessage(self, "BigWigs_OnBossWin", function() debug("BigWigs_OnBossWin refresh"); core:LFG_COMPLETION_REWARD() end)
-	end
 end
 
 function core:ADDON_LOADED()
 	if DBM and DBM.EndCombat and not addon.dbmhook then
 	  addon.dbmhook = true
 	  hooksecurefunc(DBM, "EndCombat", function() debug("DBM:EndCombat refresh"); core:LFG_COMPLETION_REWARD() end)
+	end
+	if BigWigsLoader and not addon.bigwigshook then
+	  addon.bigwigshook = true
+	  BigWigsLoader.RegisterMessage(self, "BigWigs_OnBossWin", function() debug("BigWigs_OnBossWin refresh"); core:LFG_COMPLETION_REWARD() end)
 	end
 end
 
