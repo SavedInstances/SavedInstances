@@ -95,13 +95,31 @@ addon.LFRInstances = {
   [611] = { total=3, base=4 }, -- Throne of Thunder pt 2
   [612] = { total=3, base=7 }, -- Throne of Thunder pt 3
   [613] = { total=3, base=10}, -- Throne of Thunder pt 4
+  [716] = { total=4, base=1,  flexid=726 }, -- SoO pt 1
+  [717] = { total=4, base=5,  flexid=728 }, -- SoO pt 2
+  [724] = { total=3, base=9,  flexid=729 }, -- SoO pt 3
+  [725] = { total=3, base=12, flexid=730 }, -- SoO pt 4
 }
+addon.FlexInstances = {}
+for id,info in pairs(addon.LFRInstances) do
+  if info.flexid then
+     addon.FlexInstances[info.flexid] = { total=info.total, base=info.base, flex=true }
+     info.flexid = nil
+  end
+end
+for id,info in pairs(addon.FlexInstances) do addon.LFRInstances[id] = info end
 
 addon.WorldBosses = {
+  -- encounter index is embedded in the Hjournal hyperlink
   [691] = { quest=32099, expansion=4, level=90 }, -- Sha of Anger
   [725] = { quest=32098, expansion=4, level=90 }, -- Galleon
-  [814] = { quest=32518, expansion=4, level=90 }, -- Nalak (32211?)
+  [814] = { quest=32518, expansion=4, level=90 }, -- Nalak 
   [826] = { quest=32519, expansion=4, level=90 }, -- Oondasta 
+  [857] = { quest=nil,   expansion=4, level=90, name=WORLD_BOSS_FOUR_CELESTIALS  }, -- Chi-Ji
+  --[858] = { quest=nil, expansion=4, level=90 }, -- Yu'lon
+  --[859] = { quest=nil, expansion=4, level=90 }, -- Niuzao
+  --[860] = { quest=nil, expansion=4, level=90 }, -- Xuen
+  [861] = { quest=nil,   expansion=4, level=90 }, -- Ordos
 }
 
 addon.showopts = {
@@ -837,7 +855,7 @@ function addon:UpdateInstanceData()
   instancesUpdated = true
   local count = 0
   local starttime = debugprofilestop()
-  local maxid = 700
+  local maxid = 1000
   for id=1,maxid do -- start with brute force
     if addon:UpdateInstance(id) then
       count = count + 1
@@ -863,7 +881,9 @@ function addon:UpdateInstanceData()
   end
   for eid,info in pairs(addon.WorldBosses) do
     info.eid = eid
-    info.cid,info.name = EJ_GetCreatureInfo(1,eid)
+    if not info.name then
+      info.name = select(2,EJ_GetCreatureInfo(1,eid))
+    end
     local instance = vars.db.Instances[info.name] or {}
     vars.db.Instances[info.name] = instance
     instance.Show = (instance.Show and addon.showopts[instance.Show]) or "saved"
@@ -906,7 +926,11 @@ function addon:UpdateInstance(id)
     if vars.db.Instances[name] and vars.db.Instances[name].LFDID == id then
       vars.db.Instances[name] = nil -- clean old LFR entries
     end
-    name = L["LFR"]..": "..name
+    if addon.LFRInstances[id].flex then
+      name = L["Flex"]..": "..name
+    else
+      name = L["LFR"]..": "..name
+    end
   end
 
   local instance = vars.db.Instances[name]
@@ -2031,9 +2055,19 @@ function core:Refresh(recoverdaily)
 	end
 
         local quests = GetQuestsCompleted(localarr("QuestCompleteTemp"))
+	local wbsave = localarr("wbsave")
+	if GetNumSavedWorldBosses and GetSavedWorldBossInfo then -- 5.4
+	  for i=1,GetNumSavedWorldBosses() do
+	    local name, id, reset = GetSavedWorldBossInfo(i)
+	    wbsave[id] = name
+	  end
+	end
         for _,einfo in pairs(addon.WorldBosses) do
-           if weeklyreset and (IsQuestFlaggedCompleted(einfo.quest) or 
-	      (quests and quests[einfo.quest])) then
+           if weeklyreset and (
+	      (einfo.quest and IsQuestFlaggedCompleted(einfo.quest)) or 
+	      (quests and einfo.quest and quests[einfo.quest]) or
+	      (wbsave[einfo.id] == einfo.name)
+	      ) then
              local truename = einfo.name
              local instance = vars.db.Instances[truename] 
              instance[thisToon] = instance[thisToon] or temp[truename] or { }
@@ -2248,6 +2282,17 @@ local function OpenLFR(self, instanceid, button)
     end
 end
 
+local function OpenFlex(self, instanceid, button)
+    if FlexRaidFrame and FlexRaidFrame:IsVisible() and FlexRaidFrame.raid ~= instanceid then
+      -- changing entries
+    else
+      PVEFrame_ToggleFrame("GroupFinderFrame", FlexRaidFrame)
+    end
+    if FlexRaidFrame and FlexRaidFrame:IsVisible() and FlexRaidFrame_SetRaid then
+      FlexRaidFrame_SetRaid(instanceid)
+    end
+end
+
 local function OpenLFS(self, instanceid, button)
     if ScenarioFinderFrame and ScenarioFinderFrame:IsVisible() and ScenarioQueueFrame.type ~= instanceid then
       -- changing entries
@@ -2420,7 +2465,9 @@ function core:ShowTooltip(anchorframe)
 			tooltip:SetCell(instancerow[instance], 1, GOLDFONT .. instance .. FONTEND)
 		end
 		if addon.LFRInstances[inst.LFDID] then
-		  tooltip:SetLineScript(instancerow[instance], "OnMouseDown", OpenLFR, inst.LFDID)
+		  local openfunc = OpenLFR
+		  if addon.LFRInstances[inst.LFDID].flex then openfunc = OpenFlex end
+		  tooltip:SetLineScript(instancerow[instance], "OnMouseDown", openfunc, inst.LFDID)
 		end
 			for toon, t in cpairs(vars.db.Toons) do
 				if inst[toon] then
@@ -2448,7 +2495,9 @@ function core:ShowTooltip(anchorframe)
 					tooltip:SetCellScript(instancerow[instance], columns[toon..base], "OnEnter", ShowIndicatorTooltip, {instance, toon, diff})
 					tooltip:SetCellScript(instancerow[instance], columns[toon..base], "OnLeave", CloseTooltips)
 					if addon.LFRInstances[inst.LFDID] then
-					  tooltip:SetCellScript(instancerow[instance], columns[toon..base], "OnMouseDown", OpenLFR, inst.LFDID)
+		                          local openfunc = OpenLFR
+		                          if addon.LFRInstances[inst.LFDID].flex then openfunc = OpenFlex end
+					  tooltip:SetCellScript(instancerow[instance], columns[toon..base], "OnMouseDown", openfunc, inst.LFDID)
 					else
 					  local link = inst[toon][diff].Link
 					  if link then
