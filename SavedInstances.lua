@@ -884,6 +884,7 @@ function addon:UpdateInstanceData()
     if not info.name then
       info.name = select(2,EJ_GetCreatureInfo(1,eid))
     end
+    info.name = info.name or "UNKNOWN"..eid
     local instance = vars.db.Instances[info.name] or {}
     vars.db.Instances[info.name] = instance
     instance.Show = (instance.Show and addon.showopts[instance.Show]) or "saved"
@@ -2037,7 +2038,7 @@ function core:Refresh(recoverdaily)
         local weeklyreset = addon:GetNextWeeklyResetTime()
 	for id,_ in pairs(addon.LFRInstances) do
 	  local numEncounters, numCompleted = GetLFGDungeonNumEncounters(id);
-	  if ( numCompleted > 0 and weeklyreset ) then
+	  if ( numCompleted and numCompleted > 0 and weeklyreset ) then
             local truename, instance = addon:LookupInstance(id, nil, true)
             instance[thisToon] = instance[thisToon] or temp[truename] or { }
 	    local info = instance[thisToon][2] or {}
