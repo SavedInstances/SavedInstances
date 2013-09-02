@@ -3002,6 +3002,7 @@ local trade_spells = {
 	[140050] = true,	-- Serpent's Heart
 
         -- Tailoring
+	[143011] = true,	-- Celestial Cloth
         [125557] = true, 	-- Imperial Silk
         [56005] = 7, 		-- Glacial Bag (5.2.0 verified)
 	-- Dreamcloth
@@ -3021,10 +3022,12 @@ local trade_spells = {
 
 	-- Blacksmithing
 	[138646] = true, 	-- Lightning Steel Ingot
+	[143255] = true,	-- Balanced Trillium Ingot
 
 	-- Leatherworking
 	[140040] = "magni", 	-- Magnificence of Leather
 	[140041] = "magni",	-- Magnificence of Scales
+	[142976] = true,	-- Hardened Magnificent Hide
 
 	-- Engineering
 	[139176] = true,	-- Stabilized Lightning Source
