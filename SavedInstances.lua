@@ -744,6 +744,8 @@ function addon:instanceBosses(instance,toon,diff)
   return killed, total, base
 end
 
+local lfrkey = "^"..L["LFR"]..": "
+local flexkey = "^"..L["Flex"]..": "
 local function instanceSort(i1, i2)
   local instance1 = vars.db.Instances[i1]
   local instance2 = vars.db.Instances[i2]
@@ -753,10 +755,12 @@ local function instanceSort(i1, i2)
   local id2 = instance2.LFDID or 0
   local key1 = level1*1000000+id1
   local key2 = level2*1000000+id2
-  if instance1.WorldBoss then key1 = key1 - 10000 end
-  if instance2.WorldBoss then key2 = key2 - 10000 end
-  if i1:match("^"..L["LFR"]) then key1 = key1 - 20000 end
-  if i2:match("^"..L["LFR"]) then key2 = key2 - 20000 end
+  if i1:match(flexkey) then key1 = key1 - 10000 end
+  if i2:match(flexkey) then key2 = key2 - 10000 end
+  if i1:match(lfrkey) then key1 = key1 - 20000 end
+  if i2:match(lfrkey) then key2 = key2 - 20000 end
+  if instance1.WorldBoss then key1 = key1 - 30000 end
+  if instance2.WorldBoss then key2 = key2 - 30000 end
   if vars.db.Tooltip.ReverseInstances then
       return key1 < key2
   else
@@ -948,8 +952,8 @@ function addon:UpdateInstance(id)
   instance.LFDID = id
   instance.Holiday = isHoliday or nil
   instance.Expansion = expansionLevel
-  instance.RecLevel = instance.RecLevel or recLevel
-  if recLevel < instance.RecLevel then instance.RecLevel = recLevel end -- favor non-heroic RecLevel
+  if not instance.RecLevel or instance.RecLevel < 1 then instance.RecLevel = recLevel end
+  if recLevel > 0 and recLevel < instance.RecLevel then instance.RecLevel = recLevel end -- favor non-heroic RecLevel
   instance.Raid = (maxPlayers > 5 or (maxPlayers == 0 and typeID == 2))
   if typeID == TYPEID_RANDOM_DUNGEON then
     instance.Random = true 
