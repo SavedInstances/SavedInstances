@@ -351,6 +351,12 @@ function module:BuildOptions()
 					desc = L["Combine World Bosses"],
 					order = 23.85,
 				},
+				CombineLFR = {
+					type = "toggle",
+					name = L["Combine LFR/Flex"],
+					desc = L["Combine LFR/Flex"],
+					order = 23.95,
+				},
 				MiscHeader = {
 					order = 30, 
 					type = "header",
