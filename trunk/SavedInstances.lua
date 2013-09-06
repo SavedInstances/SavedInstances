@@ -75,6 +75,7 @@ local currency = {
   738, -- Lesser Charm of Good Fortune
   697, -- Elder Charm of Good Fortune
   752, -- Mogu Rune of Fate
+  776, -- Warforged Seal
   402, -- Ironpaw Token
   81, -- Epicurean Award
   515, -- Darkmoon Prize Ticket
@@ -175,6 +176,8 @@ local QuestExceptions = {
   [32719] = "Weekly",  -- Mogu Runes of Fate
   [32862] = "Weekly",  -- Battlefield: Barrens
   [32872] = "Weekly",  -- Battlefield: Barrens
+  [33133] = "Weekly",  -- Warforged Seals
+  [33134] = "Weekly",  -- Warforged Seals
 }
 
 function addon:QuestInfo(questid)
@@ -323,6 +326,8 @@ vars.defaultDB = {
 		TrackDeserter = true,
 		Currency395 = true, -- Justice Points 
 		Currency396 = true, -- Valor Points
+		Currency752 = true, -- Mogu Runes
+		Currency776 = true, -- Warforged Seals
 		CurrencyMax = false,
 		CurrencyEarned = true,
 	},
@@ -1705,6 +1710,10 @@ function core:OnInitialize()
 	db.Tooltip.RowHighlight = db.Tooltip.RowHighlight or 0.1
 	db.Tooltip.Scale = db.Tooltip.Scale or 1
 	db.QuestDB = db.QuestDB or vars.defaultDB.QuestDB
+	for _, id in ipairs(addon.currency) do
+	  local name = "Currency"..id
+	  db.Tooltip[name] = (db.Tooltip[name]==nil and  vars.defaultDB.Tooltip[name]) or db.Tooltip[name]
+	end
 	for qid, _ in pairs(db.QuestDB.Daily) do
 	  if db.QuestDB.AccountDaily[qid] then
 	    debug("Removing duplicate questDB entry: "..qid)
