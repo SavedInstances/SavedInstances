@@ -337,13 +337,19 @@ function module:BuildOptions()
 					type = "toggle",
 					name = L["Show Holiday"],
 					desc = L["Show holiday boss rewards"],
-					order = 23.75,
+					order = 23.65,
 				},
 				ShowRandom = {
 					type = "toggle",
 					name = L["Show Random"],
 					desc = L["Show random dungeon bonus reward"],
 					order = 23.75,
+				},
+				CombineWorldBosses = {
+					type = "toggle",
+					name = L["Combine World Bosses"],
+					desc = L["Combine World Bosses"],
+					order = 23.85,
 				},
 				MiscHeader = {
 					order = 30, 
