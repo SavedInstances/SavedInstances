@@ -298,6 +298,7 @@ vars.defaultDB = {
 		ShowExpired = false,
 		ShowHoliday = true,
 		ShowRandom = true,
+		CombineWorldBosses = false,
 		TrackDailyQuests = true,
 		TrackWeeklyQuests = true,
 		ShowCategories = false,
@@ -751,8 +752,8 @@ local function instanceSort(i1, i2)
   local instance2 = vars.db.Instances[i2]
   local level1 = instance1.RecLevel or 0
   local level2 = instance2.RecLevel or 0
-  local id1 = instance1.LFDID or 0
-  local id2 = instance2.LFDID or 0
+  local id1 = instance1.LFDID or instance1.WorldBoss or 0
+  local id2 = instance2.LFDID or instance2.WorldBoss or 0
   local key1 = level1*1000000+id1
   local key2 = level2*1000000+id2
   if i1:match(flexkey) then key1 = key1 - 10000 end
@@ -810,7 +811,7 @@ function addon:OrderedCategories()
 	return orderedlist
 end
 
-local function DifficultyString(instance, diff, toon, expired)
+local function DifficultyString(instance, diff, toon, expired, killoverride, totoverride)
 	local setting,color
 	if not instance then
 		setting = "D" .. diff
@@ -842,7 +843,12 @@ local function DifficultyString(instance, diff, toon, expired)
             text = text:gsub("ICON", FONTEND .. vars.Indicators[indicator] .. ColorCodeOpen(color))
 	end
 	if text:find("KILLED", 1, true) or text:find("TOTAL", 1, true) then
-	  local killed, total = addon:instanceBosses(instance,toon,diff)
+	  local killed, total
+	  if killoverride then
+	    killed, total = killoverride, totoverride
+	  else
+	    killed, total = addon:instanceBosses(instance,toon,diff)
+	  end
 	  text = text:gsub("KILLED",killed)
 	  text = text:gsub("TOTAL",total)
 	end
@@ -1437,6 +1443,33 @@ local function ShowHistoryTooltip(cell, arg, ...)
         indicatortip:SetCell(indicatortip:AddLine(),1,
            string.format(L["These are the instances that count towards the %i instances per hour account limit, and the time until they expire."],
                          addon.histLimit),"LEFT",2,nil,nil,nil,250)
+	finishIndicator()
+end
+
+local function ShowWorldBossTooltip(cell, arg, ...)
+	local worldbosses = arg[1]
+	local toon = arg[2]
+	local saved = arg[3]
+	if not worldbosses or not toon then return end
+	openIndicator(2, "LEFT","RIGHT")
+	local line = indicatortip:AddHeader()
+	local toonstr = (db.Tooltip.ShowServer and toon) or strsplit(' ', toon)
+	indicatortip:SetCell(line, 1, ClassColorise(vars.db.Toons[toon].Class, toonstr), indicatortip:GetHeaderFont(), "LEFT")
+	indicatortip:SetCell(line, 2, GOLDFONT .. L["World Bosses"] .. FONTEND, indicatortip:GetHeaderFont(), "RIGHT")
+	indicatortip:AddLine(YELLOWFONT .. L["Time Left"] .. ":" .. FONTEND, SecondsToTime(addon:GetNextWeeklyResetTime() - time()))
+	for _, instance in ipairs(worldbosses) do
+	  local thisinstance = vars.db.Instances[instance]
+	  if thisinstance then
+            local info = thisinstance[toon] and thisinstance[toon][2]
+	    local n = indicatortip:AddLine()
+	    indicatortip:SetCell(n, 1, instance, "LEFT")
+            if info and info[1] then 
+              indicatortip:SetCell(n, 2, REDFONT..ERR_LOOT_GONE..FONTEND, "RIGHT")
+            else
+              indicatortip:SetCell(n, 2, GREENFONT..AVAILABLE..FONTEND, "RIGHT")
+            end
+	  end
+	end
 	finishIndicator()
 end
 
@@ -2393,6 +2426,8 @@ function core:ShowTooltip(anchorframe)
 	-- determining how many instances will be displayed per category
 	local categoryshown = localarr("categoryshown") -- remember if each category will be shown
 	local instancesaved = localarr("instancesaved") -- remember if each instance has been saved or not (boolean)
+	local wbcons = vars.db.Tooltip.CombineWorldBosses
+	local worldbosses = wbcons and localarr("worldbosses")
 	for _, category in ipairs(addon:OrderedCategories()) do
 		for _, instance in ipairs(addon:OrderedInstances(category)) do
 			local inst = vars.db.Instances[instance]
@@ -2400,6 +2435,9 @@ function core:ShowTooltip(anchorframe)
 			   categoryshown[category] = true
 			end
 			if inst.Show ~= "never" or showall then
+			    if wbcons and inst.WorldBoss then
+			      table.insert(worldbosses, instance)
+			    end
 			    for toon, t in cpairs(vars.db.Toons) do
 				for diff = 1, maxdiff do
 					if inst[toon] and inst[toon][diff] then
@@ -2443,7 +2481,8 @@ function core:ShowTooltip(anchorframe)
 				blankrow[line] = true
 			end
 			for _, instance in ipairs(addon:OrderedInstances(category)) do
-			       local inst = vars.db.Instances[instance]
+			   local inst = vars.db.Instances[instance]
+			   if not (wbcons and inst.WorldBoss) then
 				if inst.Show == "always" then
 			  	   instancerow[instance] = instancerow[instance] or tooltip:AddLine()
 				end
@@ -2457,6 +2496,7 @@ function core:ShowTooltip(anchorframe)
 					end
 				    end
 				end
+		            end
 			end
 			firstcategory = false
 		end
@@ -2516,6 +2556,29 @@ function core:ShowTooltip(anchorframe)
 				  end
 				end
 			end
+	end
+	if wbcons and next(worldbosses) then
+	  if not firstcategory and vars.db.Tooltip.CategorySpaces then
+	    addsep()
+	  end
+	  local line = tooltip:AddLine(YELLOWFONT .. L["World Bosses"] .. FONTEND)
+	  for toon, t in cpairs(vars.db.Toons) do
+	    local saved = 0
+	    local diff = 2
+	    for _, instance in ipairs(worldbosses) do
+	      local inst = vars.db.Instances[instance]
+	      if inst[toon] and inst[toon][diff] and inst[toon][diff].Expires > 0 then
+	        saved = saved + 1
+	      end
+	    end
+	    if saved > 0 then
+	      addColumns(columns, toon, tooltip)
+	      local col = columns[toon.."1"]
+	      tooltip:SetCell(line, col, DifficultyString(worldbosses[1], diff, toon, false, saved, #worldbosses),4)
+	      tooltip:SetCellScript(line, col, "OnEnter", ShowWorldBossTooltip, {worldbosses, toon, saved})
+	      tooltip:SetCellScript(line, col, "OnLeave", CloseTooltips)
+	    end
+	  end
 	end
 
 	local holidayinst = localarr("holidayinst")
