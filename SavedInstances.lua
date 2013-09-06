@@ -103,7 +103,7 @@ addon.LFRInstances = {
 addon.FlexInstances = {}
 for id,info in pairs(addon.LFRInstances) do
   if info.flexid then
-     addon.FlexInstances[info.flexid] = { total=info.total, base=info.base, flex=true }
+     addon.FlexInstances[info.flexid] = { total=info.total, base=info.base, parent=info.parent, flex=true }
      info.flexid = nil
   end
 end
@@ -2564,6 +2564,7 @@ function core:ShowTooltip(anchorframe)
 			        lfrbox[L["Flex"]..": "..instance] = tooltip:AddLine()
 		              end
 			      lfrbox[inst.LFDID] = nil
+			      lfrbox[-inst.LFDID] = nil
 			   end 
 			end
 			firstcategory = false
