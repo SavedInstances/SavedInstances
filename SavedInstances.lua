@@ -84,21 +84,21 @@ local currency = {
 addon.currency = currency
 
 addon.LFRInstances = { 
-  [416] = { total=4, base=1 }, -- The Siege of Wyrmrest Temple
-  [417] = { total=4, base=5 }, -- Fall of Deathwing
-  [527] = { total=3, base=1 }, -- Guardians of Mogu'shan
-  [528] = { total=3, base=4 }, -- The Vault of Mysteries
-  [529] = { total=3, base=1 }, -- The Dread Approach
-  [530] = { total=3, base=4 }, -- Nightmare of Shek'zeer
-  [526] = { total=4, base=1 }, -- Terrace of Endless Spring
-  [610] = { total=3, base=1 }, -- Throne of Thunder pt 1
-  [611] = { total=3, base=4 }, -- Throne of Thunder pt 2
-  [612] = { total=3, base=7 }, -- Throne of Thunder pt 3
-  [613] = { total=3, base=10}, -- Throne of Thunder pt 4
-  [716] = { total=4, base=1,  flexid=726 }, -- SoO pt 1
-  [717] = { total=4, base=5,  flexid=728 }, -- SoO pt 2
-  [724] = { total=3, base=9,  flexid=729 }, -- SoO pt 3
-  [725] = { total=3, base=12, flexid=730 }, -- SoO pt 4
+  [416] = { total=4, base=1,  parent=448 }, -- The Siege of Wyrmrest Temple
+  [417] = { total=4, base=5,  parent=448 }, -- Fall of Deathwing
+  [527] = { total=3, base=1,  parent=532 }, -- Guardians of Mogu'shan
+  [528] = { total=3, base=4,  parent=532 }, -- The Vault of Mysteries
+  [529] = { total=3, base=1,  parent=534 }, -- The Dread Approach
+  [530] = { total=3, base=4,  parent=534 }, -- Nightmare of Shek'zeer
+  [526] = { total=4, base=1,  parent=536 }, -- Terrace of Endless Spring
+  [610] = { total=3, base=1,  parent=634 }, -- Throne of Thunder pt 1
+  [611] = { total=3, base=4,  parent=634 }, -- Throne of Thunder pt 2
+  [612] = { total=3, base=7,  parent=634 }, -- Throne of Thunder pt 3
+  [613] = { total=3, base=10, parent=634 }, -- Throne of Thunder pt 4
+  [716] = { total=4, base=1,  parent=715, flexid=726 }, -- SoO pt 1
+  [717] = { total=4, base=5,  parent=715, flexid=728 }, -- SoO pt 2
+  [724] = { total=3, base=9,  parent=715, flexid=729 }, -- SoO pt 3
+  [725] = { total=3, base=12, parent=715, flexid=730 }, -- SoO pt 4
 }
 addon.FlexInstances = {}
 for id,info in pairs(addon.LFRInstances) do
@@ -299,6 +299,7 @@ vars.defaultDB = {
 		ShowHoliday = true,
 		ShowRandom = true,
 		CombineWorldBosses = false,
+		CombineLFR = true,
 		TrackDailyQuests = true,
 		TrackWeeklyQuests = true,
 		ShowCategories = false,
@@ -719,6 +720,11 @@ function addon:instanceBosses(instance,toon,diff)
   end
   if not inst or not inst.LFDID then return 0,0,1 end
   total = GetLFGDungeonNumEncounters(inst.LFDID)
+  local LFR = addon.LFRInstances[inst.LFDID]
+  if LFR then
+    total = LFR.total or total
+    base = LFR.base or base
+  end
   if not save then
       return killed, total, base
   elseif save.Link then
@@ -735,11 +741,6 @@ function addon:instanceBosses(instance,toon,diff)
   elseif save.ID < 0 then
     for i=1,-1*save.ID do
       killed = killed + (save[i] and 1 or 0)
-    end
-    local LFR = addon.LFRInstances[inst.LFDID]
-    if LFR then
-      total = LFR.total or total
-      base = LFR.base or base
     end
   end 
   return killed, total, base
@@ -1473,6 +1474,40 @@ local function ShowWorldBossTooltip(cell, arg, ...)
 	finishIndicator()
 end
 
+local function ShowLFRTooltip(cell, arg, ...)
+	local boxname = arg[1]
+	local toon = arg[2]
+	local lfrmap = arg[3]
+	if not boxname or not toon or not lfrmap then return end
+	openIndicator(3, "LEFT", "LEFT","RIGHT")
+	local line = indicatortip:AddHeader()
+	local toonstr = (db.Tooltip.ShowServer and toon) or strsplit(' ', toon)
+	indicatortip:SetCell(line, 1, ClassColorise(vars.db.Toons[toon].Class, toonstr), indicatortip:GetHeaderFont(), "LEFT", 1)
+	indicatortip:SetCell(line, 2, GOLDFONT .. boxname .. FONTEND, indicatortip:GetHeaderFont(), "RIGHT", 2)
+	indicatortip:AddLine(YELLOWFONT .. L["Time Left"] .. ":" .. FONTEND, nil, SecondsToTime(addon:GetNextWeeklyResetTime() - time()))
+	for i=1,20 do
+	  local instance = lfrmap[boxname..":"..i]
+	  local diff = 2
+	  if instance then
+	    indicatortip:SetCell(indicatortip:AddLine(), 1, YELLOWFONT .. instance .. FONTEND, "CENTER",3)
+	    local thisinstance = vars.db.Instances[instance]
+            local info = thisinstance[toon][diff]
+	    local killed, total, base = addon:instanceBosses(instance,toon,diff)
+            for i=base,base+total-1 do
+              local bossname = GetLFGDungeonEncounterInfo(thisinstance.LFDID, i);
+	      local n = indicatortip:AddLine()
+	      indicatortip:SetCell(n, 1, bossname, "LEFT", 2)
+              if info and info[i] then 
+                indicatortip:SetCell(n, 3, REDFONT..ERR_LOOT_GONE..FONTEND, "RIGHT", 1)
+              else
+                indicatortip:SetCell(n, 3, GREENFONT..AVAILABLE..FONTEND, "RIGHT", 1)
+              end
+	    end
+          end
+	end
+	finishIndicator()
+end
+
 local function ShowIndicatorTooltip(cell, arg, ...)
 	local instance = arg[1]
 	local toon = arg[2]
@@ -1657,6 +1692,7 @@ function core:OnInitialize()
 	db.Tooltip.LimitWarn = (db.Tooltip.LimitWarn == nil and true) or db.Tooltip.LimitWarn
 	db.Tooltip.ShowHoliday = (db.Tooltip.ShowHoliday == nil and true) or db.Tooltip.ShowHoliday
 	db.Tooltip.ShowRandom = (db.Tooltip.ShowRandom == nil and true) or db.Tooltip.ShowRandom
+	db.Tooltip.CombineLFR = (db.Tooltip.CombineLFR == nil and true) or db.Tooltip.CombineLFR
 	db.Tooltip.TrackSkills = (db.Tooltip.TrackSkills == nil and true) or db.Tooltip.TrackSkills
 	db.Tooltip.TrackFarm = (db.Tooltip.TrackFarm == nil and true) or db.Tooltip.TrackFarm
 	db.Tooltip.TrackDailyQuests = (db.Tooltip.TrackDailyQuests == nil and true) or db.Tooltip.TrackDailyQuests
@@ -2428,6 +2464,10 @@ function core:ShowTooltip(anchorframe)
 	local instancesaved = localarr("instancesaved") -- remember if each instance has been saved or not (boolean)
 	local wbcons = vars.db.Tooltip.CombineWorldBosses
 	local worldbosses = wbcons and localarr("worldbosses")
+	local wbalways = false
+	local lfrcons = vars.db.Tooltip.CombineLFR
+	local lfrbox = lfrcons and localarr("lfrbox")
+	local lfrmap = lfrcons and localarr("lfrmap") 
 	for _, category in ipairs(addon:OrderedCategories()) do
 		for _, instance in ipairs(addon:OrderedInstances(category)) do
 			local inst = vars.db.Instances[instance]
@@ -2437,12 +2477,29 @@ function core:ShowTooltip(anchorframe)
 			if inst.Show ~= "never" or showall then
 			    if wbcons and inst.WorldBoss then
 			      table.insert(worldbosses, instance)
+			      wbalways = wbalways or (inst.Show == "always")
+			    end
+			    local lfrinfo = lfrcons and inst.LFDID and addon.LFRInstances[inst.LFDID]
+			    local lfrboxid
+			    if lfrinfo then
+			      lfrboxid = (lfrinfo.flex and -1 or 1)*lfrinfo.parent
+			      lfrmap[inst.LFDID] = instance
+			      if inst.Show == "always" then
+			        lfrbox[lfrboxid] = true
+			      end
 			    end
 			    for toon, t in cpairs(vars.db.Toons) do
 				for diff = 1, maxdiff do
 					if inst[toon] and inst[toon][diff] then
 					    if (inst[toon][diff].Expires > 0) then
-						instancesaved[instance] = true
+					        if lfrinfo then
+						  lfrbox[lfrboxid] = true
+						  instancesaved[lfrboxid] = true
+						elseif wbcons and inst.WorldBoss then
+						  instancesaved[L["World Bosses"]] = true
+						else
+						  instancesaved[instance] = true
+						end
 						categoryshown[category] = true
 					    elseif showall then
 						categoryshown[category] = true
@@ -2482,7 +2539,8 @@ function core:ShowTooltip(anchorframe)
 			end
 			for _, instance in ipairs(addon:OrderedInstances(category)) do
 			   local inst = vars.db.Instances[instance]
-			   if not (wbcons and inst.WorldBoss) then
+			   if not (wbcons and inst.WorldBoss) and
+			      not (lfrcons and addon.LFRInstances[inst.LFDID]) then
 				if inst.Show == "always" then
 			  	   instancerow[instance] = instancerow[instance] or tooltip:AddLine()
 				end
@@ -2497,6 +2555,16 @@ function core:ShowTooltip(anchorframe)
 				    end
 				end
 		            end
+			   if lfrcons and inst.LFDID then 
+			      -- check if this parent instance has corresponding lfrboxes, and create them
+			      if lfrbox[inst.LFDID] then
+			        lfrbox[L["LFR"]..": "..instance] = tooltip:AddLine()
+		              end
+			      if lfrbox[-inst.LFDID] then
+			        lfrbox[L["Flex"]..": "..instance] = tooltip:AddLine()
+		              end
+			      lfrbox[inst.LFDID] = nil
+			   end 
 			end
 			firstcategory = false
 		end
@@ -2504,11 +2572,7 @@ function core:ShowTooltip(anchorframe)
 	-- now printing instance data
 	for instance, row in pairs(instancerow) do
 	        local inst = vars.db.Instances[instance]
-		if (not instancesaved[instance]) then
-			tooltip:SetCell(instancerow[instance], 1, GRAYFONT .. instance .. FONTEND)
-		else
-			tooltip:SetCell(instancerow[instance], 1, GOLDFONT .. instance .. FONTEND)
-		end
+		tooltip:SetCell(instancerow[instance], 1, (instancesaved[instance] and GOLDFONT or GRAYFONT) .. instance .. FONTEND)
 		if addon.LFRInstances[inst.LFDID] then
 		  local openfunc = OpenLFR
 		  if addon.LFRInstances[inst.LFDID].flex then openfunc = OpenFlex end
@@ -2557,11 +2621,50 @@ function core:ShowTooltip(anchorframe)
 				end
 			end
 	end
-	if wbcons and next(worldbosses) then
+
+	-- combined LFRs
+	if lfrcons then
+	  for boxname, line in pairs(lfrbox) do
+	    local boxtype, pinstance = boxname:match("^([^:]+): (.+)$")
+	    local flex = boxtype == L["Flex"]
+	    local pinst = vars.db.Instances[pinstance]
+	    local boxid = (flex and -1 or 1)*pinst.LFDID
+	    local firstid
+	    local total = 0
+            for lfdid, lfrinfo in pairs(addon.LFRInstances) do
+	      if lfrinfo.parent == pinst.LFDID and (not flex) == (not lfrinfo.flex) and lfrmap[lfdid] then
+	        firstid = math.min(lfdid, firstid or lfdid)
+		total = total + lfrinfo.total
+	        lfrmap[boxname..":"..lfrinfo.base] = lfrmap[lfdid]
+	      end
+	    end
+	    tooltip:SetCell(line, 1, (instancesaved[boxid] and GOLDFONT or GRAYFONT) .. boxname .. FONTEND)
+	    tooltip:SetLineScript(line, "OnMouseDown", (flex and OpenFlex or OpenLFR), firstid)
+	    for toon, t in cpairs(vars.db.Toons) do
+	      local saved = 0
+	      local diff = 2
+	      for key, instance in pairs(lfrmap) do
+	        if string.match(key,boxname..":%d+$") then
+		  saved = saved + addon:instanceBosses(instance, toon, diff)
+		end
+	      end
+	      if saved > 0 then
+	        addColumns(columns, toon, tooltip)
+	        local col = columns[toon.."1"]
+	        tooltip:SetCell(line, col, DifficultyString(pinstance, diff, toon, false, saved, total),4)
+	        tooltip:SetCellScript(line, col, "OnEnter", ShowLFRTooltip, {boxname, toon, lfrmap})
+	        tooltip:SetCellScript(line, col, "OnLeave", CloseTooltips)
+              end
+	    end
+          end
+	end
+
+	-- combined world bosses
+	if wbcons and next(worldbosses) and (wbalways or instancesaved[L["World Bosses"]]) then
 	  if not firstcategory and vars.db.Tooltip.CategorySpaces then
 	    addsep()
 	  end
-	  local line = tooltip:AddLine(YELLOWFONT .. L["World Bosses"] .. FONTEND)
+	  local line = tooltip:AddLine((instancesaved[L["World Bosses"]] and YELLOWFONT or GRAYFONT) .. L["World Bosses"] .. FONTEND)
 	  for toon, t in cpairs(vars.db.Toons) do
 	    local saved = 0
 	    local diff = 2
