@@ -2270,7 +2270,9 @@ local function cpairs(t)
   wipe(cnext_sorted_names)
   for n,_ in pairs(t) do
     local tn, ts = n:match('^(.*) [-] (.*)$')
-    if vars.db.Toons[n] and vars.db.Toons[n].Show ~= "never" and
+    if vars.db.Toons[n] and 
+       (vars.db.Toons[n].Show ~= "never" or 
+        (n == thisToon and vars.db.Tooltip.SelfAlways))  and
        (ts == GetRealmName() or not db.Tooltip.ServerOnly) then
       table.insert(cnext_sorted_names, n)
     end
