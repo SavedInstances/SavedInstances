@@ -1496,7 +1496,7 @@ local function ShowLFRTooltip(cell, arg, ...)
 	  if instance then
 	    indicatortip:SetCell(indicatortip:AddLine(), 1, YELLOWFONT .. instance .. FONTEND, "CENTER",3)
 	    local thisinstance = vars.db.Instances[instance]
-            local info = thisinstance[toon][diff]
+            local info = thisinstance[toon] and thisinstance[toon][diff]
 	    local killed, total, base = addon:instanceBosses(instance,toon,diff)
             for i=base,base+total-1 do
               local bossname = GetLFGDungeonEncounterInfo(thisinstance.LFDID, i);
