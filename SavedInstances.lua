@@ -2143,14 +2143,14 @@ function core:Refresh(recoverdaily)
 	if GetNumSavedWorldBosses and GetSavedWorldBossInfo then -- 5.4
 	  for i=1,GetNumSavedWorldBosses() do
 	    local name, id, reset = GetSavedWorldBossInfo(i)
-	    wbsave[id] = name
+	    wbsave[name] = true
 	  end
 	end
         for _,einfo in pairs(addon.WorldBosses) do
            if weeklyreset and (
 	      (einfo.quest and IsQuestFlaggedCompleted(einfo.quest)) or 
 	      (quests and einfo.quest and quests[einfo.quest]) or
-	      (wbsave[einfo.id] == einfo.name)
+	      wbsave[einfo.name]
 	      ) then
              local truename = einfo.name
              local instance = vars.db.Instances[truename] 
