@@ -76,6 +76,7 @@ local currency = {
   697, -- Elder Charm of Good Fortune
   752, -- Mogu Rune of Fate
   776, -- Warforged Seal
+  777, -- Timeless Coin
   402, -- Ironpaw Token
   81, -- Epicurean Award
   515, -- Darkmoon Prize Ticket
