@@ -1282,7 +1282,7 @@ end
 local function finishIndicator()
   indicatortip:SetAutoHideDelay(0.1, tooltip)
   indicatortip:SmartAnchorTo(tooltip)
-  indicatortip:SetFrameLevel(200) -- ensure visibility when forced to overlap main tooltip
+  indicatortip:SetFrameLevel(100) -- ensure visibility when forced to overlap main tooltip
   addon:SkinFrame(indicatortip,"SavedInstancesIndicatorTooltip")
   indicatortip:Show()
 end
