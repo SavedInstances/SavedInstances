@@ -173,12 +173,11 @@ local QuestExceptions = {
   -- also pre-populate a few important quests
   [32640] = "Weekly",  -- Champions of the Thunder King
   [32641] = "Weekly",  -- Champions of the Thunder King
-  [32718] = "Weekly",  -- Mogu Runes of Fate
-  [32719] = "Weekly",  -- Mogu Runes of Fate
-  [32862] = "Weekly",  -- Battlefield: Barrens
-  [32872] = "Weekly",  -- Battlefield: Barrens
+  [32718] = "Regular",  -- Mogu Runes of Fate -- ticket 142: outdated quest flag still shows up
+  [32719] = "Regular",  -- Mogu Runes of Fate
   [33133] = "Weekly",  -- Warforged Seals
   [33134] = "Weekly",  -- Warforged Seals
+  [33338] = "Weekly",  -- Empowering the Hourglass
 }
 
 function addon:QuestInfo(questid)
@@ -1143,6 +1142,9 @@ function addon:UpdateToonData()
 	for toon, ti in pairs(vars.db.Toons) do
 	  for id,qi in pairs(ti.Quests) do
 	      if not qi.isDaily and (qi.Expires or 0) < time() then
+	        ti.Quests[id] = nil
+	      end
+	      if QuestExceptions[id] == "Regular" then -- adjust exceptions
 	        ti.Quests[id] = nil
 	      end
 	  end
