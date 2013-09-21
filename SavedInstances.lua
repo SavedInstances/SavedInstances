@@ -130,14 +130,23 @@ addon.showopts = {
   never = "never",
 }
 
-local _specialWeeklyQuests = {
+local _specialQuests = {
+  -- Isle of Thunder
   [32610] = { zid=928, lid=94221 }, -- Shan'ze Ritual Stone looted
   [32611] = { zid=928, lid1=95350 },-- Incantation of X looted
   [32626] = { zid=928, lid=94222 }, -- Key to the Palace of Lei Shen looted
-  [32609] = { zid=928, aid=8104  }, -- Trove of the Thunder King (outdoor chest)
+  [32609] = { zid=928, aid=8104, aline="Left5"  }, -- Trove of the Thunder King (outdoor chest)
+  -- Timeless Isle
+  [32962] = { zid=951, aid=8743, daily=true },  -- Zarhym
+  [32956] = { zid=951, aid=8727, aline="Right7" }, -- Blackguard's Jetsam
+  [32957] = { zid=951, aid=8727, aline="Left7" },  -- Sunken Treasure
+  [32970] = { zid=951, aid=8727, aline="Left8" },  -- Gleaming Treasure Satchel
+  [32968] = { zid=951, aid=8726, aline="Right7" }, -- Rope-Bound Treasure Chest
+  [32969] = { zid=951, aid=8726, aline="Left7" },  -- Gleaming Treasure Chest
+  [32971] = { zid=951, aid=8726, aline="Left8" },  -- Mist-Covered Treasure Chest
 }
-function addon:specialWeeklyQuests()
-  for qid, qinfo in pairs(_specialWeeklyQuests) do
+function addon:specialQuests()
+  for qid, qinfo in pairs(_specialQuests) do
     qinfo.quest = qid
     if not qinfo.name and (qinfo.lid or qinfo.lid1) then
       local itemname, itemlink = GetItemInfo(qinfo.lid or qinfo.lid1)
@@ -153,19 +162,19 @@ function addon:specialWeeklyQuests()
     if not qinfo.name and qinfo.aid then
       scantt:SetOwner(UIParent,"ANCHOR_NONE")
       scantt:SetAchievementByID(qinfo.aid)
-      local l = _G[scantt:GetName().."TextLeft5"]
+      local l = _G[scantt:GetName().."Text"..(qinfo.aline or "Left1")]
       l = l and l:GetText()
       if l then
-        qinfo.name = l:gsub("%p","")
+        qinfo.name = l:gsub("%p$","")
       end
     end
     if not qinfo.zone and qinfo.zid then
       qinfo.zone = GetMapNameByID(qinfo.zid)
     end
   end
-  return _specialWeeklyQuests
+  return _specialQuests
 end
-addon:specialWeeklyQuests()
+addon:specialQuests()
 
 local QuestExceptions = { 
   -- some quests are misidentified in scope
@@ -2168,15 +2177,21 @@ function core:Refresh(recoverdaily)
 	local tiq = vars.db.Toons[thisToon]
 	tiq = tiq and tiq.Quests
 	if tiq then
-	  for _, qinfo in pairs(addon:specialWeeklyQuests()) do
+	  for _, qinfo in pairs(addon:specialQuests()) do
 	    local qid = qinfo.quest
-            if weeklyreset and (IsQuestFlaggedCompleted(qid) or 
+            if nextreset and weeklyreset and (IsQuestFlaggedCompleted(qid) or 
 	      (quests and quests[qid])) then
               local q = tiq[qid] or {}
 	      tiq[qid] = q
 	      q.Title = qinfo.name
 	      q.Zone = qinfo.zone
-	      q.Expires = weeklyreset
+	      if qinfo.daily then
+	        q.Expires = nextreset
+		q.isDaily = true
+	      else
+	        q.Expires = weeklyreset
+		q.isDaily = nil
+	      end
 	    end
 	  end
 	  local now = time()
