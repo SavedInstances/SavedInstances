@@ -82,6 +82,7 @@ local currency = {
   515, -- Darkmoon Prize Ticket
   241, -- Champion's Seal
   391, -- Tol Barad Commendation
+  789, -- Bloody Coin
 }
 addon.currency = currency
 
@@ -187,6 +188,7 @@ local QuestExceptions = {
   [33133] = "Weekly",  -- Warforged Seals
   [33134] = "Weekly",  -- Warforged Seals
   [33338] = "Weekly",  -- Empowering the Hourglass
+  [33334] = "Weekly",  -- Strong Enough to Survive
 }
 
 function addon:QuestInfo(questid)
