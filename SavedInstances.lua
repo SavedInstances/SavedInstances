@@ -139,6 +139,7 @@ local _specialQuests = {
   [32609] = { zid=928, aid=8104, aline="Left5"  }, -- Trove of the Thunder King (outdoor chest)
   -- Timeless Isle
   [32962] = { zid=951, aid=8743, daily=true },  -- Zarhym
+  [32961] = { zid=951, daily=true },  -- Scary Ghosts and Nice Sprites
   [32956] = { zid=951, aid=8727, aline="Right7" }, -- Blackguard's Jetsam
   [32957] = { zid=951, aid=8727, aline="Left7" },  -- Sunken Treasure
   [32970] = { zid=951, aid=8727, aline="Left8" },  -- Gleaming Treasure Satchel
@@ -149,6 +150,7 @@ local _specialQuests = {
 function addon:specialQuests()
   for qid, qinfo in pairs(_specialQuests) do
     qinfo.quest = qid
+
     if not qinfo.name and (qinfo.lid or qinfo.lid1) then
       local itemname, itemlink = GetItemInfo(qinfo.lid or qinfo.lid1)
       if itemlink and qinfo.lid then
@@ -159,8 +161,7 @@ function addon:specialQuests()
           qinfo.name = name.." ("..LOOT..")"
 	end
       end
-    end
-    if not qinfo.name and qinfo.aid then
+    elseif not qinfo.name and qinfo.aid then
       scantt:SetOwner(UIParent,"ANCHOR_NONE")
       scantt:SetAchievementByID(qinfo.aid)
       local l = _G[scantt:GetName().."Text"..(qinfo.aline or "Left1")]
@@ -168,14 +169,21 @@ function addon:specialQuests()
       if l then
         qinfo.name = l:gsub("%p$","")
       end
+    elseif not qinfo.name then
+      local title, link = addon:QuestInfo(qid)
+      if title then
+        title = title:gsub("%p?%s*[Tt]racking%s*[Qq]uest","")
+        title = strtrim(title)
+        qinfo.name = title
+      end
     end
+
     if not qinfo.zone and qinfo.zid then
       qinfo.zone = GetMapNameByID(qinfo.zid)
     end
   end
   return _specialQuests
 end
-addon:specialQuests()
 
 local QuestExceptions = { 
   -- some quests are misidentified in scope
@@ -1838,7 +1846,7 @@ function core:OnEnable()
         addon.resetDetect:SetScript("OnEvent", addon.HistoryEvent)
         RegisterAddonMessagePrefix(addonName)
 	addon:HistoryEvent("PLAYER_ENTERING_WORLD") -- update after initial load
-
+        addon:specialQuests()
 end
 
 function core:ADDON_LOADED()
