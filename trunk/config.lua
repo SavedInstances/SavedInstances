@@ -372,6 +372,12 @@ function module:BuildOptions()
 					order = 33.5,
 					name = L["Track Weekly Quests"],
 				},
+				RemindCharms = {
+					type = "toggle",
+					order = 33.6,
+					width = "double",
+					name = L["Remind about weekly charm quest"],
+				},
 				TrackSkills = {
 					type = "toggle",
 					order = 33.75,

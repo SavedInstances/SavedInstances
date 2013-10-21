@@ -1193,6 +1193,21 @@ function addon:UpdateToonData()
 	if zone and #zone > 0 then
 	  t.Zone = zone
 	end
+        if vars.db.Tooltip.RemindCharms and not addon.remindCharms and
+	   not addon.logout and nextreset and nextreset > time() 
+	   then
+	   local lcharm = t.currency[738]
+	   local gcharm = t.currency[776]
+	   local qlink = select(2, addon:QuestInfo(33133))
+	   if t.Level == 90 and qlink and
+	      not t.Quests[33133] and not t.Quests[33134] and
+	      -- lcharm and lcharm.amount >= 50 and
+	      gcharm and gcharm.amount <= gcharm.totalMax-3
+	      then
+	        chatMsg(string.format(L["Reminder: You need to do quest %s"], qlink))
+	        addon.remindCharms = true
+	   end
+	end
 	t.LastSeen = time()
 end
 
@@ -1724,6 +1739,7 @@ function core:OnInitialize()
 	db.Tooltip.TrackFarm = (db.Tooltip.TrackFarm == nil and true) or db.Tooltip.TrackFarm
 	db.Tooltip.TrackDailyQuests = (db.Tooltip.TrackDailyQuests == nil and true) or db.Tooltip.TrackDailyQuests
 	db.Tooltip.TrackWeeklyQuests = (db.Tooltip.TrackWeeklyQuests == nil and true) or db.Tooltip.TrackWeeklyQuests
+	db.Tooltip.RemindCharms = (db.Tooltip.RemindCharms == nil and true) or db.Tooltip.RemindCharms
 	db.Tooltip.ServerSort = (db.Tooltip.ServerSort == nil and true) or db.Tooltip.ServerSort
 	db.Tooltip.ServerOnly = (db.Tooltip.ServerOnly == nil and false) or db.Tooltip.ServerOnly
 	db.Tooltip.SelfFirst = (db.Tooltip.SelfFirst == nil and true) or db.Tooltip.SelfFirst
