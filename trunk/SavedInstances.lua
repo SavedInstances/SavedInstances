@@ -1190,10 +1190,9 @@ function addon:UpdateToonData()
 	  t.Money = GetMoney()
 	end
 	local zone = GetRealZoneText()
-	if zone and #zone > 0 then
-	  t.Zone = zone
-	end
-        if vars.db.Tooltip.RemindCharms and not addon.remindCharms and
+	local zoneid = GetCurrentMapAreaID()
+        if vars.db.Tooltip.RemindCharms and 
+	   (not addon.remindCharms or (zone ~= t.Zone and zoneid == 811)) and
 	   not addon.logout and nextreset and nextreset > time() 
 	   then
 	   local lcharm = t.currency[738]
@@ -1207,6 +1206,9 @@ function addon:UpdateToonData()
 	        chatMsg(string.format(L["Reminder: You need to do quest %s"], qlink))
 	        addon.remindCharms = true
 	   end
+	end
+	if zone and #zone > 0 then
+	  t.Zone = zone
 	end
 	t.LastSeen = time()
 end
