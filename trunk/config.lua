@@ -50,7 +50,7 @@ function addon:idtext(instance,diff,info)
   if instance.WorldBoss then
     return L["World Boss"]
   elseif info.ID < 0 then 
-    return RAID_FINDER
+    return "" -- ticket 144: could be RAID_FINDER or FLEX_RAID, but this is already shown in the instance name so it's redundant anyhow
   elseif instance.Raid and instance.Expansion == 0 then
     return EXPANSION_NAME0 .. " " .. LFG_TYPE_RAID
   elseif instance.Raid then
