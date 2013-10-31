@@ -1203,7 +1203,9 @@ function addon:UpdateToonData()
 	      -- lcharm and lcharm.amount >= 50 and
 	      gcharm and gcharm.amount <= gcharm.totalMax-3
 	      then
-	        chatMsg(string.format(L["Reminder: You need to do quest %s"], qlink))
+	        core:ScheduleTimer(function() 
+	          chatMsg(string.format(L["Reminder: You need to do quest %s"], qlink))
+		end, 5) -- short delay for loading messages
 	        addon.remindCharms = true
 	   end
 	end
