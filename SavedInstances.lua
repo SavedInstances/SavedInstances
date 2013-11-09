@@ -1325,6 +1325,7 @@ end
 
 local function finishIndicator()
   indicatortip:SetAutoHideDelay(0.1, tooltip)
+  indicatortip.OnRelease = function() indicatortip = nil end -- extra-safety: update our variable on auto-release
   indicatortip:SmartAnchorTo(tooltip)
   indicatortip:SetFrameLevel(100) -- ensure visibility when forced to overlap main tooltip
   addon:SkinFrame(indicatortip,"SavedInstancesIndicatorTooltip")
