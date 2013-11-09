@@ -3128,6 +3128,7 @@ function core:ShowTooltip(anchorframe)
 	   else
 	        tooltip:SmartAnchorTo(anchorframe)
 		tooltip:SetAutoHideDelay(0.1, anchorframe)
+		tooltip.OnRelease = function() tooltip = nil end -- extra-safety: update our variable on auto-release
 	        tooltip:Show()
 	   end
         end
