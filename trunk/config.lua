@@ -193,7 +193,7 @@ function module:BuildOptions()
 					get = function(info) return not db.MinimapIcon.hide end,
 					set = function(info, value)
 						db.MinimapIcon.hide = not value
-						vars.icon:Update()
+						vars.icon:Refresh(addonName)
 					end,
 				},
 				DisableMouseover = {
