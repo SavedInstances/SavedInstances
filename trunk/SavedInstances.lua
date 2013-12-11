@@ -888,34 +888,17 @@ end
 local instancesUpdated = false
 function addon:UpdateInstanceData()
   --debug("UpdateInstanceData()")
-  local dungeonDB = (GetLFDChoiceInfo and GetLFDChoiceInfo()) or -- 4.2 and earlier
-                    LFDDungeonList -- lazily updated
-  if not dungeonDB or instancesUpdated then return end  -- nil before first use in UI
+  if instancesUpdated then return end  -- nil before first use in UI
   instancesUpdated = true
   local count = 0
   local starttime = debugprofilestop()
   local maxid = 1000
-  for id=1,maxid do -- start with brute force
+  -- previously we used GetFullRaidList() and LFDDungeonList to help populate the instance list
+  -- Unfortunately those are loaded lazily, and forcing them to load from here can lead to taint.
+  -- They are also somewhat incomplete, so instead we just brute force it, which is reasonably fast anyhow
+  for id=1,maxid do
     if addon:UpdateInstance(id) then
       count = count + 1
-    end
-  end
-  local raidHeaders, raidDB = GetFullRaidList()
-  for _,rinfo in pairs(raidDB) do
-    for _,rid in pairs(rinfo) do
-      if rid > 0 and rid > maxid then -- ignore headers
-        if addon:UpdateInstance(rid) then
-          count = count + 1
-	end
-      end
-    end
-  end
-  for did,dinfo in pairs(dungeonDB) do
-    local id = (type(dinfo) == "number" and dinfo) or did
-    if id > 0 and id > maxid then -- ignore headers
-      if addon:UpdateInstance(id) then
-        count = count + 1
-      end
     end
   end
   for eid,info in pairs(addon.WorldBosses) do
@@ -1780,7 +1763,6 @@ function core:OnInitialize()
         addon:SetupVersion()
 	RequestRaidInfo() -- get lockout data
 	RequestLFDPlayerLockInfo()
-	if LFGDungeonList_Setup then pcall(LFGDungeonList_Setup) end -- try to force LFG frame to populate instance list LFDDungeonList
 	vars.dataobject = vars.LDB and vars.LDB:NewDataObject("SavedInstances", {
 		text = "",
 		type = "launcher",
