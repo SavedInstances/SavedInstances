@@ -1786,15 +1786,7 @@ function core:OnInitialize()
 	})
 	if vars.icon then
 		vars.icon:Register(addonName, vars.dataobject, db.MinimapIcon)
-                vars.icon.Update = function()
-                if db.MinimapIcon.hide then
-                  vars.icon:Hide(addonName)
-                else
-                  vars.icon:Show(addonName)
-                end
-                end
-                vars.icon:Update()
-
+		vars.icon:Refresh(addonName)
 	end
 end
 
