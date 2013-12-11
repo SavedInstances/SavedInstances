@@ -369,7 +369,7 @@ vars.defaultDB = {
                                                         -- Extended: boolean, whether this is an extended raid lockout
 							-- Link: string hyperlink to the save
                                                         -- 1..numEncounters: boolean LFR isLooted
-	MinimapIcon = { },
+	MinimapIcon = { hide = false },
 	Quests = {},  -- Account-wide Quests:  key: QuestID  value: same as toon Quest database
 	QuestDB = {   -- permanent repeatable quest DB: key: questid  value: mapid
 		Daily = {},
@@ -1785,7 +1785,16 @@ function core:OnInitialize()
 		end
 	})
 	if vars.icon then
-		vars.icon:Register("SavedInstances", vars.dataobject, db.MinimapIcon)
+		vars.icon:Register(addonName, vars.dataobject, db.MinimapIcon)
+                vars.icon.Update = function()
+                if db.MinimapIcon.hide then
+                  vars.icon:Hide(addonName)
+                else
+                  vars.icon:Show(addonName)
+                end
+                end
+                vars.icon:Update()
+
 	end
 end
 
