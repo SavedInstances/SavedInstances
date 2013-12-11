@@ -193,7 +193,7 @@ function module:BuildOptions()
 					get = function(info) return not db.MinimapIcon.hide end,
 					set = function(info, value)
 						db.MinimapIcon.hide = not value
-						if value then vars.icon:Show("SavedInstances") else vars.icon:Hide("SavedInstances") end
+						vars.icon:Update()
 					end,
 				},
 				DisableMouseover = {
