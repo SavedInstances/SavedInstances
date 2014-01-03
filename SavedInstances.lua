@@ -82,6 +82,7 @@ local currency = {
   515, -- Darkmoon Prize Ticket
   241, -- Champion's Seal
   391, -- Tol Barad Commendation
+  416, -- Mark of the World Tree
   789, -- Bloody Coin
 }
 addon.currency = currency
