@@ -390,6 +390,12 @@ function module:BuildOptions()
 					width = "double",
 					name = L["Track farm crops"],
 				},
+				TrackBonus = {
+					type = "toggle",
+					order = 33.85,
+					width = "double",
+					name = L["Track bonus loot rolls"],
+				},
 				TrackLFG = {
 					type = "toggle",
 					order = 34,
