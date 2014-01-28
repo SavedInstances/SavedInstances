@@ -285,6 +285,13 @@ vars.defaultDB = {
 				-- FarmCropReady: key: spellID value: count
 				-- FarmExpires: expiration
 
+				-- BonusRoll: key: int value:
+				   -- name: string
+				   -- time: int
+				   -- currencyID: int
+				   -- money: integer or nil
+				   -- item: linkstring or nil
+
 	Indicators = {
 		D1Indicator = "BLANK", -- indicator: ICON_*, BLANK
 		D1Text = "KILLED/TOTAL",
@@ -1317,7 +1324,7 @@ local function finishIndicator()
 end
 
 local function ShowToonTooltip(cell, arg, ...)
-	local toon = arg[1]
+	local toon = arg
 	if not toon then return end
 	local t = vars.db.Toons[toon]
 	if not t then return end
@@ -1426,14 +1433,14 @@ function addon:plantName(spellid)
 end
 
 local function ShowFarmTooltip(cell, arg, ...)
-        local toon, cstr = unpack(arg)
+        local toon = arg
         local t = vars.db.Toons[toon]
         if not t then return end
 	openIndicator(2, "LEFT","RIGHT")
 	local tname = ClassColorise(t.Class, toon)
         indicatortip:AddHeader()
 	indicatortip:SetCell(1,1,tname,"LEFT")
-	indicatortip:SetCell(1,2,cstr,"RIGHT")
+	indicatortip:SetCell(1,2,L["Farm Crops"],"RIGHT")
 
         local exp = t.FarmExpires
 	if exp and exp > time() then
@@ -1457,6 +1464,39 @@ local function ShowFarmTooltip(cell, arg, ...)
           end
 	end
 	finishIndicator()
+end
+
+local function ShowBonusTooltip(cell, arg, ...)
+        local toon = arg
+        local t = vars.db.Toons[toon]
+        if not t or not t.BonusRoll then return end
+        openIndicator(4, "LEFT","LEFT","LEFT","LEFT")
+        local tname = ClassColorise(t.Class, toon)
+        indicatortip:AddHeader()
+        indicatortip:SetCell(1,1,tname,"LEFT",2)
+        indicatortip:SetCell(1,3,L["Recent Bonus Rolls"],"RIGHT",2)
+
+        local line = indicatortip:AddLine()
+	for i,roll in ipairs(t.BonusRoll) do
+	    if i > 10 then break end
+            local line = indicatortip:AddLine()
+	    local icon = roll.currencyID and select(3,GetCurrencyInfo(roll.currencyID))
+	    if icon then
+              indicatortip:SetCell(line,1, " \124T"..icon..":0\124t ")
+	    end
+	    if roll.name then
+              indicatortip:SetCell(line,2,roll.name)
+	    end
+	    if roll.item then
+              indicatortip:SetCell(line,3,roll.item)
+	    elseif roll.money then
+              indicatortip:SetCell(line,3,GetMoneyString(roll.money))
+	    end
+	    if roll.time then
+              indicatortip:SetCell(line,4,date("%b %d %H:%M",roll.time))
+	    end
+	end
+        finishIndicator()
 end
 
 local function ShowHistoryTooltip(cell, arg, ...)
@@ -1730,6 +1770,7 @@ function core:OnInitialize()
 	db.Tooltip.CombineLFR = (db.Tooltip.CombineLFR == nil and true) or db.Tooltip.CombineLFR
 	db.Tooltip.TrackSkills = (db.Tooltip.TrackSkills == nil and true) or db.Tooltip.TrackSkills
 	db.Tooltip.TrackFarm = (db.Tooltip.TrackFarm == nil and true) or db.Tooltip.TrackFarm
+	db.Tooltip.TrackBonus = (db.Tooltip.TrackBonus == nil and false) or db.Tooltip.TrackBonus
 	db.Tooltip.TrackDailyQuests = (db.Tooltip.TrackDailyQuests == nil and true) or db.Tooltip.TrackDailyQuests
 	db.Tooltip.TrackWeeklyQuests = (db.Tooltip.TrackWeeklyQuests == nil and true) or db.Tooltip.TrackWeeklyQuests
 	db.Tooltip.RemindCharms = (db.Tooltip.RemindCharms == nil and true) or db.Tooltip.RemindCharms
@@ -1823,8 +1864,10 @@ function core:OnEnable()
 	self:RegisterEvent("TRADE_SKILL_UPDATE")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", RequestRaidInfo)
 	self:RegisterEvent("LFG_LOCK_INFO_RECEIVED", RequestRaidInfo)
+	self:RegisterEvent("BONUS_ROLL_RESULT", "BonusRollResult")
 	self:RegisterEvent("PLAYER_LOGOUT", function() addon.logout = true ; addon:UpdateToonData() end) -- update currency spent
 	self:RegisterEvent("LFG_COMPLETION_REWARD") -- for random daily dungeon tracking
+	self:RegisterEvent("ENCOUNTER_END", "EncounterEnd")
 	self:RegisterEvent("TIME_PLAYED_MSG", function(_,total,level) 
 	                      local t = thisToon and vars and vars.db and vars.db.Toons[thisToon]
 	                      if total > 0 and t then
@@ -1890,6 +1933,26 @@ end
 function core:LFG_COMPLETION_REWARD()
 	RequestRaidInfo()
 	RequestLFDPlayerLockInfo()
+end
+
+function core:EncounterEnd(event, encounterID, encounterName, difficultyID, raidSize, endStatus)
+  debug("EncounterEnd:"..tostring(encounterID)..":"..tostring(encounterName)..":"..tostring(difficultyID)..":"..tostring(raidSize)..":"..tostring(endStatus))
+  if endStatus ~= 1 then return end -- wipe
+  core:LFG_COMPLETION_REWARD() -- killed a boss, make sure we update any lockout info (sometimes there's server-side delay)
+  core:ScheduleTimer("LFG_COMPLETION_REWARD",5)
+  core:ScheduleTimer("LFG_COMPLETION_REWARD",30)
+  core:ScheduleTimer("LFG_COMPLETION_REWARD",60)
+  core:ScheduleTimer("LFG_COMPLETION_REWARD",120)
+  local t = vars.db.Toons[thisToon]
+  if not t then return end
+  local name = encounterName
+  if difficultyID and difficultyID > 0 then
+    local diff = GetDifficultyInfo(difficultyID)
+    if diff and #diff > 0 then
+      name = name ..": "..diff
+    end
+  end
+  t.lastboss = name
 end
 
 function addon:InGroup() 
@@ -2921,7 +2984,42 @@ function core:ShowTooltip(anchorframe)
 		for toon, t in cpairs(vars.db.Toons) do
 			if toonfarm[toon] then
 				tooltip:SetCell(show, columns[toon..1], ClassColorise(t.Class,toonfarm[toon]), "CENTER",maxcol)
-		                tooltip:SetCellScript(show, columns[toon..1], "OnEnter", ShowFarmTooltip, {toon, L["Farm Crops"]})
+		                tooltip:SetCellScript(show, columns[toon..1], "OnEnter", ShowFarmTooltip, toon)
+		                tooltip:SetCellScript(show, columns[toon..1], "OnLeave", CloseTooltips)
+			end
+		end
+        end
+
+	if vars.db.Tooltip.TrackBonus or showall then
+		local show
+		local toonbonus = localarr("toonbonus")
+		for toon, t in cpairs(vars.db.Toons) do
+			if t.BonusRoll and t.BonusRoll[1] then
+				local gold = 0
+				for _,roll in ipairs(t.BonusRoll) do
+					if roll.money then 
+						gold = gold + 1
+					else
+						break
+					end
+				end
+				toonbonus[toon] = gold
+				show = true
+				addColumns(columns, toon, tooltip)
+			end
+		end
+		if show then
+			if not firstcategory and vars.db.Tooltip.CategorySpaces then
+				addsep()
+			end
+			show = tooltip:AddLine(YELLOWFONT .. L["Roll Bonus"] .. FONTEND)		
+		end
+		for toon, t in cpairs(vars.db.Toons) do
+			if toonbonus[toon] then
+				local str = toonbonus[toon]
+				if str > 0 then str = "+"..str end
+				tooltip:SetCell(show, columns[toon..1], ClassColorise(t.Class,str), "CENTER",maxcol)
+		                tooltip:SetCellScript(show, columns[toon..1], "OnEnter", ShowBonusTooltip, toon)
 		                tooltip:SetCellScript(show, columns[toon..1], "OnLeave", CloseTooltips)
 			end
 		end
@@ -3008,7 +3106,7 @@ function core:ShowTooltip(anchorframe)
 			end
 			tooltip:SetCell(headLine, col, ClassColorise(vars.db.Toons[toon].Class, toonstr), 
 			                tooltip:GetHeaderFont(), "CENTER", maxcol)
-			tooltip:SetCellScript(headLine, col, "OnEnter", ShowToonTooltip, {toon})
+			tooltip:SetCellScript(headLine, col, "OnEnter", ShowToonTooltip, toon)
 			tooltip:SetCellScript(headLine, col, "OnLeave", CloseTooltips)
 	 		--[[
 			tooltip:SetCellScript(headLine, col, "OnEnter", function() 
@@ -3513,4 +3611,22 @@ function core:UNIT_SPELLCAST_SUCCEEDED(evt, unit, spellName, rank, lineID, spell
   end
 end
 
+function core:BonusRollResult(event, rewardType, rewardLink, rewardQuantity, rewardSpecID)
+  debug("BonusRollResult:"..tostring(rewardType)..":"..tostring(rewardLink)..":"..tostring(rewardQuantity)..":"..tostring(rewardSpecID))
+  local t = vars.db.Toons[thisToon]
+  if not t then return end
+  t.BonusRoll = t.BonusRoll or {}
+  --local rewardstr = _G["BONUS_ROLL_REWARD_"..string.upper(rewardType)]
+  local roll = { name = t.lastboss, time = time(), currencyID = BonusRollFrame.currencyID }
+  if rewardType == "money" then
+    roll.money = rewardQuantity
+  elseif rewardType == "item" then
+    roll.item = rewardLink
+  end
+  table.insert(t.BonusRoll, 1, roll)
+  local limit = 25
+  for i=limit+1, table.maxn(t.BonusRoll) do
+    t.BonusRoll[i] = nil
+  end
+end
 
