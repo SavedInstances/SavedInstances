@@ -1904,11 +1904,15 @@ end
 function core:ADDON_LOADED()
 	if DBM and DBM.EndCombat and not addon.dbmhook then
 	  addon.dbmhook = true
-	  hooksecurefunc(DBM, "EndCombat", function() debug("DBM:EndCombat refresh"); core:LFG_COMPLETION_REWARD() end)
+	  hooksecurefunc(DBM, "EndCombat", function(self, mod, wipe) 
+	     core:BossModEncounterEnd("DBM:EndCombat", mod and mod.combatInfo and mod.combatInfo.name) 
+	  end)
 	end
 	if BigWigsLoader and not addon.bigwigshook then
 	  addon.bigwigshook = true
-	  BigWigsLoader.RegisterMessage(self, "BigWigs_OnBossWin", function() debug("BigWigs_OnBossWin refresh"); core:LFG_COMPLETION_REWARD() end)
+	  BigWigsLoader.RegisterMessage(self, "BigWigs_OnBossWin", function(self, event, mod) 
+	      core:BossModEncounterEnd("BigWigs_OnBossWin", mod and mod.displayName)
+	  end)
 	end
 end
 
@@ -1935,6 +1939,22 @@ function core:LFG_COMPLETION_REWARD()
 	RequestLFDPlayerLockInfo()
 end
 
+function core:BossModEncounterEnd(modname, bossname)
+  local t = vars.db.Toons[thisToon]
+  local now = time()
+  if bossname and t and now > (t.lastbosstime or 0) + 5*60 then 
+    -- boss mods can often detect completion before ENCOUNTER_END
+    -- also some world bosses never send ENCOUNTER_END
+    bossname = tostring(bossname) -- for safety
+    local diff = select(4,GetInstanceInfo())
+    if diff and #diff > 0 then bossname = bossname .. ": ".. diff end
+    t.lastboss = bossname
+    t.lastbosstime = time()
+  end
+  debug((modname or "BossMod").." refresh: "..tostring(bossname)); 
+  core:LFG_COMPLETION_REWARD()
+end
+
 function core:EncounterEnd(event, encounterID, encounterName, difficultyID, raidSize, endStatus)
   debug("EncounterEnd:"..tostring(encounterID)..":"..tostring(encounterName)..":"..tostring(difficultyID)..":"..tostring(raidSize)..":"..tostring(endStatus))
   if endStatus ~= 1 then return end -- wipe
@@ -1953,6 +1973,7 @@ function core:EncounterEnd(event, encounterID, encounterName, difficultyID, raid
     end
   end
   t.lastboss = name
+  t.lastbosstime = time()
 end
 
 function addon:InGroup() 
@@ -3617,7 +3638,11 @@ function core:BonusRollResult(event, rewardType, rewardLink, rewardQuantity, rew
   if not t then return end
   t.BonusRoll = t.BonusRoll or {}
   --local rewardstr = _G["BONUS_ROLL_REWARD_"..string.upper(rewardType)]
-  local roll = { name = t.lastboss, time = time(), currencyID = BonusRollFrame.currencyID }
+  local now = time()
+  if now > (t.lastbosstime or 0) + 5*60 then -- user rolled before lastboss was updated, ignore the stale one
+    t.lastboss = ""
+  end
+  local roll = { name = t.lastboss, time = now, currencyID = BonusRollFrame.currencyID }
   if rewardType == "money" then
     roll.money = rewardQuantity
   elseif rewardType == "item" then
