@@ -1866,7 +1866,7 @@ function core:OnEnable()
 	self:RegisterEvent("LFG_LOCK_INFO_RECEIVED", RequestRaidInfo)
 	self:RegisterEvent("BONUS_ROLL_RESULT", "BonusRollResult")
 	self:RegisterEvent("PLAYER_LOGOUT", function() addon.logout = true ; addon:UpdateToonData() end) -- update currency spent
-	self:RegisterEvent("LFG_COMPLETION_REWARD") -- for random daily dungeon tracking
+	self:RegisterEvent("LFG_COMPLETION_REWARD", "RefreshLockInfo") -- for random daily dungeon tracking
 	self:RegisterEvent("ENCOUNTER_END", "EncounterEnd")
 	self:RegisterEvent("TIME_PLAYED_MSG", function(_,total,level) 
 	                      local t = thisToon and vars and vars.db and vars.db.Toons[thisToon]
@@ -1921,6 +1921,28 @@ function core:OnDisable()
         addon.resetDetect:SetScript("OnEvent", nil)
 end
 
+function core:RequestLockInfo() -- request lock info from the server immediately
+	RequestRaidInfo()
+	RequestLFDPlayerLockInfo()
+end
+
+function core:RefreshLockInfo() -- throttled lock update with retry
+	local now = GetTime()
+	if now > (core.lastrefreshlock or 0) + 1 then
+		core.lastrefreshlock = now
+		core:RequestLockInfo()
+	end
+	if now > (core.lastrefreshlocksched or 0) + 120 then
+                -- make sure we update any lockout info (sometimes there's server-side delay)
+		core.lastrefreshlockshed = now
+  		core:ScheduleTimer("RequestLockInfo",5)
+  		core:ScheduleTimer("RequestLockInfo",30)
+  		core:ScheduleTimer("RequestLockInfo",60)
+  		core:ScheduleTimer("RequestLockInfo",90)
+  		core:ScheduleTimer("RequestLockInfo",120)
+	end
+end
+
 local currency_msg = CURRENCY_GAINED:gsub(":.*$","")
 function core:CheckSystemMessage(event, msg)
         local inst, t = IsInInstance()
@@ -1930,13 +1952,8 @@ function core:CheckSystemMessage(event, msg)
 	   (msg:find(INSTANCE_SAVED) or -- first boss kill
 	    msg:find(currency_msg)) -- subsequent boss kills (unless capped or over level)
 	   then
-	   RequestRaidInfo()
+	   core:RefreshLockInfo()
 	end
-end
-
-function core:LFG_COMPLETION_REWARD()
-	RequestRaidInfo()
-	RequestLFDPlayerLockInfo()
 end
 
 function core:BossModEncounterEnd(modname, bossname)
@@ -1952,17 +1969,13 @@ function core:BossModEncounterEnd(modname, bossname)
     t.lastbosstime = time()
   end
   debug((modname or "BossMod").." refresh: "..tostring(bossname)); 
-  core:LFG_COMPLETION_REWARD()
+  core:RefreshLockInfo()
 end
 
 function core:EncounterEnd(event, encounterID, encounterName, difficultyID, raidSize, endStatus)
   debug("EncounterEnd:"..tostring(encounterID)..":"..tostring(encounterName)..":"..tostring(difficultyID)..":"..tostring(raidSize)..":"..tostring(endStatus))
   if endStatus ~= 1 then return end -- wipe
-  core:LFG_COMPLETION_REWARD() -- killed a boss, make sure we update any lockout info (sometimes there's server-side delay)
-  core:ScheduleTimer("LFG_COMPLETION_REWARD",5)
-  core:ScheduleTimer("LFG_COMPLETION_REWARD",30)
-  core:ScheduleTimer("LFG_COMPLETION_REWARD",60)
-  core:ScheduleTimer("LFG_COMPLETION_REWARD",120)
+  core:RefreshLockInfo()
   local t = vars.db.Toons[thisToon]
   if not t then return end
   local name = encounterName
@@ -3636,6 +3649,7 @@ function core:BonusRollResult(event, rewardType, rewardLink, rewardQuantity, rew
   debug("BonusRollResult:"..tostring(rewardType)..":"..tostring(rewardLink)..":"..tostring(rewardQuantity)..":"..tostring(rewardSpecID))
   local t = vars.db.Toons[thisToon]
   if not t then return end
+  if not rewardType then return end -- sometimes get a bogus message, ignore it
   t.BonusRoll = t.BonusRoll or {}
   --local rewardstr = _G["BONUS_ROLL_REWARD_"..string.upper(rewardType)]
   local now = time()
