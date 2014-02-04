@@ -1959,9 +1959,10 @@ end
 function core:BossModEncounterEnd(modname, bossname)
   local t = vars.db.Toons[thisToon]
   local now = time()
-  if bossname and t and now > (t.lastbosstime or 0) + 5*60 then 
+  if bossname and t and now > (t.lastbosstime or 0) + 2*60 then 
     -- boss mods can often detect completion before ENCOUNTER_END
     -- also some world bosses never send ENCOUNTER_END
+    -- enough timeout to prevent overwriting, but short enough to prevent cross-boss contamination
     bossname = tostring(bossname) -- for safety
     local diff = select(4,GetInstanceInfo())
     if diff and #diff > 0 then bossname = bossname .. ": ".. diff end
@@ -3646,14 +3647,15 @@ function core:UNIT_SPELLCAST_SUCCEEDED(evt, unit, spellName, rank, lineID, spell
 end
 
 function core:BonusRollResult(event, rewardType, rewardLink, rewardQuantity, rewardSpecID)
-  debug("BonusRollResult:"..tostring(rewardType)..":"..tostring(rewardLink)..":"..tostring(rewardQuantity)..":"..tostring(rewardSpecID))
   local t = vars.db.Toons[thisToon]
+  debug("BonusRollResult:"..tostring(rewardType)..":"..tostring(rewardLink)..":"..tostring(rewardQuantity)..":"..tostring(rewardSpecID)..
+        " (boss="..tostring(t and t.lastboss)..")")
   if not t then return end
   if not rewardType then return end -- sometimes get a bogus message, ignore it
   t.BonusRoll = t.BonusRoll or {}
   --local rewardstr = _G["BONUS_ROLL_REWARD_"..string.upper(rewardType)]
   local now = time()
-  if now > (t.lastbosstime or 0) + 5*60 then -- user rolled before lastboss was updated, ignore the stale one
+  if now > (t.lastbosstime or 0) + 3*60 then -- user rolled before lastboss was updated, ignore the stale one. Roll timeout is 3 min.
     t.lastboss = ""
   end
   local roll = { name = t.lastboss, time = now, currencyID = BonusRollFrame.currencyID }
