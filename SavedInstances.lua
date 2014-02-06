@@ -1868,6 +1868,7 @@ function core:OnEnable()
 	self:RegisterEvent("PLAYER_LOGOUT", function() addon.logout = true ; addon:UpdateToonData() end) -- update currency spent
 	self:RegisterEvent("LFG_COMPLETION_REWARD", "RefreshLockInfo") -- for random daily dungeon tracking
 	self:RegisterEvent("ENCOUNTER_END", "EncounterEnd")
+	self:RegisterEvent("CHAT_MSG_MONSTER_YELL")
 	self:RegisterEvent("TIME_PLAYED_MSG", function(_,total,level) 
 	                      local t = thisToon and vars and vars.db and vars.db.Toons[thisToon]
 	                      if total > 0 and t then
@@ -1956,6 +1957,21 @@ function core:CheckSystemMessage(event, msg)
 	end
 end
 
+function core:CHAT_MSG_MONSTER_YELL(event, msg, bossname)
+  -- cheapest possible outdoor boss detection for players lacking a proper boss mod
+  -- should work for sha and nalak, oon and gal report a related mob
+  local t = vars.db.Toons[thisToon]
+  local now = time()
+  if bossname and t then
+    bossname = tostring(bossname) -- for safety
+    local diff = select(4,GetInstanceInfo())
+    if diff and #diff > 0 then bossname = bossname .. ": ".. diff end
+    t.lastbossyell = bossname
+    t.lastbossyelltime = now
+    debug("CHAT_MSG_MONSTER_YELL: "..tostring(bossname)); 
+  end
+end
+
 function core:BossModEncounterEnd(modname, bossname)
   local t = vars.db.Toons[thisToon]
   local now = time()
@@ -1967,7 +1983,7 @@ function core:BossModEncounterEnd(modname, bossname)
     local diff = select(4,GetInstanceInfo())
     if diff and #diff > 0 then bossname = bossname .. ": ".. diff end
     t.lastboss = bossname
-    t.lastbosstime = time()
+    t.lastbosstime = now
   end
   debug((modname or "BossMod").." refresh: "..tostring(bossname)); 
   core:RefreshLockInfo()
@@ -3649,16 +3665,23 @@ end
 function core:BonusRollResult(event, rewardType, rewardLink, rewardQuantity, rewardSpecID)
   local t = vars.db.Toons[thisToon]
   debug("BonusRollResult:"..tostring(rewardType)..":"..tostring(rewardLink)..":"..tostring(rewardQuantity)..":"..tostring(rewardSpecID)..
-        " (boss="..tostring(t and t.lastboss)..")")
+        " (boss="..tostring(t and t.lastboss).."|"..tostring(t and t.lastbossyell)..")")
   if not t then return end
   if not rewardType then return end -- sometimes get a bogus message, ignore it
   t.BonusRoll = t.BonusRoll or {}
   --local rewardstr = _G["BONUS_ROLL_REWARD_"..string.upper(rewardType)]
   local now = time()
+  local bossname = t.lastboss
   if now > (t.lastbosstime or 0) + 3*60 then -- user rolled before lastboss was updated, ignore the stale one. Roll timeout is 3 min.
-    t.lastboss = ""
+    bossname = nil
   end
-  local roll = { name = t.lastboss, time = now, currencyID = BonusRollFrame.currencyID }
+  if not bossname and t.lastbossyell and now < (t.lastbossyelltime or 0) + 10*60 then
+    bossname = t.lastbossyell -- yell fallback
+  end
+  if not bossname then
+    bossname = GetSubZoneText() or GetRealZoneText() -- zone fallback
+  end
+  local roll = { name = bossname, time = now, currencyID = BonusRollFrame.currencyID }
   if rewardType == "money" then
     roll.money = rewardQuantity
   elseif rewardType == "item" then
