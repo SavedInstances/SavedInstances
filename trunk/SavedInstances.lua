@@ -188,6 +188,8 @@ end
 
 local QuestExceptions = { 
   -- some quests are misidentified in scope
+  [7905]  = "Regular", -- Darkmoon Faire referral -- old addon versions misidentified this as monthly
+  [7926]  = "Regular", -- Darkmoon Faire referral
   [31752] = "AccountDaily", -- Blingtron
   -- also pre-populate a few important quests
   [32640] = "Weekly",  -- Champions of the Thunder King
@@ -1212,6 +1214,7 @@ end
 
 function addon:QuestIsDarkmoonMonthly()
   if QuestIsDaily() then return false end
+  if GetQuestID() == 7905 or GetQuestID() == 7926 then return false end -- one-time referral quest
   for i=1,GetNumRewardCurrencies() do
     local name,texture,amount = GetQuestCurrencyInfo("reward",i)
     if texture:find("_ticket_darkmoon_") then
@@ -1968,7 +1971,7 @@ function core:CHAT_MSG_MONSTER_YELL(event, msg, bossname)
     if diff and #diff > 0 then bossname = bossname .. ": ".. diff end
     t.lastbossyell = bossname
     t.lastbossyelltime = now
-    debug("CHAT_MSG_MONSTER_YELL: "..tostring(bossname)); 
+    --debug("CHAT_MSG_MONSTER_YELL: "..tostring(bossname)); 
   end
 end
 
