@@ -396,6 +396,12 @@ function module:BuildOptions()
 					width = "double",
 					name = L["Track bonus loot rolls"],
 				},
+				AugmentBonus = {
+					type = "toggle",
+					order = 33.95,
+					width = "double",
+					name = L["Augment bonus loot frame"],
+				},
 				TrackLFG = {
 					type = "toggle",
 					order = 34,

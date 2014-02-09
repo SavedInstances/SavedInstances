@@ -1313,14 +1313,15 @@ end
 local function openIndicator(...)
   indicatortip = QTip:Acquire("SavedInstancesIndicatorTooltip", ...)
   indicatortip:Clear()
-  indicatortip:SetHeaderFont(tooltip:GetHeaderFont())
+  indicatortip:SetHeaderFont(core:HeaderFont())
   indicatortip:SetScale(vars.db.Tooltip.Scale)
 end
 
-local function finishIndicator()
-  indicatortip:SetAutoHideDelay(0.1, tooltip)
+local function finishIndicator(parent)
+  parent = parent or tooltip
+  indicatortip:SetAutoHideDelay(0.1, parent)
   indicatortip.OnRelease = function() indicatortip = nil end -- extra-safety: update our variable on auto-release
-  indicatortip:SmartAnchorTo(tooltip)
+  indicatortip:SmartAnchorTo(parent)
   indicatortip:SetFrameLevel(100) -- ensure visibility when forced to overlap main tooltip
   addon:SkinFrame(indicatortip,"SavedInstancesIndicatorTooltip")
   indicatortip:Show()
@@ -1471,6 +1472,10 @@ end
 
 local function ShowBonusTooltip(cell, arg, ...)
         local toon = arg
+        local parent
+	if type(toon) == "table" then
+	   toon, parent = unpack(toon)
+	end
         local t = vars.db.Toons[toon]
         if not t or not t.BonusRoll then return end
         openIndicator(4, "LEFT","LEFT","LEFT","LEFT")
@@ -1499,7 +1504,7 @@ local function ShowBonusTooltip(cell, arg, ...)
               indicatortip:SetCell(line,4,date("%b %d %H:%M",roll.time))
 	    end
 	end
-        finishIndicator()
+        finishIndicator(parent)
 end
 
 local function ShowHistoryTooltip(cell, arg, ...)
@@ -1774,6 +1779,7 @@ function core:OnInitialize()
 	db.Tooltip.TrackSkills = (db.Tooltip.TrackSkills == nil and true) or db.Tooltip.TrackSkills
 	db.Tooltip.TrackFarm = (db.Tooltip.TrackFarm == nil and true) or db.Tooltip.TrackFarm
 	db.Tooltip.TrackBonus = (db.Tooltip.TrackBonus == nil and false) or db.Tooltip.TrackBonus
+	db.Tooltip.AugmentBonus = (db.Tooltip.AugmentBonus == nil and true) or db.Tooltip.AugmentBonus
 	db.Tooltip.TrackDailyQuests = (db.Tooltip.TrackDailyQuests == nil and true) or db.Tooltip.TrackDailyQuests
 	db.Tooltip.TrackWeeklyQuests = (db.Tooltip.TrackWeeklyQuests == nil and true) or db.Tooltip.TrackWeeklyQuests
 	db.Tooltip.RemindCharms = (db.Tooltip.RemindCharms == nil and true) or db.Tooltip.RemindCharms
@@ -1833,6 +1839,7 @@ function core:OnInitialize()
 		vars.icon:Register(addonName, vars.dataobject, db.MinimapIcon)
 		vars.icon:Refresh(addonName)
 	end
+	addon.BonusRollShow() -- catch roll-on-load
 end
 
 function addon:SetupVersion()
@@ -2579,6 +2586,18 @@ local function addColumns(columns, toon, tooltip)
 	columnCache[ShowAll()][toon] = true
 end
 
+function core:HeaderFont()
+  if not addon.headerfont then
+    local temp = QTip:Acquire("SavedInstancesHeaderTooltip", 1, "LEFT")
+    addon.headerfont = CreateFont("SavedInstancedTooltipHeaderFont")
+    local hFont = temp:GetHeaderFont()
+    local hFontPath, hFontSize,_ hFontPath, hFontSize, _ = hFont:GetFont()
+    addon.headerfont:SetFont(hFontPath, hFontSize, "OUTLINE")
+    QTip:Release(temp)
+  end
+  return addon.headerfont
+end
+
 function core:ShowTooltip(anchorframe)
 	local showall = ShowAll()
 	if tooltip and tooltip:IsShown() and 
@@ -2596,13 +2615,7 @@ function core:ShowTooltip(anchorframe)
 	tooltip:SetScript("OnUpdate", UpdateTooltip)
 	tooltip:Clear()
 	tooltip:SetScale(vars.db.Tooltip.Scale)
-	if not addon.headerfont then
-	  addon.headerfont = CreateFont("SavedInstancedTooltipHeaderFont")
-	  local hFont = tooltip:GetHeaderFont()
-	  local hFontPath, hFontSize,_ hFontPath, hFontSize, _ = hFont:GetFont()
-	  addon.headerfont:SetFont(hFontPath, hFontSize, "OUTLINE")
-	end
-	tooltip:SetHeaderFont(addon.headerfont)
+	tooltip:SetHeaderFont(core:HeaderFont())
 	addon:HistoryUpdate()
 	local histinfo = ""
 	if addon.histLiveCount and addon.histLiveCount > 0 then
@@ -3696,4 +3709,39 @@ function core:BonusRollResult(event, rewardType, rewardLink, rewardQuantity, rew
     t.BonusRoll[i] = nil
   end
 end
+
+function addon.BonusRollShow()
+  local t = vars.db.Toons[thisToon]
+  if not t or not BonusRollFrame then return end
+  local binfo = t.BonusRoll
+  local frame = addon.BonusFrame
+  if not binfo or #binfo == 0 or not vars.db.Tooltip.AugmentBonus then
+    if frame then frame:Hide() end
+    return
+  end
+  if not frame then
+    frame = CreateFrame("Button", "SavedInstancesBonusRollFrame", BonusRollFrame, "SpellBookSkillLineTabTemplate")
+    addon.BonusFrame = frame
+    --frame:SetSize(BonusRollFrame:GetHeight(), BonusRollFrame:GetHeight())
+    frame:SetPoint("LEFT", BonusRollFrame, "RIGHT",0,8)
+    frame.text = addon.BonusFrame:CreateFontString(nil, "OVERLAY","GameFontNormal")
+    frame.text:SetPoint("CENTER")
+    frame:SetScript("OnEnter", function() ShowBonusTooltip(nil, { thisToon, frame }) end )
+    frame:SetScript("OnLeave", CloseTooltips)
+    frame:SetScript("OnClick", nil)
+    frame.text:Show()
+  end
+  local bonus = 0
+  for _,rinfo in ipairs(binfo) do
+    if rinfo.money then 
+       bonus = bonus + 1
+    else
+       break
+    end
+  end
+  frame.text:SetText((bonus > 0 and "+" or "")..bonus)
+  frame:Show()
+end
+
+hooksecurefunc("BonusRollFrame_StartBonusRoll", addon.BonusRollShow)
 
