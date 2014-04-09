@@ -1043,6 +1043,7 @@ function addon:UpdateToonData()
 		  local donetoday, money = GetLFGDungeonRewards(id)
 		  local expires = addon:GetNextDailyResetTime()
 		  if donetoday and i.Random and (
+		    (i.LFDID == 258) or  -- random classic dungeon
 		    (UnitLevel("player") == 85 and 
 		     (i.LFDID == 300 or i.LFDID == 301 or i.LFDID == 434)) -- reg/her cata and HoT at 85
 		   ) then -- donetoday flag is falsely set for some level/dungeon combos where no daily incentive is available
@@ -2095,7 +2096,7 @@ end
 
 
 addon.histReapTime = 60*60 -- 1 hour
-addon.histLimit = 5 -- instances per hour
+addon.histLimit = 10 -- instances per hour
 function addon:histZoneKey()
   local instname, insttype, diff, diffname, maxPlayers, playerDifficulty, isDynamicInstance = GetInstanceInfo()
   if insttype == nil or insttype == "none" or insttype == "arena" or insttype == "pvp" then -- pvp doesnt count
