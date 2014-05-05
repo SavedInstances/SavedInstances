@@ -641,6 +641,7 @@ addon.transInstance = {
   [534] = 195, 	-- The Battle for Mount Hyjal
   [509] = 160, 	-- Ruins of Ahn'Qiraj
   [557] = 179,  -- Auchindoun: Mana-Tombs : ticket 72 zhTW
+  [556] = 180,  -- Auchindoun: Sethekk Halls : ticket 151 frFR
   [568] = 340,  -- Zul'Aman: frFR 
   [1004] = 474, -- Scarlet Monastary: deDE
   [600] = 215,  -- Drak'Tharon: ticket 105 deDE
