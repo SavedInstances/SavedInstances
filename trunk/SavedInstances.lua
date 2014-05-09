@@ -1817,7 +1817,7 @@ function core:OnInitialize()
 	RequestRaidInfo() -- get lockout data
 	RequestLFDPlayerLockInfo()
 	vars.dataobject = vars.LDB and vars.LDB:NewDataObject("SavedInstances", {
-		text = "",
+		text = addonName,
 		type = "launcher",
 		icon = "Interface\\Addons\\SavedInstances\\icon.tga",
 		OnEnter = function(frame)
