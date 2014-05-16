@@ -141,12 +141,12 @@ local _specialQuests = {
   -- Timeless Isle
   [32962] = { zid=951, aid=8743, daily=true },  -- Zarhym
   [32961] = { zid=951, daily=true },  -- Scary Ghosts and Nice Sprites
-  [32956] = { zid=951, aid=8727, aline="Right7" }, -- Blackguard's Jetsam
-  [32957] = { zid=951, aid=8727, aline="Left7" },  -- Sunken Treasure
-  [32970] = { zid=951, aid=8727, aline="Left8" },  -- Gleaming Treasure Satchel
-  [32968] = { zid=951, aid=8726, aline="Right7" }, -- Rope-Bound Treasure Chest
-  [32969] = { zid=951, aid=8726, aline="Left7" },  -- Gleaming Treasure Chest
-  [32971] = { zid=951, aid=8726, aline="Left8" },  -- Mist-Covered Treasure Chest
+  [32956] = { zid=951, aid=8727, acid=2, aline="Right7" }, -- Blackguard's Jetsam
+  [32957] = { zid=951, aid=8727, acid=1, aline="Left7" },  -- Sunken Treasure
+  [32970] = { zid=951, aid=8727, acid=3, aline="Left8" },  -- Gleaming Treasure Satchel
+  [32968] = { zid=951, aid=8726, acid=2, aline="Right7" }, -- Rope-Bound Treasure Chest
+  [32969] = { zid=951, aid=8726, acid=1, aline="Left7" },  -- Gleaming Treasure Chest
+  [32971] = { zid=951, aid=8726, acid=3, aline="Left8" },  -- Mist-Covered Treasure Chest
 }
 function addon:specialQuests()
   for qid, qinfo in pairs(_specialQuests) do
@@ -161,6 +161,11 @@ function addon:specialQuests()
 	if name and #name > 0 then
           qinfo.name = name.." ("..LOOT..")"
 	end
+      end
+    elseif not qinfo.name and qinfo.aid and qinfo.acid then
+      local l = GetAchievementCriteriaInfo(qinfo.aid, qinfo.acid)
+      if l then
+        qinfo.name = l:gsub("%p$","")
       end
     elseif not qinfo.name and qinfo.aid then
       scantt:SetOwner(UIParent,"ANCHOR_NONE")
