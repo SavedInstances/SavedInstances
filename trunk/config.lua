@@ -217,6 +217,11 @@ function module:BuildOptions()
 					name = L["Warn about instance limit"],
 					order = 4.7,
 				},
+				HistoryText = {
+					type = "toggle",
+					name = L["Instance limit in broker"],
+					order = 4.8,
+				},
 
 				CharactersHeader = {
 					order = 4.9, 
