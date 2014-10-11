@@ -12,18 +12,8 @@ local db
 addon.svnrev["config.lua"] = tonumber(("$Revision$"):match("%d+"))
 
 -- local (optimal) references to Blizzard's strings
-local COLOR = COLOR -- "Color"
-local DELETE = DELETE -- "DELETE"
 local DUNGEON_DIFFICULTY1 = DUNGEON_DIFFICULTY1 -- 5 man
 local DUNGEON_DIFFICULTY2 = DUNGEON_DIFFICULTY2 -- 5 man (Heroic)
-local EMBLEM_SYMBOL = EMBLEM_SYMBOL -- "Icon"
-local EXPANSION_NAME0 = EXPANSION_NAME0 -- "Classic"
-local EXPANSION_NAME1 = EXPANSION_NAME1 -- "The Burning Crusade"
-local EXPANSION_NAME2 = EXPANSION_NAME2 -- "Wrath of the Lich King"
-local EXPANSION_NAME3 = EXPANSION_NAME3 -- "Cataclysm"
-local EXPANSION_NAME4 = EXPANSION_NAME4 -- "Mists of Pandaria"
-local LFG_TYPE_DUNGEON = LFG_TYPE_DUNGEON -- "Dungeon"
-local LFG_TYPE_RAID = LFG_TYPE_RAID -- "Raid"
 local RAID_DIFFICULTY0 = EXPANSION_NAME0 .. " " .. LFG_TYPE_RAID
 local RAID_DIFFICULTY1 = RAID_DIFFICULTY1 -- "10 man"
 local RAID_DIFFICULTY2 = RAID_DIFFICULTY2 -- "25 man"
