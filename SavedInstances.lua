@@ -247,9 +247,6 @@ vars.defaultDB = {
 	DBVersion = 11,
 	History = { }, -- for tracking 5 instance per hour limit
 		-- key: instance string; value: time first entered
-	Broker = {
-		HistoryText = false,
-	},
 	Toons = { }, 	-- table key: "Toon - Realm"; value:
 				-- Class: string
 				-- Level: integer
@@ -351,6 +348,7 @@ vars.defaultDB = {
 		AltColumnColor = { 0.2, 0.2, 0.2, 1, }, -- grey
 		ReportResets = true,
 		LimitWarn = true,
+		HistoryText = false,
 		ShowServer = false,
 		ServerSort = true,
 		ServerOnly = false,
@@ -1780,6 +1778,7 @@ function core:OnInitialize()
 	db.Quests = db.Quests or vars.defaultDB.Quests
 	db.Tooltip.ReportResets = (db.Tooltip.ReportResets == nil and true) or db.Tooltip.ReportResets
 	db.Tooltip.LimitWarn = (db.Tooltip.LimitWarn == nil and true) or db.Tooltip.LimitWarn
+	db.Tooltip.HistoryText = (db.Tooltip.HistoryText == nil and false) or db.Tooltip.HistoryText
 	db.Tooltip.ShowHoliday = (db.Tooltip.ShowHoliday == nil and true) or db.Tooltip.ShowHoliday
 	db.Tooltip.ShowRandom = (db.Tooltip.ShowRandom == nil and true) or db.Tooltip.ShowRandom
 	db.Tooltip.CombineLFR = (db.Tooltip.CombineLFR == nil and true) or db.Tooltip.CombineLFR
@@ -2196,27 +2195,34 @@ function addon:HistoryUpdate(forcereset, forcemesg)
       end
     end
   end
-  local oldistexp = (oldesttime and SecondsToTime(oldesttime+addon.histReapTime-now,false,false,1)) or "n/a"
-  debug(livecnt.." live instances, oldest ("..(oldestkey or "none")..") expires in "..oldistexp..". Current Zone="..(newzone or "nil"))
+  local oldestrem = oldesttime and (oldesttime+addon.histReapTime-now)
+  local oldestremt = (oldestrem and SecondsToTime(oldestrem,false,false,1)) or "n/a"
+  local oldestremtm = (oldestrem and SecondsToTime(math.floor((oldestrem+59)/60)*60,false,false,1)) or "n/a"
+  debug(livecnt.." live instances, oldest ("..(oldestkey or "none")..") expires in "..oldestremt..". Current Zone="..(newzone or "nil"))
   --myprint(vars.db.History)
   -- display update
 
   if forcemesg or (vars.db.Tooltip.LimitWarn and zoningin and livecnt >= addon.histLimit-1) then 
-      chatMsg(L["Warning: You've entered about %i instances recently and are approaching the %i instance per hour limit for your account. More instances should be available in %s."]:format(livecnt, addon.histLimit, oldistexp))
+      chatMsg(L["Warning: You've entered about %i instances recently and are approaching the %i instance per hour limit for your account. More instances should be available in %s."]:format(livecnt, addon.histLimit, oldestremt))
   end
   addon.histLiveCount = livecnt
-  addon.histOldest = oldistexp
-  if db.Broker.HistoryText and vars.dataobject then
-    if livecnt >= addon.histLimit then
-      vars.dataobject.text = oldistexp
-    else
-      vars.dataobject.text = livecnt
-    end
+  addon.histOldest = oldestremt
+  if db.Tooltip.HistoryText and livecnt > 0 then
+    vars.dataobject.text = "("..livecnt.."/"..(oldestremt or "?")..")"
+    addon.histTextthrottle = math.min(oldestrem+1, addon.histTextthrottle or 15)
+    addon.resetDetect:SetScript("OnUpdate", addon.histTextUpdate)
   else
     vars.dataobject.text = addonName
+    addon.resetDetect:SetScript("OnUpdate", nil)
   end
 end
 function core:HistoryUpdate(...) return addon:HistoryUpdate(...) end
+function addon.histTextUpdate(self, elap)
+  addon.histTextthrottle = addon.histTextthrottle - elap
+  if addon.histTextthrottle > 0 then return end
+  addon.histTextthrottle = 15
+  addon:HistoryUpdate()
+end
 
 local function localarr(name) -- save on memory churn by reusing arrays in updates
   name = "localarr#"..name
@@ -2485,7 +2491,7 @@ function addon:ShowDetached()
                   end)
       f:SetScript("OnHide", function() if tooltip then QTip:Release(tooltip); tooltip = nil end  end )
       f:SetScript("OnUpdate", function(self)
-		  if not tooltip then return end
+		  if not tooltip then f:Hide(); return end
 		  local w,h = tooltip:GetSize()
 		  self:SetSize(w*tooltip:GetScale(),(h+20)*tooltip:GetScale())
 		  tooltip:ClearAllPoints()
@@ -2610,7 +2616,8 @@ function core:ShowTooltip(anchorframe)
 	if tooltip and tooltip:IsShown() and 
 	   core.showall == showall and
 	   core.scale == vars.db.Tooltip.Scale
-	   then return -- skip update
+	   then 
+	   return -- skip update
 	end
 	core.scale = vars.db.Tooltip.Scale
 	core.showall = showall
@@ -3426,6 +3433,11 @@ local trade_spells = {
 	[126459] = "item",	-- Blingtron
 	[54710]  = "item",	-- MOLL-E
 	[67826]  = "item",	-- Jeeves
+
+	[67833] = "item",	-- Wormhole Generator: Northrend
+	[126755] = "item",	-- Wormhole Generator: Pandaria
+	[23453] = "item", 	-- Ultrasafe Transporter: Gadgetzhan
+	[36941] = "item",	-- Ultrasafe Transporter: Toshley's Station
 }
 
 local cdname = {
@@ -3439,6 +3451,10 @@ local itemcds = { -- [itemid] = spellid
 	[87214] = 126459, 	-- Blingtron
 	[40768] = 54710, 	-- MOLL-E
 	[49040] = 67826, 	-- Jeeves
+	[48933] = 67833,	-- Wormhole Generator: Northrend
+	[87215] = 126755,	-- Wormhole Generator: Pandaria
+	[18986] = 23453, 	-- Ultrasafe Transporter: Gadgetzhan
+	[30544] = 36941,	-- Ultrasafe Transporter: Toshley's Station
 }
 
 function core:scan_item_cds()
@@ -3473,6 +3489,12 @@ function core:record_skill(spellID, expires)
     if not expires then 
       core:ScheduleTimer("scan_item_cds", 2) -- theres a delay for the item to go on cd
       return
+    end
+    for itemid, spellid in pairs(itemcds) do
+      if spellid == spellID then
+        title,link = GetItemInfo(itemid) -- use item name as some item spellnames are ambiguous or wrong
+	title = title or spellName
+      end
     end
   elseif type(cdinfo) == "string" then
     idx = cdinfo
