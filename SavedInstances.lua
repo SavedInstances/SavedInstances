@@ -48,18 +48,16 @@ vars.Indicators = {
 	BLANK = "None",
 }
 
-vars.Categories = {
-	D0 = EXPANSION_NAME0 .. ": " .. LFG_TYPE_DUNGEON,
-	R0 = EXPANSION_NAME0 .. ": " .. LFG_TYPE_RAID,
-	D1 = EXPANSION_NAME1 .. ": " .. LFG_TYPE_DUNGEON,
-	R1 = EXPANSION_NAME1 .. ": " .. LFG_TYPE_RAID,
-	D2 = EXPANSION_NAME2 .. ": " .. LFG_TYPE_DUNGEON,
-	R2 = EXPANSION_NAME2 .. ": " .. LFG_TYPE_RAID,
-	D3 = EXPANSION_NAME3 .. ": " .. LFG_TYPE_DUNGEON,
-	R3 = EXPANSION_NAME3 .. ": " .. LFG_TYPE_RAID,
-	D4 = EXPANSION_NAME4 .. ": " .. LFG_TYPE_DUNGEON,
-	R4 = EXPANSION_NAME4 .. ": " .. LFG_TYPE_RAID,
-}
+vars.Categories = { }
+for i = 0,10 do
+  local ename = _G["EXPANSION_NAME"..i]
+  if ename then
+    vars.Categories["D"..i] = ename .. ": " .. LFG_TYPE_DUNGEON
+    vars.Categories["R"..i] = ename .. ": " .. LFG_TYPE_RAID
+  else
+    break
+  end
+end
 
 local tooltip, indicatortip
 local thisToon = UnitName("player") .. " - " .. GetRealmName()
@@ -498,11 +496,14 @@ function addon:GetRegion()
   if not addon.region then
     local reg
     reg = GetCVar("portal")
-    if not reg or #reg ~= 2 then
-      reg = GetCVar("realmList"):match("^(%a+)%.")
+    if reg == "public-test" then -- PTR uses US region resets, despite the misleading realm name suffix
+      reg = "US"
     end
     if not reg or #reg ~= 2 then
-      reg = GetRealmName():match("%(%a%a%)")
+      reg = (GetCVar("realmList") or ""):match("^(%a+)%.")
+    end
+    if not reg or #reg ~= 2 then -- other test realms?
+      reg = (GetRealmName() or ""):match("%((%a%a)%)")
     end
     reg = reg and reg:upper()
     if reg and #reg == 2 then
