@@ -124,12 +124,6 @@ addon.WorldBosses = {
   [861] = { quest=nil,   expansion=4, level=90 }, -- Ordos
 }
 
-addon.showopts = {
-  always = "always",
-  saved = "saved",
-  never = "never",
-}
-
 local _specialQuests = {
   -- Isle of Thunder
   [32610] = { zid=928, lid=94221 }, -- Shan'ze Ritual Stone looted
@@ -199,8 +193,8 @@ local QuestExceptions = {
   [32641] = "Weekly",  -- Champions of the Thunder King
   [32718] = "Regular",  -- Mogu Runes of Fate -- ticket 142: outdated quest flag still shows up
   [32719] = "Regular",  -- Mogu Runes of Fate
-  [33133] = "Weekly",  -- Warforged Seals
-  [33134] = "Weekly",  -- Warforged Seals
+  [33133] = "Regular",  -- Warforged Seals outdated quests, no longer weekly
+  [33134] = "Regular",  -- Warforged Seals
   [33338] = "Weekly",  -- Empowering the Hourglass
   [33334] = "Weekly",  -- Strong Enough to Survive
 }
@@ -924,7 +918,7 @@ function addon:UpdateInstanceData()
     info.name = info.name or "UNKNOWN"..eid
     local instance = vars.db.Instances[info.name] or {}
     vars.db.Instances[info.name] = instance
-    instance.Show = (instance.Show and addon.showopts[instance.Show]) or "saved"
+    instance.Show = instance.Show or "saved"
     instance.WorldBoss = eid
     instance.Expansion = info.expansion
     instance.RecLevel = info.level
@@ -979,7 +973,7 @@ function addon:UpdateInstance(id)
     newinst = true
   end
   vars.db.Instances[name] = instance
-  instance.Show = (instance.Show and addon.showopts[instance.Show]) or "saved"
+  instance.Show = instance.Show or "saved"
   instance.Encounters = nil -- deprecated
   instance.LFDupdated = nil
   instance.LFDID = id
@@ -1193,25 +1187,6 @@ function addon:UpdateToonData()
 	  t.Money = GetMoney()
 	end
 	local zone = GetRealZoneText()
-	local zoneid = GetCurrentMapAreaID()
-        if vars.db.Tooltip.RemindCharms and 
-	   (not addon.remindCharms or (zone ~= t.Zone and zoneid == 811)) and
-	   not addon.logout and nextreset and nextreset > time() 
-	   then
-	   local lcharm = t.currency[738]
-	   local gcharm = t.currency[776]
-	   local qlink = select(2, addon:QuestInfo(33133))
-	   if t.Level == 90 and qlink and
-	      not t.Quests[33133] and not t.Quests[33134] and
-	      -- lcharm and lcharm.amount >= 50 and
-	      gcharm and gcharm.amount <= gcharm.totalMax-3
-	      then
-	        core:ScheduleTimer(function() 
-	          chatMsg(string.format(L["Reminder: You need to do quest %s"], qlink))
-		end, 5) -- short delay for loading messages
-	        addon.remindCharms = true
-	   end
-	end
 	if zone and #zone > 0 then
 	  t.Zone = zone
 	end
@@ -1789,7 +1764,6 @@ function core:OnInitialize()
 	db.Tooltip.AugmentBonus = (db.Tooltip.AugmentBonus == nil and true) or db.Tooltip.AugmentBonus
 	db.Tooltip.TrackDailyQuests = (db.Tooltip.TrackDailyQuests == nil and true) or db.Tooltip.TrackDailyQuests
 	db.Tooltip.TrackWeeklyQuests = (db.Tooltip.TrackWeeklyQuests == nil and true) or db.Tooltip.TrackWeeklyQuests
-	db.Tooltip.RemindCharms = (db.Tooltip.RemindCharms == nil and true) or db.Tooltip.RemindCharms
 	db.Tooltip.ServerSort = (db.Tooltip.ServerSort == nil and true) or db.Tooltip.ServerSort
 	db.Tooltip.ServerOnly = (db.Tooltip.ServerOnly == nil and false) or db.Tooltip.ServerOnly
 	db.Tooltip.SelfFirst = (db.Tooltip.SelfFirst == nil and true) or db.Tooltip.SelfFirst
