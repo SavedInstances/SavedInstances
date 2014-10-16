@@ -117,7 +117,7 @@ addon.WorldBosses = {
   [725] = { quest=32098, expansion=4, level=90 }, -- Galleon
   [814] = { quest=32518, expansion=4, level=90 }, -- Nalak 
   [826] = { quest=32519, expansion=4, level=90 }, -- Oondasta 
-  [857] = { quest=nil,   expansion=4, level=90, name=WORLD_BOSS_FOUR_CELESTIALS  }, -- Chi-Ji
+  [857] = { quest=nil,   expansion=4, level=90, name=L["The Four Celestials"]  }, -- Chi-Ji
   --[858] = { quest=nil, expansion=4, level=90 }, -- Yu'lon
   --[859] = { quest=nil, expansion=4, level=90 }, -- Niuzao
   --[860] = { quest=nil, expansion=4, level=90 }, -- Xuen
@@ -924,6 +924,8 @@ function addon:UpdateInstanceData()
     instance.RecLevel = info.level
     instance.Raid = true
   end
+  local chiji = select(2,EJ_GetCreatureInfo(1,857))
+  vars.db.Instances[chiji] = nil -- XXX: correct a data corruption caused by locale string removal on 6.0.2 launch 
   starttime = debugprofilestop()-starttime
   debug("UpdateInstanceData(): completed "..count.." updates in "..string.format("%.6f",starttime/1000.0).." sec.")
   if addon.RefreshPending then
