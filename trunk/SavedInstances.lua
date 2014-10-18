@@ -9,7 +9,7 @@ vars.icon = vars.LDB and LibStub("LibDBIcon-1.0", true)
 
 local QTip = LibStub("LibQTip-1.0")
 local dataobject, db, config
-local maxdiff = 10 -- max number of instance difficulties
+local maxdiff = 16 -- max number of instance difficulties
 local maxcol = 4 -- max columns per player+instance
 
 addon.svnrev = {}
@@ -49,9 +49,11 @@ vars.Indicators = {
 }
 
 vars.Categories = { }
+local maxExpansion
 for i = 0,10 do
   local ename = _G["EXPANSION_NAME"..i]
   if ename then
+    maxExpansion = i
     vars.Categories["D"..i] = ename .. ": " .. LFG_TYPE_DUNGEON
     vars.Categories["R"..i] = ename .. ": " .. LFG_TYPE_RAID
   else
@@ -232,11 +234,12 @@ local function abbreviate(iname)
   iname = iname:gsub("Wrath of the Lich King", "WotLK")
   iname = iname:gsub("Cataclysm", "Cata")
   iname = iname:gsub("Mists of Pandaria", "MoP")
+  iname = iname:gsub("Warlords of Draenor", "WoD")
   return iname
 end
 
 vars.defaultDB = {
-	DBVersion = 11,
+	DBVersion = 12,
 	History = { }, -- for tracking 5 instance per hour limit
 		-- key: instance string; value: time first entered
 	Toons = { }, 	-- table key: "Toon - Realm"; value:
@@ -291,32 +294,48 @@ vars.defaultDB = {
 	Indicators = {
 		D1Indicator = "BLANK", -- indicator: ICON_*, BLANK
 		D1Text = "KILLED/TOTAL",
-		D1Color = { 0, 0.6, 0, 1, }, -- dark green
+		D1Color = { 0, 0.6, 0 }, -- dark green
 		D1ClassColor = true,
-		D2Indicator = "BLANK", -- indicator
+		D2Indicator = "BLANK",
 		D2Text = "KILLED/TOTAL",
-		D2Color = { 0, 1, 0, 1, }, -- green
+		D2Color = { 0, 1, 0 }, -- green
 		D2ClassColor = true,
-		R0Indicator = "BLANK", -- indicator: ICON_*, BLANK
+		R0Indicator = "BLANK",
 		R0Text = "KILLED/TOTAL",
-		R0Color = { 0.6, 0.6, 0, 1, }, -- dark yellow
+		R0Color = { 0.6, 0.6, 0 }, -- dark yellow
 		R0ClassColor = true,
-		R1Indicator = "BLANK", -- indicator: ICON_*, BLANK
+		R1Indicator = "BLANK",
 		R1Text = "KILLED/TOTAL",
-		R1Color = { 0.6, 0.6, 0, 1, }, -- dark yellow
+		R1Color = { 0.6, 0.6, 0 }, -- dark yellow
 		R1ClassColor = true,
-		R2Indicator = "BLANK", -- indicator
+		R2Indicator = "BLANK",
 		R2Text = "KILLED/TOTAL",
-		R2Color = { 0.6, 0, 0, 1, }, -- dark red
+		R2Color = { 0.6, 0, 0 }, -- dark red
 		R2ClassColor = true,
-		R3Indicator = "BLANK", -- indicator: ICON_*, BLANK
-		R3Text = "KILLED/TOTAL+",
-		R3Color = { 1, 1, 0, 1, }, -- yellow
+		R3Indicator = "BLANK",
+		R3Text = "KILLED/TOTALH",
+		R3Color = { 1, 1, 0 }, -- yellow
 		R3ClassColor = true,
-		R4Indicator = "BLANK", -- indicator
-		R4Text = "KILLED/TOTAL+",
-		R4Color = { 1, 0, 0, 1, }, -- red
+		R4Indicator = "BLANK",
+		R4Text = "KILLED/TOTALH",
+		R4Color = { 1, 0, 0 }, -- red
 		R4ClassColor = true,
+		R5Indicator = "BLANK",
+		R5Text = "KILLED/TOTAL",
+		R5Color = { 0, 0, 1 }, -- blue
+		R5ClassColor = true,
+		R6Indicator = "BLANK",
+		R6Text = "KILLED/TOTAL",
+		R6Color = { 0, 1, 0 }, -- green
+		R6ClassColor = true,
+		R7Indicator = "BLANK",
+		R7Text = "KILLED/TOTALH",
+		R7Color = { 1, 1, 0 }, -- yellow
+		R7ClassColor = true,
+		R8Indicator = "BLANK",
+		R8Text = "KILLED/TOTALM",
+		R8Color = { 1, 0, 0 }, -- red
+		R8ClassColor = true,
 	},
 	Tooltip = {
 		Details = false,
@@ -348,10 +367,10 @@ vars.defaultDB = {
 		SelfAlways = false,
 		TrackLFG = true,
 		TrackDeserter = true,
-		Currency395 = true, -- Justice Points 
-		Currency396 = true, -- Valor Points
-		Currency752 = true, -- Mogu Runes
+		Currency395 = false, -- Justice Points  -- XXX: temporary
+		Currency396 = false, -- Valor Points -- XXX: temporary
 		Currency776 = true, -- Warforged Seals
+		Currency738 = true, -- Lesser Charm of Good Fortune -- XXX: temporary
 		CurrencyMax = false,
 		CurrencyEarned = true,
 	},
@@ -820,12 +839,12 @@ function addon:OrderedCategories()
 	local orderedlist = { }
 	local firstexpansion, lastexpansion, expansionstep, firsttype, lasttype
 	if vars.db.Tooltip.NewFirst then
-		firstexpansion = GetExpansionLevel()
+		firstexpansion = maxExpansion
 		lastexpansion = 0
 		expansionstep = -1
 	else
 		firstexpansion = 0
-		lastexpansion = GetExpansionLevel()
+		lastexpansion = maxExpansion
 		expansionstep = 1
 	end
 	if vars.db.Tooltip.RaidsFirst then
@@ -852,17 +871,19 @@ end
 local function DifficultyString(instance, diff, toon, expired, killoverride, totoverride)
 	local setting,color
 	if not instance then
-		setting = "D" .. diff
+		setting = "D1"
 	else
 		local inst = vars.db.Instances[instance]
-		if inst.Expansion == 0 and inst.Raid then
+		if not inst or not inst.Raid then -- 5-man
+		  setting = (diff == 1 and "D1" or "D2")
+		elseif inst.Expansion == 0 then -- classic raid
 		  setting = "R0"
-		elseif inst.Raid and diff <= 2 then -- ticket 94: temporary hack for old 4.8.1 data
-		  setting = "R"..diff
-		elseif inst.Raid then
+		elseif diff >= 3 and diff <= 7 then -- pre-WoD raids
 		  setting = "R"..(diff-2)
-		else
-		  setting = "D"..diff
+		elseif diff >= 14 and diff <= 16 then -- WoD raids
+		  setting = "R"..(diff-8)
+		else -- don't know
+		  setting = "D1"
 		end
 	end
 	local prefs = vars.db.Indicators
@@ -886,6 +907,10 @@ local function DifficultyString(instance, diff, toon, expired, killoverride, tot
 	    killed, total = killoverride, totoverride
 	  else
 	    killed, total = addon:instanceBosses(instance,toon,diff)
+	  end
+	  if killed == 0 and total == 0 then -- boss kill info missing
+	    killed = "*"
+	    total = "*"
 	  end
 	  text = text:gsub("KILLED",killed)
 	  text = text:gsub("TOTAL",total)
@@ -965,6 +990,9 @@ function addon:UpdateInstance(id)
     else
       name = L["LFR"]..": "..name
     end
+  end
+  if id == 852 and expansionLevel == 5 then -- XXX: Molten Core hack
+    return nil -- ignore Molten Core holiday version, which has no save
   end
 
   local instance = vars.db.Instances[name]
@@ -1600,7 +1628,7 @@ local function ShowIndicatorTooltip(cell, arg, ...)
 	if info.Expires > 0 then
 	  indicatortip:AddLine(YELLOWFONT .. L["Time Left"] .. ":" .. FONTEND, nil, SecondsToTime(thisinstance[toon][diff].Expires - time()))
 	end
-	if thisinstance.Raid and info.ID > 0 and (diff == 5 or diff == 6) then -- heroic raid
+	if thisinstance.Raid and info.ID > 0 and (diff == 5 or diff == 6 or diff == 16) then -- heroic raid
 	  local n = indicatortip:AddLine()
 	  indicatortip:SetCell(n, 1, YELLOWFONT .. ID .. ":" .. FONTEND, "LEFT", 1)
 	  indicatortip:SetCell(n, 2, info.ID, "RIGHT", 2)
@@ -1742,9 +1770,9 @@ function core:OnInitialize()
 	-- begin backwards compatibility
 	if not SavedInstancesDB.DBVersion or SavedInstancesDB.DBVersion < 10 then
 		SavedInstancesDB = vars.defaultDB
-	end
-	if SavedInstancesDB.DBVersion < 11 then
+	elseif SavedInstancesDB.DBVersion < 12 then
 		SavedInstancesDB.Indicators = vars.defaultDB.Indicators
+		SavedInstancesDB.DBVersion = 12
 	end
 	-- end backwards compatibilty
 	db = db or SavedInstancesDB
