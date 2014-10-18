@@ -88,30 +88,44 @@ local currency = {
 addon.currency = currency
 
 addon.LFRInstances = { 
-  [416] = { total=4, base=1,  parent=448 }, -- The Siege of Wyrmrest Temple
-  [417] = { total=4, base=5,  parent=448 }, -- Fall of Deathwing
-  [527] = { total=3, base=1,  parent=532 }, -- Guardians of Mogu'shan
-  [528] = { total=3, base=4,  parent=532 }, -- The Vault of Mysteries
-  [529] = { total=3, base=1,  parent=534 }, -- The Dread Approach
-  [530] = { total=3, base=4,  parent=534 }, -- Nightmare of Shek'zeer
-  [526] = { total=4, base=1,  parent=536 }, -- Terrace of Endless Spring
-  [610] = { total=3, base=1,  parent=634 }, -- Throne of Thunder pt 1
-  [611] = { total=3, base=4,  parent=634 }, -- Throne of Thunder pt 2
-  [612] = { total=3, base=7,  parent=634 }, -- Throne of Thunder pt 3
-  [613] = { total=3, base=10, parent=634 }, -- Throne of Thunder pt 4
-  [716] = { total=4, base=1,  parent=715, flexid=726 }, -- SoO pt 1
-  [717] = { total=4, base=5,  parent=715, flexid=728 }, -- SoO pt 2
-  [724] = { total=3, base=9,  parent=715, flexid=729 }, -- SoO pt 3
-  [725] = { total=3, base=12, parent=715, flexid=730 }, -- SoO pt 4
+  -- total is boss count, base is boss offset, 
+  -- parent is instance name to use
+  -- altid is for alternate LFRID for higher level toons
+
+  [416] = { total=4, base=1,  parent=448, altid=843 }, -- DS1: The Siege of Wyrmrest Temple
+  [417] = { total=4, base=5,  parent=448, altid=844 }, -- DS2: Fall of Deathwing
+
+  [527] = { total=3, base=1,  parent=532, altid=830 }, -- MSV1: Guardians of Mogu'shan
+  [528] = { total=3, base=4,  parent=532, altid=831 }, -- MSV2: The Vault of Mysteries
+  [529] = { total=3, base=1,  parent=534, altid=832 }, -- HoF1: The Dread Approach
+  [530] = { total=3, base=4,  parent=534, altid=833 }, -- HoF2: Nightmare of Shek'zeer
+  [526] = { total=4, base=1,  parent=536, altid=834 }, -- TeS1: Terrace of Endless Spring
+  [610] = { total=3, base=1,  parent=634, altid=835 }, -- ToT1: Last Stand of the Zandalari
+  [611] = { total=3, base=4,  parent=634, altid=836 }, -- ToT2: Forgotten Depths
+  [612] = { total=3, base=7,  parent=634, altid=837 }, -- ToT3: Halls of Flesh-Shaping
+  [613] = { total=3, base=10, parent=634, altid=838 }, -- ToT4: Pinnacle of Storms
+  [716] = { total=4, base=1,  parent=715, altid=839 }, -- SoO1: Vale of Eternal Sorrows
+  [717] = { total=4, base=5,  parent=715, altid=840 }, -- SoO2: Gates of Retribution
+  [724] = { total=3, base=9,  parent=715, altid=841 }, -- SoO3: The Underhold
+  [725] = { total=3, base=12, parent=715, altid=842 }, -- SoO4: Downfall
+
+  [849] = { total=3, base=1,  parent=897, altid=nil }, -- Highmaul1: Walled City
+  [850] = { total=3, base=4,  parent=897, altid=nil }, -- Highmaul2: Arcane Sanctum
+  [851] = { total=1, base=7,  parent=897, altid=nil }, -- Highmaul3: Imperator's Rise
+  [847] = { total=3, base=1,  parent=900, altid=nil }, -- BRF1: Slagworks
+  [846] = { total=3, base=4,  parent=900, altid=nil }, -- BRF2: The Black Forge
+  [848] = { total=3, base=7,  parent=900, altid=nil }, -- BRF3: Iron Assembly
+  [823] = { total=1, base=10, parent=900, altid=nil }, -- BRF4: Blackhand's Crucible
+
 }
-addon.FlexInstances = {}
-for id,info in pairs(addon.LFRInstances) do
-  if info.flexid then
-     addon.FlexInstances[info.flexid] = { total=info.total, base=info.base, parent=info.parent, flex=true }
-     info.flexid = nil
+local tmp = {}
+for id, info in pairs(addon.LFRInstances) do
+  tmp[id] = info
+  if info.altid then
+    tmp[info.altid] = info
   end
 end
-for id,info in pairs(addon.FlexInstances) do addon.LFRInstances[id] = info end
+addon.LFRInstances = tmp
 
 addon.WorldBosses = {
   -- encounter index is embedded in the Hjournal hyperlink
@@ -124,6 +138,10 @@ addon.WorldBosses = {
   --[859] = { quest=nil, expansion=4, level=90 }, -- Niuzao
   --[860] = { quest=nil, expansion=4, level=90 }, -- Xuen
   [861] = { quest=nil,   expansion=4, level=90 }, -- Ordos
+
+  [1291] = { quest=nil,  expansion=5, level=100 }, -- Drov the Ruiner
+  [1211] = { quest=nil,  expansion=5, level=100 }, -- Tarina the Ageless
+  [1262] = { quest=nil,  expansion=5, level=100 }, -- Rukhmar
 }
 
 local _specialQuests = {
@@ -803,7 +821,6 @@ function addon:instanceBosses(instance,toon,diff)
 end
 
 local lfrkey = "^"..L["LFR"]..": "
-local flexkey = "^"..L["Flex"]..": "
 local function instanceSort(i1, i2)
   local instance1 = vars.db.Instances[i1]
   local instance2 = vars.db.Instances[i2]
@@ -813,8 +830,6 @@ local function instanceSort(i1, i2)
   local id2 = instance2.LFDID or instance2.WorldBoss or 0
   local key1 = level1*1000000+id1
   local key2 = level2*1000000+id2
-  if i1:match(flexkey) then key1 = key1 - 10000 end
-  if i2:match(flexkey) then key2 = key2 - 10000 end
   if i1:match(lfrkey) then key1 = key1 - 20000 end
   if i2:match(lfrkey) then key2 = key2 - 20000 end
   if instance1.WorldBoss then key1 = key1 - 30000 end
@@ -926,7 +941,7 @@ function addon:UpdateInstanceData()
   instancesUpdated = true
   local count = 0
   local starttime = debugprofilestop()
-  local maxid = 1000
+  local maxid = 1500
   -- previously we used GetFullRaidList() and LFDDungeonList to help populate the instance list
   -- Unfortunately those are loaded lazily, and forcing them to load from here can lead to taint.
   -- They are also somewhat incomplete, so instead we just brute force it, which is reasonably fast anyhow
@@ -974,25 +989,48 @@ function addon:UpdateInstance(id)
   maxPlayers = tonumber(maxPlayers)
   if not name or not expansionLevel or not recLevel or (typeID > 2 and typeID ~= TYPEID_RANDOM_DUNGEON) then return end
   if name:find(PVP_RATED_BATTLEGROUND) then return end -- ignore 10v10 rated bg
-  if subtypeID == LFG_SUBTYPEID_SCENARIO and typeID ~= TYPEID_RANDOM_DUNGEON and
-     (maxPlayers == 3 or maxPlayers == 1) then -- ignore non-random scenarios
+  if subtypeID == LFG_SUBTYPEID_SCENARIO and typeID ~= TYPEID_RANDOM_DUNGEON then -- ignore non-random scenarios
      if vars.db.Instances[name] and vars.db.Instances[name].LFDID == id then
        vars.db.Instances[name] = nil -- clean old scenario entries
      end
      return 
   end
-  if addon.LFRInstances[id] then -- ensure uniqueness (eg TeS LFR)
+  if typeID == 2 and subtypeID == 0 and difficulty == 14 and maxPlayers == 0 then
+    --print("ignoring "..id, GetLFGDungeonInfo(id))
+    return -- ignore bogus LFR entries
+  end
+  if typeID == 1 and subtypeID == 5 and difficulty == 14 and maxPlayers == 25 then
+    --print("ignoring "..id, GetLFGDungeonInfo(id))
     if vars.db.Instances[name] and vars.db.Instances[name].LFDID == id then
+      vars.db.Instances[name] = nil
+    end
+    return -- ignore old Flex entries
+  end
+  if addon.LFRInstances[id] then -- ensure uniqueness (eg TeS LFR)
+    local lfrid = vars.db.Instances[name] and vars.db.Instances[name].LFDID
+    if lfrid and addon.LFRInstances[lfrid] then
       vars.db.Instances[name] = nil -- clean old LFR entries
     end
-    if addon.LFRInstances[id].flex then
-      name = L["Flex"]..": "..name
-    else
-      name = L["LFR"]..": "..name
-    end
+    vars.db.Instances[L["Flex"]..": "..name] = nil -- clean old flex entries
+    name = L["LFR"]..": "..name
   end
   if id == 852 and expansionLevel == 5 then -- XXX: Molten Core hack
-    return nil -- ignore Molten Core holiday version, which has no save
+    return -- ignore Molten Core holiday version, which has no save
+  end
+  if (id == 897 or id == 900) and expansionLevel == 4 then -- XXX: Highmaul / Blackrock Foundry hack
+    expansionLevel = 5 -- fix incorrect expansionLevel
+  end
+  if id == 767 then -- ignore bogus Ordos entry
+    if vars.db.Instances[name] and vars.db.Instances[name].LFDID == id then
+      vars.db.Instances[name].LFDID = nil
+    end
+    return
+  end
+  if id == 768 then -- ignore bogus Celestials entry
+    if vars.db.Instances[name] and vars.db.Instances[name].LFDID == id then
+      vars.db.Instances[name] = nil
+    end
+    return
   end
 
   local instance = vars.db.Instances[name]
@@ -2546,17 +2584,6 @@ local function OpenLFR(self, instanceid, button)
     end
 end
 
-local function OpenFlex(self, instanceid, button)
-    if FlexRaidFrame and FlexRaidFrame:IsVisible() and FlexRaidFrame.raid ~= instanceid then
-      -- changing entries
-    else
-      PVEFrame_ToggleFrame("GroupFinderFrame", FlexRaidFrame)
-    end
-    if FlexRaidFrame and FlexRaidFrame:IsVisible() and FlexRaidFrame_SetRaid then
-      FlexRaidFrame_SetRaid(instanceid)
-    end
-end
-
 local function OpenLFS(self, instanceid, button)
     if ScenarioFinderFrame and ScenarioFinderFrame:IsVisible() and ScenarioQueueFrame.type ~= instanceid then
       -- changing entries
@@ -2672,14 +2699,18 @@ function core:ShowTooltip(anchorframe)
 			   categoryshown[category] = true
 			end
 			if inst.Show ~= "never" or showall then
-			    if wbcons and inst.WorldBoss then
-			      table.insert(worldbosses, instance)
+			    if wbcons and inst.WorldBoss and inst.Expansion <= GetExpansionLevel() then
+			      if vars.db.Tooltip.ReverseInstances then
+			        table.insert(worldbosses, instance)
+			      else
+			        table.insert(worldbosses, 1, instance)
+			      end
 			      wbalways = wbalways or (inst.Show == "always")
 			    end
 			    local lfrinfo = lfrcons and inst.LFDID and addon.LFRInstances[inst.LFDID]
 			    local lfrboxid
 			    if lfrinfo then
-			      lfrboxid = (lfrinfo.flex and -1 or 1)*lfrinfo.parent
+			      lfrboxid = lfrinfo.parent
 			      lfrmap[inst.LFDID] = instance
 			      if inst.Show == "always" then
 			        lfrbox[lfrboxid] = true
@@ -2757,11 +2788,7 @@ function core:ShowTooltip(anchorframe)
 			      if lfrbox[inst.LFDID] then
 			        lfrbox[L["LFR"]..": "..instance] = tooltip:AddLine()
 		              end
-			      if lfrbox[-inst.LFDID] then
-			        lfrbox[L["Flex"]..": "..instance] = tooltip:AddLine()
-		              end
 			      lfrbox[inst.LFDID] = nil
-			      lfrbox[-inst.LFDID] = nil
 			   end 
 			end
 			firstcategory = false
@@ -2772,9 +2799,7 @@ function core:ShowTooltip(anchorframe)
 	        local inst = vars.db.Instances[instance]
 		tooltip:SetCell(instancerow[instance], 1, (instancesaved[instance] and GOLDFONT or GRAYFONT) .. instance .. FONTEND)
 		if addon.LFRInstances[inst.LFDID] then
-		  local openfunc = OpenLFR
-		  if addon.LFRInstances[inst.LFDID].flex then openfunc = OpenFlex end
-		  tooltip:SetLineScript(instancerow[instance], "OnMouseDown", openfunc, inst.LFDID)
+		  tooltip:SetLineScript(instancerow[instance], "OnMouseDown", OpenLFR, inst.LFDID)
 		end
 			for toon, t in cpairs(vars.db.Toons) do
 				if inst[toon] then
@@ -2802,9 +2827,7 @@ function core:ShowTooltip(anchorframe)
 					tooltip:SetCellScript(instancerow[instance], columns[toon..base], "OnEnter", ShowIndicatorTooltip, {instance, toon, diff})
 					tooltip:SetCellScript(instancerow[instance], columns[toon..base], "OnLeave", CloseTooltips)
 					if addon.LFRInstances[inst.LFDID] then
-		                          local openfunc = OpenLFR
-		                          if addon.LFRInstances[inst.LFDID].flex then openfunc = OpenFlex end
-					  tooltip:SetCellScript(instancerow[instance], columns[toon..base], "OnMouseDown", openfunc, inst.LFDID)
+					  tooltip:SetCellScript(instancerow[instance], columns[toon..base], "OnMouseDown", OpenLFR, inst.LFDID)
 					else
 					  local link = inst[toon][diff].Link
 					  if link then
@@ -2824,20 +2847,19 @@ function core:ShowTooltip(anchorframe)
 	if lfrcons then
 	  for boxname, line in pairs(lfrbox) do
 	    local boxtype, pinstance = boxname:match("^([^:]+): (.+)$")
-	    local flex = boxtype == L["Flex"]
 	    local pinst = vars.db.Instances[pinstance]
-	    local boxid = (flex and -1 or 1)*pinst.LFDID
+	    local boxid = pinst.LFDID
 	    local firstid
 	    local total = 0
             for lfdid, lfrinfo in pairs(addon.LFRInstances) do
-	      if lfrinfo.parent == pinst.LFDID and (not flex) == (not lfrinfo.flex) and lfrmap[lfdid] then
+	      if lfrinfo.parent == pinst.LFDID and lfrmap[lfdid] then
 	        firstid = math.min(lfdid, firstid or lfdid)
 		total = total + lfrinfo.total
 	        lfrmap[boxname..":"..lfrinfo.base] = lfrmap[lfdid]
 	      end
 	    end
 	    tooltip:SetCell(line, 1, (instancesaved[boxid] and GOLDFONT or GRAYFONT) .. boxname .. FONTEND)
-	    tooltip:SetLineScript(line, "OnMouseDown", (flex and OpenFlex or OpenLFR), firstid)
+	    tooltip:SetLineScript(line, "OnMouseDown", OpenLFR, firstid)
 	    for toon, t in cpairs(vars.db.Toons) do
 	      local saved = 0
 	      local diff = 2
