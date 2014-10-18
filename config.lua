@@ -11,14 +11,19 @@ local db
 
 addon.svnrev["config.lua"] = tonumber(("$Revision$"):match("%d+"))
 
--- local (optimal) references to Blizzard's strings
-local DUNGEON_DIFFICULTY1 = DUNGEON_DIFFICULTY1 -- 5 man
-local DUNGEON_DIFFICULTY2 = DUNGEON_DIFFICULTY2 -- 5 man (Heroic)
-local RAID_DIFFICULTY0 = EXPANSION_NAME0 .. " " .. LFG_TYPE_RAID
-local RAID_DIFFICULTY1 = RAID_DIFFICULTY1 -- "10 man"
-local RAID_DIFFICULTY2 = RAID_DIFFICULTY2 -- "25 man"
-local RAID_DIFFICULTY3 = RAID_DIFFICULTY3 -- "10 man (Heroic)"
-local RAID_DIFFICULTY4 = RAID_DIFFICULTY4 -- "25 man (Heroic)"
+addon.diff_strings = {
+	D1 = DUNGEON_DIFFICULTY1, -- 5 man
+	D2 = DUNGEON_DIFFICULTY2, -- 5 man (Heroic)
+	R0 = EXPANSION_NAME0 .. " " .. LFG_TYPE_RAID,
+	R1 = RAID_DIFFICULTY1, -- "10 man"
+	R2 = RAID_DIFFICULTY2, -- "25 man"
+	R3 = RAID_DIFFICULTY3, -- "10 man (Heroic)"
+	R4 = RAID_DIFFICULTY4, -- "25 man (Heroic)"
+	R5 = GetDifficultyInfo(7), -- "Looking for Raid"
+	R6 = GetDifficultyInfo(14), -- "Normal raid"
+	R7 = GetDifficultyInfo(15), -- "Heroic raid"
+	R8 = GetDifficultyInfo(16), -- "Mythic raid"
+}
 local FONTEND = FONT_COLOR_CODE_CLOSE
 local GOLDFONT = NORMAL_FONT_COLOR_CODE
 
@@ -41,13 +46,16 @@ function addon:idtext(instance,diff,info)
     return L["World Boss"]
   elseif info.ID < 0 then 
     return "" -- ticket 144: could be RAID_FINDER or FLEX_RAID, but this is already shown in the instance name so it's redundant anyhow
-  elseif instance.Raid and instance.Expansion == 0 then
-    return EXPANSION_NAME0 .. " " .. LFG_TYPE_RAID
-  elseif instance.Raid then
-    diff = diff - 2 
-    return _G["RAID_DIFFICULTY"..diff]
-  else
+  elseif not instance.Raid then
     return _G["DUNGEON_DIFFICULTY"..diff]
+  elseif instance.Expansion == 0 then -- classic Raid
+    return addon.diff_strings.R0
+  elseif instance.Raid and diff >= 3 and diff <= 7 then -- pre-WoD raids
+    return addon.diff_strings["R"..(diff-2)]
+  elseif diff >= 14 and diff <= 16 then -- WoD raids
+    return addon.diff_strings["R"..(diff-8)]
+  else
+    return ""
   end
 end
 
@@ -59,38 +67,66 @@ local function TableLen(table)
 	return i
 end
 
--- options functions below
-
-local function IndicatorIconOptions(nextorder)
-	return { order = nextorder, type = "select", width = "half", name = EMBLEM_SYMBOL, values = vars.Indicators }
-end
-
-local function IndicatorTextOptions(nextorder)
-	return { order = nextorder, type = "input", name = L["Text"], multiline = false }
-end
-
-local function IndicatorColorOptions(nextorder, indicatortype)
-	return { order = nextorder, type = "color", width = "half", hasAlpha = false, name = COLOR,
-		disabled = function()
-			return db.Indicators[indicatortype .. "ClassColor"]
-		end,
-		get = function(info)
-		        db.Indicators[info[#info]] = db.Indicators[info[#info]] or vars.defaultDB.Indicators[info[#info]]
-			local r = db.Indicators[info[#info]][1]
-			local g = db.Indicators[info[#info]][2]
-			local b = db.Indicators[info[#info]][3]
-			return r, g, b, nil
-		end,
-		set = function(info, r, g, b, ...)
-			db.Indicators[info[#info]][1] = r
-			db.Indicators[info[#info]][2] = g
-			db.Indicators[info[#info]][3] = b
-		end,
+local function IndicatorOptions()
+	local args = {
+		Instructions = {
+			order = 1,
+			type = "description",
+			name = L["You can combine icons and text in a single indicator if you wish. Simply choose an icon, and insert the word ICON into the text field. Anywhere the word ICON is found, the icon you chose will be substituted in."].." "..L["Similarly, the words KILLED and TOTAL will be substituted with the number of bosses killed and total in the lockout."],
+		},
 	}
-end
-
-local function IndicatorClassColorOption(nextorder)
-	return { order = nextorder, type = "toggle", name = L["Use class color"] }
+	for diffname, diffstr in pairs(addon.diff_strings) do
+		local dorder = (tonumber(diffname:match("%d+")) or 0) + 10
+		if diffname:find("^R") then dorder = dorder + 10 end
+		args[diffname] = {
+			type = "group",
+			name = diffstr,
+			order = dorder,
+			args = {
+				[diffname.."Indicator"] = { 
+					order = 1, 
+					type = "select", 
+					width = "half", 
+					name = EMBLEM_SYMBOL, 
+					values = vars.Indicators 
+				},
+				[diffname.."Text"] = { 
+					order = 2, 
+					type = "input", 
+					name = L["Text"], 
+					multiline = false 
+				},
+				[diffname.."Color"] = { 
+					order = 3, 
+					type = "color", 
+					width = "half", 
+					hasAlpha = false, 
+					name = COLOR,
+					disabled = function()
+						return db.Indicators[diffname .. "ClassColor"]
+					end,
+					get = function(info)
+		        			db.Indicators[info[#info]] = db.Indicators[info[#info]] or vars.defaultDB.Indicators[info[#info]]
+						local r = db.Indicators[info[#info]][1]
+						local g = db.Indicators[info[#info]][2]
+						local b = db.Indicators[info[#info]][3]
+						return r, g, b, nil
+					end,
+					set = function(info, r, g, b, ...)
+						db.Indicators[info[#info]][1] = r
+						db.Indicators[info[#info]][2] = g
+						db.Indicators[info[#info]][3] = b
+					end,
+				},
+				[diffname.."ClassColor"] = { 
+					order = 4, 
+					type = "toggle", 
+					name = L["Use class color"] 
+				},
+			},
+		}
+	end
+	return args
 end
 
 local function GroupListGUI(order, name, list)
@@ -348,8 +384,8 @@ function module:BuildOptions()
 				},
 				CombineLFR = {
 					type = "toggle",
-					name = L["Combine LFR/Flex"],
-					desc = L["Combine LFR/Flex"],
+					name = L["Combine LFR"],
+					desc = L["Combine LFR"],
 					order = 23.95,
 				},
 				MiscHeader = {
@@ -520,98 +556,7 @@ function module:BuildOptions()
 					addon.debug("Config set: "..info[#info].." = "..(value and "true" or "false"))
 					db.Indicators[info[#info]] = value
 			end,
-			args = {
-				Instructions = {
-					order = 1,
-					type = "description",
-					name = L["You can combine icons and text in a single indicator if you wish. Simply choose an icon, and insert the word ICON into the text field. Anywhere the word ICON is found, the icon you chose will be substituted in."].." "..L["Similarly, the words KILLED and TOTAL will be substituted with the number of bosses killed and total in the lockout."],
-				},
-
-				D1 = {
-					type = "group",
-					name = DUNGEON_DIFFICULTY1,
-					order = 2,
-					args = {
-						D1Indicator = IndicatorIconOptions(1),
-						D1Text = IndicatorTextOptions(2),
-						D1Color = IndicatorColorOptions(3, "D1"),
-						D1ClassColor = IndicatorClassColorOption(4),
-					},
-				},	
-				
-				D2 = {
-					type = "group",
-					name = DUNGEON_DIFFICULTY2,
-					order = 3,
-					args = {
-						D2Indicator = IndicatorIconOptions(1),
-						D2Text = IndicatorTextOptions(2),
-						D2Color = IndicatorColorOptions(3, "D2"),
-						D2ClassColor = IndicatorClassColorOption(4),
-					},
-				},
-				
-				R0 = {
-					type = "group",
-					order = 3.5,
-					name = RAID_DIFFICULTY0,
-					args = {
-						R0Indicator = IndicatorIconOptions(1),
-						R0Text = IndicatorTextOptions(2),
-						R0Color = IndicatorColorOptions(3, "R0"),
-						R0ClassColor = IndicatorClassColorOption(4),
-					},
-				},
-
-				R1 = {
-					type = "group",
-					order = 4,
-					name = RAID_DIFFICULTY1,
-					args = {
-						R1Indicator = IndicatorIconOptions(1),
-						R1Text = IndicatorTextOptions(2),
-						R1Color = IndicatorColorOptions(3, "R1"),
-						R1ClassColor = IndicatorClassColorOption(4),
-					},
-				},
-
-				R2 = {
-					type = "group",
-					order = 5,
-					name = RAID_DIFFICULTY2,
-					args = {
-						R2Indicator = IndicatorIconOptions(1),
-						R2Text = IndicatorTextOptions(2),
-						R2Color = IndicatorColorOptions(3, "R2"),
-						R2ClassColor = IndicatorClassColorOption(4),
-					},
-				},
-				
-				R3 = {
-					type = "group",
-					order = 6,
-					name = RAID_DIFFICULTY3,
-					args = {
-						R3Indicator = IndicatorIconOptions(1),
-						R3Text = IndicatorTextOptions(2),
-						R3Color = IndicatorColorOptions(3, "R3"),
-						R3ClassColor = IndicatorClassColorOption(4),
-					},
-				},
-
-				R4 = {
-					type = "group",
-					order = 7,
-					name = RAID_DIFFICULTY4,
-					args = {
-						R4Indicator = IndicatorIconOptions(1),
-						R4Text = IndicatorTextOptions(2),
-						R4Color = IndicatorColorOptions(3, "R4"),
-						R4ClassColor = IndicatorClassColorOption(4),
-					},
-				},
-
-			},
+			args = IndicatorOptions(),
 		},
 		Instances = {
 			order = 4,
