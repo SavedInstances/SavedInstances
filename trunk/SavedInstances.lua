@@ -1433,8 +1433,12 @@ local function ShowQuestTooltip(cell, arg, ...)
           local id = tonumber(e:match("# (%d+)"))
           local qi = id and t.Quests[id]
           local line = indicatortip:AddLine()
+	  local link = qi.Link
+	  if not link then -- sometimes missing the actual link due to races, fake it for display to prevent confusion
+	    link = "\124cffffff00["..(qi.Title or "???").."]\124r"
+	  end
 	  indicatortip:SetCell(line,1,(qi.Zone or ""),"LEFT")
-          indicatortip:SetCell(line,2,(qi.Link or qi.Title),"RIGHT")
+          indicatortip:SetCell(line,2,link,"RIGHT")
         end
 	finishIndicator()
 end
