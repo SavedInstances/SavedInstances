@@ -1295,14 +1295,17 @@ local function SI_GetQuestReward()
   local isWeekly = QuestIsWeekly()
   local isDaily = QuestIsDaily()
   local isAccount
-  for index = 1, GetNumQuestLogEntries() do
-     local questLogTitleText, level, questTag, suggestedGroup, isHeader, 
-           isCollapsed, isComplete, isDaily, questID, startEvent = GetQuestLogTitle(index)
-     if questID == id then
-        link = GetQuestLink(index)
-	isAccount = questTag and #questTag > 0 and ITEM_ACCOUNTBOUND:lower():find(questTag:lower()) -- questtag is localized
-        break
-     end
+
+  local index = GetQuestLogIndexByID(id)
+  if index and index > 0 then
+    link = GetQuestLink(index)
+  end
+  local questTagID, tagName = GetQuestTagInfo(id)
+  if questTagID and tagName then
+    isAccount = (questTagID == QUEST_TAG_ACCOUNT)
+  else
+    isAccount = db.QuestDB.AccountDaily[id] or db.QuestDB.AccountWeekly[id]
+    debug("Fetched isAccount")
   end
   if QuestExceptions[id] then
     local qe = QuestExceptions[id]
@@ -1310,10 +1313,6 @@ local function SI_GetQuestReward()
     isDaily = 	qe:find("Daily") and true
     isWeekly = 	qe:find("Weekly") and true
     isMonthly =	qe:find("Darkmoon") and true
-  end
-  if not link then 
-    isAccount = db.QuestDB.AccountDaily[id] or db.QuestDB.AccountWeekly[id]
-    debug("Fetched isAccount")
   end
   local expires
   local questDB
