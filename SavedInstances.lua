@@ -139,9 +139,9 @@ addon.WorldBosses = {
   --[860] = { quest=nil, expansion=4, level=90 }, -- Xuen
   [861] = { quest=nil,   expansion=4, level=90 }, -- Ordos
 
-  [1291] = { quest=nil,  expansion=5, level=100 }, -- Drov the Ruiner
-  [1211] = { quest=nil,  expansion=5, level=100 }, -- Tarina the Ageless
-  [1262] = { quest=nil,  expansion=5, level=100 }, -- Rukhmar
+  [1291] = { quest=37460,  expansion=5, level=100 }, -- Drov the Ruiner
+  [1211] = { quest=37462,  expansion=5, level=100 }, -- Tarina the Ageless
+  [1262] = { quest=37464,  expansion=5, level=100 }, -- Rukhmar
 }
 
 local _specialQuests = {
@@ -3730,9 +3730,11 @@ end
 function core:UNIT_SPELLCAST_SUCCEEDED(evt, unit, spellName, rank, lineID, spellID)
   if unit ~= "player" then return end
   if trade_spells[spellID] then 
+    debug("UNIT_SPELLCAST_SUCCEEDED: "..GetSpellLink(spellID).." ("..spellID..")")
     if not core:record_skill(spellID) then return end
     core:ScheduleTimer("TradeSkillRescan", 0.5, spellID)
   elseif farm_spells[spellID] then
+    debug("UNIT_SPELLCAST_SUCCEEDED: "..GetSpellLink(spellID).." ("..spellID..")")
     core:record_farm(spellID)
   end
 end
