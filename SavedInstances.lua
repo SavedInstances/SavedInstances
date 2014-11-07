@@ -133,7 +133,7 @@ addon.WorldBosses = {
   [725] = { quest=32098, expansion=4, level=90 }, -- Galleon
   [814] = { quest=32518, expansion=4, level=90 }, -- Nalak 
   [826] = { quest=32519, expansion=4, level=90 }, -- Oondasta 
-  [857] = { quest=nil,   expansion=4, level=90, name=L["The Four Celestials"]  }, -- Chi-Ji
+  [857] = { quest=33117,   expansion=4, level=90, name=L["The Four Celestials"]  }, -- Chi-Ji
   --[858] = { quest=nil, expansion=4, level=90 }, -- Yu'lon
   --[859] = { quest=nil, expansion=4, level=90 }, -- Niuzao
   --[860] = { quest=nil, expansion=4, level=90 }, -- Xuen
