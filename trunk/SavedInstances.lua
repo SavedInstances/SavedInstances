@@ -703,7 +703,7 @@ function addon:FindInstance(name, raid)
      lid = lid and tonumber(lid)
      local lfdid = lid and addon.transInstance[lid]
      if lname == nname and lfdid then
-       local truename = select(3,addon:UpdateInstance(lfdid))
+       local truename = addon:UpdateInstance(lfdid)
        if truename then
          return truename, lfdid
        end
@@ -729,7 +729,7 @@ function addon:LookupInstance(id, name, raid)
     truename, id = addon:FindInstance(name, raid)
   end
   if id then
-    truename = select(3,addon:UpdateInstance(id))
+    truename = addon:UpdateInstance(id)
   end
   if truename then
     instance = vars.db.Instances[truename]
@@ -939,15 +939,25 @@ function addon:UpdateInstanceData()
   --debug("UpdateInstanceData()")
   if instancesUpdated then return end  -- nil before first use in UI
   instancesUpdated = true
-  local count = 0
+  local added = 0
+  local lfdid_to_name = {}
+  local wbid_to_name = {}
   local starttime = debugprofilestop()
   local maxid = 1500
   -- previously we used GetFullRaidList() and LFDDungeonList to help populate the instance list
   -- Unfortunately those are loaded lazily, and forcing them to load from here can lead to taint.
   -- They are also somewhat incomplete, so instead we just brute force it, which is reasonably fast anyhow
   for id=1,maxid do
-    if addon:UpdateInstance(id) then
-      count = count + 1
+    local instname, newentry = addon:UpdateInstance(id)
+    if newentry then
+      added = added + 1
+    end
+    local inst = instname and vars.db.Instances[instname]
+    if inst and inst.LFDID then -- build merge database
+      if lfdid_to_name[inst.LFDID] then
+        debug("Duplicate entry in lfdid_to_name: "..inst.LFDID..":"..lfdid_to_name[inst.LFDID]..":"..instname)
+      end
+      lfdid_to_name[inst.LFDID] = instname
     end
   end
   for eid,info in pairs(addon.WorldBosses) do
@@ -956,18 +966,73 @@ function addon:UpdateInstanceData()
       info.name = select(2,EJ_GetCreatureInfo(1,eid))
     end
     info.name = info.name or "UNKNOWN"..eid
-    local instance = vars.db.Instances[info.name] or {}
-    vars.db.Instances[info.name] = instance
+    local instance = vars.db.Instances[info.name]
+    if not instance then
+      added = added + 1
+      instance = {}
+      vars.db.Instances[info.name] = instance
+    end
     instance.Show = instance.Show or "saved"
     instance.WorldBoss = eid
     instance.Expansion = info.expansion
     instance.RecLevel = info.level
     instance.Raid = true
+    wbid_to_name[eid] = info.name
   end
   local chiji = select(2,EJ_GetCreatureInfo(1,857))
   vars.db.Instances[chiji] = nil -- XXX: correct a data corruption caused by locale string removal on 6.0.2 launch 
+
+  -- instance merging: this algorithm removes duplicate entries created by client locale changes using the same database
+  -- we really should re-key the database by ID, but this is sufficient for now
+  local renames = 0
+  local merges = 0
+  local conflicts = 0
+  for instname, inst in pairs(vars.db.Instances) do
+    local truename
+    if inst.WorldBoss then
+      truename = wbid_to_name[inst.WorldBoss]
+    elseif inst.LFDID then
+      truename = lfdid_to_name[inst.LFDID]
+    else
+      debug("Ignoring bogus entry in instance database: "..instname)
+    end
+    if not truename then
+      debug("Ignoring unmatched entry in instance database: "..instname)
+    elseif instname == truename then
+      -- this is the canonical entry, nothing to do
+    else -- this is a stale entry, merge data and remove it
+      local trueinst = vars.db.Instances[truename]
+      if not trueinst or trueinst == inst then
+        debug("Merge error in UpdateInstanceData: "..truename)
+      else
+        for key, info in pairs(inst) do
+          if key:find(" - ") then -- is a character key
+	    if trueinst[key] then 
+	      -- merge conflict: keep the trueinst data
+	      debug("Merge conflict on "..truename..":"..instname..":"..key)
+	      conflicts = conflicts + 1
+	    else
+	      trueinst[key] = info
+	      merges = merges + 1
+	    end
+	  end
+        end
+	-- copy config settings, favoring old entry
+	trueinst.Show = inst.Show or trueinst.Show
+	-- clear stale entry
+	vars.db.Instances[instname] = nil
+        renames = renames + 1
+      end
+    end
+  end
+  -- addon.lfdid_to_name = lfdid_to_name 
+  -- addon.wbid_to_name = wbid_to_name
+
+  vars.config:BuildOptions() -- refresh config table
+  
   starttime = debugprofilestop()-starttime
-  debug("UpdateInstanceData(): completed "..count.." updates in "..string.format("%.6f",starttime/1000.0).." sec.")
+  debug("UpdateInstanceData(): completed in "..string.format("%.6f",starttime/1000.0).." sec : "..
+        added.." added, "..renames.." renames, "..merges.." merges, "..conflicts.." conflicts.")
   if addon.RefreshPending then
     addon.RefreshPending = nil
     core:Refresh()
@@ -975,8 +1040,8 @@ function addon:UpdateInstanceData()
 end
 
 --if LFDParentFrame then hooksecurefunc(LFDParentFrame,"Show",function() addon:UpdateInstanceData() end) end
-
 function addon:UpdateInstance(id)
+  -- returns: <instance_name>, <is_new_instance>
   --debug("UpdateInstance: "..id)
   if not id or id <= 0 then return end
   local name, typeID, subtypeID, 
@@ -1056,7 +1121,7 @@ function addon:UpdateInstance(id)
   if subtypeID == LFG_SUBTYPEID_SCENARIO then
     instance.Scenario = true
   end
-  return newinst, true, name
+  return name, newinst
 end
 
 function addon:updateSpellTip(spellid)
