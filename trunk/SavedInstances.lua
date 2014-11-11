@@ -942,22 +942,25 @@ function addon:UpdateInstanceData()
   local added = 0
   local lfdid_to_name = {}
   local wbid_to_name = {}
+  local id_blacklist = {}
   local starttime = debugprofilestop()
   local maxid = 1500
   -- previously we used GetFullRaidList() and LFDDungeonList to help populate the instance list
   -- Unfortunately those are loaded lazily, and forcing them to load from here can lead to taint.
   -- They are also somewhat incomplete, so instead we just brute force it, which is reasonably fast anyhow
   for id=1,maxid do
-    local instname, newentry = addon:UpdateInstance(id)
+    local instname, newentry, blacklist = addon:UpdateInstance(id)
     if newentry then
       added = added + 1
     end
-    local inst = instname and vars.db.Instances[instname]
-    if inst and inst.LFDID then -- build merge database
-      if lfdid_to_name[inst.LFDID] then
-        debug("Duplicate entry in lfdid_to_name: "..inst.LFDID..":"..lfdid_to_name[inst.LFDID]..":"..instname)
+    if blacklist then
+      id_blacklist[id] = true
+    end
+    if instname then
+      if lfdid_to_name[id] then
+        debug("Duplicate entry in lfdid_to_name: "..id..":"..lfdid_to_name[id]..":"..instname)
       end
-      lfdid_to_name[inst.LFDID] = instname
+      lfdid_to_name[id] = instname
     end
   end
   for eid,info in pairs(addon.WorldBosses) do
@@ -979,8 +982,6 @@ function addon:UpdateInstanceData()
     instance.Raid = true
     wbid_to_name[eid] = info.name
   end
-  local chiji = select(2,EJ_GetCreatureInfo(1,857))
-  vars.db.Instances[chiji] = nil -- XXX: correct a data corruption caused by locale string removal on 6.0.2 launch 
 
   -- instance merging: this algorithm removes duplicate entries created by client locale changes using the same database
   -- we really should re-key the database by ID, but this is sufficient for now
@@ -997,7 +998,12 @@ function addon:UpdateInstanceData()
       debug("Ignoring bogus entry in instance database: "..instname)
     end
     if not truename then
-      debug("Ignoring unmatched entry in instance database: "..instname)
+      if inst.LFDID and id_blacklist[inst.LFDID] then
+        debug("Removing blacklisted entry in instance database: "..instname)
+	vars.db.Instances[instname] = nil
+      else
+        debug("Ignoring unmatched entry in instance database: "..instname)
+      end
     elseif instname == truename then
       -- this is the canonical entry, nothing to do
     else -- this is a stale entry, merge data and remove it
@@ -1041,7 +1047,7 @@ end
 
 --if LFDParentFrame then hooksecurefunc(LFDParentFrame,"Show",function() addon:UpdateInstanceData() end) end
 function addon:UpdateInstance(id)
-  -- returns: <instance_name>, <is_new_instance>
+  -- returns: <instance_name>, <is_new_instance>, <blacklisted_id>
   --debug("UpdateInstance: "..id)
   if not id or id <= 0 then return end
   local name, typeID, subtypeID, 
@@ -1053,23 +1059,17 @@ function addon:UpdateInstance(id)
   -- typeID 4 = outdoor area, typeID 6 = random
   maxPlayers = tonumber(maxPlayers)
   if not name or not expansionLevel or not recLevel or (typeID > 2 and typeID ~= TYPEID_RANDOM_DUNGEON) then return end
-  if name:find(PVP_RATED_BATTLEGROUND) then return end -- ignore 10v10 rated bg
+  if name:find(PVP_RATED_BATTLEGROUND) then return nil, nil, true end -- ignore 10v10 rated bg
   if subtypeID == LFG_SUBTYPEID_SCENARIO and typeID ~= TYPEID_RANDOM_DUNGEON then -- ignore non-random scenarios
-     if vars.db.Instances[name] and vars.db.Instances[name].LFDID == id then
-       vars.db.Instances[name] = nil -- clean old scenario entries
-     end
-     return 
+     return nil, nil, true
   end
   if typeID == 2 and subtypeID == 0 and difficulty == 14 and maxPlayers == 0 then
     --print("ignoring "..id, GetLFGDungeonInfo(id))
-    return -- ignore bogus LFR entries
+    return nil, nil, true -- ignore bogus LFR entries
   end
   if typeID == 1 and subtypeID == 5 and difficulty == 14 and maxPlayers == 25 then
     --print("ignoring "..id, GetLFGDungeonInfo(id))
-    if vars.db.Instances[name] and vars.db.Instances[name].LFDID == id then
-      vars.db.Instances[name] = nil
-    end
-    return -- ignore old Flex entries
+    return nil, nil, true -- ignore old Flex entries
   end
   if addon.LFRInstances[id] then -- ensure uniqueness (eg TeS LFR)
     local lfrid = vars.db.Instances[name] and vars.db.Instances[name].LFDID
@@ -1080,22 +1080,16 @@ function addon:UpdateInstance(id)
     name = L["LFR"]..": "..name
   end
   if id == 852 and expansionLevel == 5 then -- XXX: Molten Core hack
-    return -- ignore Molten Core holiday version, which has no save
+    return nil, nil, true -- ignore Molten Core holiday version, which has no save
   end
   if (id == 897 or id == 900) and expansionLevel == 4 then -- XXX: Highmaul / Blackrock Foundry hack
     expansionLevel = 5 -- fix incorrect expansionLevel
   end
   if id == 767 then -- ignore bogus Ordos entry
-    if vars.db.Instances[name] and vars.db.Instances[name].LFDID == id then
-      vars.db.Instances[name].LFDID = nil
-    end
-    return
+    return nil, nil, true
   end
   if id == 768 then -- ignore bogus Celestials entry
-    if vars.db.Instances[name] and vars.db.Instances[name].LFDID == id then
-      vars.db.Instances[name] = nil
-    end
-    return
+    return nil, nil, true
   end
 
   local instance = vars.db.Instances[name]
