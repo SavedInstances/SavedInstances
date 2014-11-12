@@ -208,6 +208,7 @@ local QuestExceptions = {
   [7905]  = "Regular", -- Darkmoon Faire referral -- old addon versions misidentified this as monthly
   [7926]  = "Regular", -- Darkmoon Faire referral
   [31752] = "AccountDaily", -- Blingtron
+  [34774] = "AccountDaily", -- Blingtron 5000
   -- also pre-populate a few important quests
   [32640] = "Weekly",  -- Champions of the Thunder King
   [32641] = "Weekly",  -- Champions of the Thunder King
@@ -3471,11 +3472,17 @@ local trade_spells = {
         [80244] = "xmute", 	-- Transmute: Pyrium Bar
         -- MoP
         [114780] = "xmute", 	-- Transmute: Living Steel
+	-- WoD
+	[175880] = true,	-- Secrets of Draenor
+	[156587] = true,	-- Alchemical Catalyst
+
 
         -- Enchanting
         [28027] = "sphere", 	-- Prismatic Sphere (2-day shared, 5.2.0 verified)
         [28028] = "sphere", 	-- Void Sphere (2-day shared, 5.2.0 verified)
         [116499] = true, 	-- Sha Crystal
+	[177043] = true,	-- Secrets of Draenor
+	[169092] = true,	-- Temporal Crystal
 
         -- Jewelcrafting
         [47280] = true, 	-- Brilliant Glass, still has a cd (5.2.0 verified)
@@ -3488,11 +3495,15 @@ local trade_spells = {
         [131690] = "facet", 	-- Vermilion Onyx/Facets of Research
         [131688] = "facet", 	-- Wild Jade/Facets of Research
 	[140050] = true,	-- Serpent's Heart
+	[176087] = true,	-- Secrets of Draenor
+	[170700] = true,	-- Taladite Crystal
 
         -- Tailoring
 	[143011] = true,	-- Celestial Cloth
         [125557] = true, 	-- Imperial Silk
         [56005] = 7, 		-- Glacial Bag (5.2.0 verified)
+	[176058] = true,	-- Secrets of Draenor
+	[168835] = true,	-- Hexweave Cloth
 	-- Dreamcloth
         [75141] = 7, 		-- Dream of Skywall
         [75145] = 7, 		-- Dream of Ragnaros
@@ -3507,18 +3518,26 @@ local trade_spells = {
         [86654] = true, 	-- Horde Forged Documents
         [89244] = true, 	-- Alliance Forged Documents
         [112996] = true, 	-- Scroll of Wisdom
+	[177045] = true,	-- Secrets of Draenor
 
 	-- Blacksmithing
 	[138646] = true, 	-- Lightning Steel Ingot
 	[143255] = true,	-- Balanced Trillium Ingot
+	[171690] = true,	-- Truesteel Ingot
+	[176090] = true,	-- Secrets of Draenor
 
 	-- Leatherworking
 	[140040] = "magni", 	-- Magnificence of Leather
 	[140041] = "magni",	-- Magnificence of Scales
 	[142976] = true,	-- Hardened Magnificent Hide
+	[171391] = true,	-- Burnished Leather
+	[176089] = true,	-- Secrets of Draenor
 
 	-- Engineering
 	[139176] = true,	-- Stabilized Lightning Source
+	[169080] = true, 	-- Gearspring Parts
+	[177054] = true,	-- Secrets of Draenor
+
 	[126459] = "item",	-- Blingtron
 	[54710]  = "item",	-- MOLL-E
 	[67826]  = "item",	-- Jeeves
