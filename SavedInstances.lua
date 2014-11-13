@@ -84,6 +84,9 @@ local currency = {
   391, -- Tol Barad Commendation
   416, -- Mark of the World Tree
   789, -- Bloody Coin
+  823, -- Apexis Crystal
+  824, -- Garrison Resources
+  994, -- Seal of Tempered Fate
 }
 addon.currency = currency
 
@@ -388,8 +391,11 @@ vars.defaultDB = {
 		TrackDeserter = true,
 		Currency395 = false, -- Justice Points  -- XXX: temporary
 		Currency396 = false, -- Valor Points -- XXX: temporary
-		Currency776 = true, -- Warforged Seals
-		Currency738 = true, -- Lesser Charm of Good Fortune -- XXX: temporary
+		Currency776 = false, -- Warforged Seals
+		Currency738 = false, -- Lesser Charm of Good Fortune
+		Currency823 = true,  -- Apexis Crystal
+  		Currency824 = true,  -- Garrison Resources
+		Currency994 = true,  -- Seal of Tempered Fate
 		CurrencyMax = false,
 		CurrencyEarned = true,
 	},
