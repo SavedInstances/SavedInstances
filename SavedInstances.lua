@@ -3524,6 +3524,7 @@ local trade_spells = {
         [86654] = true, 	-- Horde Forged Documents
         [89244] = true, 	-- Alliance Forged Documents
         [112996] = true, 	-- Scroll of Wisdom
+	[169081] = true,	-- War Paints
 	[177045] = true,	-- Secrets of Draenor
 
 	-- Blacksmithing
