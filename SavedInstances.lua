@@ -2222,6 +2222,9 @@ function addon:histZoneKey()
   if IsInLFGDungeon() or IsInScenarioGroup() then -- LFG instances don't count
     return nil
   end
+  if C_Garrison.IsOnGarrisonMap() then -- Garrisons don't count
+    return nil
+  end
   -- check if we're locked (using FindInstance so we don't complain about unsaved unknown instances)
   local truename = addon:FindInstance(instname, insttype == "raid")
   local locked = false
@@ -3480,7 +3483,8 @@ local trade_spells = {
         [114780] = "xmute", 	-- Transmute: Living Steel
 	-- WoD
 	[175880] = true,	-- Secrets of Draenor
-	[156587] = true,	-- Alchemical Catalyst
+	[156587] = true,	-- Alchemical Catalyst (4)
+	[168042] = true,	-- Alchemical Catalyst (10), 3 charges w/ 24hr recharge
 
 
         -- Enchanting
@@ -3526,6 +3530,7 @@ local trade_spells = {
         [112996] = true, 	-- Scroll of Wisdom
 	[169081] = true,	-- War Paints
 	[177045] = true,	-- Secrets of Draenor
+	[176513] = true,	-- Draenor Merchant Order
 
 	-- Blacksmithing
 	[138646] = true, 	-- Lightning Steel Ingot
