@@ -142,8 +142,14 @@ addon.WorldBosses = {
   --[860] = { quest=nil, expansion=4, level=90 }, -- Xuen
   [861] = { quest=nil,   expansion=4, level=90 }, -- Ordos
 
+  --[[
   [1291] = { quest=37460,  expansion=5, level=100 }, -- Drov the Ruiner
-  [1211] = { quest=37462,  expansion=5, level=100 }, -- Tarina the Ageless
+  [1211] = { quest=37462,  expansion=5, level=100 }, -- Tarlna the Ageless
+  --]]
+  [1211] = { quest=37462,  expansion=5, level=100, -- Drov/Tarlna share a loot and quest atm
+             name=select(2,EJ_GetCreatureInfo(1,1211)).."/"..select(2,EJ_GetCreatureInfo(1,1291))}, 
+  [1291] = { remove=true }, -- Drov cleanup
+
   [1262] = { quest=37464,  expansion=5, level=100 }, -- Rukhmar
 }
 
@@ -981,6 +987,9 @@ function addon:UpdateInstanceData()
     end
     info.name = info.name or "UNKNOWN"..eid
     local instance = vars.db.Instances[info.name]
+   if info.remove then -- cleanup hook
+    vars.db.Instances[info.name] = nil
+   else
     if not instance then
       added = added + 1
       instance = {}
@@ -992,6 +1001,7 @@ function addon:UpdateInstanceData()
     instance.RecLevel = info.level
     instance.Raid = true
     wbid_to_name[eid] = info.name
+   end
   end
 
   -- instance merging: this algorithm removes duplicate entries created by client locale changes using the same database
