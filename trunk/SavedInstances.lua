@@ -231,6 +231,21 @@ local QuestExceptions = {
   [33134] = "Regular",  -- Warforged Seals
   [33338] = "Weekly",  -- Empowering the Hourglass
   [33334] = "Weekly",  -- Strong Enough to Survive
+
+  [36058] = "Weekly",  -- Seal of Tempered Fate (Dwarven Bunker)
+  -- Seal of Tempered Fate (quests)
+  [36054] = "Weekly",
+  [37454] = "Weekly",
+  [37455] = "Weekly",
+  [36056] = "Weekly",
+  [37456] = "Weekly",
+  [37457] = "Weekly",
+  [36057] = "Weekly",
+  [37458] = "Weekly",
+  [37459] = "Weekly",
+  [36055] = "Weekly",
+  [37452] = "Weekly",
+  [37453] = "Weekly",
 }
 
 function addon:QuestInfo(questid)
@@ -1935,7 +1950,7 @@ function core:OnInitialize()
 	  end
 	end
 	for qid, escope in pairs(QuestExceptions) do -- upgrade QuestDB with new exceptions
-	  local val = 862 -- default to a blank zone
+	  local val = -1 -- default to a blank zone
 	  for scope, qdb in pairs(db.QuestDB) do
 	    val = qdb[qid] or val
 	    qdb[qid] = nil
