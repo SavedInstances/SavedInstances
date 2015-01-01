@@ -231,7 +231,9 @@ local QuestExceptions = {
   [33134] = "Regular",  -- Warforged Seals
   [33338] = "Weekly",  -- Empowering the Hourglass
   [33334] = "Weekly",  -- Strong Enough to Survive
+}
 
+local WoDSealQuests = {
   [36058] = "Weekly",  -- Seal of Tempered Fate (Dwarven Bunker)
   -- Seal of Tempered Fate (quests)
   [36054] = "Weekly",
@@ -247,6 +249,9 @@ local QuestExceptions = {
   [37452] = "Weekly",
   [37453] = "Weekly",
 }
+for k,v in pairs(WoDSealQuests) do
+  QuestExceptions[k] = v
+end
 
 function addon:QuestInfo(questid)
   if not questid or questid == 0 then return nil end
@@ -1343,6 +1348,15 @@ function addon:UpdateToonData()
           end
 	  if idx == 390 or idx == 392 or idx == 395 or idx == 396 then -- these have a total max scaled by 100
             ci.totalMax = ci.totalMax and math.floor(ci.totalMax/100)
+	  end
+	  if idx == 994 then -- Seal of Tempered Fate returns zero for weekly quantities
+	    ci.weeklyMax = 3 -- the max via quests
+	    ci.earnedThisWeek = 0
+	    for id in pairs(WoDSealQuests) do
+	      if IsQuestFlaggedCompleted(id) then
+	        ci.earnedThisWeek = ci.earnedThisWeek + 1
+	      end
+	    end
 	  end
           ci.season = addon:GetSeasonCurrency(idx)
 	  t.currency[idx] = ci
