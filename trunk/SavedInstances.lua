@@ -147,7 +147,8 @@ addon.WorldBosses = {
   [1211] = { quest=37462,  expansion=5, level=100 }, -- Tarlna the Ageless
   --]]
   [1211] = { quest=37462,  expansion=5, level=100, -- Drov/Tarlna share a loot and quest atm
-             name=select(2,EJ_GetCreatureInfo(1,1211)).."/"..select(2,EJ_GetCreatureInfo(1,1291))}, 
+             name=select(2,EJ_GetCreatureInfo(1,1291)):match("^[^ ]+").." / "..
+	          select(2,EJ_GetCreatureInfo(1,1211)):match("^[^ ]+")}, 
   [1291] = { remove=true }, -- Drov cleanup
 
   [1262] = { quest=37464,  expansion=5, level=100 }, -- Rukhmar
