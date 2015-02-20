@@ -115,9 +115,9 @@ addon.LFRInstances = {
   [849] = { total=3, base=1,  parent=897, altid=nil }, -- Highmaul1: Walled City
   [850] = { total=3, base=4,  parent=897, altid=nil }, -- Highmaul2: Arcane Sanctum
   [851] = { total=1, base=7,  parent=897, altid=nil }, -- Highmaul3: Imperator's Rise
-  [847] = { total=3, base=1,  parent=900, altid=nil }, -- BRF1: Slagworks
-  [846] = { total=3, base=4,  parent=900, altid=nil }, -- BRF2: The Black Forge
-  [848] = { total=3, base=7,  parent=900, altid=nil }, -- BRF3: Iron Assembly
+  [847] = { total=3, base=1,  parent=900, altid=nil, remap={ 1, 2, 7 } }, -- BRF1: Slagworks
+  [846] = { total=3, base=4,  parent=900, altid=nil, remap={ 3, 5, 8 } }, -- BRF2: The Black Forge
+  [848] = { total=3, base=7,  parent=900, altid=nil, remap={ 4, 6, 9 } }, -- BRF3: Iron Assembly
   [823] = { total=1, base=10, parent=900, altid=nil }, -- BRF4: Blackhand's Crucible
 
 }
@@ -826,6 +826,7 @@ end
 
 function addon:instanceBosses(instance,toon,diff)
   local killed,total,base = 0,0,1
+  local remap = nil
   local inst = vars.db.Instances[instance]
   local save = inst and inst[toon] and inst[toon][diff]
   if inst.WorldBoss then
@@ -837,9 +838,10 @@ function addon:instanceBosses(instance,toon,diff)
   if LFR then
     total = LFR.total or total
     base = LFR.base or base
+    remap = LFR.remap
   end
   if not save then
-      return killed, total, base
+      return killed, total, base, remap
   elseif save.Link then
       local bits = save.Link:match(":(%d+)\124h")
       bits = bits and tonumber(bits)
@@ -856,7 +858,7 @@ function addon:instanceBosses(instance,toon,diff)
       killed = killed + (save[i] and 1 or 0)
     end
   end 
-  return killed, total, base
+  return killed, total, base, remap
 end
 
 local lfrkey = "^"..L["LFR"]..": "
@@ -1738,12 +1740,16 @@ local function ShowLFRTooltip(cell, arg, ...)
 	    indicatortip:SetCell(indicatortip:AddLine(), 1, YELLOWFONT .. instance .. FONTEND, "CENTER",3)
 	    local thisinstance = vars.db.Instances[instance]
             local info = thisinstance[toon] and thisinstance[toon][diff]
-	    local killed, total, base = addon:instanceBosses(instance,toon,diff)
+	    local killed, total, base, remap = addon:instanceBosses(instance,toon,diff)
             for i=base,base+total-1 do
-              local bossname = GetLFGDungeonEncounterInfo(thisinstance.LFDID, i);
+	      local bossid = i
+	      if remap then
+	        bossid = remap[i-base+1]
+	      end
+              local bossname = GetLFGDungeonEncounterInfo(thisinstance.LFDID, bossid);
 	      local n = indicatortip:AddLine()
 	      indicatortip:SetCell(n, 1, bossname, "LEFT", 2)
-              if info and info[i] then 
+              if info and info[bossid] then 
                 indicatortip:SetCell(n, 3, REDFONT..ERR_LOOT_GONE..FONTEND, "RIGHT", 1)
               else
                 indicatortip:SetCell(n, 3, GREENFONT..AVAILABLE..FONTEND, "RIGHT", 1)
@@ -1808,17 +1814,21 @@ local function ShowIndicatorTooltip(cell, arg, ...)
 	  end
 	end
 	if info.ID < 0 then
-	  local killed, total, base = addon:instanceBosses(instance,toon,diff)
+	  local killed, total, base, remap = addon:instanceBosses(instance,toon,diff)
           for i=base,base+total-1 do
+	    local bossid = i
+            if remap then
+	      bossid = remap[i-base+1]
+	    end
             local bossname
             if worldboss then
               bossname = addon.WorldBosses[worldboss].name or "UNKNOWN"
             else
-              bossname = GetLFGDungeonEncounterInfo(thisinstance.LFDID, i);
+              bossname = GetLFGDungeonEncounterInfo(thisinstance.LFDID, bossid);
             end
 	    local n = indicatortip:AddLine()
 	    indicatortip:SetCell(n, 1, bossname, "LEFT", 2)
-            if info[i] then 
+            if info[bossid] then 
               indicatortip:SetCell(n, 3, REDFONT..ERR_LOOT_GONE..FONTEND, "RIGHT", 1)
             else
               indicatortip:SetCell(n, 3, GREENFONT..AVAILABLE..FONTEND, "RIGHT", 1)
