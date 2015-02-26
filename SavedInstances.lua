@@ -1013,6 +1013,7 @@ function addon:UpdateInstanceData()
     local instance = vars.db.Instances[info.name]
    if info.remove then -- cleanup hook
     vars.db.Instances[info.name] = nil
+    addon.WorldBosses[eid] = nil
    else
     if not instance then
       added = added + 1
