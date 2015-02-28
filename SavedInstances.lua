@@ -1345,6 +1345,7 @@ function addon:UpdateToonData()
 	end
 	t.currency = t.currency or {}
 	for _,idx in pairs(currency) do
+	  if addon.logout then break end -- currency is unreliable during logout
 	  local ci = t.currency[idx] or {}
 	  _, ci.amount, _, ci.earnedThisWeek, ci.weeklyMax, ci.totalMax = GetCurrencyInfo(idx)
           if idx == 396 then -- VP has a weekly max scaled by 100
