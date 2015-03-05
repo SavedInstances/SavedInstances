@@ -3543,6 +3543,7 @@ local trade_spells = {
 	[175880] = true,	-- Secrets of Draenor
 	[156587] = true,	-- Alchemical Catalyst (4)
 	[168042] = true,	-- Alchemical Catalyst (10), 3 charges w/ 24hr recharge
+	[181643] = "xmute",	-- Transmute: Savage Blood
 
 
         -- Enchanting
