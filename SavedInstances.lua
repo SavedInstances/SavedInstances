@@ -825,6 +825,114 @@ function addon:CategorySize(category)
 	return i
 end
 
+local _instance_exceptions = { 
+  -- workaround a Blizzard bug:
+  -- since 5.0, some old raid lockout tooltips are missing boss kill info
+  -- currently affects 25+ man BC/Vanilla raids (but not Kara or AQ Ruins, go figure)
+  -- starting in 6.1 we have the kill bitmap but no boss names
+  [48] = { -- Molten Core
+    12118, -- Lucifron
+    11982, -- Magmadar
+    12259, -- Gehennas
+    12057, -- Garr
+    12264, -- Shazzrah
+    12056, -- Baron Geddon
+    12098, -- Sulfuron Harbinger
+    11988, -- Golemagg the Incinerator
+    12018, -- Majordomo Executus
+    11502, -- Ragnaros
+  },
+  [50] = { -- Blackwing Lair
+    12435, -- Razorgore the Untamed
+    13020, -- Vaelastrasz the Corrupt
+    12017, -- Boodlord Lashlayer
+    11983, -- Firemaw
+    14601, -- Ebonroc
+    11981, -- Flamegor
+    14020, -- Chromaggus
+    11583, -- Nefarian
+  },
+  [161] = { -- Ahn'Qiraj Temple
+    15263, -- Prophet Skeram
+    15543, -- Princess Yauj (also Vem and Lord Kri)
+    15516, -- Bodyguard Sartura
+    15510, -- Fankriss the Unyielding
+    15299, -- Viscidus
+    15509, -- Princess Huhuran
+    15276, -- Emperor Vek'lor
+    15517, -- Ouro
+    15727, -- C'Thun
+  },
+  [176] = { -- Magtheridon's Lair
+    17257, -- Magtheridon
+  },
+  [177] = { -- Gruul's Lair
+    18831, -- High King Maulgar
+    19044, -- Gruul
+  },
+  [193] = { -- Tempest Keep
+    19514, -- A'lar
+    19516, -- Void Reaver
+    18805, -- High Astromancer Solarian
+    19622, -- Kael'thas Sunstrider
+  },
+  [194] = { -- Serpentshrine Cavern
+    21216, -- Hydross the Unstable
+    21217, -- The Lurker Below
+    21215, -- Leotheras the Blind
+    21214, -- Fathom-Lord Karathress
+    21213, -- Morogrim Tidewalker
+    21212, -- Lady Vashj
+  },
+  [195] = { -- Hyjal Past
+    17767, -- Rage Winterchill
+    17808, -- Anetheron
+    17888, -- Kaz'rogal
+    17842, -- Azgalor
+    17968, -- Archimonde
+  },
+  [196] = { -- Black Temple
+    22887, -- High Warlord Naj'entus
+    22898, -- Supremus
+    22841, -- Shade of Akama
+    22871, -- Teron Gorefiend
+    22948, -- Gurtogg Bloodboil
+    22856, -- Reliquary of Souls
+    22947, -- Mother Shahraz
+    23426, -- Illidari Council
+    22917, -- Illidan Stormrage
+  },
+  [199] = { -- Sunwell
+    24850, -- Kalecgos
+    24882, -- Brutallus
+    25038, -- Felmyst
+    25166, -- Grand Warlock Alythess
+    25741, -- M'uru
+    25315, -- Kil'jaeden
+  },
+}
+function addon:instanceException(LFDID)
+  if not LFDID then return nil end
+  local exc = _instance_exceptions[LFDID]
+  if exc then -- localize boss names
+    local total = 0
+    for idx, id in ipairs(exc) do
+      if type(id) == "number" then
+        scantt:SetOwner(UIParent,"ANCHOR_NONE")
+        scantt:SetHyperlink(("unit:Creature-0-0-0-0-%d:0000000000"):format(id))  
+	local line = scantt:IsShown() and _G[scantt:GetName().."TextLeft1"]
+	line = line and line:GetText()
+	if line and #line > 0 then
+	  exc[idx] = line
+	end
+      end
+      total = total + 1
+    end
+    exc.total = total
+  end
+  return exc
+end
+
 function addon:instanceBosses(instance,toon,diff)
   local killed,total,base = 0,0,1
   local remap = nil
@@ -834,7 +942,8 @@ function addon:instanceBosses(instance,toon,diff)
     return (save[1] and 1 or 0), 1, 1
   end
   if not inst or not inst.LFDID then return 0,0,1 end
-  total = GetLFGDungeonNumEncounters(inst.LFDID)
+  local exc = addon:instanceException(inst.LFDID)
+  total = (exc and exc.total) or GetLFGDungeonNumEncounters(inst.LFDID)
   local LFR = addon.LFRInstances[inst.LFDID]
   if LFR then
     total = LFR.total or total
@@ -1796,7 +1905,7 @@ local function ShowIndicatorTooltip(cell, arg, ...)
 	end
 	if info.Link then
 	  scantt:SetOwner(UIParent,"ANCHOR_NONE")
-	  scantt:SetHyperlink(thisinstance[toon][diff].Link)
+	  scantt:SetHyperlink(info.Link)
 	  local name = scantt:GetName()
 	  local gotbossinfo
 	  for i=2,scantt:NumLines() do
@@ -1810,10 +1919,25 @@ local function ShowIndicatorTooltip(cell, arg, ...)
 	      indicatortip:SetCell(indicatortip:AddLine(),1,coloredText(left),"CENTER",3)
 	    end
 	  end
-	  if not gotbossinfo and info.Link:find(":0|h[",1,true) then
+	  if not gotbossinfo then
+	    local exc = addon:instanceException(thisinstance.LFDID)
+            local bits = tonumber(info.Link:match(":(%d+)\124h"))
+	    if exc and bits then
+	      for i=1,exc.total do
+	        local n = indicatortip:AddLine()
+	        indicatortip:SetCell(n, 1, exc[i], "LEFT", 2)
+		local text = "\124cff00ff00"..BOSS_ALIVE.."\124r"
+                if bit.band(bits,1) > 0 then
+                  text = "\124cffff1f1f"..BOSS_DEAD.."\124r"
+                end
+	        indicatortip:SetCell(n, 3, text, "RIGHT", 1)
+                bits = bit.rshift(bits,1)
+              end
+	    else
 	      indicatortip:SetCell(indicatortip:AddLine(),1,WHITEFONT .. 
 	          L["Boss kill information is missing for this lockout.\nThis is a Blizzard bug affecting certain old raids."] .. 
 		  FONTEND,"CENTER",3)
+            end
 	  end
 	end
 	if info.ID < 0 then
