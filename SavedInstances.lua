@@ -1453,9 +1453,20 @@ function addon:UpdateToonData()
 	     db.Quests[id] = nil
 	  end
 	end
+	addon:UpdateCurrency()
+	local zone = GetRealZoneText()
+	if zone and #zone > 0 then
+	  t.Zone = zone
+	end
+	t.LastSeen = time()
+end
+
+function addon:UpdateCurrency()
+	if addon.logout then return end -- currency is unreliable during logout
+	local t = vars.db.Toons[thisToon]
+	t.Money = GetMoney()
 	t.currency = t.currency or {}
 	for _,idx in pairs(currency) do
-	  if addon.logout then break end -- currency is unreliable during logout
 	  local ci = t.currency[idx] or {}
 	  _, ci.amount, _, ci.earnedThisWeek, ci.weeklyMax, ci.totalMax = GetCurrencyInfo(idx)
           if idx == 396 then -- VP has a weekly max scaled by 100
@@ -1476,14 +1487,6 @@ function addon:UpdateToonData()
           ci.season = addon:GetSeasonCurrency(idx)
 	  t.currency[idx] = ci
 	end
-        if not addon.logout then
-	  t.Money = GetMoney()
-	end
-	local zone = GetRealZoneText()
-	if zone and #zone > 0 then
-	  t.Zone = zone
-	end
-	t.LastSeen = time()
 end
 
 function addon:QuestIsDarkmoonMonthly()
@@ -2170,6 +2173,7 @@ function core:OnEnable()
 	self:RegisterEvent("CHAT_MSG_SYSTEM", "CheckSystemMessage")
 	self:RegisterEvent("CHAT_MSG_CURRENCY", "CheckSystemMessage")
 	self:RegisterEvent("CHAT_MSG_LOOT", "CheckSystemMessage")
+	self:RegisterEvent("CURRENCY_DISPLAY_UPDATE", function() addon:UpdateCurrency() end)
 	self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
 	self:RegisterEvent("TRADE_SKILL_UPDATE")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", RequestRaidInfo)
