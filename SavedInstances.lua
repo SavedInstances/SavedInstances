@@ -1,6 +1,7 @@
 local addonName, vars = ...
 SavedInstances = vars
 local addon = vars
+local addonAbbrev = "SI"
 vars.core = LibStub("AceAddon-3.0"):NewAddon(addonName, "AceEvent-3.0", "AceTimer-3.0")
 local core = vars.core
 local L = vars.L
@@ -151,7 +152,10 @@ addon.WorldBosses = {
 	          select(2,EJ_GetCreatureInfo(1,1211)):match("^[^ ]+")}, 
   [1291] = { remove=true }, -- Drov cleanup
 
-  [1262] = { quest=37464,  expansion=5, level=100 }, -- Rukhmar
+  [1262] = { quest=37464, expansion=5, level=100 }, -- Rukhmar
+
+  -- bosses with no EJ entry (eid is a placeholder)
+  [9001] = { quest=38276, name=GARRISON_LOCATION_TOOLTIP.." "..BOSS, expansion=5, level=100 },
 }
 
 local _specialQuests = {
@@ -2118,7 +2122,7 @@ function core:OnInitialize()
 	RequestRaidInfo() -- get lockout data
 	RequestLFDPlayerLockInfo()
 	vars.dataobject = vars.LDB and vars.LDB:NewDataObject("SavedInstances", {
-		text = addonName,
+		text = addonAbbrev,
 		type = "launcher",
 		icon = "Interface\\Addons\\SavedInstances\\icon.tga",
 		OnEnter = function(frame)
@@ -2513,7 +2517,7 @@ function addon:HistoryUpdate(forcereset, forcemesg)
     addon.histTextthrottle = math.min(oldestrem+1, addon.histTextthrottle or 15)
     addon.resetDetect:SetScript("OnUpdate", addon.histTextUpdate)
   else
-    vars.dataobject.text = addonName
+    vars.dataobject.text = addonAbbrev
     addon.resetDetect:SetScript("OnUpdate", nil)
   end
 end
@@ -2618,7 +2622,7 @@ function core:Refresh(recoverdaily)
            if weeklyreset and (
 	      (einfo.quest and IsQuestFlaggedCompleted(einfo.quest)) or 
 	      (quests and einfo.quest and quests[einfo.quest]) or
-	      wbsave[einfo.name]
+	      wbsave[einfo.savename or einfo.name]
 	      ) then
              local truename = einfo.name
              local instance = vars.db.Instances[truename] 
