@@ -1667,7 +1667,11 @@ local function ShowQuestTooltip(cell, arg, ...)
           local line = indicatortip:AddLine()
 	  local link = qi.Link
 	  if not link then -- sometimes missing the actual link due to races, fake it for display to prevent confusion
-	    link = "\124cffffff00["..(qi.Title or "???").."]\124r"
+	    if qi.Title:find("("..LOOT..")") then
+	      link = qi.Title
+	    else
+	      link = "\124cffffff00["..(qi.Title or "???").."]\124r"
+	    end
 	  end
 	  indicatortip:SetCell(line,1,(qi.Zone or ""),"LEFT")
           indicatortip:SetCell(line,2,link,"RIGHT")
