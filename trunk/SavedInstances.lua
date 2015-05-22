@@ -1521,7 +1521,7 @@ local function SI_GetQuestReward()
   local t = vars and vars.db.Toons[thisToon]
   if not t then return end
   local id = GetQuestID() or -1
-  local title = GetTitleText() or "<unknown>"
+  local title = GetTitleText() or ""
   local link = nil
   local isMonthly = addon:QuestIsDarkmoonMonthly()
   local isWeekly = QuestIsWeekly()
@@ -1531,6 +1531,15 @@ local function SI_GetQuestReward()
   local index = GetQuestLogIndexByID(id)
   if index and index > 0 then
     link = GetQuestLink(index)
+  end
+  if id > 1 then -- try harder to fetch names
+    local t,l = addon:QuestInfo(id)
+    if not (link and #link > 0) then
+      link = l
+    end
+    if not (title and #title > 0) then
+      title = t or "<unknown>"
+    end
   end
   local questTagID, tagName = GetQuestTagInfo(id)
   if questTagID and tagName then
@@ -3745,12 +3754,14 @@ local trade_spells = {
 	[169080] = true, 	-- Gearspring Parts
 	[177054] = true,	-- Secrets of Draenor
 
-	[126459] = "item",	-- Blingtron
+	[126459] = "item",	-- Blingtron 4000
+	[161414] = "item",	-- Blingtron 5000
 	[54710]  = "item",	-- MOLL-E
 	[67826]  = "item",	-- Jeeves
 
 	[67833] = "item",	-- Wormhole Generator: Northrend
 	[126755] = "item",	-- Wormhole Generator: Pandaria
+	[163830] = "item",	-- Wormhole Centrifuge
 	[23453] = "item", 	-- Ultrasafe Transporter: Gadgetzhan
 	[36941] = "item",	-- Ultrasafe Transporter: Toshley's Station
 }
@@ -3763,9 +3774,11 @@ local cdname = {
 }
 
 local itemcds = { -- [itemid] = spellid
-	[87214] = 126459, 	-- Blingtron
+	[87214] = 126459, 	-- Blingtron 4000
+	[111821] = 161414, 	-- Blingtron 5000
 	[40768] = 54710, 	-- MOLL-E
 	[49040] = 67826, 	-- Jeeves
+	[112059] = 163830,	-- Wormhole Centrifuge
 	[48933] = 67833,	-- Wormhole Generator: Northrend
 	[87215] = 126755,	-- Wormhole Generator: Pandaria
 	[18986] = 23453, 	-- Ultrasafe Transporter: Gadgetzhan
