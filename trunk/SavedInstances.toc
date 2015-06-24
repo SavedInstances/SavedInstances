@@ -1,4 +1,4 @@
-## Interface: 60100
+## Interface: 60200
 ## Title: SavedInstances
 ## Notes: Tracks raid/instance/worldboss lockouts for all your characters, daily/weekly quests, currencies, trade cooldowns, and more!
 ## Author: @project-author@
