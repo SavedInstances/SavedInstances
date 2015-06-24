@@ -87,6 +87,7 @@ local currency = {
   789, -- Bloody Coin
   823, -- Apexis Crystal
   824, -- Garrison Resources
+  1101,-- Oil
   994, -- Seal of Tempered Fate
   1129,-- Seal of Inevitable Fate
 }
@@ -437,6 +438,7 @@ vars.defaultDB = {
 		Currency738 = false, -- Lesser Charm of Good Fortune
 		Currency823 = true,  -- Apexis Crystal
   		Currency824 = true,  -- Garrison Resources
+		Currency1101= true,  -- Oil
 		Currency994 = true,  -- Seal of Tempered Fate
 		Currency1129= true,  -- Seal of Inevitable Fate
 		CurrencyMax = false,
