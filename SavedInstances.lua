@@ -88,6 +88,7 @@ local currency = {
   823, -- Apexis Crystal
   824, -- Garrison Resources
   994, -- Seal of Tempered Fate
+  1129,-- Seal of Inevitable Fate
 }
 addon.currency = currency
 
@@ -121,6 +122,11 @@ addon.LFRInstances = {
   [848] = { total=3, base=7,  parent=900, altid=nil, remap={ 4, 6, 9 } }, -- BRF3: Iron Assembly
   [823] = { total=1, base=10, parent=900, altid=nil }, -- BRF4: Blackhand's Crucible
 
+  [982] = { total=3, base=1,  parent=989, altid=nil }, -- Hellfire1: Hellbreach
+  [983] = { total=3, base=4,  parent=989, altid=nil }, -- Hellfire2: Halls of Blood
+  [984] = { total=3, base=7,  parent=989, altid=nil, remap={ 7, 8,  11 } }, -- Hellfire3: Bastion of Shadows
+  [985] = { total=3, base=10, parent=989, altid=nil, remap={ 9, 10, 12 } }, -- Hellfire4: Destructor's Rise
+  [986] = { total=1, base=13, parent=989, altid=nil }, -- Hellfire5: Black Gate
 }
 local tmp = {}
 for id, info in pairs(addon.LFRInstances) do
@@ -240,8 +246,8 @@ local QuestExceptions = {
 }
 
 local WoDSealQuests = {
-  [36058] = "Weekly",  -- Seal of Tempered Fate (Dwarven Bunker)
-  -- Seal of Tempered Fate (quests)
+  [36058] = "Weekly",  -- Seal of Dwarven Bunker
+  -- Seal of Ashran quests
   [36054] = "Weekly",
   [37454] = "Weekly",
   [37455] = "Weekly",
@@ -432,6 +438,7 @@ vars.defaultDB = {
 		Currency823 = true,  -- Apexis Crystal
   		Currency824 = true,  -- Garrison Resources
 		Currency994 = true,  -- Seal of Tempered Fate
+		Currency1129= true,  -- Seal of Inevitable Fate
 		CurrencyMax = false,
 		CurrencyEarned = true,
 	},
@@ -1244,9 +1251,6 @@ function addon:UpdateInstance(id)
   if id == 852 and expansionLevel == 5 then -- XXX: Molten Core hack
     return nil, nil, true -- ignore Molten Core holiday version, which has no save
   end
-  if (id == 897 or id == 900) and expansionLevel == 4 then -- XXX: Highmaul / Blackrock Foundry hack
-    expansionLevel = 5 -- fix incorrect expansionLevel
-  end
   if id == 767 then -- ignore bogus Ordos entry
     return nil, nil, true
   end
@@ -1325,7 +1329,8 @@ function addon:UpdateToonData()
 				end
 			end
 		end
-		if (i.Holiday and addon.activeHolidays[instance]) or (i.Random) then
+		if (i.Holiday and addon.activeHolidays[instance]) or 
+		   (i.Random and not i.Holiday) then
 		  local id = i.LFDID
 		  GetLFGDungeonInfo(id) -- forces update
 		  local donetoday, money = GetLFGDungeonRewards(id)
@@ -1481,7 +1486,7 @@ function addon:UpdateCurrency()
 	  if idx == 390 or idx == 392 or idx == 395 or idx == 396 then -- these have a total max scaled by 100
             ci.totalMax = ci.totalMax and math.floor(ci.totalMax/100)
 	  end
-	  if idx == 994 then -- Seal of Tempered Fate returns zero for weekly quantities
+	  if idx == 1129 then -- Seal of Tempered Fate returns zero for weekly quantities
 	    ci.weeklyMax = 3 -- the max via quests
 	    ci.earnedThisWeek = 0
 	    for id in pairs(WoDSealQuests) do
