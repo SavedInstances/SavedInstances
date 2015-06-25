@@ -14,6 +14,7 @@ addon.svnrev["config.lua"] = tonumber(("$Revision$"):match("%d+"))
 addon.diff_strings = {
 	D1 = DUNGEON_DIFFICULTY1, -- 5 man
 	D2 = DUNGEON_DIFFICULTY2, -- 5 man (Heroic)
+	D3 = DUNGEON_DIFFICULTY1.." ("..GetDifficultyInfo(23)..")", -- 5 man (Mythic)
 	R0 = EXPANSION_NAME0 .. " " .. LFG_TYPE_RAID,
 	R1 = RAID_DIFFICULTY1, -- "10 man"
 	R2 = RAID_DIFFICULTY2, -- "25 man"
@@ -47,7 +48,11 @@ function addon:idtext(instance,diff,info)
   elseif info.ID < 0 then 
     return "" -- ticket 144: could be RAID_FINDER or FLEX_RAID, but this is already shown in the instance name so it's redundant anyhow
   elseif not instance.Raid then
-    return _G["DUNGEON_DIFFICULTY"..diff]
+    if diff == 23 then
+      return addon.diff_strings["D3"]
+    else
+      return addon.diff_strings["D"..diff]
+    end
   elseif instance.Expansion == 0 then -- classic Raid
     return addon.diff_strings.R0
   elseif instance.Raid and diff >= 3 and diff <= 7 then -- pre-WoD raids
