@@ -3839,13 +3839,16 @@ function core:record_skill(spellID, expires)
   elseif expires ~= 0 then
     local slink = GetSpellLink(spellID)
     if slink and #slink > 0 then  -- tt scan for the full name with profession
+      link = "\124cffffd000\124Henchant:"..spellID.."\124h[X]\124h\124r"
       scantt:SetOwner(UIParent,"ANCHOR_NONE")
-      scantt:SetHyperlink(slink) 
+      scantt:SetHyperlink(link) 
       local l = _G[scantt:GetName().."TextLeft1"]
       l = l and l:GetText()
       if l and #l > 0 then 
         title = l
-        link = "\124cffffd000\124Henchant:"..spellID.."\124h["..l.."]\124h\124r"
+	link = link:gsub("X",l)
+      else
+        link = nil
       end
     end
   end
