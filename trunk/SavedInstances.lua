@@ -10,7 +10,7 @@ vars.icon = vars.LDB and LibStub("LibDBIcon-1.0", true)
 
 local QTip = LibStub("LibQTip-1.0")
 local dataobject, db, config
-local maxdiff = 16 -- max number of instance difficulties
+local maxdiff = 23 -- max number of instance difficulties
 local maxcol = 4 -- max columns per player+instance
 
 addon.svnrev = {}
@@ -362,9 +362,13 @@ vars.defaultDB = {
 		D1Color = { 0, 0.6, 0 }, -- dark green
 		D1ClassColor = true,
 		D2Indicator = "BLANK",
-		D2Text = "KILLED/TOTAL",
+		D2Text = "KILLED/TOTALH",
 		D2Color = { 0, 1, 0 }, -- green
 		D2ClassColor = true,
+		D3Indicator = "BLANK",
+		D3Text = "KILLED/TOTALM",
+		D3Color = { 1, 0, 0 }, -- red
+		D3ClassColor = true,
 		R0Indicator = "BLANK",
 		R0Text = "KILLED/TOTAL",
 		R0Color = { 0.6, 0.6, 0 }, -- dark yellow
@@ -1054,7 +1058,13 @@ local function DifficultyString(instance, diff, toon, expired, killoverride, tot
 	else
 		local inst = vars.db.Instances[instance]
 		if not inst or not inst.Raid then -- 5-man
-		  setting = (diff == 1 and "D1" or "D2")
+		  if diff == 2 then -- heroic
+		    setting = "D2"
+		  elseif diff == 23 then -- mythic
+		    setting = "D3"
+		  else -- normal?
+		    setting = "D1"
+		  end
 		elseif inst.Expansion == 0 then -- classic raid
 		  setting = "R0"
 		elseif diff >= 3 and diff <= 7 then -- pre-WoD raids
@@ -1066,9 +1076,13 @@ local function DifficultyString(instance, diff, toon, expired, killoverride, tot
 		end
 	end
 	local prefs = vars.db.Indicators
+	local classcolor = prefs[setting .. "ClassColor"]
+	if classcolor == nil then
+	  classcolor = vars.defaultDB.Indicators[setting .. "ClassColor"]
+	end
 	if expired then
 	  	color = GRAY_COLOR
-	elseif prefs[setting .. "ClassColor"] then
+	elseif classcolor then
 		color = (CUSTOM_CLASS_COLORS or RAID_CLASS_COLORS)[vars.db.Toons[toon].Class]
 	else
 	        prefs[setting.."Color"]  = prefs[setting.."Color"] or vars.defaultDB.Indicators[setting.."Color"]
