@@ -160,6 +160,7 @@ addon.WorldBosses = {
   [1291] = { remove=true }, -- Drov cleanup
 
   [1262] = { quest=37464, expansion=5, level=100 }, -- Rukhmar
+  [1452] = { quest=94015, expansion=5, level=100 }, -- Kazzak
 
   -- bosses with no EJ entry (eid is a placeholder)
   [9001] = { quest=38276, name=GARRISON_LOCATION_TOOLTIP.." "..BOSS, expansion=5, level=100 },
