@@ -186,6 +186,11 @@ local _specialQuests = {
   [37639] = { zone=GARRISON_LOCATION_TOOLTIP, aid=9164 }, -- Silver Defender
   [37640] = { zone=GARRISON_LOCATION_TOOLTIP, aid=9165 }, -- Golden Defender
   [38482] = { zone=GARRISON_LOCATION_TOOLTIP, aid=9826 }, -- Platinum Defender
+  -- Tanaan Jungle
+  [39287] = { zid=945, daily=true }, -- Deathtalon
+  [39288] = { zid=945, daily=true }, -- Terrorfist
+  [39289] = { zid=945, daily=true }, -- Doomroller
+  [39290] = { zid=945, daily=true }, -- Vengeance
 }
 function addon:specialQuests()
   for qid, qinfo in pairs(_specialQuests) do
@@ -2210,6 +2215,7 @@ end
 
 function core:OnEnable()
 	self:RegisterEvent("UPDATE_INSTANCE_INFO", function() core:Refresh(nil) end)
+	self:RegisterEvent("LOOT_CLOSED", function() core:QuestRefresh(nil) end)
 	self:RegisterEvent("LFG_UPDATE_RANDOM_INFO", function() addon:UpdateInstanceData(); addon:UpdateToonData() end)
 	self:RegisterEvent("RAID_INSTANCE_WELCOME", RequestRaidInfo)
 	self:RegisterEvent("CHAT_MSG_SYSTEM", "CheckSystemMessage")
@@ -2583,6 +2589,71 @@ function core:memcheck(context)
   end
 end
 
+-- Lightweight refresh of just quest flag information
+-- all may be nil if not instantiataed
+function core:QuestRefresh(recoverdaily, questcomplete, nextreset, weeklyreset)
+  local tiq = vars.db.Toons[thisToon]
+  tiq = tiq and tiq.Quests
+  if not tiq then return end
+  nextreset = nextreset or addon:GetNextDailyResetTime()
+  weeklyreset = weeklyreset or addon:GetNextWeeklyResetTime()
+  if not nextreset or not weeklyreset then return end
+
+  for _, qinfo in pairs(addon:specialQuests()) do
+    local qid = qinfo.quest
+    if IsQuestFlaggedCompleted(qid) or (questcomplete and questcomplete[qid]) then
+      local q = tiq[qid] or {}
+      tiq[qid] = q
+      q.Title = qinfo.name
+      q.Zone = qinfo.zone
+      if qinfo.daily then
+        q.Expires = nextreset
+	q.isDaily = true
+      else
+        q.Expires = weeklyreset
+	q.isDaily = nil
+      end
+    end
+  end
+
+  local now = time()
+  db.QuestDB.Weekly.expires = weeklyreset
+  db.QuestDB.AccountWeekly.expires = weeklyreset
+  db.QuestDB.Darkmoon.expires = addon:GetNextDarkmoonResetTime()
+  for scope, list in pairs(db.QuestDB) do
+    local questlist = tiq
+    if scope:find("Account") then
+      questlist = db.Quests
+    end
+    if recoverdaily or (scope ~= "Daily") then
+      for qid, mapid in pairs(list) do
+        if tonumber(qid) and (IsQuestFlaggedCompleted(qid) or
+           (questcomplete and questcomplete[qid])) and not questlist[qid] and -- recovering a lost quest
+	   (list.expires == nil or list.expires > now) then -- don't repop darkmoon quests from last faire
+           local title, link = addon:QuestInfo(qid)
+           if title then
+	     local found
+	      for _,info in pairs(questlist) do
+	        if title == info.Title then -- avoid faction duplicates, since both flags are set
+	          found = true
+	  	  break
+		end
+	      end
+	      if not found then
+	        debug("Recovering lost quest: "..title.." ("..scope..")")
+                questlist[qid] = { ["Title"] = title, ["Link"] = link, 
+                                   ["isDaily"] = (scope:find("Daily") and true) or nil, 
+	                           ["Expires"] = list.expires,
+	                           ["Zone"] = GetMapNameByID(mapid) }
+	      end
+           end
+         end
+      end
+    end
+  end
+  addon:QuestCount(thisToon)
+end
+
 function core:Refresh(recoverdaily)
 	-- update entire database from the current character's perspective
         addon:UpdateInstanceData()
@@ -2648,7 +2719,7 @@ function core:Refresh(recoverdaily)
 	  end
 	end
 
-        local quests = GetQuestsCompleted(localarr("QuestCompleteTemp"))
+        local questcomplete = GetQuestsCompleted(localarr("QuestCompleteTemp"))
 	local wbsave = localarr("wbsave")
 	if GetNumSavedWorldBosses and GetSavedWorldBossInfo then -- 5.4
 	  for i=1,GetNumSavedWorldBosses() do
@@ -2659,7 +2730,7 @@ function core:Refresh(recoverdaily)
         for _,einfo in pairs(addon.WorldBosses) do
            if weeklyreset and (
 	      (einfo.quest and IsQuestFlaggedCompleted(einfo.quest)) or 
-	      (quests and einfo.quest and quests[einfo.quest]) or
+	      (questcomplete and einfo.quest and questcomplete[einfo.quest]) or
 	      wbsave[einfo.savename or einfo.name]
 	      ) then
              local truename = einfo.name
@@ -2673,63 +2744,8 @@ function core:Refresh(recoverdaily)
              info[1] = true
            end
         end
-	local tiq = vars.db.Toons[thisToon]
-	tiq = tiq and tiq.Quests
-	if tiq then
-	  for _, qinfo in pairs(addon:specialQuests()) do
-	    local qid = qinfo.quest
-            if nextreset and weeklyreset and (IsQuestFlaggedCompleted(qid) or 
-	      (quests and quests[qid])) then
-              local q = tiq[qid] or {}
-	      tiq[qid] = q
-	      q.Title = qinfo.name
-	      q.Zone = qinfo.zone
-	      if qinfo.daily then
-	        q.Expires = nextreset
-		q.isDaily = true
-	      else
-	        q.Expires = weeklyreset
-		q.isDaily = nil
-	      end
-	    end
-	  end
-	  local now = time()
-	  db.QuestDB.Weekly.expires = weeklyreset
-	  db.QuestDB.AccountWeekly.expires = weeklyreset
-	  db.QuestDB.Darkmoon.expires = addon:GetNextDarkmoonResetTime()
-          for scope, list in pairs(db.QuestDB) do
-	    local questlist = tiq
-	    if scope:find("Account") then
-	      questlist = db.Quests
-	    end
-	    if recoverdaily or (scope ~= "Daily") then
-             for qid, mapid in pairs(list) do
-              if tonumber(qid) and (IsQuestFlaggedCompleted(qid) or
-	        (quests and quests[qid])) and not questlist[qid] and -- recovering a lost quest
-		(list.expires == nil or list.expires > now) then -- don't repop darkmoon quests from last faire
-                 local title, link = addon:QuestInfo(qid)
-                 if title then
-		    local found
-		    for _,info in pairs(questlist) do
-		      if title == info.Title then -- avoid faction duplicates, since both flags are set
-		        found = true
-			break
-		      end
-		    end
-		    if not found then
-		      debug("Recovering lost quest: "..title.." ("..scope..")")
-                      questlist[qid] = { ["Title"] = title, ["Link"] = link, 
-                                         ["isDaily"] = (scope:find("Daily") and true) or nil, 
-		                         ["Expires"] = list.expires,
-		                         ["Zone"] = GetMapNameByID(mapid) }
-		    end
-                 end
-              end
-	     end
-            end
-          end
-          addon:QuestCount(thisToon)
-	end
+
+	core:QuestRefresh(recoverdaily, questcomplete, nextreset, weeklyreset)
 
         local icnt, dcnt = 0,0
 	for name, _ in pairs(temp) do
