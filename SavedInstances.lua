@@ -110,10 +110,10 @@ addon.LFRInstances = {
   [611] = { total=3, base=4,  parent=634, altid=836 }, -- ToT2: Forgotten Depths
   [612] = { total=3, base=7,  parent=634, altid=837 }, -- ToT3: Halls of Flesh-Shaping
   [613] = { total=3, base=10, parent=634, altid=838 }, -- ToT4: Pinnacle of Storms
-  [716] = { total=4, base=1,  parent=715, altid=839 }, -- SoO1: Vale of Eternal Sorrows
-  [717] = { total=4, base=5,  parent=715, altid=840 }, -- SoO2: Gates of Retribution
-  [724] = { total=3, base=9,  parent=715, altid=841 }, -- SoO3: The Underhold
-  [725] = { total=3, base=12, parent=715, altid=842 }, -- SoO4: Downfall
+  [716] = { total=4, base=1,  parent=766, altid=839 }, -- SoO1: Vale of Eternal Sorrows
+  [717] = { total=4, base=5,  parent=766, altid=840 }, -- SoO2: Gates of Retribution
+  [724] = { total=3, base=9,  parent=766, altid=841 }, -- SoO3: The Underhold
+  [725] = { total=3, base=12, parent=766, altid=842 }, -- SoO4: Downfall
 
   [849] = { total=3, base=1,  parent=897, altid=nil }, -- Highmaul1: Walled City
   [850] = { total=3, base=4,  parent=897, altid=nil }, -- Highmaul2: Arcane Sanctum
@@ -292,6 +292,16 @@ local function debug(msg)
   end
 end
 addon.debug = debug
+local function bugReport(msg)
+  addon.bugreport = addon.bugreport or {}
+  local now = GetTime()
+  if now < (addon.bugreport[msg] or 0)+60 then return end
+  addon.bugreport[msg] = now
+  chatMsg(msg)
+  if now < (addon.bugreport["url"] or 0)+5 then return end
+  chatMsg("Please report this bug at: http://www.wowace.com/addons/saved_instances/tickets/")
+  addon.bugreport["url"] = now
+end
 
 local GTToffset = time() - GetTime()
 local function GetTimeToTime(val)
@@ -808,8 +818,7 @@ function addon:LookupInstance(id, name, raid)
         local tlid,tlname = link:match(":(%d+):%d+:%d+\124h%[(.+)%]\124h")
 	if tlname == name then lid = tlid end
       end
-      print("SavedInstances: ERROR: Refresh() failed to find instance: "..name.." : "..GetLocale().." : "..(lid or "x"))
-      print(" Please report this bug at: http://www.wowace.com/addons/saved_instances/tickets/")
+      bugReport("SavedInstances: ERROR: Refresh() failed to find instance: "..name.." : "..GetLocale().." : "..(lid or "x"))
     end
     instance = {}
     --vars.db.Instances[name] = instance
@@ -3134,7 +3143,7 @@ function core:ShowTooltip(anchorframe)
 				    span = 1
 				  end
 				  if showcnt > maxcol then
-                                     chatMsg("Column overflow! Please report this bug! showcnt="..showcnt)
+                                     bugReport("Column overflow! showcnt="..showcnt)
 				  end
 				  for diff = 1, maxdiff do
 				    if showcol[diff] then
@@ -3161,6 +3170,12 @@ function core:ShowTooltip(anchorframe)
 
 	-- combined LFRs
 	if lfrcons then
+	  for boxname, line in pairs(lfrbox) do
+	    if type(boxname) == "number" then
+              bugReport("Unrecognized LFR instance parent id= "..boxname)
+	      lfrbox[boxname] = nil
+	    end
+	  end
 	  for boxname, line in pairs(lfrbox) do
 	    local boxtype, pinstance = boxname:match("^([^:]+): (.+)$")
 	    local pinst = vars.db.Instances[pinstance]
@@ -3842,8 +3857,7 @@ function core:record_skill(spellID, expires)
     addon.skillwarned = addon.skillwarned or {}
     if expires and expires > 0 and not addon.skillwarned[spellID] then
       addon.skillwarned[spellID] = true
-      chatMsg("Warning: Unrecognized trade skill cd "..(GetSpellInfo(spellID) or "??")..
-              " ("..spellID.."). Please report this bug!")
+      bugReport("Unrecognized trade skill cd "..(GetSpellInfo(spellID) or "??").." ("..spellID..")")
     end
     return 
   end
