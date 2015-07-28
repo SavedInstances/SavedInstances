@@ -525,6 +525,27 @@ function addon:SkinFrame(frame,name)
   end
 end
 
+-- ticket 205: temporary workaround for a blizzard RaidInfoFrame bug, which is made more visible by the addon's polling
+if true then 
+  local gsii
+  local function gsii_wrapper(i)
+    local rets = { gsii(i) }
+    -- mask off the high-order bit on instance IDs, which causes the string.format lua error
+    rets[2] = rets[2] and bit.band(rets[2],0x7fffffff)
+    rets[7] = rets[7] and bit.band(rets[2],0x7fffffff)
+    return unpack(rets)
+  end
+  local rifu = _G.RaidInfoFrame_Update
+  _G.RaidInfoFrame_Update = function(...) -- wrapper
+    gsii = _G.GetSavedInstanceInfo
+    _G.GetSavedInstanceInfo = gsii_wrapper
+    rifu(...) -- call down
+    _G.GetSavedInstanceInfo = gsii
+  end
+  RaidInfoScrollFrame.update = _G.RaidInfoFrame_Update
+end
+
+
 -- general helper functions below
 
 local function ColorCodeOpenRGB(r,g,b,a)
