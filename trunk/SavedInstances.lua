@@ -90,6 +90,7 @@ local currency = {
   1101,-- Oil
   994, -- Seal of Tempered Fate
   1129,-- Seal of Inevitable Fate
+  1166,-- Timewarped Badge 
 }
 addon.currency = currency
 
@@ -459,6 +460,7 @@ vars.defaultDB = {
 		Currency1101= true,  -- Oil
 		Currency994 = true,  -- Seal of Tempered Fate
 		Currency1129= true,  -- Seal of Inevitable Fate
+		Currency1166= true,  -- Timewarped Badge
 		CurrencyMax = false,
 		CurrencyEarned = true,
 	},
