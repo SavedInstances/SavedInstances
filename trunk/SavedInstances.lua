@@ -2591,8 +2591,14 @@ function addon:HistoryUpdate(forcereset, forcemesg)
   local oldestrem = oldesttime and (oldesttime+addon.histReapTime-now)
   local oldestremt = (oldestrem and SecondsToTime(oldestrem,false,false,1)) or "n/a"
   local oldestremtm = (oldestrem and SecondsToTime(math.floor((oldestrem+59)/60)*60,false,false,1)) or "n/a"
-  debug(livecnt.." live instances, oldest ("..(oldestkey or "none")..") expires in "..oldestremt..". Current Zone="..(newzone or "nil"))
-  --myprint(vars.db.History)
+  if addon.db.dbg then
+    local msg = livecnt.." live instances, oldest ("..(oldestkey or "none")..") expires in "..oldestremt..". Current Zone="..(newzone or "nil")
+    if msg ~= addon.lasthistdbg then
+      addon.lasthistdbg = msg
+      debug(msg)
+    end
+    --myprint(vars.db.History)
+  end
   -- display update
 
   if forcemesg or (vars.db.Tooltip.LimitWarn and zoningin and livecnt >= addon.histLimit-1) then 
