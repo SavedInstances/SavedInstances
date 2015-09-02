@@ -2262,6 +2262,7 @@ function core:OnEnable()
 	self:RegisterEvent("BONUS_ROLL_RESULT", "BonusRollResult")
 	self:RegisterEvent("PLAYER_LOGOUT", function() addon.logout = true ; addon:UpdateToonData() end) -- update currency spent
 	self:RegisterEvent("LFG_COMPLETION_REWARD", "RefreshLockInfo") -- for random daily dungeon tracking
+	self:RegisterEvent("BOSS_KILL")
 	self:RegisterEvent("ENCOUNTER_END", "EncounterEnd")
 	self:RegisterEvent("CHAT_MSG_MONSTER_YELL")
 	self:RegisterEvent("TIME_PLAYED_MSG", function(_,total,level) 
@@ -2399,6 +2400,16 @@ function core:EncounterEnd(event, encounterID, encounterName, difficultyID, raid
   end
   t.lastboss = name
   t.lastbosstime = time()
+end
+
+function core:BOSS_KILL(event, encounterID, encounterName, ...)
+  debug("BOSS_KILL:"..tostring(encounterID)..":"..tostring(encounterName)) -- ..":"..strjoin(":",...))
+  local name = encounterName
+  if name and type(name) == "string" then
+    name = name:gsub(",.*$","") -- remove extraneous trailing boss titles
+    name = strtrim(name)
+    core:BossModEncounterEnd("BOSS_KILL", name)
+  end
 end
 
 function addon:InGroup() 
