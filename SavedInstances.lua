@@ -69,8 +69,8 @@ local maxlvl = MAX_PLAYER_LEVEL_TABLE[#MAX_PLAYER_LEVEL_TABLE]
 local scantt = CreateFrame("GameTooltip", "SavedInstancesScanTooltip", UIParent, "GameTooltipTemplate")
 
 local currency = { 
-  395, -- Justice Points 
-  396, -- Valor Points
+  --395, -- Justice Points 
+  --396, -- Valor Points
   392, -- Honor Points
   390, -- Conquest Points
   738, -- Lesser Charm of Good Fortune
