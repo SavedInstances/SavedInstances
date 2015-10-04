@@ -2863,6 +2863,7 @@ function addon:ShowDetached()
       local f = CreateFrame("Frame","SavedInstancesDetachHeader",UIParent,"BasicFrameTemplate")
       f:SetMovable(true)
       f:SetFrameStrata("TOOLTIP")
+      f:SetFrameLevel(100) -- prevent weird interlacings with other tooltips
       f:SetClampedToScreen(true)
       f:EnableMouse(true)
       f:SetUserPlaced(true)
@@ -3659,7 +3660,9 @@ function core:ShowTooltip(anchorframe)
         end 
         if fail then -- retry with corrected cache
 		debug("Tooltip cache miss")
-		core:ShowTooltip(anchorframe)
+		--core:ShowTooltip(anchorframe)
+		-- reschedule continuation to reduce time-slice exceeded errors in combat
+		core:ScheduleTimer("ShowTooltip", 0, anchorframe)
         else -- render it
 	   addon:SkinFrame(tooltip,"SavedInstancesTooltip")
 	   if addon:IsDetached() then
