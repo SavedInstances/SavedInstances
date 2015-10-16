@@ -198,6 +198,7 @@ function module:BuildOptions()
 			set = function(info, value)
 					addon.debug(info[#info].." set to: "..tostring(value))
 					db.Tooltip[info[#info]] = value
+					wipe(addon.scaleCache)
 			end,
 			args = {
 				ver = {
@@ -333,19 +334,25 @@ function module:BuildOptions()
 					desc = L["List raid categories before dungeon categories"],
 					order = 17,
 				},
+				FitToScreen = {
+					type = "toggle",
+					name = L["Fit to screen"],
+					desc = L["Automatically shrink the tooltip to fit on the screen"],
+					order = 4.81,
+				},
 			        Scale = {
 					type = "range",
 					name = L["Tooltip Scale"],
-					order = 17.5,
+					order = 4.82,
 					min = 0.1,
 					max = 5,
-					bigStep = 0.1,
+					bigStep = 0.05,
 				},
 			        RowHighlight = {
 					type = "range",
 					name = L["Row Highlight"],
 					desc = L["Opacity of the tooltip row highlighting"],
-					order = 18,
+					order = 4.83,
 					min = 0,
 					max = 0.5,
 					bigStep = 0.1,
