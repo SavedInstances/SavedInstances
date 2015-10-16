@@ -286,10 +286,10 @@ end
 local function chatMsg(msg)
      DEFAULT_CHAT_FRAME:AddMessage("\124cFFFF0000"..addonName.."\124r: "..msg)
 end
-local function debug(msg)
+local function debug(...)
   --addon.db.dbg = true
   if addon.db.dbg then
-     chatMsg(msg)
+     chatMsg(string.format(...))
   end
 end
 addon.debug = debug
@@ -1237,8 +1237,8 @@ function addon:UpdateInstanceData()
   vars.config:BuildOptions() -- refresh config table
   
   starttime = debugprofilestop()-starttime
-  debug("UpdateInstanceData(): completed in "..string.format("%.6f",starttime/1000.0).." sec : "..
-        added.." added, "..renames.." renames, "..merges.." merges, "..conflicts.." conflicts.")
+  debug("UpdateInstanceData(): completed in %.3f ms : %d added, %d renames, %d merges, %d conflicts.",
+	starttime, added, renames, merges, conflicts)
   if addon.RefreshPending then
     addon.RefreshPending = nil
     core:Refresh()
@@ -2361,12 +2361,12 @@ function core:BossModEncounterEnd(modname, bossname)
     t.lastboss = bossname
     t.lastbosstime = now
   end
-  debug((modname or "BossMod").." refresh: "..tostring(bossname)); 
+  debug("%s refresh: %s",(modname or "BossMod"),tostring(bossname)); 
   core:RefreshLockInfo()
 end
 
 function core:EncounterEnd(event, encounterID, encounterName, difficultyID, raidSize, endStatus)
-  debug("EncounterEnd:"..tostring(encounterID)..":"..tostring(encounterName)..":"..tostring(difficultyID)..":"..tostring(raidSize)..":"..tostring(endStatus))
+  debug("EncounterEnd:%s:%s:%s:%s:%s",tostring(encounterID),tostring(encounterName),tostring(difficultyID),tostring(raidSize),tostring(endStatus))
   if endStatus ~= 1 then return end -- wipe
   core:RefreshLockInfo()
   local t = vars.db.Toons[thisToon]
@@ -2383,7 +2383,7 @@ function core:EncounterEnd(event, encounterID, encounterName, difficultyID, raid
 end
 
 function core:BOSS_KILL(event, encounterID, encounterName, ...)
-  debug("BOSS_KILL:"..tostring(encounterID)..":"..tostring(encounterName)) -- ..":"..strjoin(":",...))
+  debug("BOSS_KILL:%s:%s",tostring(encounterID),tostring(encounterName)) -- ..":"..strjoin(":",...))
   local name = encounterName
   if name and type(name) == "string" then
     name = name:gsub(",.*$","") -- remove extraneous trailing boss titles
@@ -2558,7 +2558,7 @@ function addon:HistoryUpdate(forcereset, forcemesg)
   for zk, zi in pairs(vars.db.History) do
     if now > zi.last + addon.histReapTime or
        zi.last > (now + 3600) then -- temporary bug fix
-      debug("Reaping "..zi.desc)
+      debug("Reaping %s",zi.desc)
       vars.db.History[zk] = nil
     else 
       livecnt = livecnt + 1
@@ -2614,7 +2614,7 @@ function core:memcheck(context)
   local newval = GetAddOnMemoryUsage("SavedInstances")
   core.memusage = core.memusage or 0
   if newval ~= core.memusage then
-    debug(string.format("%.3f",newval - core.memusage).." KB in "..context)
+    debug("%.3f KB in %s",(newval - core.memusage),context)
     core.memusage = newval
   end
 end
@@ -3001,6 +3001,7 @@ function core:ShowTooltip(anchorframe)
 	   then 
 	   return -- skip update
 	end
+	local starttime = debugprofilestop()
 	core.showall = showall
 	local showexpired = showall or vars.db.Tooltip.ShowExpired
 	if tooltip then QTip:Release(tooltip) end
@@ -3702,7 +3703,7 @@ function core:ShowTooltip(anchorframe)
 	     if w > sw or h > sh then
 	       scale = scale / math.max(w/sw, h/sh)
 	       scale = scale*0.95 -- 5% slop to speed convergeance
-	       debug("Downscaling to "..scale)
+	       debug("Downscaling to %.4f",scale)
 	       tooltip:SetScale(scale)
 	       tooltip:Hide()
 	       addon.scaleCache[showall] = scale
@@ -3710,6 +3711,8 @@ function core:ShowTooltip(anchorframe)
 	     end
 	   end
         end
+  	starttime = debugprofilestop()-starttime
+  	debug("ShowTooltip(): completed in %.3fms", starttime)
 end
 
 local function ResetConfirmed()
@@ -3956,7 +3959,7 @@ function core:record_skill(spellID, expires)
   end
   if expires == 0 then 
     if t.Skills[idx] then -- a cd ended early
-      debug("Clearing Trade skill cd: "..spellName.." ("..spellID..")")
+      debug("Clearing Trade skill cd: %s (%s)",spellName,spellID)
     end
     t.Skills[idx] = nil 
     return
@@ -3971,7 +3974,7 @@ function core:record_skill(spellID, expires)
   local sinfo = t.Skills[idx] or {}
   t.Skills[idx] = sinfo
   local change = expires - (sinfo.Expires or 0)
-  if math.abs(change) > 180 then -- updating expiration guess (more than 3 min update lag)
+  if math.abs(change) > 180 and addon.db.dbg then -- updating expiration guess (more than 3 min update lag)
     debug("Trade skill cd: "..(link or title).." ("..spellID..") "..
           (sinfo.Expires and string.format("%d",change).." sec" or "(new)")..
 	  " Local time: "..date("%c",expires))
@@ -4142,19 +4145,20 @@ end
 function core:UNIT_SPELLCAST_SUCCEEDED(evt, unit, spellName, rank, lineID, spellID)
   if unit ~= "player" then return end
   if trade_spells[spellID] then 
-    debug("UNIT_SPELLCAST_SUCCEEDED: "..GetSpellLink(spellID).." ("..spellID..")")
+    debug("UNIT_SPELLCAST_SUCCEEDED: %s (%s)",GetSpellLink(spellID),spellID)
     if not core:record_skill(spellID) then return end
     core:ScheduleTimer("TradeSkillRescan", 0.5, spellID)
   elseif farm_spells[spellID] then
-    debug("UNIT_SPELLCAST_SUCCEEDED: "..GetSpellLink(spellID).." ("..spellID..")")
+    debug("UNIT_SPELLCAST_SUCCEEDED: %s (%s)",GetSpellLink(spellID),spellID)
     core:record_farm(spellID)
   end
 end
 
 function core:BonusRollResult(event, rewardType, rewardLink, rewardQuantity, rewardSpecID)
   local t = vars.db.Toons[thisToon]
-  debug("BonusRollResult:"..tostring(rewardType)..":"..tostring(rewardLink)..":"..tostring(rewardQuantity)..":"..tostring(rewardSpecID)..
-        " (boss="..tostring(t and t.lastboss).."|"..tostring(t and t.lastbossyell)..")")
+  debug("BonusRollResult:%s:%s:%s:%s (boss=%s|%s)",
+        tostring(rewardType), tostring(rewardLink), tostring(rewardQuantity), tostring(rewardSpecID),
+        tostring(t and t.lastboss), tostring(t and t.lastbossyell))
   if not t then return end
   if not rewardType then return end -- sometimes get a bogus message, ignore it
   t.BonusRoll = t.BonusRoll or {}
