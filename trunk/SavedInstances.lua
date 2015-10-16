@@ -2805,31 +2805,34 @@ local function UpdateTooltip(self,elap)
 end
 
 -- sorted traversal function for character table
+local cpairs
+do
 local cnext_sorted_names = {}
+local cnext_pos
 local function cnext(t,i)
-   -- return them in reverse order
-   if #cnext_sorted_names == 0 then
+   local n = cnext_sorted_names[cnext_pos]
+   if not n then
      return nil
    else
-      local n = cnext_sorted_names[#cnext_sorted_names]
-      table.remove(cnext_sorted_names, #cnext_sorted_names)
-      return n, t[n]
+     cnext_pos = cnext_pos + 1
+     return n, t[n]
    end
 end
 local function cpairs_sort(a,b)
   local an, as = a:match('^(.*) [-] (.*)$')
   local bn, bs = b:match('^(.*) [-] (.*)$')
   if db.Tooltip.SelfFirst and b == thisToon then
-    return true
-  elseif db.Tooltip.SelfFirst and a == thisToon then
     return false
+  elseif db.Tooltip.SelfFirst and a == thisToon then
+    return true
   elseif db.Tooltip.ServerSort and as ~= bs then
-    return as > bs
+    return as < bs
   else
-    return a > b
+    return a < b
   end
 end
-local function cpairs(t)
+cpairs = function(t, usecache)
+ if not usecache then
   wipe(cnext_sorted_names)
   for n,_ in pairs(t) do
     local tn, ts = n:match('^(.*) [-] (.*)$')
@@ -2841,8 +2844,11 @@ local function cpairs(t)
     end
   end
   table.sort(cnext_sorted_names, cpairs_sort)
+ end
   --myprint(cnext_sorted_names)
+  cnext_pos = 1
   return cnext, t, nil
+end
 end
 
 function addon:IsDetached()
@@ -3067,7 +3073,7 @@ function core:ShowTooltip(anchorframe)
 			        lfrbox[lfrboxid] = true
 			      end
 			    end
-			    for toon, t in cpairs(vars.db.Toons) do
+			    for toon, t in cpairs(vars.db.Toons, true) do
 				for diff = 1, maxdiff do
 					if inst[toon] and inst[toon][diff] then
 					    if (inst[toon][diff].Expires > 0) then
@@ -3124,7 +3130,7 @@ function core:ShowTooltip(anchorframe)
 			  	   instancerow[instance] = instancerow[instance] or tooltip:AddLine()
 				end
 				if inst.Show ~= "never" or showall then
-				    for toon, t in cpairs(vars.db.Toons) do
+				    for toon, t in cpairs(vars.db.Toons, true) do
 					for diff = 1, maxdiff do
 					        if inst[toon] and inst[toon][diff] and (inst[toon][diff].Expires > 0 or showexpired) then
 							instancerow[instance] = instancerow[instance] or tooltip:AddLine()
@@ -3152,7 +3158,7 @@ function core:ShowTooltip(anchorframe)
 		if addon.LFRInstances[inst.LFDID] then
 		  tooltip:SetLineScript(instancerow[instance], "OnMouseDown", OpenLFR, inst.LFDID)
 		end
-			for toon, t in cpairs(vars.db.Toons) do
+			for toon, t in cpairs(vars.db.Toons, true) do
 				if inst[toon] then
 				  local showcol = localarr("showcol")
 				  local showcnt = 0
@@ -3217,7 +3223,7 @@ function core:ShowTooltip(anchorframe)
 	    end
 	    tooltip:SetCell(line, 1, (instancesaved[boxid] and GOLDFONT or GRAYFONT) .. boxname .. FONTEND)
 	    tooltip:SetLineScript(line, "OnMouseDown", OpenLFR, firstid)
-	    for toon, t in cpairs(vars.db.Toons) do
+	    for toon, t in cpairs(vars.db.Toons, true) do
 	      local saved = 0
 	      local diff = 2
 	      for key, instance in pairs(lfrmap) do
@@ -3242,7 +3248,7 @@ function core:ShowTooltip(anchorframe)
 	    addsep()
 	  end
 	  local line = tooltip:AddLine((instancesaved[L["World Bosses"]] and YELLOWFONT or GRAYFONT) .. L["World Bosses"] .. FONTEND)
-	  for toon, t in cpairs(vars.db.Toons) do
+	  for toon, t in cpairs(vars.db.Toons, true) do
 	    local saved = 0
 	    local diff = 2
 	    for _, instance in ipairs(worldbosses) do
@@ -3267,7 +3273,7 @@ function core:ShowTooltip(anchorframe)
 	  if showall or 
 	     (info.Holiday and vars.db.Tooltip.ShowHoliday) or
 	     (info.Random and vars.db.Tooltip.ShowRandom) then
-		for toon, t in cpairs(vars.db.Toons) do
+		for toon, t in cpairs(vars.db.Toons, true) do
 		  local d = info[toon] and info[toon][1]
 		  if d then
 		    addColumns(columns, toon, tooltip)
@@ -3293,7 +3299,7 @@ function core:ShowTooltip(anchorframe)
 	-- random dungeon
 	if vars.db.Tooltip.TrackLFG or showall then
 		local cd1,cd2 = false,false
-		for toon, t in cpairs(vars.db.Toons) do
+		for toon, t in cpairs(vars.db.Toons, true) do
 			cd2 = cd2 or t.LFG2
 			cd1 = cd1 or (t.LFG1 and (not t.LFG2 or showall))
 			if t.LFG1 or t.LFG2 then
@@ -3310,7 +3316,7 @@ function core:ShowTooltip(anchorframe)
 			cd1 = cd1 and tooltip:AddLine(YELLOWFONT .. LFG_TYPE_RANDOM_DUNGEON..cooldown .. FONTEND)		
 			cd2 = cd2 and tooltip:AddLine(YELLOWFONT .. GetSpellInfo(71041) .. FONTEND)		
 		end
-		for toon, t in cpairs(vars.db.Toons) do
+		for toon, t in cpairs(vars.db.Toons, true) do
 		    local d1 = (t.LFG1 and t.LFG1 - time()) or -1
 		    local d2 = (t.LFG2 and t.LFG2 - time()) or -1
 		    if d1 > 0 and (d2 < 0 or showall) then
@@ -3329,7 +3335,7 @@ function core:ShowTooltip(anchorframe)
 	end
 	if vars.db.Tooltip.TrackDeserter or showall then
 		local show = false
-		for toon, t in cpairs(vars.db.Toons) do
+		for toon, t in cpairs(vars.db.Toons, true) do
 			if t.pvpdesert then
 				show = true
 				addColumns(columns, toon, tooltip)
@@ -3342,7 +3348,7 @@ function core:ShowTooltip(anchorframe)
 			end
 			show = tooltip:AddLine(YELLOWFONT .. DESERTER .. FONTEND)		
 		end
-		for toon, t in cpairs(vars.db.Toons) do
+		for toon, t in cpairs(vars.db.Toons, true) do
 			if t.pvpdesert and time() < t.pvpdesert then
 				local tstr = SecondsToTime(t.pvpdesert - time(), false, false, 1)
 				tooltip:SetCell(show, columns[toon..1], ClassColorise(t.Class,tstr), "CENTER",maxcol)
@@ -3354,7 +3360,7 @@ function core:ShowTooltip(anchorframe)
 
         do
                 local showd, showw 
-                for toon, t in cpairs(vars.db.Toons) do
+                for toon, t in cpairs(vars.db.Toons, true) do
                         local dc, wc = addon:QuestCount(toon)
                         if dc > 0 and (vars.db.Tooltip.TrackDailyQuests or showall) then
                                 showd = true
@@ -3385,7 +3391,7 @@ function core:ShowTooltip(anchorframe)
                           tooltip:SetCellScript(showw, 1, "OnLeave", CloseTooltips)
 			end
                 end
-                for toon, t in cpairs(vars.db.Toons) do
+                for toon, t in cpairs(vars.db.Toons, true) do
                         local dc, wc = addon:QuestCount(toon)
                         if showd and columns[toon..1] and dc > 0 then
 				local qstr = dc
@@ -3404,7 +3410,7 @@ function core:ShowTooltip(anchorframe)
 
 	if vars.db.Tooltip.TrackSkills or showall then
 		local show = false
-		for toon, t in cpairs(vars.db.Toons) do
+		for toon, t in cpairs(vars.db.Toons, true) do
 			if t.Skills and next(t.Skills) then
 				show = true
 				addColumns(columns, toon, tooltip)
@@ -3416,7 +3422,7 @@ function core:ShowTooltip(anchorframe)
 			end
 			show = tooltip:AddLine(YELLOWFONT .. L["Trade Skill Cooldowns"] .. FONTEND)		
 		end
-		for toon, t in cpairs(vars.db.Toons) do
+		for toon, t in cpairs(vars.db.Toons, true) do
 			local cnt = 0
 			if t.Skills then
 				for _ in pairs(t.Skills) do cnt = cnt + 1 end
@@ -3432,7 +3438,7 @@ function core:ShowTooltip(anchorframe)
 	if vars.db.Tooltip.TrackFarm or showall then
 		local toonfarm = localarr("toonfarm")
 		local show
-		for toon, t in cpairs(vars.db.Toons) do
+		for toon, t in cpairs(vars.db.Toons, true) do
 			if (t.FarmPlanted or 0) > 0 or (t.FarmHarvested or 0) > 0 or
 			   (t.FarmCropReady and next(t.FarmCropReady)) then
 				toonfarm[toon] = (t.FarmHarvested or 0).."/"..(t.FarmPlanted or 0)
@@ -3446,7 +3452,7 @@ function core:ShowTooltip(anchorframe)
 			end
 			show = tooltip:AddLine(YELLOWFONT .. L["Farm Crops"] .. FONTEND)		
 		end
-		for toon, t in cpairs(vars.db.Toons) do
+		for toon, t in cpairs(vars.db.Toons, true) do
 			if toonfarm[toon] then
 				tooltip:SetCell(show, columns[toon..1], ClassColorise(t.Class,toonfarm[toon]), "CENTER",maxcol)
 		                tooltip:SetCellScript(show, columns[toon..1], "OnEnter", ShowFarmTooltip, toon)
@@ -3458,7 +3464,7 @@ function core:ShowTooltip(anchorframe)
 	if vars.db.Tooltip.TrackBonus or showall then
 		local show
 		local toonbonus = localarr("toonbonus")
-		for toon, t in cpairs(vars.db.Toons) do
+		for toon, t in cpairs(vars.db.Toons, true) do
 			if t.BonusRoll and t.BonusRoll[1] then
 				local gold = 0
 				for _,roll in ipairs(t.BonusRoll) do
@@ -3479,7 +3485,7 @@ function core:ShowTooltip(anchorframe)
 			end
 			show = tooltip:AddLine(YELLOWFONT .. L["Roll Bonus"] .. FONTEND)		
 		end
-		for toon, t in cpairs(vars.db.Toons) do
+		for toon, t in cpairs(vars.db.Toons, true) do
 			if toonbonus[toon] then
 				local str = toonbonus[toon]
 				if str > 0 then str = "+"..str end
@@ -3495,7 +3501,7 @@ function core:ShowTooltip(anchorframe)
 	  local setting = vars.db.Tooltip["Currency"..idx]
           if setting or showall then
             local show 
-   	    for toon, t in cpairs(vars.db.Toons) do
+   	    for toon, t in cpairs(vars.db.Toons, true) do
 		-- ci.name, ci.amount, ci.earnedThisWeek, ci.weeklyMax, ci.totalMax
                 local ci = t.currency and t.currency[idx] 
 		local gotsome
@@ -3520,7 +3526,7 @@ function core:ShowTooltip(anchorframe)
 		end
 		currLine = tooltip:AddLine(YELLOWFONT .. show .. FONTEND)		
 
-   	      for toon, t in cpairs(vars.db.Toons) do
+   	      for toon, t in cpairs(vars.db.Toons, true) do
                 local ci = t.currency and t.currency[idx] 
 		if ci and columns[toon..1] then
 		   local earned, weeklymax, totalmax = "","",""
