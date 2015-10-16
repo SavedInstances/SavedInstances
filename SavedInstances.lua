@@ -840,7 +840,7 @@ function addon:InstancesInCategory(targetcategory)
 	local list = { }
 	for instance, _ in pairs(vars.db.Instances) do
 		if addon:InstanceCategory(instance) == targetcategory then
-			list[#list+1] = instance
+			table.insert(list, instance)
 		end
 	end
 	return list
@@ -1024,16 +1024,23 @@ local function instanceSort(i1, i2)
   end
 end
 
+addon.oi_cache = {}
 function addon:OrderedInstances(category)
 	-- returns a table of the form { "instance1", "instance2", ... }
-	local instances = addon:InstancesInCategory(category)
-	table.sort(instances, instanceSort)
+	local instances = addon.oi_cache[category]
+	if not instances then 
+		instances = addon:InstancesInCategory(category)
+		table.sort(instances, instanceSort)
+		if addon.instancesUpdated then
+			addon.oi_cache[category] = instances
+		end
+	end
 	return instances
 end
 
-
 function addon:OrderedCategories()
 	-- returns a table of the form { "category1", "category2", ... }
+	if addon.oc_cache then return addon.oc_cache end
 	local orderedlist = { }
 	local firstexpansion, lastexpansion, expansionstep, firsttype, lasttype
 	if vars.db.Tooltip.NewFirst then
@@ -1053,16 +1060,17 @@ function addon:OrderedCategories()
 		lasttype = "R"
 	end
 	for i = firstexpansion, lastexpansion, expansionstep do
-		orderedlist[1+#orderedlist] = firsttype .. i
+		table.insert(orderedlist, firsttype .. i)
 		if vars.db.Tooltip.CategorySort == "EXPANSION" then
-			orderedlist[1+#orderedlist] = lasttype .. i
+			table.insert(orderedlist, lasttype .. i)
 		end
 	end
 	if vars.db.Tooltip.CategorySort == "TYPE" then
 		for i = firstexpansion, lastexpansion, expansionstep do
-			orderedlist[1+#orderedlist] = lasttype .. i
+			table.insert(orderedlist, lasttype .. i)
 		end
 	end
+	addon.oc_cache = orderedlist
 	return orderedlist
 end
 
@@ -1129,11 +1137,10 @@ local function DifficultyString(instance, diff, toon, expired, killoverride, tot
 end
 
 -- run about once per session to update our database of instance info
-local instancesUpdated = false
 function addon:UpdateInstanceData()
   --debug("UpdateInstanceData()")
-  if instancesUpdated then return end  -- nil before first use in UI
-  instancesUpdated = true
+  if addon.instancesUpdated then return end  -- nil before first use in UI
+  addon.instancesUpdated = true
   local added = 0
   local lfdid_to_name = {}
   local wbid_to_name = {}
@@ -2687,7 +2694,7 @@ end
 function core:Refresh(recoverdaily)
 	-- update entire database from the current character's perspective
         addon:UpdateInstanceData()
-	if not instancesUpdated then addon.RefreshPending = true; return end -- wait for UpdateInstanceData to succeed
+	if not addon.instancesUpdated then addon.RefreshPending = true; return end -- wait for UpdateInstanceData to succeed
 	local nextreset = addon:GetNextDailyResetTime()
         if not nextreset or ((nextreset - time()) > (24*3600 - 5*60)) then  -- allow 5 minutes for quest DB to update after daily rollover
 	  debug("Skipping core:Refresh() near daily reset")

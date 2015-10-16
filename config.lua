@@ -199,6 +199,8 @@ function module:BuildOptions()
 					addon.debug(info[#info].." set to: "..tostring(value))
 					db.Tooltip[info[#info]] = value
 					wipe(addon.scaleCache)
+					wipe(addon.oi_cache)
+					addon.oc_cache = nil
 			end,
 			args = {
 				ver = {
