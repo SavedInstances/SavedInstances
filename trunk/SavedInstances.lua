@@ -1653,7 +1653,7 @@ local function finishIndicator(parent)
   indicatortip:SetAutoHideDelay(0.1, parent)
   indicatortip.OnRelease = function() indicatortip = nil end -- extra-safety: update our variable on auto-release
   indicatortip:SmartAnchorTo(parent)
-  indicatortip:SetFrameLevel(100) -- ensure visibility when forced to overlap main tooltip
+  indicatortip:SetFrameLevel(150) -- ensure visibility when forced to overlap main tooltip
   addon:SkinFrame(indicatortip,"SavedInstancesIndicatorTooltip")
   indicatortip:Show()
 end
@@ -2152,6 +2152,7 @@ function core:OnInitialize()
 	db.Tooltip.CurrencyValueColor = (db.Tooltip.CurrencyValueColor == nil and true) or db.Tooltip.CurrencyValueColor
 	db.Tooltip.RowHighlight = db.Tooltip.RowHighlight or 0.1
 	db.Tooltip.Scale = db.Tooltip.Scale or 1
+	db.Tooltip.FitToScreen = (db.Tooltip.FitToScreen == nil and true) or db.Tooltip.FitToScreen
 	db.QuestDB = db.QuestDB or vars.defaultDB.QuestDB
 	for _, id in ipairs(addon.currency) do
 	  local name = "Currency"..id
@@ -2883,10 +2884,12 @@ function addon:ShowDetached()
 		  if not tooltip then f:Hide(); return end
 		  local w,h = tooltip:GetSize()
 		  self:SetSize(w*tooltip:GetScale(),(h+20)*tooltip:GetScale())
+		  --[[
 		  tooltip:ClearAllPoints()
 		  tooltip:SetPoint("BOTTOMLEFT",addon.detachframe)
 		  tooltip:SetFrameLevel(addon.detachframe:GetFrameLevel()+1)
 	          tooltip:Show()
+		  --]]
 		end)
       f:SetScript("OnKeyDown", function(self,key) 
         if key == "ESCAPE" then 
@@ -2976,6 +2979,7 @@ local function addColumns(columns, toon, tooltip)
 	end
 	columnCache[ShowAll()][toon] = true
 end
+addon.scaleCache = {}
 
 function core:HeaderFont()
   if not addon.headerfont then
@@ -2993,11 +2997,10 @@ function core:ShowTooltip(anchorframe)
 	local showall = ShowAll()
 	if tooltip and tooltip:IsShown() and 
 	   core.showall == showall and
-	   core.scale == vars.db.Tooltip.Scale
+	   core.scale == (addon.scaleCache[showall] or vars.db.Tooltip.Scale)
 	   then 
 	   return -- skip update
 	end
-	core.scale = vars.db.Tooltip.Scale
 	core.showall = showall
 	local showexpired = showall or vars.db.Tooltip.ShowExpired
 	if tooltip then QTip:Release(tooltip) end
@@ -3006,7 +3009,8 @@ function core:ShowTooltip(anchorframe)
 	tooltip.anchorframe = anchorframe
 	tooltip:SetScript("OnUpdate", UpdateTooltip)
 	tooltip:Clear()
-	tooltip:SetScale(vars.db.Tooltip.Scale)
+	core.scale = addon.scaleCache[showall] or vars.db.Tooltip.Scale
+	tooltip:SetScale(core.scale)
 	tooltip:SetHeaderFont(core:HeaderFont())
 	addon:HistoryUpdate()
 	local histinfo = ""
@@ -3660,21 +3664,50 @@ function core:ShowTooltip(anchorframe)
         end 
         if fail then -- retry with corrected cache
 		debug("Tooltip cache miss")
+	        addon.scaleCache[showall] = nil
 		--core:ShowTooltip(anchorframe)
 		-- reschedule continuation to reduce time-slice exceeded errors in combat
 		core:ScheduleTimer("ShowTooltip", 0, anchorframe)
         else -- render it
 	   addon:SkinFrame(tooltip,"SavedInstancesTooltip")
 	   if addon:IsDetached() then
+	   --[[
 	        tooltip.anchorframe = UIParent
 	        tooltip:SmartAnchorTo(UIParent)
 		tooltip:SetAutoHideDelay(nil, UIParent)
+		--]]
 		--tooltip:UpdateScrolling(100000)
+	        tooltip:Show()
+	        QTip.layoutCleaner:CleanupLayouts()
+		tooltip:ClearAllPoints()
+		tooltip:SetPoint("BOTTOMLEFT",addon.detachframe)
+		tooltip:SetFrameLevel(addon.detachframe:GetFrameLevel()+1)
 	   else
 	        tooltip:SmartAnchorTo(anchorframe)
 		tooltip:SetAutoHideDelay(0.1, anchorframe)
-		tooltip.OnRelease = function() tooltip = nil end -- extra-safety: update our variable on auto-release
 	        tooltip:Show()
+	   end
+	   tooltip.OnRelease = function() -- extra-safety: update our variable on auto-release
+	   	tooltip:ClearAllPoints()
+	   	tooltip = nil 
+	   end 
+	   if db.Tooltip.FitToScreen then
+	     -- scale check
+	     QTip.layoutCleaner:CleanupLayouts()
+  	     local scale = tooltip:GetScale()
+	     local w,h = tooltip:GetSize()
+	     local sw,sh = UIParent:GetSize()
+	     w = w*scale;
+	     h = h*scale;
+	     if w > sw or h > sh then
+	       scale = scale / math.max(w/sw, h/sh)
+	       scale = scale*0.95 -- 5% slop to speed convergeance
+	       debug("Downscaling to "..scale)
+	       tooltip:SetScale(scale)
+	       tooltip:Hide()
+	       addon.scaleCache[showall] = scale
+	       core:ScheduleTimer("ShowTooltip", 0, anchorframe) -- re-render fonts
+	     end
 	   end
         end
 end
