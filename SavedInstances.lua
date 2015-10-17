@@ -3027,11 +3027,13 @@ function core:ShowTooltip(anchorframe)
 	tooltip:SetScale(core.scale)
 	tooltip:SetHeaderFont(core:HeaderFont())
 	addon:HistoryUpdate()
-	local histinfo = ""
+	local headText
 	if addon.histLiveCount and addon.histLiveCount > 0 then
-	  histinfo = "  ("..addon.histLiveCount.."/"..(addon.histOldest or "?")..")"
+	  headText = string.format("%s%s (%d/%s)%s",GOLDFONT,addonName,addon.histLiveCount,(addon.histOldest or "?"),FONTEND)
+	else
+	  headText = string.format("%s%s%s",GOLDFONT,addonName,FONTEND)
 	end
-	local headLine = tooltip:AddHeader(GOLDFONT .. addonName .. histinfo .. FONTEND)
+	local headLine = tooltip:AddHeader(headText)
 	tooltip:SetCellScript(headLine, 1, "OnEnter", ShowHistoryTooltip )
 	tooltip:SetCellScript(headLine, 1, "OnLeave", CloseTooltips)
 	addon:UpdateToonData()
@@ -3161,17 +3163,16 @@ function core:ShowTooltip(anchorframe)
 	-- now printing instance data
 	for instance, row in pairs(instancerow) do
 	        local inst = vars.db.Instances[instance]
-		tooltip:SetCell(instancerow[instance], 1, (instancesaved[instance] and GOLDFONT or GRAYFONT) .. instance .. FONTEND)
+		tooltip:SetCell(row, 1, (instancesaved[instance] and GOLDFONT or GRAYFONT) .. instance .. FONTEND)
 		if addon.LFRInstances[inst.LFDID] then
-		  tooltip:SetLineScript(instancerow[instance], "OnMouseDown", OpenLFR, inst.LFDID)
+		  tooltip:SetLineScript(row, "OnMouseDown", OpenLFR, inst.LFDID)
 		end
 			for toon, t in cpairs(vars.db.Toons, true) do
 				if inst[toon] then
 				  local showcol = localarr("showcol")
 				  local showcnt = 0
 				  for diff = 1, maxdiff do
-				    if instancerow[instance] and 
-				      inst[toon][diff] and (inst[toon][diff].Expires > 0 or showexpired) then
+				    if inst[toon][diff] and (inst[toon][diff].Expires > 0 or showexpired) then
 				      showcnt = showcnt + 1
 				      showcol[diff] = true
 				    end
@@ -3186,21 +3187,22 @@ function core:ShowTooltip(anchorframe)
 				  end
 				  for diff = 1, maxdiff do
 				    if showcol[diff] then
-					tooltip:SetCell(instancerow[instance], columns[toon..base], 
+				        local col = columns[toon..base]
+					tooltip:SetCell(row, col, 
 					    DifficultyString(instance, diff, toon, inst[toon][diff].Expires == 0), span)
-					tooltip:SetCellScript(instancerow[instance], columns[toon..base], "OnEnter", ShowIndicatorTooltip, {instance, toon, diff})
-					tooltip:SetCellScript(instancerow[instance], columns[toon..base], "OnLeave", CloseTooltips)
+					tooltip:SetCellScript(row, col, "OnEnter", ShowIndicatorTooltip, {instance, toon, diff})
+					tooltip:SetCellScript(row, col, "OnLeave", CloseTooltips)
 					if addon.LFRInstances[inst.LFDID] then
-					  tooltip:SetCellScript(instancerow[instance], columns[toon..base], "OnMouseDown", OpenLFR, inst.LFDID)
+					  tooltip:SetCellScript(row, col, "OnMouseDown", OpenLFR, inst.LFDID)
 					else
 					  local link = inst[toon][diff].Link
 					  if link then
-					    tooltip:SetCellScript(instancerow[instance], columns[toon..base], "OnMouseDown", ChatLink, link)
+					    tooltip:SetCellScript(row, col, "OnMouseDown", ChatLink, link)
 					  end
 				        end
 					base = base + 1
 				    elseif columns[toon..diff] and showcnt > 1 then
-					tooltip:SetCell(instancerow[instance], columns[toon..diff], "")
+					tooltip:SetCell(row, columns[toon..diff], "")
 				    end
 				  end
 				end
@@ -3240,7 +3242,7 @@ function core:ShowTooltip(anchorframe)
 	      end
 	      if saved > 0 then
 	        addColumns(columns, toon, tooltip)
-	        local col = columns[toon.."1"]
+	        local col = columns[toon..1]
 	        tooltip:SetCell(line, col, DifficultyString(pinstance, diff, toon, false, saved, total),4)
 	        tooltip:SetCellScript(line, col, "OnEnter", ShowLFRTooltip, {boxname, toon, lfrmap})
 	        tooltip:SetCellScript(line, col, "OnLeave", CloseTooltips)
@@ -3266,7 +3268,7 @@ function core:ShowTooltip(anchorframe)
 	    end
 	    if saved > 0 then
 	      addColumns(columns, toon, tooltip)
-	      local col = columns[toon.."1"]
+	      local col = columns[toon..1]
 	      tooltip:SetCell(line, col, DifficultyString(worldbosses[1], diff, toon, false, saved, #worldbosses),4)
 	      tooltip:SetCellScript(line, col, "OnEnter", ShowWorldBossTooltip, {worldbosses, toon, saved})
 	      tooltip:SetCellScript(line, col, "OnLeave", CloseTooltips)
@@ -3284,19 +3286,21 @@ function core:ShowTooltip(anchorframe)
 		  local d = info[toon] and info[toon][1]
 		  if d then
 		    addColumns(columns, toon, tooltip)
-		    if not holidayinst[instance] then
+		    local row = holidayinst[instance]
+		    if not row then
 		      if not firstcategory and vars.db.Tooltip.CategorySpaces and firstlfd then
 			 addsep()
 			 firstlfd = false
 		      end
-		      holidayinst[instance] = tooltip:AddLine(YELLOWFONT .. abbreviate(instance) .. FONTEND)
+		      row = tooltip:AddLine(YELLOWFONT .. abbreviate(instance) .. FONTEND)
+		      holidayinst[instance] = row
 		    end
 		    local tstr = SecondsToTime(d.Expires - time(), false, false, 1)
-     		    tooltip:SetCell(holidayinst[instance], columns[toon..1], ClassColorise(t.Class,tstr), "CENTER",maxcol)
+     		    tooltip:SetCell(row, columns[toon..1], ClassColorise(t.Class,tstr), "CENTER",maxcol)
 		    if info.Scenario then
-		      tooltip:SetLineScript(holidayinst[instance], "OnMouseDown", OpenLFS, info.LFDID)
+		      tooltip:SetLineScript(row, "OnMouseDown", OpenLFS, info.LFDID)
 		    else
-		      tooltip:SetLineScript(holidayinst[instance], "OnMouseDown", OpenLFD, info.LFDID)
+		      tooltip:SetLineScript(row, "OnMouseDown", OpenLFD, info.LFDID)
 		    end
 		  end
 		end
@@ -3327,16 +3331,18 @@ function core:ShowTooltip(anchorframe)
 		    local d1 = (t.LFG1 and t.LFG1 - time()) or -1
 		    local d2 = (t.LFG2 and t.LFG2 - time()) or -1
 		    if d1 > 0 and (d2 < 0 or showall) then
+		    	local col = columns[toon..1]
 		        local tstr = SecondsToTime(d1, false, false, 1)
-			tooltip:SetCell(cd1, columns[toon..1], ClassColorise(t.Class,tstr), "CENTER",maxcol)
-		        tooltip:SetCellScript(cd1, columns[toon..1], "OnEnter", ShowSpellIDTooltip, {toon,-1,tstr})
-		        tooltip:SetCellScript(cd1, columns[toon..1], "OnLeave", CloseTooltips)
+			tooltip:SetCell(cd1, col, ClassColorise(t.Class,tstr), "CENTER",maxcol)
+		        tooltip:SetCellScript(cd1, col, "OnEnter", ShowSpellIDTooltip, {toon,-1,tstr})
+		        tooltip:SetCellScript(cd1, col, "OnLeave", CloseTooltips)
 		    end
 		    if d2 > 0 then
+		    	local col = columns[toon..1]
 		        local tstr = SecondsToTime(d2, false, false, 1)
-			tooltip:SetCell(cd2, columns[toon..1], ClassColorise(t.Class,tstr), "CENTER",maxcol)
-		        tooltip:SetCellScript(cd2, columns[toon..1], "OnEnter", ShowSpellIDTooltip, {toon,71041,tstr})
-		        tooltip:SetCellScript(cd2, columns[toon..1], "OnLeave", CloseTooltips)
+			tooltip:SetCell(cd2, col, ClassColorise(t.Class,tstr), "CENTER",maxcol)
+		        tooltip:SetCellScript(cd2, col, "OnEnter", ShowSpellIDTooltip, {toon,71041,tstr})
+		        tooltip:SetCellScript(cd2, col, "OnLeave", CloseTooltips)
 		    end
 		end
 	end
@@ -3357,10 +3363,11 @@ function core:ShowTooltip(anchorframe)
 		end
 		for toon, t in cpairs(vars.db.Toons, true) do
 			if t.pvpdesert and time() < t.pvpdesert then
+		    		local col = columns[toon..1]
 				local tstr = SecondsToTime(t.pvpdesert - time(), false, false, 1)
-				tooltip:SetCell(show, columns[toon..1], ClassColorise(t.Class,tstr), "CENTER",maxcol)
-		                tooltip:SetCellScript(show, columns[toon..1], "OnEnter", ShowSpellIDTooltip, {toon,26013,tstr})
-		                tooltip:SetCellScript(show, columns[toon..1], "OnLeave", CloseTooltips)
+				tooltip:SetCell(show, col, ClassColorise(t.Class,tstr), "CENTER",maxcol)
+		                tooltip:SetCellScript(show, col, "OnEnter", ShowSpellIDTooltip, {toon,26013,tstr})
+		                tooltip:SetCellScript(show, col, "OnLeave", CloseTooltips)
 			end
 		end
 	end
@@ -3400,17 +3407,18 @@ function core:ShowTooltip(anchorframe)
                 end
                 for toon, t in cpairs(vars.db.Toons, true) do
                         local dc, wc = addon:QuestCount(toon)
-                        if showd and columns[toon..1] and dc > 0 then
+			local col = columns[toon..1]
+                        if showd and col and dc > 0 then
 				local qstr = dc
-                                tooltip:SetCell(showd, columns[toon..1], ClassColorise(t.Class,qstr), "CENTER",maxcol)
-                                tooltip:SetCellScript(showd, columns[toon..1], "OnEnter", ShowQuestTooltip, {toon,qstr.." "..L["Daily Quests"],true})
-                                tooltip:SetCellScript(showd, columns[toon..1], "OnLeave", CloseTooltips)
+                                tooltip:SetCell(showd, col, ClassColorise(t.Class,qstr), "CENTER",maxcol)
+                                tooltip:SetCellScript(showd, col, "OnEnter", ShowQuestTooltip, {toon,qstr.." "..L["Daily Quests"],true})
+                                tooltip:SetCellScript(showd, col, "OnLeave", CloseTooltips)
                         end
-                        if showw and columns[toon..1] and wc > 0 then
+                        if showw and col and wc > 0 then
 				local qstr = wc
-                                tooltip:SetCell(showw, columns[toon..1], ClassColorise(t.Class,qstr), "CENTER",maxcol)
-                                tooltip:SetCellScript(showw, columns[toon..1], "OnEnter", ShowQuestTooltip, {toon,qstr.." "..L["Weekly Quests"],false})
-                                tooltip:SetCellScript(showw, columns[toon..1], "OnLeave", CloseTooltips)
+                                tooltip:SetCell(showw, col, ClassColorise(t.Class,qstr), "CENTER",maxcol)
+                                tooltip:SetCellScript(showw, col, "OnEnter", ShowQuestTooltip, {toon,qstr.." "..L["Weekly Quests"],false})
+                                tooltip:SetCellScript(showw, col, "OnLeave", CloseTooltips)
                         end
                 end
         end
@@ -3435,9 +3443,10 @@ function core:ShowTooltip(anchorframe)
 				for _ in pairs(t.Skills) do cnt = cnt + 1 end
 			end
 			if cnt > 0 then
-				tooltip:SetCell(show, columns[toon..1], ClassColorise(t.Class,cnt), "CENTER",maxcol)
-		                tooltip:SetCellScript(show, columns[toon..1], "OnEnter", ShowSkillTooltip, {toon, cnt.." "..L["Trade Skill Cooldowns"]})
-		                tooltip:SetCellScript(show, columns[toon..1], "OnLeave", CloseTooltips)
+				local col = columns[toon..1]
+				tooltip:SetCell(show, col, ClassColorise(t.Class,cnt), "CENTER",maxcol)
+		                tooltip:SetCellScript(show, col, "OnEnter", ShowSkillTooltip, {toon, cnt.." "..L["Trade Skill Cooldowns"]})
+		                tooltip:SetCellScript(show, col, "OnLeave", CloseTooltips)
 			end
 		end
         end
@@ -3461,9 +3470,10 @@ function core:ShowTooltip(anchorframe)
 		end
 		for toon, t in cpairs(vars.db.Toons, true) do
 			if toonfarm[toon] then
-				tooltip:SetCell(show, columns[toon..1], ClassColorise(t.Class,toonfarm[toon]), "CENTER",maxcol)
-		                tooltip:SetCellScript(show, columns[toon..1], "OnEnter", ShowFarmTooltip, toon)
-		                tooltip:SetCellScript(show, columns[toon..1], "OnLeave", CloseTooltips)
+				local col = columns[toon..1]
+				tooltip:SetCell(show, col, ClassColorise(t.Class,toonfarm[toon]), "CENTER",maxcol)
+		                tooltip:SetCellScript(show, col, "OnEnter", ShowFarmTooltip, toon)
+		                tooltip:SetCellScript(show, col, "OnLeave", CloseTooltips)
 			end
 		end
         end
@@ -3494,11 +3504,12 @@ function core:ShowTooltip(anchorframe)
 		end
 		for toon, t in cpairs(vars.db.Toons, true) do
 			if toonbonus[toon] then
+				local col = columns[toon..1]
 				local str = toonbonus[toon]
 				if str > 0 then str = "+"..str end
-				tooltip:SetCell(show, columns[toon..1], ClassColorise(t.Class,str), "CENTER",maxcol)
-		                tooltip:SetCellScript(show, columns[toon..1], "OnEnter", ShowBonusTooltip, toon)
-		                tooltip:SetCellScript(show, columns[toon..1], "OnLeave", CloseTooltips)
+				tooltip:SetCell(show, col, ClassColorise(t.Class,str), "CENTER",maxcol)
+		                tooltip:SetCellScript(show, col, "OnEnter", ShowBonusTooltip, toon)
+		                tooltip:SetCellScript(show, col, "OnLeave", CloseTooltips)
 			end
 		end
         end
@@ -3535,7 +3546,8 @@ function core:ShowTooltip(anchorframe)
 
    	      for toon, t in cpairs(vars.db.Toons, true) do
                 local ci = t.currency and t.currency[idx] 
-		if ci and columns[toon..1] then
+		local col = columns[toon..1]
+		if ci and col then
 		   local earned, weeklymax, totalmax = "","",""
 		   if vars.db.Tooltip.CurrencyMax then
 		     if (ci.weeklyMax or 0) > 0 then
@@ -3560,10 +3572,10 @@ function core:ShowTooltip(anchorframe)
 		   if not vars.db.Tooltip.CurrencyValueColor then
 		     str = ClassColorise(t.Class,str)
 		   end
-		   tooltip:SetCell(currLine, columns[toon..1], str, "CENTER",maxcol)
-		   tooltip:SetCellScript(currLine, columns[toon..1], "OnEnter", ShowCurrencyTooltip, {toon, idx, ci})
-		   tooltip:SetCellScript(currLine, columns[toon..1], "OnLeave", CloseTooltips)
-		   tooltip:SetCellScript(currLine, columns[toon..1], "OnMouseDown", OpenCurrency)
+		   tooltip:SetCell(currLine, col, str, "CENTER",maxcol)
+		   tooltip:SetCellScript(currLine, col, "OnEnter", ShowCurrencyTooltip, {toon, idx, ci})
+		   tooltip:SetCellScript(currLine, col, "OnLeave", CloseTooltips)
+		   tooltip:SetCellScript(currLine, col, "OnMouseDown", OpenCurrency)
 		   tooltip:SetLineScript(currLine, "OnMouseDown", OpenCurrency)
 		  end
                 end
@@ -3604,7 +3616,7 @@ function core:ShowTooltip(anchorframe)
 	if vars.db.Tooltip.ShowCategories then
 		for category, row in pairs(categoryrow) do
 			if (categories > 1 or vars.db.Tooltip.ShowSoloCategory) and categoryshown[category] then
-				tooltip:SetCell(categoryrow[category], 1, YELLOWFONT .. vars.Categories[category] .. FONTEND, "LEFT", tooltip:GetColumnCount())
+				tooltip:SetCell(row, 1, YELLOWFONT .. vars.Categories[category] .. FONTEND, "LEFT", tooltip:GetColumnCount())
 			end
 		end
 	end
