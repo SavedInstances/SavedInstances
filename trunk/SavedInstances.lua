@@ -2805,10 +2805,18 @@ function core:Refresh(recoverdaily)
 end
 
 local function UpdateTooltip(self,elap) 
+	if not tooltip or not tooltip:IsShown() then return end
+	if addon.firstupdate then
+	   -- ticket 155: fix QTip backdrop which somehow gets corrupted sometimes, no idea why
+	   tooltip:SetBackdrop(GameTooltip:GetBackdrop())
+    	   tooltip:SetBackdropColor(GameTooltip:GetBackdropColor()); 
+	   tooltip:SetBackdropBorderColor(GameTooltip:GetBackdropBorderColor())
+	   addon.firstupdate = false
+	end
  	addon.updatetooltip_throttle = (addon.updatetooltip_throttle or 10) + elap 
 	if addon.updatetooltip_throttle < 0.5 then return end
 	addon.updatetooltip_throttle = 0
-	if tooltip:IsShown() and tooltip.anchorframe then 
+	if tooltip.anchorframe then 
 	   core:ShowTooltip(tooltip.anchorframe) 
 	end
 end
@@ -3024,6 +3032,7 @@ function core:ShowTooltip(anchorframe)
 	tooltip:SetCellMarginH(0)
 	tooltip.anchorframe = anchorframe
 	tooltip:SetScript("OnUpdate", UpdateTooltip)
+	addon.firstupdate = true
 	tooltip:Clear()
 	core.scale = addon.scaleCache[showall] or vars.db.Tooltip.Scale
 	tooltip:SetScale(core.scale)
