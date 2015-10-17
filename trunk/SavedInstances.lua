@@ -1697,7 +1697,8 @@ local function ShowToonTooltip(cell, arg, ...)
 end
 
 local function ShowQuestTooltip(cell, arg, ...)
-	local toon,qstr,isDaily = unpack(arg)
+	local toon,cnt,isDaily = unpack(arg)
+	local qstr = cnt.." "..(isDaily and L["Daily Quests"] or L["Weekly Quests"])
 	local t = db
 	local scopestr = L["Account"]
 	if toon then 
@@ -1746,7 +1747,8 @@ local function skillsort(s1, s2)
 end
 
 local function ShowSkillTooltip(cell, arg, ...)
-        local toon, cstr = unpack(arg)
+        local toon, cnt = unpack(arg)
+	local cstr = cnt.." "..L["Trade Skill Cooldowns"]
         local t = vars.db.Toons[toon]
         if not t then return end
 	openIndicator(3, "LEFT","RIGHT","RIGHT")
@@ -3394,14 +3396,14 @@ function core:ShowTooltip(anchorframe)
                 if showd then
                         showd = tooltip:AddLine(YELLOWFONT .. L["Daily Quests"] .. (adc > 0 and " ("..adc..")" or "") .. FONTEND)
 			if adc > 0 then
-                          tooltip:SetCellScript(showd, 1, "OnEnter", ShowQuestTooltip, {nil,adc.." "..L["Daily Quests"],true})
+                          tooltip:SetCellScript(showd, 1, "OnEnter", ShowQuestTooltip, {nil,adc,true})
                           tooltip:SetCellScript(showd, 1, "OnLeave", CloseTooltips)
 			end
                 end
                 if showw then
                         showw = tooltip:AddLine(YELLOWFONT .. L["Weekly Quests"] .. (awc > 0 and " ("..awc..")" or "") .. FONTEND)
 			if awc > 0 then
-                          tooltip:SetCellScript(showw, 1, "OnEnter", ShowQuestTooltip, {nil,awc.." "..L["Weekly Quests"],false})
+                          tooltip:SetCellScript(showw, 1, "OnEnter", ShowQuestTooltip, {nil,awc,false})
                           tooltip:SetCellScript(showw, 1, "OnLeave", CloseTooltips)
 			end
                 end
@@ -3409,15 +3411,13 @@ function core:ShowTooltip(anchorframe)
                         local dc, wc = addon:QuestCount(toon)
 			local col = columns[toon..1]
                         if showd and col and dc > 0 then
-				local qstr = dc
-                                tooltip:SetCell(showd, col, ClassColorise(t.Class,qstr), "CENTER",maxcol)
-                                tooltip:SetCellScript(showd, col, "OnEnter", ShowQuestTooltip, {toon,qstr.." "..L["Daily Quests"],true})
+                                tooltip:SetCell(showd, col, ClassColorise(t.Class,dc), "CENTER",maxcol)
+                                tooltip:SetCellScript(showd, col, "OnEnter", ShowQuestTooltip, {toon,dc,true})
                                 tooltip:SetCellScript(showd, col, "OnLeave", CloseTooltips)
                         end
                         if showw and col and wc > 0 then
-				local qstr = wc
-                                tooltip:SetCell(showw, col, ClassColorise(t.Class,qstr), "CENTER",maxcol)
-                                tooltip:SetCellScript(showw, col, "OnEnter", ShowQuestTooltip, {toon,qstr.." "..L["Weekly Quests"],false})
+                                tooltip:SetCell(showw, col, ClassColorise(t.Class,wc), "CENTER",maxcol)
+                                tooltip:SetCellScript(showw, col, "OnEnter", ShowQuestTooltip, {toon,wc,false})
                                 tooltip:SetCellScript(showw, col, "OnLeave", CloseTooltips)
                         end
                 end
@@ -3445,7 +3445,7 @@ function core:ShowTooltip(anchorframe)
 			if cnt > 0 then
 				local col = columns[toon..1]
 				tooltip:SetCell(show, col, ClassColorise(t.Class,cnt), "CENTER",maxcol)
-		                tooltip:SetCellScript(show, col, "OnEnter", ShowSkillTooltip, {toon, cnt.." "..L["Trade Skill Cooldowns"]})
+		                tooltip:SetCellScript(show, col, "OnEnter", ShowSkillTooltip, {toon, cnt})
 		                tooltip:SetCellScript(show, col, "OnLeave", CloseTooltips)
 			end
 		end
@@ -3533,7 +3533,7 @@ function core:ShowTooltip(anchorframe)
 		end
 		if ci and (gotsome or (ci.amount or 0) > 0) and columns[toon..1] then
 		  local name,_,tex = GetCurrencyInfo(idx)
-		  show = " \124T"..tex..":0\124t"..name
+		  show = string.format(" \124T%s:0\124t%s",tex,name)
 		end
 	    end
    	    local currLine
