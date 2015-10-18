@@ -70,7 +70,7 @@ local scantt = CreateFrame("GameTooltip", "SavedInstancesScanTooltip", UIParent,
 
 local currency = { 
   --395, -- Justice Points 
-  --396, -- Valor Points
+  396, -- Valor Points
   392, -- Honor Points
   390, -- Conquest Points
   738, -- Lesser Charm of Good Fortune
