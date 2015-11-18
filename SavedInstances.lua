@@ -1970,7 +1970,11 @@ local function ShowIndicatorTooltip(cell, arg, ...)
 	if info.Expires > 0 then
 	  indicatortip:AddLine(YELLOWFONT .. L["Time Left"] .. ":" .. FONTEND, nil, SecondsToTime(thisinstance[toon][diff].Expires - time()))
 	end
-	if thisinstance.Raid and info.ID > 0 and (diff == 5 or diff == 6 or diff == 16) then -- heroic raid
+	if (info.ID or 0) > 0 and (
+	  (thisinstance.Raid and (diff == 5 or diff == 6 or diff == 16)) -- raid: 10 heroic, 25 heroic or mythic
+	  or 
+	  (diff == 23) -- mythic 5-man
+	  ) then 
 	  local n = indicatortip:AddLine()
 	  indicatortip:SetCell(n, 1, YELLOWFONT .. ID .. ":" .. FONTEND, "LEFT", 1)
 	  indicatortip:SetCell(n, 2, info.ID, "RIGHT", 2)
