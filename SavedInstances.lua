@@ -70,7 +70,7 @@ local scantt = CreateFrame("GameTooltip", "SavedInstancesScanTooltip", UIParent,
 
 local currency = { 
   --395, -- Justice Points 
-  396, -- Valor Points
+  1191, -- Valor Points
   392, -- Honor Points
   390, -- Conquest Points
   738, -- Lesser Charm of Good Fortune
@@ -461,6 +461,7 @@ vars.defaultDB = {
 		Currency994 = true,  -- Seal of Tempered Fate
 		Currency1129= true,  -- Seal of Inevitable Fate
 		Currency1166= true,  -- Timewarped Badge
+		Currency1191= true,  -- Valor Points
 		CurrencyMax = false,
 		CurrencyEarned = true,
 	},
