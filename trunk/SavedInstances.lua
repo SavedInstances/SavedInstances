@@ -1418,8 +1418,12 @@ function addon:UpdateToonData()
         t.LFG1 = GetTimeToTime(GetLFGRandomCooldownExpiration()) or t.LFG1
 	t.LFG2 = GetTimeToTime(select(7,UnitDebuff("player",GetSpellInfo(71041)))) or t.LFG2 -- GetLFGDeserterExpiration()
 	if t.LFG2 then addon:updateSpellTip(71041) end
-	t.pvpdesert = GetTimeToTime(select(7,UnitDebuff("player",GetSpellInfo(26013)))) or t.pvpdesert
-	if t.pvpdesert then addon:updateSpellTip(26013) end
+	addon.pvpdesertids = addon.pvpdesertids or { 26013,   -- BG queue
+						     194958 } -- Ashran
+	for _,id in ipairs(addon.pvpdesertids) do
+	  t.pvpdesert = GetTimeToTime(select(7,UnitDebuff("player",GetSpellInfo(id)))) or t.pvpdesert
+	  if t.pvpdesert then addon:updateSpellTip(id) end
+	end
 	for toon, ti in pairs(vars.db.Toons) do
 		if ti.LFG1 and (ti.LFG1 < now) then ti.LFG1 = nil end
 		if ti.LFG2 and (ti.LFG2 < now) then ti.LFG2 = nil end
@@ -2711,8 +2715,10 @@ function core:Refresh(recoverdaily)
 	local temp = localarr("RefreshTemp")
 	for name, instance in pairs(vars.db.Instances) do -- clear current toons lockouts before refresh
 	  local id = instance.LFDID
-	  if instance[thisToon] and 
-	    not (id and addon.LFRInstances[id] and select(2,GetLFGDungeonNumEncounters(id)) == 0) then -- ticket 103
+	  if instance[thisToon] 
+	    -- disabled for ticket 178/195:
+	    --and not (id and addon.LFRInstances[id] and select(2,GetLFGDungeonNumEncounters(id)) == 0) -- ticket 103
+	    then
 	    temp[name] = instance[thisToon] -- use a temp to reduce memory churn
 	    for diff,info in pairs(temp[name]) do
 	      wipe(info)
