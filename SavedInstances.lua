@@ -1706,14 +1706,18 @@ local function ShowQuestTooltip(cell, arg, ...)
 	local qstr = cnt.." "..(isDaily and L["Daily Quests"] or L["Weekly Quests"])
 	local t = db
 	local scopestr = L["Account"]
+	local reset
 	if toon then 
 	  t = vars.db.Toons[toon]
 	  if not t then return end
-	  scopestr = ClassColorise(vars.db.Toons[toon].Class, toon)
+	  scopestr = ClassColorise(t.Class, toon)
+          reset = (isDaily and t.DailyResetTime) or (not isDaily and t.WeeklyResetTime)
 	end
 	openIndicator(2, "LEFT","RIGHT")
 	indicatortip:AddHeader(scopestr, qstr)
-        local reset = (isDaily and addon:GetNextDailyResetTime()) or (not isDaily and addon:GetNextWeeklyResetTime())
+	if not reset then
+          reset = (isDaily and addon:GetNextDailyResetTime()) or (not isDaily and addon:GetNextWeeklyResetTime())
+	end
 	if reset then
 	  indicatortip:AddLine(YELLOWFONT .. L["Time Left"] .. ":" .. FONTEND,
 	      SecondsToTime(reset - time()))
@@ -1891,9 +1895,11 @@ local function ShowWorldBossTooltip(cell, arg, ...)
 	openIndicator(2, "LEFT","RIGHT")
 	local line = indicatortip:AddHeader()
 	local toonstr = (db.Tooltip.ShowServer and toon) or strsplit(' ', toon)
+	local t = vars.db.Toons[toon]
+	local reset = t.WeeklyResetTime or addon:GetNextWeeklyResetTime()
 	indicatortip:SetCell(line, 1, ClassColorise(vars.db.Toons[toon].Class, toonstr), indicatortip:GetHeaderFont(), "LEFT")
 	indicatortip:SetCell(line, 2, GOLDFONT .. L["World Bosses"] .. FONTEND, indicatortip:GetHeaderFont(), "RIGHT")
-	indicatortip:AddLine(YELLOWFONT .. L["Time Left"] .. ":" .. FONTEND, SecondsToTime(addon:GetNextWeeklyResetTime() - time()))
+	indicatortip:AddLine(YELLOWFONT .. L["Time Left"] .. ":" .. FONTEND, SecondsToTime(reset - time()))
 	for _, instance in ipairs(worldbosses) do
 	  local thisinstance = vars.db.Instances[instance]
 	  if thisinstance then
@@ -1914,13 +1920,15 @@ local function ShowLFRTooltip(cell, arg, ...)
 	local boxname = arg[1]
 	local toon = arg[2]
 	local lfrmap = arg[3]
-	if not boxname or not toon or not lfrmap then return end
+	local t = vars.db.Toons[toon]
+	if not boxname or not t or not lfrmap then return end
 	openIndicator(3, "LEFT", "LEFT","RIGHT")
 	local line = indicatortip:AddHeader()
 	local toonstr = (db.Tooltip.ShowServer and toon) or strsplit(' ', toon)
+	local reset = t.WeeklyResetTime or addon:GetNextWeeklyResetTime()
 	indicatortip:SetCell(line, 1, ClassColorise(vars.db.Toons[toon].Class, toonstr), indicatortip:GetHeaderFont(), "LEFT", 1)
 	indicatortip:SetCell(line, 2, GOLDFONT .. boxname .. FONTEND, indicatortip:GetHeaderFont(), "RIGHT", 2)
-	indicatortip:AddLine(YELLOWFONT .. L["Time Left"] .. ":" .. FONTEND, nil, SecondsToTime(addon:GetNextWeeklyResetTime() - time()))
+	indicatortip:AddLine(YELLOWFONT .. L["Time Left"] .. ":" .. FONTEND, nil, SecondsToTime(reset - time()))
 	for i=1,20 do
 	  local instance = lfrmap[boxname..":"..i]
 	  local diff = 2
