@@ -182,6 +182,12 @@ function module:BuildOptions()
 			type = "execute",
 			func = function() module:ShowConfig() end,
 		},
+		time = { 
+			name = L["Dump time debugging information"],
+			guiHidden = true,
+			type = "execute",
+			func = function() addon:timedebug() end,
+		},
 		show = { 
 			name = L["Show/Hide the SavedInstances tooltip"],
 			guiHidden = true,
