@@ -283,13 +283,13 @@ function addon:QuestInfo(questid)
   return l, "\124cffffff00\124Hquest:"..questid..":90\124h["..l.."]\124h\124r"
 end
 
-local function chatMsg(msg)
-     DEFAULT_CHAT_FRAME:AddMessage("\124cFFFF0000"..addonName.."\124r: "..msg)
+local function chatMsg(...)
+     DEFAULT_CHAT_FRAME:AddMessage("\124cFFFF0000"..addonName.."\124r: "..string.format(...))
 end
 local function debug(...)
   --addon.db.dbg = true
   if addon.db.dbg then
-     chatMsg(string.format(...))
+     chatMsg(...)
   end
 end
 addon.debug = debug
@@ -308,6 +308,27 @@ local GTToffset = time() - GetTime()
 local function GetTimeToTime(val)
   if not val then return nil end
   return val + GTToffset
+end
+
+function addon:timedebug()
+ chatMsg("Version: %s (%s)", addon.version, addon.revision)
+ chatMsg("Realm: %s (%s)", GetRealmName(), addon:GetRegion())
+ chatMsg("Zone: %s (%s)", GetRealZoneText(), addon:GetCurrentMapAreaID())
+ chatMsg("time()=%s GetTime()=%s", time(), GetTime())
+ chatMsg("Local time: %s local", date("%A %c"))
+ chatMsg("GetGameTime: %s:%s server",GetGameTime())
+ chatMsg("CalendarGetDate: %s %s/%s/%s server",CalendarGetDate())
+ chatMsg("GetQuestResetTime: %s",SecondsToTime(GetQuestResetTime()))
+ chatMsg(date("Daily reset: %a %c local (based on GetQuestResetTime)",time()+GetQuestResetTime())) 
+ chatMsg("Local to Server offset: %d hours",SavedInstances:GetServerOffset())
+ local t = SavedInstances:GetNextDailyResetTime()
+ chatMsg("Next daily reset: %s local, %s server",date("%a %c",t), date("%a %c",t+3600*SavedInstances:GetServerOffset()))
+ local t = SavedInstances:GetNextWeeklyResetTime()
+ chatMsg("Next weekly reset: %s local, %s server",date("%a %c",t), date("%a %c",t+3600*SavedInstances:GetServerOffset()))
+ local t = SavedInstances:GetNextDailySkillResetTime()
+ chatMsg("Next skill reset: %s local, %s server",date("%a %c",t), date("%a %c",t+3600*SavedInstances:GetServerOffset()))
+ local t = SavedInstances:GetNextDarkmoonResetTime()
+ chatMsg("Next darkmoon reset: %s local, %s server",date("%a %c",t), date("%a %c",t+3600*SavedInstances:GetServerOffset()))
 end
 
 -- abbreviate expansion names (which apparently are not localized in any western character set)
@@ -623,6 +644,21 @@ function addon:GetNextDailyResetTime()
      -- also right after a daylight savings rollover, when it returns negative values >.<
      resettime > 24*3600+30 then -- can also be wrong near reset in an instance
     return nil
+  end
+  -- ticket 177/191: GetQuestResetTime() is wrong for Oceanic characters in PST instances
+  local serverHour, serverMinute = GetGameTime()
+  local serverResetTime = (serverHour*3600 + serverMinute*60 + resettime) % 86400 -- GetGameTime of the reported reset
+  local diff = serverResetTime - 10800 -- how far from 3AM server
+  if math.abs(diff) > 25200  -- more than 7 hours - ignore TZ differences of US continental servers
+     and addon:GetRegion() == "US" then
+     local diffhours = math.floor((diff + 1800)/3600)
+     resettime = resettime - diffhours*3600
+     if resettime < -900 then -- reset already passed, next reset
+        resettime = resettime + 86400
+     elseif resettime > 86400+900 then
+        resettime = resettime - 86400
+     end
+     debug("Adjusting GetQuestResetTime() discrepancy of %d seconds (%d hours). Reset in %d seconds", diff, diffhours, resettime)
   end
   return time() + resettime
 end
@@ -1354,6 +1390,7 @@ function addon:UpdateToonData()
 	   end
 	end
 
+	local nextreset = addon:GetNextDailyResetTime()
 	for instance, i in pairs(vars.db.Instances) do
 		for toon, t in pairs(vars.db.Toons) do
 			if i[toon] then
@@ -1373,7 +1410,6 @@ function addon:UpdateToonData()
 		  local id = i.LFDID
 		  GetLFGDungeonInfo(id) -- forces update
 		  local donetoday, money = GetLFGDungeonRewards(id)
-		  local expires = addon:GetNextDailyResetTime()
 		  if donetoday and i.Random and (
 		    (i.LFDID == 258) or  -- random classic dungeon
 		    (i.LFDID == 995 or i.LFDID == 744) or  -- timewalking dungeons
@@ -1382,13 +1418,13 @@ function addon:UpdateToonData()
 		   ) then -- donetoday flag is falsely set for some level/dungeon combos where no daily incentive is available
 		     donetoday = false
 		  end
-		  if expires and donetoday and (i.Holiday or (money and money > 0)) then
+		  if nextreset and donetoday and (i.Holiday or (money and money > 0)) then
 		    i[thisToon] = i[thisToon] or {}
 		    i[thisToon][1] = i[thisToon][1] or {}
 		    local d = i[thisToon][1]
 		    d.ID = -1
 		    d.Locked = false
-		    d.Expires = expires
+		    d.Expires = nextreset
 		  end
 		end
 	end
@@ -1439,7 +1475,6 @@ function addon:UpdateToonData()
 	t.RBGrating = tonumber(rating) or t.RBGrating
 	core:scan_item_cds()
 	-- Daily Reset
-	local nextreset = addon:GetNextDailyResetTime()
 	if nextreset and nextreset > time() then
 	 for toon, ti in pairs(vars.db.Toons) do
 	  if not ti.DailyResetTime or (ti.DailyResetTime < time()) then 
@@ -2608,7 +2643,7 @@ function addon:HistoryUpdate(forcereset, forcemesg)
   -- display update
 
   if forcemesg or (vars.db.Tooltip.LimitWarn and zoningin and livecnt >= addon.histLimit-1) then 
-      chatMsg(L["Warning: You've entered about %i instances recently and are approaching the %i instance per hour limit for your account. More instances should be available in %s."]:format(livecnt, addon.histLimit, oldestremt))
+      chatMsg(L["Warning: You've entered about %i instances recently and are approaching the %i instance per hour limit for your account. More instances should be available in %s."],livecnt, addon.histLimit, oldestremt)
   end
   addon.histLiveCount = livecnt
   addon.histOldest = oldestremt
