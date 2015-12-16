@@ -1548,6 +1548,15 @@ function addon:UpdateToonData()
 	if zone and #zone > 0 then
 	  t.Zone = zone
 	end
+	local lrace, race = UnitRace("player")
+	local faction, lfaction = UnitFactionGroup("player")
+	t.Faction = faction
+	if race == "Pandaren" then
+	  t.Race = lrace.." ("..lfaction..")"
+	else
+	  t.Race = lrace
+	end
+	   
 	t.LastSeen = time()
 end
 
@@ -1711,7 +1720,13 @@ local function ShowToonTooltip(cell, arg, ...)
 	local t = vars.db.Toons[toon]
 	if not t then return end
 	openIndicator(2, "LEFT","RIGHT")
-	indicatortip:SetCell(indicatortip:AddHeader(),1,ClassColorise(t.Class, toon))
+        local ftex = ""
+        if t.Faction == "Alliance" then
+          ftex = "\124TInterface\\TargetingFrame\\UI-PVP-Alliance:0:0:0:0:100:100:0:50:0:55\124t "
+        elseif t.Faction == "Horde" then
+          ftex = "\124TInterface\\TargetingFrame\\UI-PVP-Horde:0:0:0:0:100:100:10:70:0:55\124t"
+        end
+	indicatortip:SetCell(indicatortip:AddHeader(),1,ftex..ClassColorise(t.Class, toon))
 	indicatortip:SetCell(1,2,ClassColorise(t.Class, LEVEL.." "..t.Level.." "..(t.LClass or "")))
 	indicatortip:AddLine(STAT_AVERAGE_ITEM_LEVEL,("%d "):format(t.IL or 0)..STAT_AVERAGE_ITEM_LEVEL_EQUIPPED:format(t.ILe or 0))
 	if t.RBGrating and t.RBGrating > 0 then
@@ -1723,6 +1738,11 @@ local function ShowToonTooltip(cell, arg, ...)
 	if t.Zone then
 	  indicatortip:AddLine(ZONE,t.Zone)
 	end
+	--[[
+	if t.Race then
+	  indicatortip:AddLine(RACE,t.Race)
+	end
+	]]
 	if t.LastSeen then
 	  local when = date("%c",t.LastSeen)
 	  indicatortip:AddLine(L["Last updated"],when)
