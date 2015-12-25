@@ -648,11 +648,9 @@ function module:BuildOptions()
 			        core:Refresh(true)
 			    end
 			  }
-			  local scnt = 0;
 			  for server, stoons in pairs(toons) do
-			    scnt = scnt + 1;
 			    ret[server] = {
-			      order = (server == GetRealmName() and 0.5 or scnt),
+			      order = (server == GetRealmName() and 0.5 or 100),
 			      type = "group",
 			      name = server,
 		  	      childGroups = "tree",
