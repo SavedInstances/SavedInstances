@@ -2270,6 +2270,7 @@ function core:OnInitialize()
 		OnLeave = function(frame) end,
 		OnClick = function(frame, button)
 			if button == "MiddleButton" then
+				if InCombatLockdown() then return end
 				ToggleFriendsFrame(4) -- open Blizzard Raid window
 				RaidInfoFrame:Show()
 			elseif button == "LeftButton" then
