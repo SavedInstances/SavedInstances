@@ -467,75 +467,12 @@ function module:BuildOptions()
 					name = L["Track Battleground Deserter cooldown"],
 					desc = L["Show cooldown for characters to use battleground system"],
 				},
-				CurrencyHeader = {
-					order = 50, 
-					type = "header",
-					name = CURRENCY,
-				},
-				CurrencyMax = {
-					type = "toggle",
-					order = 50.2,
-					name = L["Show currency max"]
-				},
-				CurrencyEarned = {
-					type = "toggle",
-					order = 50.4,
-					name = L["Show currency earned"]
-				},
-				CurrencyValueColor = {
-					type = "toggle",
-					order = 50.5,
-					name = L["Color currency by cap"]
-				},
 				ToonHeader = {
 					order = 31, 
 					type = "header",
 					name = L["Characters"],
 					hidden = true,
 				},
-				ColumnStyle = {
-					order = 32,
-					type = "select",
-					width = "double",
-					style = "radio",
-					hidden = true,
-					disabled = true,
-					name = L["Character column style"],
-					values = {
-						["ALTERNATING"] = L["Alternating columns are colored differently"],
-						["CLASS"] = L["Columns are colored according to the characters class"],
-						["NORMAL"] = L["Columns are the same color as the whole tooltip"],
-					},
-				},
-				AltColumnColor = { 
-					order = 33,
-					type = "color",
-					width = "half",
-					hasAlpha = true,
-					name = COLOR,
-					hidden = true,
---					hidden = function()
---						return not (db.Tooltip.ColumnStyle == "ALTERNATING")
---					end,
-					disabled = true,
---					disabled = function()
---						return not (db.Tooltip.ColumnStyle == "ALTERNATING")
---					end,
-					get = function(info)
-						local r = db.Tooltip[info[#info]][1]
-						local g = db.Tooltip[info[#info]][2]
-						local b = db.Tooltip[info[#info]][3]
-						local a = db.Tooltip[info[#info]][4]
-						return r, g, b, a
-					end,
-					set = function(info, r, g, b, a)
-						db.Tooltip[info[#info]][1] = r
-						db.Tooltip[info[#info]][2] = g
-						db.Tooltip[info[#info]][3] = b
-						db.Tooltip[info[#info]][4] = a
-					end,
-				},
-
 				BindHeader = {
 					order = -0.6, 
 					type = "header",
@@ -561,8 +498,50 @@ function module:BuildOptions()
     				},
 			},
 		},
-		Indicators = {
+		Currency = {
 			order = 2,
+			type = "group",
+			name = L["Currency settings"],
+			get = function(info)
+					return db.Tooltip[info[#info]]
+			end,
+			set = function(info, value)
+					addon.debug(info[#info].." set to: "..tostring(value))
+					db.Tooltip[info[#info]] = value
+					wipe(addon.scaleCache)
+					wipe(addon.oi_cache)
+					addon.oc_cache = nil
+			end,
+			args = {
+				CurrencyValueColor = {
+					type = "toggle",
+					order = 10,
+					name = L["Color currency by cap"]
+				},
+				NumberFormat = {
+					type = "toggle",
+					order = 20,
+					name = L["Format large numbers"]
+				},
+				CurrencyMax = {
+					type = "toggle",
+					order = 30,
+					name = L["Show currency max"]
+				},
+				CurrencyEarned = {
+					type = "toggle",
+					order = 40,
+					name = L["Show currency earned"]
+				},
+				CurrencyHeader = {
+					order = 50, 
+					type = "header",
+					name = CURRENCY,
+				},
+			},
+		},
+		Indicators = {
+			order = 3,
 			type = "group",
 			name = L["Indicators"],
 			get = function(info)
@@ -618,7 +597,7 @@ function module:BuildOptions()
 			end)(),
 		},
 		Characters = {
-			order = 4,
+			order = 5,
 			type = "group",
 			name = L["Characters"],
 			childGroups = "select",
@@ -733,7 +712,7 @@ function module:BuildOptions()
   for i, curr in ipairs(addon.currency) do
     local name,_,tex = GetCurrencyInfo(curr)
     tex = "\124T"..tex..":0\124t "
-    core.Options.args.General.args["Currency"..curr] = { 
+    core.Options.args.Currency.args["Currency"..curr] = { 
 	type = "toggle",
 	order = 50+i,
 	name = tex..name,
@@ -789,6 +768,8 @@ function module:SetupOptions()
                        db.MinimapIcon = module:table_clone(vars.defaultDB.MinimapIcon) 
                        module:ReopenConfigDisplay(fgen)
                     end
+	local fcur = ACD:AddToBlizOptions(namespace, CURRENCY, namespace, "Currency")
+        fcur.default = fgen.default
 	local find = ACD:AddToBlizOptions(namespace, L["Indicators"], namespace, "Indicators")
         find.default = function() 
                        addon.debug("RESET: Indicators")
