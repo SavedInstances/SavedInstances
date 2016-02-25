@@ -1518,7 +1518,7 @@ function addon:UpdateToonData()
 	        ti.Quests[id] = nil
 	      end
 	    end
-	    ti.DailyResetTime = nextreset
+	    ti.DailyResetTime = (ti.DailyResetTime and ti.DailyResetTime + 24*3600) or nextreset
           end 
 	 end
 	 if not db.DailyResetTime or (db.DailyResetTime < time()) then -- AccountDaily reset
@@ -1559,7 +1559,7 @@ function addon:UpdateToonData()
 	      ti.currency[idx] = ti.currency[idx] or {}
 	      ti.currency[idx].earnedThisWeek = 0
 	    end
-	    ti.WeeklyResetTime = nextreset
+	    ti.WeeklyResetTime = (ti.WeeklyResetTime and ti.WeeklyResetTime + 7*24*3600) or nextreset
           end 
 	 end
 	end
@@ -2241,8 +2241,8 @@ function core:toonInit()
 	ti.Show = ti.Show or "saved"
 	ti.Quests = ti.Quests or {}
 	ti.Skills = ti.Skills or {}
-	ti.DailyResetTime = ti.DailyResetTime or addon:GetNextDailyResetTime()
-	ti.WeeklyResetTime = ti.WeeklyResetTime or addon:GetNextWeeklyResetTime()
+	ti.DailyResetTime = addon:GetNextDailyResetTime()
+	ti.WeeklyResetTime = addon:GetNextWeeklyResetTime()
 end
 
 function core:OnInitialize()
