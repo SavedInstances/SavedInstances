@@ -684,7 +684,7 @@ function addon:GetNextDailyResetTime()
   local serverHour, serverMinute = GetGameTime()
   local serverResetTime = (serverHour*3600 + serverMinute*60 + resettime) % 86400 -- GetGameTime of the reported reset
   local diff = serverResetTime - 10800 -- how far from 3AM server
-  if math.abs(diff) > 4.5*3600  -- more than 4.5 hours - ignore TZ differences of US continental servers
+  if math.abs(diff) > 3.5*3600  -- more than 3.5 hours - ignore TZ differences of US continental servers
      and addon:GetRegion() == "US" then
      local diffhours = math.floor((diff + 1800)/3600)
      resettime = resettime - diffhours*3600
