@@ -1556,8 +1556,10 @@ function addon:UpdateToonData()
 	  if not ti.WeeklyResetTime or (ti.WeeklyResetTime < time()) then 
 	    ti.currency = ti.currency or {}
 	    for _,idx in ipairs(currency) do
-	      ti.currency[idx] = ti.currency[idx] or {}
-	      ti.currency[idx].earnedThisWeek = 0
+	      local ci = ti.currency[idx]
+	      if ci and ci.earnedThisWeek then
+	        ci.earnedThisWeek = 0
+	      end
 	    end
 	    ti.WeeklyResetTime = (ti.WeeklyResetTime and ti.WeeklyResetTime + 7*24*3600) or nextreset
           end 
@@ -1599,10 +1601,17 @@ function addon:UpdateCurrency()
 	if addon.logout then return end -- currency is unreliable during logout
 	local t = vars.db.Toons[thisToon]
 	t.Money = GetMoney()
-	t.currency = t.currency or {}
-	for _,idx in pairs(currency) do
+	t.currency = wipe(t.currency or {})
+	for _,idx in ipairs(currency) do
+	 local _, amount, _, earnedThisWeek, weeklyMax, totalMax, discovered = GetCurrencyInfo(idx)
+         if idx == 390 and amount == 0 then
+          discovered = false -- discovery flag broken for conquest points
+         end
+	 if not discovered then
+	  t.currency[idx] = nil
+	 else
 	  local ci = t.currency[idx] or {}
-	  _, ci.amount, _, ci.earnedThisWeek, ci.weeklyMax, ci.totalMax = GetCurrencyInfo(idx)
+	  ci.amount, ci.earnedThisWeek, ci.weeklyMax, ci.totalMax = amount, earnedThisWeek, weeklyMax, totalMax
           if idx == 396 then -- VP has a weekly max scaled by 100
             ci.weeklyMax = ci.weeklyMax and math.floor(ci.weeklyMax/100)
           end
@@ -1622,7 +1631,11 @@ function addon:UpdateCurrency()
 	    end
 	  end
           ci.season = addon:GetSeasonCurrency(idx)
+	  if ci.weeklyMax == 0 then ci.weeklyMax = nil end -- don't store useless info
+	  if ci.totalMax == 0 then ci.totalMax = nil end -- don't store useless info
+	  if ci.earnedThisWeek == 0 then ci.earnedThisWeek = nil end -- don't store useless info
 	  t.currency[idx] = ci
+	 end
 	end
 end
 
@@ -2230,6 +2243,52 @@ local function ShowCurrencyTooltip(cell, arg, ...)
   finishIndicator()
 end
 
+local function ShowCurrencySummary(cell, arg, ...)
+  local idx = arg
+  if not idx then return end
+  local name,_,tex = GetCurrencyInfo(idx)
+  tex = " \124T"..tex..":0\124t"
+  openIndicator(2, "LEFT","RIGHT")
+  indicatortip:AddHeader(name, "")
+  local total = 0
+  local tmax
+  local temp = {}
+  for toon, t in pairs(vars.db.Toons) do -- deliberately include ALL toons
+    local ci = t.currency and t.currency[idx]
+    if ci and ci.amount then
+      tmax = tmax or ci.totalMax
+      table.insert(temp, { ["toon"] = toon, ["amount"] = ci.amount, 
+                     ["str1"] = ClassColorise(t.Class, toon),
+                     ["str2"] = CurrencyColor(ci.amount or 0,tmax)..tex,
+		   })
+      total = total + ci.amount
+    end
+  end
+  indicatortip:SetCell(1,2,CurrencyColor(total,0)..tex)
+  --indicatortip:AddLine(TOTAL, CurrencyColor(total,tmax)..tex)
+  --indicatortip:AddLine(" ")
+  addon.currency_sort = addon.currency_sort or function(a,b)
+    if a.amount > b.amount then 
+      return true
+    elseif a.amount < b.amount then
+      return false
+    end
+    local an, as = a.toon:match('^(.*) [-] (.*)$')
+    local bn, bs = b.toon:match('^(.*) [-] (.*)$')
+    if db.Tooltip.ServerSort and as ~= bs then
+      return as < bs
+    else
+      return a.toon < b.toon
+    end
+  end
+  table.sort(temp, addon.currency_sort)
+  for _,t in ipairs(temp) do
+    indicatortip:AddLine(t.str1, t.str2)
+  end
+
+  finishIndicator()
+end
+
 
 -- global addon code below
 
@@ -2270,6 +2329,21 @@ function core:OnInitialize()
 	  local name = "Currency"..id
 	  db.Tooltip[name] = (db.Tooltip[name]==nil and  vars.defaultDB.Tooltip[name]) or db.Tooltip[name]
 	end
+	local currtmp = {}
+	for _,idx in ipairs(currency) do currtmp[idx] = true end
+        for toon, t in pairs(vars.db.Toons) do
+	  if t.currency then -- clean old undiscovered currency entries
+	    for idx, ci in pairs(t.currency) do
+	      -- detect outdated entries because new version doesn't explicitly store max zeros
+	      if (ci.amount == 0 and (ci.weeklyMax == 0 or ci.totalMax == 0))
+	         or ci.amount == nil -- another outdated entry type created by old weekly reset logic
+		 or not currtmp[idx] -- removed currency
+	      then 
+	        t.currency[idx] = nil
+	      end
+	    end
+	  end
+        end
 	for qid, _ in pairs(db.QuestDB.Daily) do
 	  if db.QuestDB.AccountDaily[qid] then
 	    debug("Removing duplicate questDB entry: "..qid)
@@ -3658,7 +3732,11 @@ function core:ShowTooltip(anchorframe)
 			firstcurrency = false
 		end
 		currLine = tooltip:AddLine(YELLOWFONT .. show .. FONTEND)		
-
+		tooltip:SetLineScript(currLine, "OnMouseDown", OpenCurrency)
+		tooltip:SetCellScript(currLine, 1, "OnEnter", ShowCurrencySummary, idx)
+		tooltip:SetCellScript(currLine, 1, "OnLeave", CloseTooltips)
+		tooltip:SetCellScript(currLine, 1, "OnMouseDown", OpenCurrency)
+                
    	      for toon, t in cpairs(vars.db.Toons, true) do
                 local ci = t.currency and t.currency[idx] 
 		local col = columns[toon..1]
@@ -3691,7 +3769,6 @@ function core:ShowTooltip(anchorframe)
 		   tooltip:SetCellScript(currLine, col, "OnEnter", ShowCurrencyTooltip, {toon, idx, ci})
 		   tooltip:SetCellScript(currLine, col, "OnLeave", CloseTooltips)
 		   tooltip:SetCellScript(currLine, col, "OnMouseDown", OpenCurrency)
-		   tooltip:SetLineScript(currLine, "OnMouseDown", OpenCurrency)
 		  end
                 end
               end
