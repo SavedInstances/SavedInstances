@@ -341,9 +341,17 @@ local function abbreviate(iname)
   return iname
 end
 
-function addon:formatNumber(num)
+function addon:formatNumber(num,ismoney)
   num = tonumber(num)
   if not num then return "" end
+  local post = ""
+  if ismoney then
+    if num < 1000*10000 then -- less than 1k, show it all
+      return GetMoneyString(num)
+    end
+    num = math.floor(num / 10000)
+    post = " \124TInterface\\MoneyFrame\\UI-GoldIcon:0:0:2:0\124t"
+  end
   if vars.db.Tooltip.NumberFormat then
     local str = ""
     local neg = num < 0
@@ -364,9 +372,9 @@ function addon:formatNumber(num)
     if neg then
       str = "-"..str
     end
-    return str
+    return str..post
   else
-    return num
+    return num..post
   end
 end
 
@@ -1781,7 +1789,7 @@ local function ShowToonTooltip(cell, arg, ...)
 	  indicatortip:AddLine(BATTLEGROUND_RATING, t.RBGrating)
 	end
 	if t.Money then
-	  indicatortip:AddLine(MONEY,GetMoneyString(t.Money))
+	  indicatortip:AddLine(MONEY,addon:formatNumber(t.Money,true))
 	end
 	if t.Zone then
 	  indicatortip:AddLine(ZONE,t.Zone)
@@ -1967,9 +1975,45 @@ local function ShowBonusTooltip(cell, arg, ...)
         finishIndicator(parent)
 end
 
-local function ShowHistoryTooltip(cell, arg, ...)
-        addon:HistoryUpdate()
+local function ShowAccountSummary(cell, arg, ...)
 	openIndicator(2, "LEFT","RIGHT")
+        indicatortip:SetCell(indicatortip:AddHeader(),1,GOLDFONT..L["Account Summary"]..FONTEND,"LEFT",2)
+  
+	local tmoney = 0
+	local ttime = 0
+	local ttoons = 0
+	local tmaxtoons = 0
+  	local r = {}
+  	for toon, t in pairs(vars.db.Toons) do -- deliberately include ALL toons
+	  local realm = toon:match(" %- (.+)$")
+	  local money = t.Money or 0
+	  tmoney = tmoney + money
+	  local ri = r[realm] or { ["realm"] = realm, ["money"] = 0, ["cnt"] = 0 }
+	  ri.money = ri.money + money
+	  ri.cnt = ri.cnt + 1
+	  r[realm] = ri
+	  ttime = ttime + (t.PlayedTotal or 0)
+	  ttoons = ttoons + 1
+	  if t.Level == maxlvl then
+	    tmaxtoons = tmaxtoons + 1
+	  end
+	end
+	indicatortip:AddLine(L["Characters"], ttoons)
+	indicatortip:AddLine(string.format(L["Level %d Characters"],maxlvl), tmaxtoons)
+        indicatortip:AddLine((TIME_PLAYED_TOTAL):format(""),SecondsToTime(ttime))
+        indicatortip:AddLine(TOTAL.." "..MONEY,addon:formatNumber(tmoney,true))
+	local rmoney = {}
+	for _,ri in pairs(r) do table.insert(rmoney,ri) end
+	table.sort(rmoney,function(a,b) return a.money > b.money end)
+	for _,ri in ipairs(rmoney) do
+	  if ri.money > 10000*10000 and ri.cnt > 1 then -- show multi-toon servers with over 10k wealth
+            indicatortip:AddLine(ri.realm.." "..MONEY,addon:formatNumber(ri.money,true))
+	  end
+	end
+
+	-- history information
+        indicatortip:AddLine("")
+        addon:HistoryUpdate()
         local tmp = {}
         local cnt = 0
         for _,ii in pairs(db.History) do
@@ -3225,7 +3269,7 @@ function core:ShowTooltip(anchorframe)
 	  headText = string.format("%s%s%s",GOLDFONT,addonName,FONTEND)
 	end
 	local headLine = tooltip:AddHeader(headText)
-	tooltip:SetCellScript(headLine, 1, "OnEnter", ShowHistoryTooltip )
+	tooltip:SetCellScript(headLine, 1, "OnEnter", ShowAccountSummary )
 	tooltip:SetCellScript(headLine, 1, "OnLeave", CloseTooltips)
 	addon:UpdateToonData()
 	local columns = localarr("columns")
