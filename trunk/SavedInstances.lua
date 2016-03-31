@@ -614,6 +614,17 @@ local function ClassColorise(class, targetstring)
 	return c .. targetstring .. FONTEND
 end
 
+function addon.ColoredToon(toon, fullname)
+  local str = (fullname and toon) or strsplit(' ',toon)
+  local t = vars.db.Toons[toon]
+  local class = t and t.Class
+  if class then
+    return ClassColorise(class, str)
+  else
+    return str
+  end
+end
+
 local function CurrencyColor(amt, max)
   amt = amt or 0
   local samt = addon:formatNumber(amt)
@@ -3993,6 +4004,38 @@ StaticPopupDialogs["SAVEDINSTANCES_RESET"] = {
   button1 = OKAY,
   button2 = CANCEL,
   OnAccept = ResetConfirmed,
+  timeout = 0,
+  whileDead = true,
+  hideOnEscape = true,
+  enterClicksFirstButton = false,
+  showAlert = true,
+}
+
+local function DeleteCharacter(toon)
+  if toon == thisToon or not vars.db.Toons[toon] then
+    chatMsg("ERROR: Failed to delete "..toon..". Character is active or does not exist.")
+    return
+  end
+  debug("Deleting character: "..toon)
+  if addon:IsDetached() then
+    addon:HideDetached()
+  end
+  -- clear saves
+  for instance, i in pairs(vars.db.Instances) do
+  	i[toon] = nil
+  end
+  vars.db.Toons[toon] = nil
+  vars.config:BuildOptions() -- refresh config table
+  vars.config:ReopenConfigDisplay(vars.config.ftoon)
+end
+
+StaticPopupDialogs["SAVEDINSTANCES_DELETE_CHARACTER"] = {
+  preferredIndex = 3, -- reduce the chance of UI taint
+  text = string.format(L["Are you sure you want to remove %s from the SavedInstances character database?"],"\n\n%s%s\n\n").."\n\n"..
+         L["This should only be used for characters who have been renamed or deleted, as characters will be re-populated when you log into them."],
+  button1 = OKAY,
+  button2 = CANCEL,
+  OnAccept = function(self,data) DeleteCharacter(data) end,
   timeout = 0,
   whileDead = true,
   hideOnEscape = true,
