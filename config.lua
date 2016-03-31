@@ -607,7 +607,7 @@ function module:BuildOptions()
 			  for toon, _ in pairs(db.Toons) do
 			    local tn, ts = toon:match('^(.*) [-] (.*)$')
 			    toons[ts] = toons[ts] or {}
-			    toons[ts][tn] = toon
+			    table.insert(toons[ts],tn)
 			  end
 			  local ret = {}
 			  ret.reset = {
@@ -627,6 +627,11 @@ function module:BuildOptions()
 			        core:Refresh(true)
 			    end
 			  }
+			  local deltoon = function(info)
+			    local toon, tinfo = unpack(info.arg)
+			    if not toon then return end
+			    local dialog = StaticPopup_Show("SAVEDINSTANCES_DELETE_CHARACTER", toon, tinfo, toon)
+			  end
 			  for server, stoons in pairs(toons) do
 			    ret[server] = {
 			      order = (server == GetRealmName() and 0.5 or 100),
@@ -635,10 +640,31 @@ function module:BuildOptions()
 		  	      childGroups = "tree",
 			      args = (function()
 				local tret = {}
-			        for tn, toon in pairs(stoons) do
-				  tret[toon] = {
-			            name = tn,
+				table.sort(stoons)
+			        for ord, tn in pairs(stoons) do
+				  local toon = tn.." - "..server
+				  local t = vars.db.Toons[toon]
+				  local tinfo = ""
+				  if t and t.Level and t.LClass then
+				    tinfo = tinfo.."\n"..LEVEL.." "..t.Level.." "..t.LClass
+				  end
+				  if t and t.LastSeen then
+				    tinfo = tinfo.."\n"..L["Last updated"]..": "..date("%c",t.LastSeen)
+				  end
+				  tret[tn.."_desc"] = {
+				    order = ord*10 + 0,
+			            name = addon.ColoredToon(toon),
+				    desc = tn, -- unfortunately does nothing in dialog
+				    descStyle = "tooltip",
+				    type = "description",
+				    width = "normal",
+				    cmdHidden = true,
+				  }
+				  tret[tn] = {
+				    order = ord*10 + 1,
+			            name = "",
 				    type = "select",
+				    width = "normal",
 				    values = valueslist,
 				    get = function(info)
 				      return db.Toons[toon].Show or "saved"
@@ -646,6 +672,29 @@ function module:BuildOptions()
 				    set = function(info, value)
 				      db.Toons[toon].Show = value
 				    end,
+				  }
+				  tret[tn.."_sp1"] = {
+				    order = ord*10 + 6,
+			            name = " ",
+				    type = "description",
+				    width = "half",
+				    cmdHidden = true,
+				  }
+				  tret[tn.."_delete"] = {
+				    order = ord*10 + 7,
+			            name = DELETE,
+				    desc = DELETE.." "..toon..tinfo,
+				    type = "execute",
+				    width = "half",
+				    arg = { toon, tinfo },
+				    func = deltoon,
+				  }
+				  tret[tn.."_nl"] = {
+				    order = ord*10 + 9,
+			            name = "",
+				    type = "description",
+				    width = "full",
+				    cmdHidden = true,
 				  }
 				end
 				return tret
