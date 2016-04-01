@@ -3087,11 +3087,11 @@ cpairs = function(t, usecache)
  if not usecache then
   wipe(cnext_sorted_names)
   for n,_ in pairs(t) do
-    local tn, ts = n:match('^(.*) [-] (.*)$')
-    if vars.db.Toons[n] and 
-       (vars.db.Toons[n].Show ~= "never" or 
-        (n == thisToon and vars.db.Tooltip.SelfAlways))  and
-       (ts == GetRealmName() or not db.Tooltip.ServerOnly) then
+    local t = vars.db.Toons[n]
+    if t and 
+       (t.Show ~= "never" or 
+        (n == thisToon and db.Tooltip.SelfAlways))  and
+       (not db.Tooltip.ServerOnly or n:match('^.* [-] (.*)$') == GetRealmName()) then
       table.insert(cnext_sorted_names, n)
     end
   end
