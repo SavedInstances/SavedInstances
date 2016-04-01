@@ -573,7 +573,8 @@ function module:BuildOptions()
 				childGroups = "tree",
 				args = (function()
 				  local iret = {}
-				  for j, inst in ipairs(addon:OrderedInstances(cat)) do
+				  local insts = addon:OrderedInstances(cat)
+				  for j, inst in ipairs(insts) do
 					iret[inst] = {
 					  order = j,
 					  name = inst,
@@ -585,10 +586,28 @@ function module:BuildOptions()
 				    			return (val and valueslist[val] and val) or "saved"
 				  		end,
 				  		set = function(info, value)
-				   		 	db.Instances[inst].Show = value
+				   	 		db.Instances[inst].Show = value
 				  		end,
 				        }
 				  end 
+				  iret[ALL] = {
+				  	order = 0,
+					name = L["Set All"],
+				  	type = "select",
+				  	values = valueslist,
+					get = function(info) return "" end,
+				  	set = function(info, value)
+				  		for j, inst in ipairs(insts) do
+				   	 		db.Instances[inst].Show = value
+						end
+				  	end,
+				  }
+				  iret.spacer = { 
+				  	order = 0.5,
+					name = "",
+					type = "description",
+					width = "full",
+				  }
 				  return iret
                                  end)(),
 				} 
