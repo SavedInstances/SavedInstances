@@ -607,6 +607,7 @@ function module:BuildOptions()
 					name = "",
 					type = "description",
 					width = "full",
+					cmdHidden = true,
 				  }
 				  return iret
                                  end)(),

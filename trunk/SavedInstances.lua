@@ -3071,17 +3071,18 @@ local function cnext(t,i)
    end
 end
 local function cpairs_sort(a,b)
-  local an, as = a:match('^(.*) [-] (.*)$')
-  local bn, bs = b:match('^(.*) [-] (.*)$')
   if db.Tooltip.SelfFirst and b == thisToon then
     return false
   elseif db.Tooltip.SelfFirst and a == thisToon then
     return true
-  elseif db.Tooltip.ServerSort and as ~= bs then
-    return as < bs
-  else
-    return a < b
+  elseif db.Tooltip.ServerSort then
+    local as = a:match('^.* [-] (.*)$')
+    local bs = b:match('^.* [-] (.*)$')
+    if as ~= bs then
+      return as < bs
+    end
   end
+  return a < b
 end
 cpairs = function(t, usecache)
  if not usecache then
