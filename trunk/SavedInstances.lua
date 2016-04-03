@@ -556,6 +556,7 @@ vars.defaultDB = {
 		AccountDaily = {},
 		AccountWeekly = {},
 	},
+	RealmMap = {},
 	--[[ REMOVED
 	Lockouts = {	-- table key: lockout ID; value:
 						-- Name: string
@@ -677,6 +678,10 @@ function addon:GetRegion()
     reg = GetCVar("portal")
     if reg == "public-test" then -- PTR uses US region resets, despite the misleading realm name suffix
       reg = "US"
+    end
+    if not reg or #reg ~= 2 then
+      local gcr = GetCurrentRegion()
+      reg = gcr and ({ "US", "KR", "EU", "TW", "CN" })[gcr]
     end
     if not reg or #reg ~= 2 then
       reg = (GetCVar("realmList") or ""):match("^(%a+)%.")
@@ -2518,6 +2523,7 @@ function core:OnEnable()
         RegisterAddonMessagePrefix(addonName)
 	addon:HistoryEvent("PLAYER_ENTERING_WORLD") -- update after initial load
         addon:specialQuests()
+	core:updateRealmMap()
 end
 
 function core:ADDON_LOADED()
@@ -2573,6 +2579,42 @@ function core:CheckSystemMessage(event, msg)
 	   then
 	   core:RefreshLockInfo()
 	end
+end
+
+function core:updateRealmMap()
+  local realm = GetRealmName():gsub("%s+","")
+  local lmap = GetAutoCompleteRealms()
+  local rmap = vars.db.RealmMap or {}
+  vars.db.RealmMap = rmap
+  if lmap and next(lmap) then -- connected realms detected
+    table.sort(lmap)
+    local mapid = rmap[realm] -- find existing map
+    if not mapid then
+      for _,r in ipairs(lmap) do
+        mapid = mapid or rmap[r]
+      end
+    end
+    if mapid then -- check for possible expansion
+      local oldmap = rmap[mapid]
+      if oldmap and #lmap > #oldmap then
+        rmap[mapid] = lmap
+      end
+    else -- new map
+      mapid = #rmap + 1
+      rmap[mapid] = lmap
+    end
+    for _,r in ipairs(rmap[mapid]) do -- maintain inverse mapping
+      rmap[r] = mapid
+    end
+  end
+end
+
+function core:getRealmGroup(realm)
+  -- returns realm-group-id, { realm1, realm2, ...} for connected realm, or nil,nil for unconnected
+  realm = realm:gsub("%s+","")
+  local rmap = vars.db.RealmMap
+  local gid = rmap and rmap[realm]
+  return gid, gid and rmap[gid]
 end
 
 function core:CHAT_MSG_MONSTER_YELL(event, msg, bossname)
