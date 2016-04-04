@@ -286,6 +286,7 @@ end
 local function chatMsg(...)
      DEFAULT_CHAT_FRAME:AddMessage("\124cFFFF0000"..addonName.."\124r: "..string.format(...))
 end
+addon.chatMsg = chatMsg
 local function debug(...)
   --addon.db.dbg = true
   if addon.db.dbg then
@@ -507,6 +508,7 @@ vars.defaultDB = {
 		ShowServer = false,
 		ServerSort = true,
 		ServerOnly = false,
+		ConnectedRealms = "group",
 		SelfFirst = true,
 		SelfAlways = false,
 		TrackLFG = true,
@@ -2392,6 +2394,7 @@ function core:OnInitialize()
 	local currtmp = {}
 	for _,idx in ipairs(currency) do currtmp[idx] = true end
         for toon, t in pairs(vars.db.Toons) do
+	  t.Order = t.Order or 50
 	  if t.currency then -- clean old undiscovered currency entries
 	    for idx, ci in pairs(t.currency) do
 	      -- detect outdated entries because new version doesn't explicitly store max zeros
@@ -3101,46 +3104,108 @@ end
 -- sorted traversal function for character table
 local cpairs
 do
-local cnext_sorted_names = {}
+local cnext_list = {}
 local cnext_pos
+local cnext_ekey
 local function cnext(t,i)
-   local n = cnext_sorted_names[cnext_pos]
-   if not n then
+   local e = cnext_list[cnext_pos]
+   if not e then
      return nil
    else
      cnext_pos = cnext_pos + 1
+     local n = e[cnext_ekey]
      return n, t[n]
    end
 end
+
 local function cpairs_sort(a,b)
-  if db.Tooltip.SelfFirst and b == thisToon then
-    return false
-  elseif db.Tooltip.SelfFirst and a == thisToon then
-    return true
-  elseif db.Tooltip.ServerSort then
-    local as = a:match('^.* [-] (.*)$')
-    local bs = b:match('^.* [-] (.*)$')
-    if as ~= bs then
-      return as < bs
+  -- generic multi-key sort
+  for k,av in ipairs(a) do
+    local bv = b[k]
+    if av ~= bv then
+      return av < bv
     end
   end
-  return a < b
+  return false -- required for sort stability when a==a
 end
+
 cpairs = function(t, usecache)
+ local settings = db.Tooltip
+ local realmgroup_key
+ local realmgroup_min
  if not usecache then
-  wipe(cnext_sorted_names)
+  local thisrealm = GetRealmName()
+  if settings.ConnectedRealms ~= "ignore" then
+    local group = core:getRealmGroup(thisrealm) 
+    thisrealm = group or thisrealm
+  end
+  wipe(cnext_list)
+  cnext_pos = 1
   for n,_ in pairs(t) do
     local t = vars.db.Toons[n]
+    local tn, tr = n:match('^(.*) [-] (.*)$')
     if t and 
-       (t.Show ~= "never" or 
-        (n == thisToon and db.Tooltip.SelfAlways))  and
-       (not db.Tooltip.ServerOnly or n:match('^.* [-] (.*)$') == GetRealmName()) then
-      table.insert(cnext_sorted_names, n)
+       (t.Show ~= "never" or (n == thisToon and settings.SelfAlways))  and
+       (not settings.ServerOnly 
+         or thisrealm == tr
+	 or thisrealm == core:getRealmGroup(tr)) 
+    then
+      local e = {}
+      cnext_ekey = 1
+
+      if settings.SelfFirst then
+        if n == thisToon then
+	  e[cnext_ekey] = 1
+	else
+	  e[cnext_ekey] = 2
+	end
+        cnext_ekey = cnext_ekey + 1
+      end
+
+      if settings.ServerSort then
+	if settings.ConnectedRealms == "ignore" then
+          e[cnext_ekey] = tr
+	  cnext_ekey = cnext_ekey + 1
+	else
+	  local rgroup = core:getRealmGroup(tr)
+	  if rgroup then -- connected realm
+	    realmgroup_min = realmgroup_min or {}
+	    if not realmgroup_min[rgroup] or tr < realmgroup_min[rgroup] then
+	      realmgroup_min[rgroup] = tr -- lowest active realm in group
+	    end
+	  else
+	    rgroup = tr
+	  end
+	  realmgroup_key = cnext_ekey
+	  e[cnext_ekey] = rgroup
+	  cnext_ekey = cnext_ekey + 1
+
+	  if settings.ConnectedRealms == "group" then
+            e[cnext_ekey] = tr
+	    cnext_ekey = cnext_ekey + 1
+	  end
+	end
+      end
+
+      e[cnext_ekey] = t.Order
+      cnext_ekey = cnext_ekey + 1
+
+      e[cnext_ekey] = n
+      cnext_list[cnext_pos] = e
+      cnext_pos = cnext_pos + 1
     end
   end
-  table.sort(cnext_sorted_names, cpairs_sort)
+  if realmgroup_key then -- second pass, convert group id to min name
+    for _,e in ipairs(cnext_list) do
+      local id = e[realmgroup_key]
+      if type(id) == "number" then
+        e[realmgroup_key] = realmgroup_min[id]
+      end
+    end
+  end
+  table.sort(cnext_list, cpairs_sort)
+  --myprint(cnext_list)
  end
-  --myprint(cnext_sorted_names)
   cnext_pos = 1
   return cnext, t, nil
 end
