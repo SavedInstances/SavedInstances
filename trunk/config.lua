@@ -168,6 +168,16 @@ function module:BuildOptions()
 	type = "group",
 	name = "SavedInstances",
 	handler = SavedInstances,
+	get = function(info)
+		return db.Tooltip[info[#info]]
+	end,
+	set = function(info, value)
+		addon.debug(info[#info].." set to: "..tostring(value))
+		db.Tooltip[info[#info]] = value
+		wipe(addon.scaleCache)
+		wipe(addon.oi_cache)
+		addon.oc_cache = nil
+	end,
 	args = {
 		debug = { 
 			name = "debug",
@@ -198,16 +208,6 @@ function module:BuildOptions()
 			order = 1,
 			type = "group",
 			name = L["General settings"],
-			get = function(info)
-					return db.Tooltip[info[#info]]
-			end,
-			set = function(info, value)
-					addon.debug(info[#info].." set to: "..tostring(value))
-					db.Tooltip[info[#info]] = value
-					wipe(addon.scaleCache)
-					wipe(addon.oi_cache)
-					addon.oc_cache = nil
-			end,
 			args = {
 				ver = {
 					order = 0.5,
@@ -263,37 +263,6 @@ function module:BuildOptions()
 					order = 4.8,
 				},
 
-				CharactersHeader = {
-					order = 4.9, 
-					type = "header",
-					name = L["Characters"],
-				},
-				ShowServer = {
-					type = "toggle",
-					name = L["Show server name"],
-					order = 5,
-				},
-				ServerSort = {
-					type = "toggle",
-					name = L["Sort by server"],
-					order = 6,
-				},
-				ServerOnly = {
-					type = "toggle",
-					name = L["Show only current server"],
-					order = 6.25,
-				},
-				SelfAlways = {
-					type = "toggle",
-					name = L["Show self always"],
-					order = 6.5,
-				},
-				SelfFirst = {
-					type = "toggle",
-					name = L["Show self first"],
-					order = 7,
-				},
-				
 				CategoriesHeader = {
 					order = 11, 
 					type = "header",
@@ -617,9 +586,62 @@ function module:BuildOptions()
 			end)(),
 		},
 		Characters = {
-			order = 5,
-			type = "group",
-			name = L["Characters"],
+	  	  order = 5,
+		  type = "group",
+		  name = L["Characters"],
+		  args = {
+		    Sorting = {
+		  	name = L["Sorting"],
+		  	type = "group",
+		        guiInline = true,
+			order = 1,
+			args = {
+				SelfAlways = {
+					type = "toggle",
+					name = L["Show self always"],
+					order = 2,
+				},
+				SelfFirst = {
+					type = "toggle",
+					name = L["Show self first"],
+					order = 3,
+				},
+				ShowServer = {
+					type = "toggle",
+					name = L["Show server name"],
+					order = 5,
+				},
+				ServerSort = {
+					type = "toggle",
+					name = L["Sort by server"],
+					order = 6,
+				},
+				ServerOnly = {
+					type = "toggle",
+					name = L["Show only current server"],
+					order = 7,
+				},
+				ConnectedRealms = {
+					type = "select",
+					name = L["Connected Realms"],
+					order = 10,
+					disabled = function()
+					  return not (db.Tooltip.ServerSort or db.Tooltip.ServerOnly)
+					end,
+					values = {
+					        ["ignore"] = L["Ignore"],
+					        ["group"] = L["Group"],
+					        ["interleave"] = L["Interleave"],
+					},
+				},
+				
+			}
+		    },
+		    Manage = {
+		  	name = L["Manage"],
+		  	type = "group",
+		        guiInline = true,
+			order = 2,
 			childGroups = "select",
 			width = "double",
 			args = (function ()
@@ -652,12 +674,74 @@ function module:BuildOptions()
 			    if not toon then return end
 			    local dialog = StaticPopup_Show("SAVEDINSTANCES_DELETE_CHARACTER", toon, tinfo, toon)
 			  end
+			  local toonfncache = {}
+			  local toonget = function(field, default)
+			    local key = field.."_get"
+			    local fn = toonfncache[key] or function(info)
+			      return tostring(info.arg[field] or default)
+			    end
+			    toonfncache[key] = fn
+			    return fn
+			  end
+			  local toonset = function(field, isnum)
+			    local key = field.."_set"
+			    local fn = toonfncache[key] or function(info, value)
+			      if isnum then
+			        value = tonumber(value)
+			      end
+			      info.arg[field] = value
+			    end
+			    toonfncache[key] = fn
+			    return fn
+			  end
+			  local orderval = function(info, value)
+			    if value:find("^%s*[0-9]?[0-9]?[0-9]%s*$") then
+			      return true
+			    else
+			      local err = L["Order must be a number in [0 - 999]"]
+			      addon.chatMsg(err)
+			      return err
+			    end
+			  end
+			  -- label line
+			  ret.newline1 = {
+			    order = 0.40,
+			    cmdHidden = true,
+			    name = "",
+			    type = "description",
+			    width = "full",
+			  }
+			  ret.cname = {
+			    order = 0.41,
+			    cmdHidden = true,
+			    name = " ",
+			    type = "description",
+			    width = "half",
+			  }
+			  ret.cshow = {
+			    order = 0.42,
+			    cmdHidden = true,
+			    fontSize = "medium",
+			    name = "  "..L["Show When"],
+			    type = "description",
+			    width = "normal",
+			  }
+			  ret.csort = {
+			    order = 0.43,
+			    cmdHidden = true,
+			    fontSize = "medium",
+			    name = "  "..L["Sort Order"],
+			    type = "description",
+			    width = "half",
+			  }
+
 			  for server, stoons in pairs(toons) do
 			    ret[server] = {
 			      order = (server == GetRealmName() and 0.5 or 100),
 			      type = "group",
 			      name = server,
-		  	      childGroups = "tree",
+		              guiInline = false,
+		  	      --childGroups = "tree",
 			      args = (function()
 				local tret = {}
 				table.sort(stoons)
@@ -672,36 +756,47 @@ function module:BuildOptions()
 				    tinfo = tinfo.."\n"..L["Last updated"]..": "..date("%c",t.LastSeen)
 				  end
 				  tret[tn.."_desc"] = {
-				    order = ord*10 + 0,
+				    order = function(info) return t.Order*1000 + ord*10 + 0 end,
 			            name = addon.ColoredToon(toon),
 				    desc = tn, -- unfortunately does nothing in dialog
 				    descStyle = "tooltip",
 				    type = "description",
-				    width = "normal",
+				    width = "half",
 				    cmdHidden = true,
 				  }
 				  tret[tn] = {
-				    order = ord*10 + 1,
+				    order = function(info) return t.Order*1000 + ord*10 + 1 end,
 			            name = "",
 				    type = "select",
 				    width = "normal",
 				    values = valueslist,
-				    get = function(info)
-				      return db.Toons[toon].Show or "saved"
-				    end,
-				    set = function(info, value)
-				      db.Toons[toon].Show = value
-				    end,
+				    arg = t,
+				    get = toonget("Show", "saved"),
+				    set = toonset("Show"),
+				  }
+				  tret[tn.."_order"] = {
+				    order = function(info) return t.Order*1000 + ord*10 + 4 end,
+			            name = "",
+				    type = "input",
+				    width = "half",
+				    desc = L["Sort Order"],
+				    --descStyle = "tooltip",
+				    arg = t,
+				    get = toonget("Order", 50),
+				    set = toonset("Order", true),
+				    validate = orderval,
+				    --pattern = "^%s*[0-9]?[0-9]?[0-9]%s*$",
+				    --usage = L["Order must be a number in [0 - 999]"],
 				  }
 				  tret[tn.."_sp1"] = {
-				    order = ord*10 + 6,
+				    order = function(info) return t.Order*1000 + ord*10 + 6 end,
 			            name = " ",
 				    type = "description",
 				    width = "half",
 				    cmdHidden = true,
 				  }
 				  tret[tn.."_delete"] = {
-				    order = ord*10 + 7,
+				    order = function(info) return t.Order*1000 + ord*10 + 7 end,
 			            name = DELETE,
 				    desc = DELETE.." "..toon..tinfo,
 				    type = "execute",
@@ -710,7 +805,7 @@ function module:BuildOptions()
 				    func = deltoon,
 				  }
 				  tret[tn.."_nl"] = {
-				    order = ord*10 + 9,
+				    order = function(info) return t.Order*1000 + ord*10 + 9 end,
 			            name = "",
 				    type = "description",
 				    width = "full",
@@ -723,6 +818,8 @@ function module:BuildOptions()
 			  end
 			  return ret
 			end)()
+		      },
+	           },
 		},
 		--[[
 		Lockouts = {
