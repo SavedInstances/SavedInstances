@@ -1225,7 +1225,7 @@ local function DifficultyString(instance, diff, toon, expired, killoverride, tot
 	  if killed == 0 and total == 0 then -- boss kill info missing
 	    killed = "*"
 	    total = "*"
-	  elseif killed == 1 and total == 1 then
+	  elseif killed == 1 and total == 1 and not expired then
 	    text = "\124T"..READY_CHECK_READY_TEXTURE..":0|t" -- checkmark
 	  end
 	  text = text:gsub("KILLED",killed)
