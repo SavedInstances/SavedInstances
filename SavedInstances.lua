@@ -3418,7 +3418,7 @@ function core:ShowTooltip(anchorframe)
 			if inst.Show == "always" then
 			   categoryshown[category] = true
 			end
-			if inst.Show ~= "never" or showall then
+			if inst.Show ~= "never" then
 			    if wbcons and inst.WorldBoss and inst.Expansion <= GetExpansionLevel() then
 			      if vars.db.Tooltip.ReverseInstances then
 			        table.insert(worldbosses, instance)
@@ -3492,7 +3492,7 @@ function core:ShowTooltip(anchorframe)
 				if inst.Show == "always" then
 			  	   instancerow[instance] = instancerow[instance] or tooltip:AddLine()
 				end
-				if inst.Show ~= "never" or showall then
+				if inst.Show ~= "never" then
 				    for toon, t in cpairs(vars.db.Toons, true) do
 					for diff = 1, maxdiff do
 					        if inst[toon] and inst[toon][diff] and (inst[toon][diff].Expires > 0 or showexpired) then
