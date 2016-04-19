@@ -1,14 +1,24 @@
 -- my custom locale file - more streamlined than AceLocale and no lib dependency
 
 -- To help with missing translations please go here:
--- http://www.wowace.com/addons/saved_instances/localization/
+local url = "http://www.wowace.com/addons/saved_instances/localization/"
 
 local addonName, vars = ...
 local Ld, La = {}, {}
 local locale = GAME_LOCALE or GetLocale()
+if locale == "enGB" then locale = "enUS" end
 
 vars.L = setmetatable({},{
-    __index = function(t, s) return La[s] or Ld[s] or rawget(t,s) or s end
+    __index = function(t, s) 
+      if locale ~= "enUS" and Ld[s] and
+         not La[s] and url and not vars.locale_warning then
+        vars.locale_warning = true
+        print(string.format("*** %s needs help translating to your language! (%s)", addonName, locale))
+	print("*** If you speak English, you can contribute by visiting:")
+	print("*** "..url)
+      end
+      return La[s] or Ld[s] or rawget(t,s) or s 
+    end
 })
 
 --@localization(locale="enUS", format="lua_additive_table", table-name="Ld")@
