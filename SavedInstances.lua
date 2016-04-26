@@ -516,6 +516,7 @@ vars.defaultDB = {
 		TrackSkills = true,
 		TrackFarm = true,
 		TrackBonus = false,
+		TrackPlayed = true,
 		AugmentBonus = true,
 		CurrencyValueColor = true,
 		Currency776 = false, -- Warforged Seals
@@ -559,14 +560,6 @@ vars.defaultDB = {
 		AccountWeekly = {},
 	},
 	RealmMap = {},
-	--[[ REMOVED
-	Lockouts = {	-- table key: lockout ID; value:
-						-- Name: string
-						-- Members: table "Toon name" = "Class"
-						-- REMOVED Encounters[GUID : integer] = boolean
-						-- Note: string
-	},
-	--]]
 }
 
 -- skinning support
@@ -1821,7 +1814,7 @@ local function ShowToonTooltip(cell, arg, ...)
 	  local when = date("%c",t.LastSeen)
 	  indicatortip:AddLine(L["Last updated"],when)
 	end
-	if t.PlayedTotal and t.PlayedLevel and ChatFrame_TimeBreakDown then
+	if vars.db.Tooltip.TrackPlayed and t.PlayedTotal and t.PlayedLevel and ChatFrame_TimeBreakDown then
 	  --indicatortip:AddLine((TIME_PLAYED_TOTAL):format((TIME_DAYHOURMINUTESECOND):format(ChatFrame_TimeBreakDown(t.PlayedTotal))))
 	  --indicatortip:AddLine((TIME_PLAYED_LEVEL):format((TIME_DAYHOURMINUTESECOND):format(ChatFrame_TimeBreakDown(t.PlayedLevel))))
 	  indicatortip:AddLine((TIME_PLAYED_TOTAL):format(""),SecondsToTime(t.PlayedTotal))
@@ -2018,7 +2011,9 @@ local function ShowAccountSummary(cell, arg, ...)
 	end
 	indicatortip:AddLine(L["Characters"], ttoons)
 	indicatortip:AddLine(string.format(L["Level %d Characters"],maxlvl), tmaxtoons)
-        indicatortip:AddLine((TIME_PLAYED_TOTAL):format(""),SecondsToTime(ttime))
+	if vars.db.Tooltip.TrackPlayed then
+          indicatortip:AddLine((TIME_PLAYED_TOTAL):format(""),SecondsToTime(ttime))
+	end
         indicatortip:AddLine(TOTAL.." "..MONEY,addon:formatNumber(tmoney,true))
 	local rmoney = {}
 	for _,ri in pairs(r) do table.insert(rmoney,ri) end
