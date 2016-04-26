@@ -134,30 +134,6 @@ local function IndicatorOptions()
 	return args
 end
 
-local function GroupListGUI(order, name, list)
-	local total = TableLen(list)
-	local group = {
-		type = "group",
-		inline = true,
-		name = name,
-		order = order,
-		args = {
-			item1 = {
-				type = "description",
-				name = L["List is empty"],
-			},
-		},
-	}
-	for i = 1, total do
-		group.args["item" .. i] = {
-			type = "description",
-			name = list[i],
-			order = i,
-		}
-	end
-	return group
-end
-
 -- options table below
 function module:BuildOptions() 
   local valueslist = { ["always"] = GREEN_FONT_COLOR_CODE..L["Always show"]..FONTEND,
@@ -213,11 +189,6 @@ function module:BuildOptions()
 					order = 0.5,
 					type = "description",
 					name = function() return "Version: SavedInstances "..addon.version end,
-				},
-				intro = {
-					order = 1,
-					type = "description",
-					name = L["Track the instance IDs saved against your characters"],
 				},
 				GeneralHeader = {
 					order = 2, 
@@ -380,67 +351,54 @@ function module:BuildOptions()
 				MiscHeader = {
 					order = 30, 
 					type = "header",
-					name = L["Miscellaneous"],
+					name = L["Miscellaneous Tracking"],
 				},
 				TrackDailyQuests = {
 					type = "toggle",
 					order = 33,
-					name = L["Track Daily Quests"],
+					name = L["Daily Quests"],
 				},
 				TrackWeeklyQuests = {
 					type = "toggle",
 					order = 33.5,
-					name = L["Track Weekly Quests"],
-				},
-				RemindCharms = {
-					type = "toggle",
-					order = 33.6,
-					width = "double",
-					name = L["Remind about weekly charm quest"],
+					name = L["Weekly Quests"],
 				},
 				TrackSkills = {
 					type = "toggle",
 					order = 33.75,
-					width = "double",
-					name = L["Track trade skill cooldowns"],
+					name = L["Trade skills"],
 				},
 				TrackFarm = {
 					type = "toggle",
 					order = 33.80,
-					width = "double",
-					name = L["Track farm crops"],
+					name = L["Farm crops"],
 				},
 				TrackBonus = {
 					type = "toggle",
 					order = 33.85,
-					width = "double",
-					name = L["Track bonus loot rolls"],
+					name = L["Bonus rolls"],
 				},
 				AugmentBonus = {
 					type = "toggle",
 					order = 33.95,
-					width = "double",
-					name = L["Augment bonus loot frame"],
+					name = L["Bonus loot frame"],
 				},
 				TrackLFG = {
 					type = "toggle",
 					order = 34,
-					width = "double",
-					name = L["Track LFG dungeon cooldown"],
+					name = L["LFG cooldown"],
 					desc = L["Show cooldown for characters to use LFG dungeon system"],
 				},
 				TrackDeserter = {
 					type = "toggle",
 					order = 35,
-					width = "double",
-					name = L["Track Battleground Deserter cooldown"],
+					name = L["Battleground Deserter"],
 					desc = L["Show cooldown for characters to use battleground system"],
 				},
-				ToonHeader = {
-					order = 31, 
-					type = "header",
-					name = L["Characters"],
-					hidden = true,
+				TrackPlayed = {
+					type = "toggle",
+					order = 36,
+					name = L["Time /played"],
 				},
 				BindHeader = {
 					order = -0.6, 
@@ -529,7 +487,7 @@ function module:BuildOptions()
 		Instances = {
 			order = 4,
 			type = "group",
-			name = L["Instance options"],
+			name = L["Instances"],
 			childGroups = "select",
 			width = "double",
 			args = (function()
@@ -821,54 +779,6 @@ function module:BuildOptions()
 		      },
 	           },
 		},
-		--[[
-		Lockouts = {
-			order = 5,
-			type = "group",
-			childGroups = "tab",
-			name = L["Lockouts"],
-			disabled = function()
-				return module.selectedLockout == nil
-			end,
-			args = {
-				SelectedToon = {
-					order = 1,
-					type = "select",
-					width = "double",
-					name = L["Selected lockout"],
-					disabled = function()
-						return TableLen(db.Lockouts) == 0
-					end,
-					get = function(info)
-						return module.selectedLockout
-					end,
-					set = function(info, value)
-						module.selectedLockout = value
-					end,
-					values = function()
-						local table = { }
-						for lockout, l in pairs(db.Lockouts) do
-							table[lockout] = lockout .. " " .. l.Name
-						end
-						return table
-					end,
-				},
-				LockoutNote = {
-					order = 2,
-					type = "input",
-					width = "double",
-					name = L["Note"],
-					get = function()
-						if not module.selectedLockout then return end
-						return db.Lockouts[module.selectedLockout].Note
-					end,
-					set = function(info, value)
-						db.Lockouts[module.selectedLockout].Note = value
-					end,
-				},
-			},
-		},
-		--]]
 	},
 }
   core.Options = core.Options or {} -- allow option table rebuild
@@ -950,7 +860,6 @@ function module:SetupOptions()
                        end
                        module:ReopenConfigDisplay(finst)
                     end
-	--ACD:AddToBlizOptions(namespace, L["Lockouts"], namespace, "Lockouts")
 	local ftoon = ACD:AddToBlizOptions(namespace, L["Characters"], namespace, "Characters")
 	lastoptiongroup = ftoon
 	module.ftoon = ftoon
