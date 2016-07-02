@@ -240,6 +240,7 @@ local QuestExceptions = {
   -- some quests are misidentified in scope
   [7905]  = "Regular", -- Darkmoon Faire referral -- old addon versions misidentified this as monthly
   [7926]  = "Regular", -- Darkmoon Faire referral
+  [37819] = "Regular", -- Darkmoon Faire races referral
   [31752] = "AccountDaily", -- Blingtron
   [34774] = "AccountDaily", -- Blingtron 5000
   -- also pre-populate a few important quests
@@ -1662,7 +1663,9 @@ end
 
 function addon:QuestIsDarkmoonMonthly()
   if QuestIsDaily() then return false end
-  if GetQuestID() == 7905 or GetQuestID() == 7926 then return false end -- one-time referral quest
+  local id = GetQuestID()
+  local scope = id and QuestExceptions[id]
+  if scope and scope ~= "Darkmoon" then return false end -- one-time referral quests
   for i=1,GetNumRewardCurrencies() do
     local name,texture,amount = GetQuestCurrencyInfo("reward",i)
     if texture:find("_ticket_darkmoon_") then
