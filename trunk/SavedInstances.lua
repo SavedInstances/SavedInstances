@@ -713,6 +713,7 @@ function addon:GetNextDailyResetTime()
      resettime > 24*3600+30 then -- can also be wrong near reset in an instance
     return nil
   end
+ if false then -- this should no longer be a problem after the 7.0 reset time changes
   -- ticket 177/191: GetQuestResetTime() is wrong for Oceanic+Brazilian characters in PST instances
   local serverHour, serverMinute = GetGameTime()
   local serverResetTime = (serverHour*3600 + serverMinute*60 + resettime) % 86400 -- GetGameTime of the reported reset
@@ -728,6 +729,7 @@ function addon:GetNextDailyResetTime()
      end
      debug("Adjusting GetQuestResetTime() discrepancy of %d seconds (%d hours). Reset in %d seconds", diff, diffhours, resettime)
   end
+ end
   return time() + resettime
 end
 
