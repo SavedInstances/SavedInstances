@@ -71,8 +71,8 @@ local scantt = CreateFrame("GameTooltip", "SavedInstancesScanTooltip", UIParent,
 local currency = { 
   --395, -- Justice Points 
   1191, -- Valor Points
-  392, -- Honor Points
-  390, -- Conquest Points
+  --392, -- Honor Points
+  --390, -- Conquest Points
   738, -- Lesser Charm of Good Fortune
   697, -- Elder Charm of Good Fortune
   752, -- Mogu Rune of Fate
@@ -88,6 +88,8 @@ local currency = {
   823, -- Apexis Crystal
   824, -- Garrison Resources
   1101,-- Oil
+  1155,-- Ancient Mana
+  1220,-- Order Resources
   994, -- Seal of Tempered Fate
   1129,-- Seal of Inevitable Fate
   1166,-- Timewarped Badge 
@@ -129,6 +131,15 @@ addon.LFRInstances = {
   [984] = { total=3, base=7,  parent=989, altid=nil, remap={ 7, 8,  11 } }, -- Hellfire3: Bastion of Shadows
   [985] = { total=3, base=10, parent=989, altid=nil, remap={ 9, 10, 12 } }, -- Hellfire4: Destructor's Rise
   [986] = { total=1, base=13, parent=989, altid=nil }, -- Hellfire5: Black Gate
+
+  [1287] ={ total=3, base=1,  parent=1350,altid=nil }, -- EN1: Darkbough
+  [1288] ={ total=3, base=4,  parent=1350,altid=nil }, -- EN2: Tormented Guardians
+  [1289] ={ total=1, base=7,  parent=1350,altid=nil }, -- EN3: Rift of Aln
+
+  [1290] ={ total=3, base=1,  parent=1353,altid=nil }, -- NH1: Arcing Aqueducts
+  [1291] ={ total=3, base=4,  parent=1353,altid=nil }, -- NH2: Royal Athenaeum 
+  [1292] ={ total=3, base=7,  parent=1353,altid=nil }, -- NH3: Nightspire
+  [1293] ={ total=1, base=10, parent=1353,altid=nil }, -- NH4: Betrayer's Rise
 }
 local tmp = {}
 for id, info in pairs(addon.LFRInstances) do
@@ -525,10 +536,12 @@ vars.defaultDB = {
 		Currency823 = true,  -- Apexis Crystal
   		Currency824 = true,  -- Garrison Resources
 		Currency1101= true,  -- Oil
-		Currency994 = true,  -- Seal of Tempered Fate
-		Currency1129= true,  -- Seal of Inevitable Fate
+		Currency994 = false, -- Seal of Tempered Fate
+		Currency1129= false, -- Seal of Inevitable Fate
+		Currency1155= true,  -- Ancient Mana
 		Currency1166= true,  -- Timewarped Badge
 		Currency1191= true,  -- Valor Points
+		Currency1220= true,  -- Order Resources
 		CurrencyMax = false,
 		CurrencyEarned = true,
 	},
