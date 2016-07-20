@@ -4427,12 +4427,10 @@ end
 
 function core:TRADE_SKILL_UPDATE()
  local cnt = 0
- if IsTradeSkillLinked() or IsTradeSkillGuild() then return end
- for i = 1, GetNumTradeSkills() do
-   local link = GetTradeSkillRecipeLink(i)
-   local spellid = link and tonumber(link:match("\124Henchant:(%d+)\124h"))
-   if spellid then
-     local cd, daily = GetTradeSkillCooldown(i)
+ if C_TradeSkillUI.IsTradeSkillLinked() or C_TradeSkillUI.IsTradeSkillGuild() then return end
+ local recipeids = C_TradeSkillUI.GetFilteredRecipeIDs()
+ for _, spellid in ipairs(recipeids) do
+     local cd, daily = C_TradeSkillUI.GetRecipeCooldown(spellid)
      if cd and daily -- GetTradeSkillCooldown often returns WRONG answers for daily cds
        and not tonumber(trade_spells[spellid]) then -- daily flag incorrectly set for some multi-day cds (Northrend Alchemy Research)
        cd = addon:GetNextDailySkillResetTime()
@@ -4447,7 +4445,6 @@ function core:TRADE_SKILL_UPDATE()
        addon.seencds[spellid] = true
        cnt = cnt + 1
      end
-   end
  end
  return cnt
 end
