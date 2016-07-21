@@ -770,8 +770,11 @@ function addon:GetNextWeeklyResetTime()
     local region = addon:GetRegion()
     if not region then return nil end
     addon.resetDays = {}
+    addon.resetDays.DLHoffset = 0
     if region == "US" then
       addon.resetDays["2"] = true -- tuesday
+      -- ensure oceanic servers over the dateline still reset on tues UTC (wed 1/2 AM server)
+      addon.resetDays.DLHoffset = -3 
     elseif region == "EU" then
       addon.resetDays["3"] = true -- wednesday
     elseif region == "CN" or region == "KR" or region == "TW" then -- XXX: codes unconfirmed
@@ -780,7 +783,7 @@ function addon:GetNextWeeklyResetTime()
       addon.resetDays["2"] = true -- tuesday?
     end
   end
-  local offset = addon:GetServerOffset() * 3600
+  local offset = (addon:GetServerOffset() + addon.resetDays.DLHoffset) * 3600
   local nightlyReset = addon:GetNextDailyResetTime()
   if not nightlyReset then return nil end
   --while date("%A",nightlyReset+offset) ~= WEEKDAY_TUESDAY do 
@@ -2504,7 +2507,7 @@ function core:OnEnable()
 	self:RegisterEvent("CHAT_MSG_LOOT", "CheckSystemMessage")
 	self:RegisterBucketEvent("CURRENCY_DISPLAY_UPDATE", 0.25, function() addon:UpdateCurrency() end)
 	self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
-	self:RegisterBucketEvent("TRADE_SKILL_UPDATE", 1)
+	self:RegisterBucketEvent("TRADE_SKILL_LIST_UPDATE", 1)
 	self:RegisterBucketEvent("PLAYER_ENTERING_WORLD", 1, RequestRaidInfo)
 	self:RegisterBucketEvent("LFG_LOCK_INFO_RECEIVED", 1, RequestRaidInfo)
 	self:RegisterEvent("BONUS_ROLL_RESULT", "BonusRollResult")
@@ -4407,7 +4410,7 @@ function core:record_skill(spellID, expires)
 end
 
 function core:TradeSkillRescan(spellid)
-  local scan = core:TRADE_SKILL_UPDATE()
+  local scan = core:TRADE_SKILL_LIST_UPDATE()
   if TradeSkillFrame and TradeSkillFrame.filterTbl and 
      (scan == 0 or not addon.seencds or not addon.seencds[spellid]) then 
     -- scan failed, probably because the skill is hidden - try again
@@ -4418,7 +4421,7 @@ function core:TradeSkillRescan(spellid)
     SetTradeSkillCategoryFilter(-1)
     SetTradeSkillInvSlotFilter(-1, 1, 1)
     ExpandTradeSkillSubClass(0)
-      local rescan = core:TRADE_SKILL_UPDATE()
+      local rescan = core:TRADE_SKILL_LIST_UPDATE()
       debug("Rescan: "..(rescan==scan and "Failed" or "Success"))
     TradeSkillOnlyShowMakeable(addon.filtertmp.hasMaterials);
     TradeSkillOnlyShowSkillUps(addon.filtertmp.hasSkillUp);
@@ -4427,7 +4430,7 @@ function core:TradeSkillRescan(spellid)
   end
 end
 
-function core:TRADE_SKILL_UPDATE()
+function core:TRADE_SKILL_LIST_UPDATE()
  local cnt = 0
  if C_TradeSkillUI.IsTradeSkillLinked() or C_TradeSkillUI.IsTradeSkillGuild() then return end
  local recipeids = C_TradeSkillUI.GetFilteredRecipeIDs()
