@@ -1,5 +1,5 @@
 <Bindings>
-  <Binding name="SAVEDINSTANCES" header="SAVEDINSTANCES">
+  <Binding name="SAVEDINSTANCES" header="SAVEDINSTANCES" category="ADDONS">
     SavedInstances:ToggleDetached();
   </Binding>
 </Bindings>
