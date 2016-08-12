@@ -93,6 +93,7 @@ local currency = {
   994, -- Seal of Tempered Fate
   1129,-- Seal of Inevitable Fate
   1166,-- Timewarped Badge 
+  1226,-- Nethershards
 }
 addon.currency = currency
 
@@ -542,6 +543,7 @@ vars.defaultDB = {
 		Currency1166= true,  -- Timewarped Badge
 		Currency1191= true,  -- Valor Points
 		Currency1220= true,  -- Order Resources
+		Currency1226= true,  -- Nethershards
 		CurrencyMax = false,
 		CurrencyEarned = true,
 	},
