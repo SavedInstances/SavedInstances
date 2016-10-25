@@ -3154,7 +3154,7 @@ local function UpdateTooltip(self,elap)
 	   tooltip:SetBackdrop(GameTooltip:GetBackdrop())
     	   tooltip:SetBackdropColor(GameTooltip:GetBackdropColor()); 
 	   tooltip:SetBackdropBorderColor(GameTooltip:GetBackdropBorderColor())
-	   addon:SkinFrame(tooltip, tooltip:GetName())
+	   addon:SkinFrame(tooltip, "SavedInstancesTooltip")
 	   addon.firstupdate = false
 	end
  	addon.updatetooltip_throttle = (addon.updatetooltip_throttle or 10) + elap 
