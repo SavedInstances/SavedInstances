@@ -94,6 +94,9 @@ local currency = {
   1129,-- Seal of Inevitable Fate
   1166,-- Timewarped Badge 
   1226,-- Nethershards
+  1273,-- Seal of Broken Fate
+  1149,-- Sightless Eye
+  1275,-- Curious Coin
 }
 addon.currency = currency
 
@@ -133,8 +136,8 @@ addon.LFRInstances = {
   [985] = { total=3, base=10, parent=989, altid=nil, remap={ 9, 10, 12 } }, -- Hellfire4: Destructor's Rise
   [986] = { total=1, base=13, parent=989, altid=nil }, -- Hellfire5: Black Gate
 
-  [1287] ={ total=3, base=1,  parent=1350,altid=nil }, -- EN1: Darkbough
-  [1288] ={ total=3, base=4,  parent=1350,altid=nil }, -- EN2: Tormented Guardians
+  [1287] ={ total=3, base=1,  parent=1350,altid=nil, remap={ 1, 3, 5 } }, -- EN1: Darkbough
+  [1288] ={ total=3, base=4,  parent=1350,altid=nil, remap={ 2, 4, 6 } }, -- EN2: Tormented Guardians
   [1289] ={ total=1, base=7,  parent=1350,altid=nil }, -- EN3: Rift of Aln
 
   [1290] ={ total=3, base=1,  parent=1353,altid=nil }, -- NH1: Arcing Aqueducts
@@ -255,6 +258,7 @@ local QuestExceptions = {
   [37819] = "Regular", -- Darkmoon Faire races referral
   [31752] = "AccountDaily", -- Blingtron
   [34774] = "AccountDaily", -- Blingtron 5000
+  [40753] = "AccountDaily", -- Blingtron 6000
   -- also pre-populate a few important quests
   [32640] = "Weekly",  -- Champions of the Thunder King
   [32641] = "Weekly",  -- Champions of the Thunder King
@@ -534,16 +538,18 @@ vars.defaultDB = {
 		CurrencyValueColor = true,
 		Currency776 = false, -- Warforged Seals
 		Currency738 = false, -- Lesser Charm of Good Fortune
-		Currency823 = true,  -- Apexis Crystal
-  		Currency824 = true,  -- Garrison Resources
-		Currency1101= true,  -- Oil
+		Currency823 = false,  -- Apexis Crystal
+  		Currency824 = false,  -- Garrison Resources
+		Currency1101= false,  -- Oil
 		Currency994 = false, -- Seal of Tempered Fate
 		Currency1129= false, -- Seal of Inevitable Fate
 		Currency1155= true,  -- Ancient Mana
 		Currency1166= true,  -- Timewarped Badge
 		Currency1191= true,  -- Valor Points
 		Currency1220= true,  -- Order Resources
-		Currency1226= true,  -- Nethershards
+		Currency1226= false, -- Nethershards
+		Currency1273= true,  -- Seal of Broken Fate
+		Currency1149= true,  -- Sightless Eye
 		CurrencyMax = false,
 		CurrencyEarned = true,
 	},
@@ -4231,7 +4237,20 @@ local trade_spells = {
 	[156587] = true,	-- Alchemical Catalyst (4)
 	[168042] = true,	-- Alchemical Catalyst (10), 3 charges w/ 24hr recharge
 	[181643] = "xmute",	-- Transmute: Savage Blood
-
+	-- Legion
+        [188800] = "wildxmute", -- Transmute: Wild Transmutation (Rank 1)
+        [188801] = "wildxmute", -- Transmute: Wild Transmutation (Rank 2)
+        [188802] = "wildxmute", -- Transmute: Wild Transmutation (Rank 3)
+        [213248] = "legionxmute", -- Transmute: Ore to Cloth
+        [213249] = "legionxmute", -- Transmute: Cloth to Skins
+        [213250] = "legionxmute", -- Transmute: Skins to Ore
+        [213251] = "legionxmute", -- Transmute: Ore to Herbs
+        [213252] = "legionxmute", -- Transmute: Cloth to Herbs
+        [213253] = "legionxmute", -- Transmute: Skins to Herbs
+        [213254] = "legionxmute", -- Transmute: Fish to Gems
+        [213255] = "legionxmute", -- Transmute: Meat to Pants
+        [213256] = "legionxmute", -- Transmute: Meat to Pet
+        [213257] = "legionxmute", -- Transmute: Blood of Sargeras	
 
         -- Enchanting
         [28027] = "sphere", 	-- Prismatic Sphere (2-day shared, 5.2.0 verified)
@@ -4310,6 +4329,8 @@ local trade_spells = {
 
 local cdname = {
 	["xmute"] =  GetSpellInfo(2259).. ": "..L["Transmute"],
+        ["wildxmute"] =  GetSpellInfo(2259).. ": "..L["Wild Transmute"],
+        ["legionxmute"] =  GetSpellInfo(2259).. ": "..L["Legion Transmute"],
 	["facet"] =  GetSpellInfo(25229)..": "..L["Facets of Research"],
 	["sphere"] = GetSpellInfo(7411).. ": "..GetSpellInfo(28027),
 	["magni"] =  GetSpellInfo(2108).. ": "..GetSpellInfo(140040)
