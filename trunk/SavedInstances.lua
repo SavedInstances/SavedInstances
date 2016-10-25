@@ -887,6 +887,7 @@ addon.transInstance = {
   [531] = 161,  -- AQ temple: ticket 137 frFR
   [1228] = 897, -- Highmaul: ticket 175 ruRU
   [552] = 1011, -- Arcatraz: ticket 216 frFR
+  [1516] = 1190, -- Arcway: ticket 227/233 ptBR
 }
 
 -- some instances (like sethekk halls) are named differently by GetSavedInstanceInfo() and LFGGetDungeonInfoByID()
