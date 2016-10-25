@@ -178,6 +178,18 @@ addon.WorldBosses = {
   [1262] = { quest=37464, expansion=5, level=100 }, -- Rukhmar
   [1452] = { quest=94015, expansion=5, level=100 }, -- Kazzak
 
+  [1749] = { quest=42270, expansion=6, level=110 }, -- Nithogg
+  [1756] = { quest=42269, expansion=6, level=110 }, -- The Soultakers
+  [1763] = { quest=42779, expansion=6, level=110 }, -- Shar'thos
+  [1769] = { quest=43192, expansion=6, level=110 }, -- Levantus
+  --[1770] = { quest=, expansion=6, level=110 }, -- Humongris
+  [1774] = { quest=43193, expansion=6, level=110 }, -- Calamir
+  --[1783] = { quest=, expansion=6, level=110 }, -- Na'zak the Fiend
+  [1789] = { quest=43448, expansion=6, level=110 }, -- Drugon the Frostblood
+  --[1790] = { quest=, expansion=6, level=110 }, -- Ana-Mouz
+  [1795] = { quest=43985, expansion=6, level=110 }, -- Flotsam
+  [1796] = { quest=44287, expansion=6, level=110 }, -- Withered Jim
+
   -- bosses with no EJ entry (eid is a placeholder)
   [9001] = { quest=38276, name=GARRISON_LOCATION_TOOLTIP.." "..BOSS, expansion=5, level=100 },
 }
