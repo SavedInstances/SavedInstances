@@ -619,7 +619,7 @@ function addon:SkinFrame(frame,name)
     if frame.SetTemplate then
       frame:SetTemplate("Transparent")
     end
-    local close = _G[name.."CloseButton"]
+    local close = _G[name.."CloseButton"] or frame.CloseButton
     if close and close.SetAlpha then
       if ElvUI then
         ElvUI[1]:GetModule('Skins'):HandleCloseButton(close)
@@ -3154,6 +3154,7 @@ local function UpdateTooltip(self,elap)
 	   tooltip:SetBackdrop(GameTooltip:GetBackdrop())
     	   tooltip:SetBackdropColor(GameTooltip:GetBackdropColor()); 
 	   tooltip:SetBackdropBorderColor(GameTooltip:GetBackdropBorderColor())
+	   addon:SkinFrame(tooltip, tooltip:GetName())
 	   addon.firstupdate = false
 	end
  	addon.updatetooltip_throttle = (addon.updatetooltip_throttle or 10) + elap 
