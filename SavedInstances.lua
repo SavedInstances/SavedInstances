@@ -301,6 +301,17 @@ local WoDSealQuests = {
 for k,v in pairs(WoDSealQuests) do
   QuestExceptions[k] = v
 end
+local LegionSealQuests = {
+  [43895] = "Weekly",
+  [43896] = "Weekly",
+  [43897] = "Weekly",
+  [43892] = "Weekly",
+  [43893] = "Weekly",
+  [43894] = "Weekly",
+}
+for k,v in pairs(LegionSealQuests) do
+  QuestExceptions[k] = v
+end
 
 function addon:QuestInfo(questid)
   if not questid or questid == 0 then return nil end
@@ -1688,6 +1699,14 @@ function addon:UpdateCurrency()
 	    ci.weeklyMax = 3 -- the max via quests
 	    ci.earnedThisWeek = 0
 	    for id in pairs(WoDSealQuests) do
+	      if IsQuestFlaggedCompleted(id) then
+	        ci.earnedThisWeek = ci.earnedThisWeek + 1
+	      end
+	    end
+	  elseif idx == 1273 then -- Seal of Broken Fate returns zero for weekly quantities
+	    ci.weeklyMax = 3 -- the max via quests
+	    ci.earnedThisWeek = 0
+	    for id in pairs(LegionSealQuests) do
 	      if IsQuestFlaggedCompleted(id) then
 	        ci.earnedThisWeek = ci.earnedThisWeek + 1
 	      end
