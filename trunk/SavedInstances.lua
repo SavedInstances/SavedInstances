@@ -2401,6 +2401,7 @@ function core:toonInit()
 	ti.LClass, ti.Class = UnitClass("player")
 	ti.Level = UnitLevel("player")
 	ti.Show = ti.Show or "saved"
+	ti.Order = ti.Order or 50
 	ti.Quests = ti.Quests or {}
 	ti.Skills = ti.Skills or {}
 	-- try to get a reset time, but don't overwrite existing, which could break quest list
