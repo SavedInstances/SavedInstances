@@ -37,6 +37,8 @@ local LFD_RANDOM_REWARD_EXPLANATION2 = LFD_RANDOM_REWARD_EXPLANATION2
 local INSTANCE_SAVED, TRANSFER_ABORT_TOO_MANY_INSTANCES, NO_RAID_INSTANCES_SAVED = 
       INSTANCE_SAVED, TRANSFER_ABORT_TOO_MANY_INSTANCES, NO_RAID_INSTANCES_SAVED
 
+local ALREADY_LOOTED = ERR_LOOT_GONE:gsub("%(.*%)","")
+
 vars.Indicators = {
 	ICON_STAR = ICON_LIST[1] .. "16:16:0:0|t",
 	ICON_CIRCLE = ICON_LIST[2] .. "16:16:0:0|t",
@@ -2132,7 +2134,7 @@ local function ShowWorldBossTooltip(cell, arg, ...)
 	    local n = indicatortip:AddLine()
 	    indicatortip:SetCell(n, 1, instance, "LEFT")
             if info and info[1] then 
-              indicatortip:SetCell(n, 2, REDFONT..ERR_LOOT_GONE..FONTEND, "RIGHT")
+              indicatortip:SetCell(n, 2, REDFONT..ALREADY_LOOTED..FONTEND, "RIGHT")
             else
               indicatortip:SetCell(n, 2, GREENFONT..AVAILABLE..FONTEND, "RIGHT")
             end
@@ -2171,7 +2173,7 @@ local function ShowLFRTooltip(cell, arg, ...)
 	      local n = indicatortip:AddLine()
 	      indicatortip:SetCell(n, 1, bossname, "LEFT", 2)
               if info and info[bossid] then 
-                indicatortip:SetCell(n, 3, REDFONT..ERR_LOOT_GONE..FONTEND, "RIGHT", 1)
+                indicatortip:SetCell(n, 3, REDFONT..ALREADY_LOOTED..FONTEND, "RIGHT", 1)
               else
                 indicatortip:SetCell(n, 3, GREENFONT..AVAILABLE..FONTEND, "RIGHT", 1)
               end
@@ -2269,7 +2271,7 @@ local function ShowIndicatorTooltip(cell, arg, ...)
 	    local n = indicatortip:AddLine()
 	    indicatortip:SetCell(n, 1, bossname, "LEFT", 2)
             if info[bossid] then 
-              indicatortip:SetCell(n, 3, REDFONT..ERR_LOOT_GONE..FONTEND, "RIGHT", 1)
+              indicatortip:SetCell(n, 3, REDFONT..ALREADY_LOOTED..FONTEND, "RIGHT", 1)
             else
               indicatortip:SetCell(n, 3, GREENFONT..AVAILABLE..FONTEND, "RIGHT", 1)
             end
