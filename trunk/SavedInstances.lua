@@ -310,6 +310,16 @@ local LegionSealQuests = {
   [43892] = "Weekly",
   [43893] = "Weekly",
   [43894] = "Weekly",
+  [44226] = "Weekly", -- order hall: DH
+  [44235] = "Weekly", -- order hall: Druid
+  [44236] = "Weekly", -- order hall: Druid?
+  [44212] = "Weekly", -- order hall: Hunter
+  [44208] = "Weekly", -- order hall: Mage
+  [44238] = "Weekly", -- order hall: Monk
+  [44219] = "Weekly", -- order hall: Paladin
+  [44230] = "Weekly", -- order hall: Priest
+  [44204] = "Weekly", -- order hall: Rogue
+  [44205] = "Weekly", -- order hall: Shaman
 }
 for k,v in pairs(LegionSealQuests) do
   QuestExceptions[k] = v
