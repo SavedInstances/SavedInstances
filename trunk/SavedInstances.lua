@@ -901,6 +901,7 @@ addon.transInstance = {
   [1228] = 897, -- Highmaul: ticket 175 ruRU
   [552] = 1011, -- Arcatraz: ticket 216 frFR
   [1516] = 1190, -- Arcway: ticket 227/233 ptBR
+  [1651] = 1347, -- Return to Karazhan: ticket 237 (fake LFDID)
 }
 
 -- some instances (like sethekk halls) are named differently by GetSavedInstanceInfo() and LFGGetDungeonInfoByID()
@@ -1088,6 +1089,7 @@ local _instance_exceptions = {
     25741, -- M'uru
     25315, -- Kil'jaeden
   },
+  [1347] = { total=8 }, -- Return to Karazhan
 }
 function addon:instanceException(LFDID)
   if not LFDID then return nil end
@@ -1106,7 +1108,7 @@ function addon:instanceException(LFDID)
       end
       total = total + 1
     end
-    exc.total = total
+    exc.total = exc.total or total
   end
   return exc
 end
@@ -1413,6 +1415,15 @@ function addon:UpdateInstance(id)
   maxPlayers = tonumber(maxPlayers)
   if not name or not expansionLevel or not recLevel or (typeID > 2 and typeID ~= TYPEID_RANDOM_DUNGEON) then return end
   if name:find(PVP_RATED_BATTLEGROUND) then return nil, nil, true end -- ignore 10v10 rated bg
+  if id == 1347 then -- ticket 237: Return to Karazhan currently has no actual LFDID, so use this one (Kara Scenario)
+    name = SPLASH_LEGION_NEW_7_1_RIGHT_TITLE
+    expansionLevel = 6
+    recLevel = 110
+    maxPlayers = 5
+    isHoliday = false
+    typeID = TYPEID_DUNGEON
+    subtypeID = LFG_SUBTYPEID_HEROIC
+  end
   if subtypeID == LFG_SUBTYPEID_SCENARIO and typeID ~= TYPEID_RANDOM_DUNGEON then -- ignore non-random scenarios
      return nil, nil, true
   end
