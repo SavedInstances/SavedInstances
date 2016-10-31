@@ -138,9 +138,9 @@ addon.LFRInstances = {
   [985] = { total=3, base=10, parent=989, altid=nil, remap={ 9, 10, 12 } }, -- Hellfire4: Destructor's Rise
   [986] = { total=1, base=13, parent=989, altid=nil }, -- Hellfire5: Black Gate
 
-  [1287] ={ total=3, base=1,  parent=1350,altid=nil, remap={ 1, 3, 5 } }, -- EN1: Darkbough
-  [1288] ={ total=3, base=4,  parent=1350,altid=nil, remap={ 2, 4, 6 } }, -- EN2: Tormented Guardians
-  [1289] ={ total=1, base=7,  parent=1350,altid=nil }, -- EN3: Rift of Aln
+  [1287] ={ total=3, base=1,  parent=1350,altid=nil, remap={ 1, 2, 3 } }, -- EN1: Darkbough
+  [1288] ={ total=3, base=4,  parent=1350,altid=nil, remap={ 1, 2, 3 } }, -- EN2: Tormented Guardians
+  [1289] ={ total=1, base=7,  parent=1350,altid=nil, remap={ 1 } },       -- EN3: Rift of Aln
 
   [1290] ={ total=3, base=1,  parent=1353,altid=nil }, -- NH1: Arcing Aqueducts
   [1291] ={ total=3, base=4,  parent=1353,altid=nil }, -- NH2: Royal Athenaeum 
