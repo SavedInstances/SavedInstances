@@ -99,6 +99,7 @@ local currency = {
   1273,-- Seal of Broken Fate
   1149,-- Sightless Eye
   1275,-- Curious Coin
+  1314,-- Lingering Soul Fragment
 }
 addon.currency = currency
 
