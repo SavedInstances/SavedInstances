@@ -182,7 +182,7 @@ addon.WorldBosses = {
   [1452] = { quest=94015, expansion=5, level=100 }, -- Kazzak
 
   [1749] = { quest=42270, expansion=6, level=110 }, -- Nithogg
-  [1756] = { quest=42269, expansion=6, level=110 }, -- The Soultakers
+  [1756] = { quest=42269, expansion=6, level=110, name=EJ_GetEncounterInfo(1756) }, -- The Soultakers
   [1763] = { quest=42779, expansion=6, level=110 }, -- Shar'thos
   [1769] = { quest=43192, expansion=6, level=110 }, -- Levantus
   [1770] = { quest=42819, expansion=6, level=110 }, -- Humongris
