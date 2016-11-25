@@ -143,6 +143,8 @@ addon.LFRInstances = {
   [1288] ={ total=3, base=4,  parent=1350,altid=nil, remap={ 1, 2, 3 } }, -- EN2: Tormented Guardians
   [1289] ={ total=1, base=7,  parent=1350,altid=nil, remap={ 1 } },       -- EN3: Rift of Aln
 
+  [1411] ={ total=3, base=1,  parent=1439,altid=nil }, -- ToV
+
   [1290] ={ total=3, base=1,  parent=1353,altid=nil }, -- NH1: Arcing Aqueducts
   [1291] ={ total=3, base=4,  parent=1353,altid=nil }, -- NH2: Royal Athenaeum 
   [1292] ={ total=3, base=7,  parent=1353,altid=nil }, -- NH3: Nightspire
