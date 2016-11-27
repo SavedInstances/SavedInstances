@@ -17,7 +17,6 @@
 ## LoadManagers: AddonLoader
 ## X-LoadOn-Always: delayed
 
-
 #@no-lib-strip@
 libs\LibStub\LibStub.lua
 libs\CallbackHandler-1.0\CallbackHandler-1.0.xml
