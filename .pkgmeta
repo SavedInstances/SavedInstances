@@ -20,3 +20,7 @@ ignore:
     - .hg*
     - .DS_Store
 
+license-output: LICENSE.txt
+
+enable-nolib-creation: yes
+
