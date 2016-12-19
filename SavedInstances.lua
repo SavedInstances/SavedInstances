@@ -224,6 +224,8 @@ local _specialQuests = {
   [39288] = { zid=945, daily=true }, -- Terrorfist
   [39289] = { zid=945, daily=true }, -- Doomroller
   [39290] = { zid=945, daily=true }, -- Vengeance
+  -- Order Hall
+  [42517] = { zid=1050, daily=true }, -- Warlock: Ritual of Doom
 }
 function addon:specialQuests()
   for qid, qinfo in pairs(_specialQuests) do
