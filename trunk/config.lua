@@ -174,6 +174,12 @@ function module:BuildOptions()
 			type = "execute",
 			func = function() addon:timedebug() end,
 		},
+		quest = { 
+			name = L["Dump quest debugging information"],
+			guiHidden = true,
+			type = "execute",
+			func = function(...) addon:questdebug(...) end,
+		},
 		show = { 
 			name = L["Show/Hide the SavedInstances tooltip"],
 			guiHidden = true,
