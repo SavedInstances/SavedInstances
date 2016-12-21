@@ -389,6 +389,63 @@ function addon:timedebug()
  chatMsg("Next darkmoon reset: %s local, %s server",date("%a %c",t), date("%a %c",t+3600*SavedInstances:GetServerOffset()))
 end
 
+local function questTableToString(t)
+  local ret = ""
+  local lvl = UnitLevel("player")
+  for k,v in pairs(t) do
+    ret = string.format("%s%s\124cffffff00\124Hquest:%s:%s\124h[%s]\124h\124r", ret, (#ret == 0 and "" or ", "),k,lvl,k)
+  end
+  return ret
+end
+
+function addon:questdebug(info)
+  local t = vars.db.Toons[thisToon]
+  local ql = GetQuestsCompleted()
+
+  local cmd = info.input
+  cmd = cmd and strtrim(cmd:gsub("^%s*(%w+)%s*","")):lower()
+  if t.completedquests and (cmd == "load" or not addon.completedquests) then
+    chatMsg("Loaded quest list")
+    addon.completedquests = t.completedquests
+  elseif cmd == "load" then
+    chatMsg("No saved quest list")
+  elseif cmd == "save" then
+    chatMsg("Saved quest list")
+    t.completedquests = ql 
+  elseif cmd == "clear" then
+    chatMsg("Cleared quest list")
+    addon.completedquests = nil
+    t.completedquests = nil
+    return
+  elseif cmd and #cmd > 0 then
+    chatMsg("Quest command not understood: '"..cmd.."'")
+    chatMsg("/si quest ([save|load|clear])")
+    return
+  end
+  local cnt = 0
+  local add = {}
+  local remove = {}
+  for id,_ in pairs(ql) do
+    cnt = cnt + 1
+  end
+  chatMsg("Completed quests: "..cnt)
+  if addon.completedquests then
+    for id,_ in pairs(ql) do
+      if not addon.completedquests[id] then
+        add[id] = true
+      end
+    end
+    for id,_ in pairs(addon.completedquests) do
+      if not ql[id] then
+        remove[id] = true
+      end
+    end
+    if next(add) then chatMsg("Added IDs:   "..questTableToString(add)) end
+    if next(remove) then chatMsg("Removed IDs: "..questTableToString(remove)) end
+  end
+  addon.completedquests = ql
+end
+
 -- abbreviate expansion names (which apparently are not localized in any western character set)
 local function abbreviate(iname)
   iname = iname:gsub("Burning Crusade", "BC")
