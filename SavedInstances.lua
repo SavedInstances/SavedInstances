@@ -226,7 +226,7 @@ local _specialQuests = {
   [39290] = { zid=945, daily=true }, -- Vengeance
   -- Order Hall
   [42517] = { zid=1050, daily=true }, -- Warlock: Ritual of Doom
-  [44707] = { zid=1052, daily=true }, -- Demon Hunter: Twisting Nether
+  [44707] = { zid=1052, daily=true, sid=228651 }, -- Demon Hunter: Twisting Nether
 }
 function addon:specialQuests()
   for qid, qinfo in pairs(_specialQuests) do
@@ -255,7 +255,10 @@ function addon:specialQuests()
       if l then
         qinfo.name = l:gsub("%p$","")
       end
-    elseif not qinfo.name then
+    elseif not qinfo.name and qinfo.sid then
+      qinfo.name = GetSpellInfo(qinfo.sid)
+    end
+    if not qinfo.name or #qinfo.name == 0 then
       local title, link = addon:QuestInfo(qid)
       if title then
         title = title:gsub("%p?%s*[Tt]racking%s*[Qq]uest","")
