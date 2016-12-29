@@ -279,6 +279,19 @@ local QuestExceptions = {
   [7905]  = "Regular", -- Darkmoon Faire referral -- old addon versions misidentified this as monthly
   [7926]  = "Regular", -- Darkmoon Faire referral
   [37819] = "Regular", -- Darkmoon Faire races referral
+
+  -- order hall quests that old addon versions misidentified as weekly (fixed in r548/7.0.8)
+  [44226] = "Regular", -- order hall: DH
+  [44235] = "Regular", -- order hall: Druid
+  [44236] = "Regular", -- order hall: Druid?
+  [44212] = "Regular", -- order hall: Hunter
+  [44208] = "Regular", -- order hall: Mage
+  [44238] = "Regular", -- order hall: Monk
+  [44219] = "Regular", -- order hall: Paladin
+  [44230] = "Regular", -- order hall: Priest
+  [44204] = "Regular", -- order hall: Rogue
+  [44205] = "Regular", -- order hall: Shaman
+
   [31752] = "AccountDaily", -- Blingtron
   [34774] = "AccountDaily", -- Blingtron 5000
   [40753] = "AccountDaily", -- Blingtron 6000
