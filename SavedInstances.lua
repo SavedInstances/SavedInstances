@@ -4748,9 +4748,12 @@ function core:BonusRollResult(event, rewardType, rewardLink, rewardQuantity, rew
   end
   local roll = { name = bossname, time = now, currencyID = BonusRollFrame.currencyID }
   if rewardType == "money" then
-    roll.money = rewardQuantity
+  	roll.money = rewardQuantity
+  elseif rewardType == "artifact_power" then
+	roll.money = 25 -- Hacky and cludgy but it'll do for now
+	--roll.item = rewardlink -- Possible alternative to at least show Artifact Power rewarded
   elseif rewardType == "item" then
-    roll.item = rewardLink
+	roll.item = rewardLink
   end
   table.insert(t.BonusRoll, 1, roll)
   local limit = 25
