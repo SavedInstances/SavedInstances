@@ -309,6 +309,17 @@ local QuestExceptions = {
   [33134] = "Regular",  -- Warforged Seals
   [33338] = "Weekly",  -- Empowering the Hourglass
   [33334] = "Weekly",  -- Strong Enough to Survive
+	
+	-- From Archmage Timear - 
+  [44164] = "Weekly", -- A Burning Path Through Time - Burning Crusade Timewalking
+  [44166] = "Weekly", -- A Frozen Path Through Time - Wrath of the Lich King Timewalking
+  [44167] = "Weekly", -- A Shattered Path Through Time - Cataclysm Timewalking
+  [44171] = "Weekly", -- Emisary of War - Complete Legion Mythics
+  [44172] = "Weekly", -- The Arena Calls - Win Legion Arena Skirmishes
+  [44173] = "Weekly", -- A Call to Battle - Win Battlegrounds
+  [44174] = "Weekly", -- The Very Best - Win PvP Pet Battles
+  [44175] = "Weekly", -- The World Awaits - Complete Broken Isles World Quests
+  [45799] = "Weekly", -- A Shrouded Path Through Time - Mists of Pandaria Timewalking
 }
 
 local WoDSealQuests = {
