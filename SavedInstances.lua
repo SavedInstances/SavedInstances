@@ -100,6 +100,7 @@ local currency = {
   1149,-- Sightless Eye
   1275,-- Curious Coin
   1314,-- Lingering Soul Fragment
+  1342,-- Legionfall War Supplies
 }
 addon.currency = currency
 
