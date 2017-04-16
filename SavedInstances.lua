@@ -139,16 +139,16 @@ addon.LFRInstances = {
   [985] = { total=3, base=10, parent=989, altid=nil, remap={ 9, 10, 12 } }, -- Hellfire4: Destructor's Rise
   [986] = { total=1, base=13, parent=989, altid=nil }, -- Hellfire5: Black Gate
 
-  [1287] ={ total=3, base=1,  parent=1350,altid=nil, remap={ 1, 2, 3 } }, -- EN1: Darkbough
-  [1288] ={ total=3, base=4,  parent=1350,altid=nil, remap={ 1, 2, 3 } }, -- EN2: Tormented Guardians
-  [1289] ={ total=1, base=7,  parent=1350,altid=nil, remap={ 1 } },       -- EN3: Rift of Aln
+  [1287] = { total=3, base=1,  parent=1350,altid=nil, remap={ 1, 2, 3 } }, -- EN1: Darkbough
+  [1288] = { total=3, base=4,  parent=1350,altid=nil, remap={ 1, 2, 3 } }, -- EN2: Tormented Guardians
+  [1289] = { total=1, base=7,  parent=1350,altid=nil, remap={ 1 } },       -- EN3: Rift of Aln
 
-  [1411] ={ total=3, base=1,  parent=1439,altid=nil }, -- ToV
+  [1411] = { total=3, base=1,  parent=1439,altid=nil }, -- ToV
 
-  [1290] ={ total=3, base=1,  parent=1353,altid=nil }, -- NH1: Arcing Aqueducts
-  [1291] ={ total=3, base=4,  parent=1353,altid=nil }, -- NH2: Royal Athenaeum 
-  [1292] ={ total=3, base=7,  parent=1353,altid=nil }, -- NH3: Nightspire
-  [1293] ={ total=1, base=10, parent=1353,altid=nil }, -- NH4: Betrayer's Rise
+  [1290] = { total=3, base=1,  parent=1353,altid=nil }, -- NH1: Arcing Aqueducts
+  [1291] = { total=3, base=4,  parent=1353,altid=nil, remap={ 1, 2, 3 } }, -- NH2: Royal Athenaeum
+  [1292] = { total=3, base=7,  parent=1353,altid=nil, remap={ 1, 2, 3 } }, -- NH3: Nightspire
+  [1293] = { total=1, base=10, parent=1353,altid=nil, remap={ 1 } }, -- NH4: Betrayer's Rise
 }
 local tmp = {}
 for id, info in pairs(addon.LFRInstances) do
