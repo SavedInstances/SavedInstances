@@ -577,6 +577,24 @@ vars.defaultDB = {
 				   -- currencyID: int
 				   -- money: integer or nil
 				   -- item: linkstring or nil
+				   
+				-- MythicKey
+				   -- name: string
+				   -- ResetTime: expiry
+				   -- level: string
+				   -- color: string
+				   -- link: string
+				-- MythicKeyBest
+				   -- lastweeklevel: int
+				   -- ResetTime: expiry
+				   -- level: string
+				   -- weeklyReward: boolean
+				-- DailyWorldQuest
+				   -- days[0,1,2]
+				      -- name
+				      -- dayleft
+				      -- questneed
+				      -- questdone
 
 	Indicators = {
 		D1Indicator = "BLANK", -- indicator: ICON_*, BLANK
@@ -681,6 +699,9 @@ vars.defaultDB = {
 		Currency1149= true,  -- Sightless Eye
 		CurrencyMax = false,
 		CurrencyEarned = true,
+		MythicKey = true,
+		MythicKeyBest = true,
+		DailyWorldQuest = true,
 	},
 	Instances = { }, 	-- table key: "Instance name"; value:
 					-- Show: boolean
@@ -1707,6 +1728,18 @@ function addon:UpdateToonData()
 	        ti.Quests[id] = nil
 	      end
 	    end
+	    if ti.DailyWorldQuest then
+	      if ti.DailyWorldQuest.days1 then
+	        ti.DailyWorldQuest.days0 = ti.DailyWorldQuest.days1
+	        ti.DailyWorldQuest.days0.dayleft = 0
+	        ti.DailyWorldQuest.days1 = nil
+	      end
+	      if ti.DailyWorldQuest.days2 then
+	        ti.DailyWorldQuest.days1 = ti.DailyWorldQuest.days2
+	        ti.DailyWorldQuest.days1.dayleft = 1
+	        ti.DailyWorldQuest.days2 = nil
+	      end
+	    end
 	    ti.DailyResetTime = (ti.DailyResetTime and ti.DailyResetTime + 24*3600) or nextreset
           end 
 	 end
@@ -1764,6 +1797,21 @@ function addon:UpdateToonData()
 	      if QuestExceptions[id] == "Regular" then -- adjust exceptions
 	        ti.Quests[id] = nil
 	      end
+	  end
+	end
+	for toon, ti in pairs(vars.db.Toons) do
+	  if ti.MythicKey and (ti.MythicKey.ResetTime or 0) < time() then
+	    ti.MythicKey = {}
+	  end
+	end
+	for toon, ti in pairs(vars.db.Toons) do
+	  if ti.MythicKeyBest and (ti.MythicKeyBest.ResetTime or 0) < time() then
+	    if ti.MythicKeyBest.level and ti.MythicKeyBest.level > 0 then
+	      ti.MythicKeyBest.LastWeekLevel = ti.MythicKeyBest.level
+	      ti.MythicKeyBest.WeeklyReward = true
+	    end
+	    ti.MythicKeyBest.level = 0
+	    ti.MythicKeyBest.ResetTime = addon:GetNextWeeklyResetTime()
 	  end
 	end
 	for id,qi in pairs(db.Quests) do -- AccountWeekly reset
@@ -2674,6 +2722,13 @@ function core:OnEnable()
 	self:RegisterEvent("LFG_COMPLETION_REWARD", "RefreshLockInfo") -- for random daily dungeon tracking
 	self:RegisterEvent("BOSS_KILL")
 	self:RegisterEvent("ENCOUNTER_END", "EncounterEnd")
+	self:RegisterEvent("BAG_UPDATE", "RefreshMythicKeyInfo")
+	self:RegisterEvent("CHALLENGE_MODE_MAPS_UPDATE", "RefreshMythicKeyInfo")
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", "RefreshDailyWorldQuestInfo")
+	self:RegisterEvent("ADDON_LOADED", "RefreshDailyWorldQuestInfo")
+	self:RegisterEvent("QUEST_LOG_UPDATE", "RefreshDailyWorldQuestInfo")
+	self:RegisterEvent("WORLD_MAP_UPDATE", "RefreshDailyWorldQuestInfo")
+	self:RegisterEvent("QUEST_WATCH_LIST_CHANGED", "RefreshDailyWorldQuestInfo")
 	self:RegisterEvent("CHAT_MSG_MONSTER_YELL")
 	self:RegisterEvent("TIME_PLAYED_MSG", function(_,total,level) 
 	                      local t = thisToon and vars and vars.db and vars.db.Toons[thisToon]
@@ -2706,7 +2761,9 @@ function core:OnEnable()
         RegisterAddonMessagePrefix(addonName)
 	addon:HistoryEvent("PLAYER_ENTERING_WORLD") -- update after initial load
         addon:specialQuests()
+        core:RefreshMythicKeyInfo()
 	core:updateRealmMap()
+        core:RefreshDailyWorldQuestInfo()
 end
 
 function core:ADDON_LOADED()
@@ -2788,6 +2845,99 @@ function core:updateRealmMap()
     end
     for _,r in ipairs(rmap[mapid]) do -- maintain inverse mapping
       rmap[r] = mapid
+    end
+  end
+end
+
+function core:RefreshMythicKeyInfo()
+  local t = vars.db.Toons[thisToon]
+  t.MythicKey = {}
+  for bagID = 0, 4 do
+    for invID = 1, GetContainerNumSlots(bagID) do
+      local itemID = GetContainerItemID(bagID, invID)
+      if itemID and itemID == 138019 then
+        local keyLink = GetContainerItemLink(bagID, invID)
+        local KeyInfo = {strsplit(':', keyLink)}
+	local mapID = tonumber(KeyInfo[15])
+	local mapLevel = tonumber(KeyInfo[16])
+	local color
+	_,_,_,color = GetItemQualityColor(0)
+	if mapLevel >= 10 then
+	  if KeyInfo[20] == "1" then
+	    _,_,_,color = GetItemQualityColor(4)
+	  end
+	elseif mapLevel >= 7 then
+	  if KeyInfo[19] == "1" then
+	    _,_,_,color = GetItemQualityColor(3)
+	  end
+	elseif mapLevel >= 4 then
+	  if KeyInfo[18] == "1" then
+	    _,_,_,color = GetItemQualityColor(2)
+	  end
+	else
+	  if KeyInfo[17] == "1" then
+	    _,_,_,color = GetItemQualityColor(1)
+	  end
+	end
+	t.MythicKey.name = C_ChallengeMode.GetMapInfo(mapID)
+	t.MythicKey.color = color
+	t.MythicKey.level = mapLevel
+	t.MythicKey.ResetTime = addon:GetNextWeeklyResetTime()
+	t.MythicKey.link = keyLink
+      end
+    end
+  end
+  local MythicMaps = { }
+  C_ChallengeMode.RequestMapInfo()
+  MythicMaps = C_ChallengeMode.GetMapTable()
+  local bestlevel = 0
+  for i = 1, #MythicMaps do
+    local _, _, level = C_ChallengeMode.GetMapPlayerStats(MythicMaps[i]);
+    if level then
+      if level > bestlevel then
+        bestlevel = level
+      end
+    end
+  end
+  if t.MythicKeyBest and (t.MythicKeyBest.ResetTime or 0) < time() then  -- dont know weekly reset function will run early or not
+    if t.MythicKeyBest.level and t.MythicKeyBest.level > 0 then
+      t.MythicKeyBest.LastWeekLevel = t.MythicKeyBest.level
+    end
+  end
+  t.MythicKeyBest = t.MythicKeyBest or { }
+  t.MythicKeyBest.ResetTime = addon:GetNextWeeklyResetTime()
+  t.MythicKeyBest.level = bestlevel
+  t.MythicKeyBest.WeeklyReward = C_ChallengeMode.IsWeeklyRewardAvailable()
+end
+
+function core:RefreshDailyWorldQuestInfo()
+  local t = vars.db.Toons[thisToon]
+  t.DailyWorldQuest = {}
+  BountyQuest = GetQuestBountyInfoForMapID(1014)
+  for BountyIndex, BountyInfo in ipairs(BountyQuest) do
+    local title = GetQuestLogTitle(GetQuestLogIndexByID(BountyInfo.questID))
+    local timeleft = C_TaskQuest.GetQuestTimeLeftMinutes(BountyInfo.questID)
+    local _, _, isFinish, questDone, questNeed = GetQuestObjectiveInfo(BountyInfo.questID, 1, false)
+    if not isFinish then
+      if timeleft > 2880 then
+        t.DailyWorldQuest.days2 = {}
+	t.DailyWorldQuest.days2.name = title
+	t.DailyWorldQuest.days2.dayleft = 2
+	t.DailyWorldQuest.days2.questneed = questNeed
+	t.DailyWorldQuest.days2.questdone = questDone
+      elseif timeleft > 1440 then
+        t.DailyWorldQuest.days1 = {}
+	t.DailyWorldQuest.days1.name = title
+	t.DailyWorldQuest.days1.dayleft = 1
+	t.DailyWorldQuest.days1.questneed = questNeed
+	t.DailyWorldQuest.days1.questdone = questDone
+      else
+        t.DailyWorldQuest.days0 = {}
+	t.DailyWorldQuest.days0.name = title
+	t.DailyWorldQuest.days0.dayleft = 0
+	t.DailyWorldQuest.days0.questneed = questNeed
+	t.DailyWorldQuest.days0.questdone = questDone
+      end
     end
   end
 end
@@ -3983,6 +4133,110 @@ function core:ShowTooltip(anchorframe)
 			end
 		end
         end
+        
+        if vars.db.Tooltip.MythicKey or showall then
+        	local show = false
+        	for toon, t in cpairs(vars.db.Toons, true) do
+        		if t.MythicKey then
+        			if t.MythicKey.name then
+        				show = true
+					addColumns(columns, toon, tooltip)
+        			end
+        		end
+        	end
+		if show then
+			if not firstcategory and vars.db.Tooltip.CategorySpaces then
+				addsep()
+			end
+			show = tooltip:AddLine(YELLOWFONT .. L["MythicKeystone"] .. FONTEND)		
+		end
+		for toon, t in cpairs(vars.db.Toons, true) do
+			if t.MythicKey then
+				if t.MythicKey.name then
+					local col = columns[toon..1]
+					tooltip:SetCell(show, col, "|c"..t.MythicKey.color..t.MythicKey.name.."("..t.MythicKey.level..")"..FONTEND, "CENTER",maxcol)
+					tooltip:SetCellScript(show, col, "OnMouseDown", ChatLink, t.MythicKey.link)
+		                end
+			end
+		end
+        end
+        
+        if vars.db.Tooltip.MythicKeyBest or showall then
+        	local show = false
+        	for toon, t in cpairs(vars.db.Toons, true) do
+        		if t.MythicKeyBest then
+        			if t.MythicKeyBest.level and t.MythicKeyBest.level > 0 then
+        				show = true
+					addColumns(columns, toon, tooltip)
+        			end
+        			if t.MythicKeyBest.WeeklyReward then
+        				show = true
+					addColumns(columns, toon, tooltip)
+        			end
+        		end
+        	end
+		if show then
+			if not firstcategory and vars.db.Tooltip.CategorySpaces then
+				addsep()
+			end
+			show = tooltip:AddLine(YELLOWFONT .. L["MythicKeyBest"] .. FONTEND)		
+		end
+		for toon, t in cpairs(vars.db.Toons, true) do
+			if t.MythicKeyBest then
+				local keydesc = ""
+				if t.MythicKeyBest.level and t.MythicKeyBest.level > 0 then
+				  keydesc = t.MythicKeyBest.level
+				end
+				if t.MythicKeyBest.WeeklyReward then
+				  if keydesc == "" then
+				    keydesc = "0"
+				  end
+				  local lastlevel = ""
+				  if t.MythicKeyBest.LastWeekLevel and t.MythicKeyBest.LastWeekLevel > 0 then
+				    lastlevel = t.MythicKeyBest.LastWeekLevel
+				  end
+				  keydesc = keydesc .."(".. lastlevel ..L["LastWeekRewardUsable"].. ")"
+		                end
+				if keydesc ~= "" then
+					local col = columns[toon..1]
+					tooltip:SetCell(show, col, keydesc , "CENTER",maxcol)
+				end
+			end
+		end
+        end
+	
+	if vars.db.Tooltip.DailyWorldQuest then
+		local show = {}
+        	for toon, t in cpairs(vars.db.Toons, true) do
+        		if t.DailyWorldQuest then
+				for day,DailyInfo in pairs(t.DailyWorldQuest) do
+					if DailyInfo.name then
+						show[DailyInfo.dayleft] = DailyInfo.name
+						addColumns(columns, toon, tooltip)
+					end
+				end
+        		end
+        	end
+        	for dayleft = 0 , 2 do
+        		if show[dayleft] then
+        			showday = show[dayleft]
+				if not firstcategory and vars.db.Tooltip.CategorySpaces then
+					addsep()
+				end
+				show[dayleft] = tooltip:AddLine(YELLOWFONT .. showday .. "(+" .. dayleft .. L["Day"] .. ")" .. FONTEND)	
+			end	
+		end
+		for toon, t in cpairs(vars.db.Toons, true) do
+			if t.DailyWorldQuest then
+				for day,DailyInfo in pairs(t.DailyWorldQuest) do
+					if show[DailyInfo.dayleft] then
+						local col = columns[toon..1]
+						tooltip:SetCell(show[DailyInfo.dayleft], col, DailyInfo.questdone .. "/" .. DailyInfo.questneed , "CENTER",maxcol)
+					end
+				end
+			end
+		end
+	end
 
 	if vars.db.Tooltip.TrackFarm or showall then
 		local toonfarm = localarr("toonfarm")
