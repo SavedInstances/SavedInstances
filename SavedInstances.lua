@@ -195,6 +195,10 @@ addon.WorldBosses = {
   [1790] = { quest=43512, expansion=6, level=110 }, -- Ana-Mouz
   [1795] = { quest=43985, expansion=6, level=110 }, -- Flotsam
   [1796] = { quest=44287, expansion=6, level=110 }, -- Withered Jim
+  [1956] = { quest=47061, expansion=6, level=110 }, -- Apacron
+  [1883] = { quest=46947, expansion=6, level=110 }, -- Brutallus
+  [1884] = { quest=46948, expansion=6, level=110 }, -- Malificus
+  [1885] = { quest=46945, expansion=6, level=110 }, -- Sivash
 
   -- bosses with no EJ entry (eid is a placeholder)
   [9001] = { quest=38276, name=GARRISON_LOCATION_TOOLTIP.." "..BOSS, expansion=5, level=100 },
