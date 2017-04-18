@@ -1,0 +1,14 @@
+## Interface: 70100
+## Title: Lib: QTip-1.0
+## Notes: Library providing multi-column tooltips.
+## Author: Torhal, Adirelle, Elkano, Tristanian
+## Version: @project-version@ 
+## LoadOnDemand: 1
+## X-Date: @project-date-iso@
+## X-Credits: Kaelten (input on initial design)
+## X-Category: Library, Tooltip
+## X-License: Ace3 BSD-like license
+## X-Website: http://www.wowace.com/addons/libqtip-1-0/ 
+
+LibStub\LibStub.lua
+lib.xml
