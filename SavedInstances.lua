@@ -2858,24 +2858,24 @@ function core:RefreshMythicKeyInfo()
 			if itemID and itemID == 138019 then
 				local keyLink = GetContainerItemLink(bagID, invID)
 				local KeyInfo = {strsplit(':', keyLink)}
-				local mapID = tonumber(KeyInfo[15])
-				local mapLevel = tonumber(KeyInfo[16])
+				local mapID = tonumber(KeyInfo[2])
+				local mapLevel = tonumber(KeyInfo[3])
 				local color
 				_,_,_,color = GetItemQualityColor(0)
 				if mapLevel >= 10 then
-					if KeyInfo[20] == "1" then
+					if KeyInfo[7] == "1" then
 						_,_,_,color = GetItemQualityColor(4)
 					end
 				elseif mapLevel >= 7 then
-					if KeyInfo[19] == "1" then
+					if KeyInfo[6] == "1" then
 						_,_,_,color = GetItemQualityColor(3)
 					end
 				elseif mapLevel >= 4 then
-					if KeyInfo[18] == "1" then
+					if KeyInfo[5] == "1" then
 						_,_,_,color = GetItemQualityColor(2)
 					end
 				else
-					if KeyInfo[17] == "1" then
+					if KeyInfo[4] == "1" then
 						_,_,_,color = GetItemQualityColor(1)
 					end
 				end
