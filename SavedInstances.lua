@@ -2850,64 +2850,64 @@ function core:updateRealmMap()
 end
 
 function core:RefreshMythicKeyInfo()
-  local t = vars.db.Toons[thisToon]
-  t.MythicKey = {}
-  for bagID = 0, 4 do
-    for invID = 1, GetContainerNumSlots(bagID) do
-      local itemID = GetContainerItemID(bagID, invID)
-      if itemID and itemID == 138019 then
-        local keyLink = GetContainerItemLink(bagID, invID)
-        local KeyInfo = {strsplit(':', keyLink)}
-	local mapID = tonumber(KeyInfo[15])
-	local mapLevel = tonumber(KeyInfo[16])
-	local color
-	_,_,_,color = GetItemQualityColor(0)
-	if mapLevel >= 10 then
-	  if KeyInfo[20] == "1" then
-	    _,_,_,color = GetItemQualityColor(4)
-	  end
-	elseif mapLevel >= 7 then
-	  if KeyInfo[19] == "1" then
-	    _,_,_,color = GetItemQualityColor(3)
-	  end
-	elseif mapLevel >= 4 then
-	  if KeyInfo[18] == "1" then
-	    _,_,_,color = GetItemQualityColor(2)
-	  end
-	else
-	  if KeyInfo[17] == "1" then
-	    _,_,_,color = GetItemQualityColor(1)
-	  end
+	local t = vars.db.Toons[thisToon]
+	t.MythicKey = {}
+	for bagID = 0, 4 do
+		for invID = 1, GetContainerNumSlots(bagID) do
+			local itemID = GetContainerItemID(bagID, invID)
+			if itemID and itemID == 138019 then
+				local keyLink = GetContainerItemLink(bagID, invID)
+				local KeyInfo = {strsplit(':', keyLink)}
+				local mapID = tonumber(KeyInfo[15])
+				local mapLevel = tonumber(KeyInfo[16])
+				local color
+				_,_,_,color = GetItemQualityColor(0)
+				if mapLevel >= 10 then
+					if KeyInfo[20] == "1" then
+						_,_,_,color = GetItemQualityColor(4)
+					end
+				elseif mapLevel >= 7 then
+					if KeyInfo[19] == "1" then
+						_,_,_,color = GetItemQualityColor(3)
+					end
+				elseif mapLevel >= 4 then
+					if KeyInfo[18] == "1" then
+						_,_,_,color = GetItemQualityColor(2)
+					end
+				else
+					if KeyInfo[17] == "1" then
+						_,_,_,color = GetItemQualityColor(1)
+					end
+				end
+				t.MythicKey.name = C_ChallengeMode.GetMapInfo(mapID)
+				t.MythicKey.color = color
+				t.MythicKey.level = mapLevel
+				t.MythicKey.ResetTime = addon:GetNextWeeklyResetTime()
+				t.MythicKey.link = keyLink
+			end
+		end
 	end
-	t.MythicKey.name = C_ChallengeMode.GetMapInfo(mapID)
-	t.MythicKey.color = color
-	t.MythicKey.level = mapLevel
-	t.MythicKey.ResetTime = addon:GetNextWeeklyResetTime()
-	t.MythicKey.link = keyLink
-      end
-    end
-  end
-  local MythicMaps = { }
-  C_ChallengeMode.RequestMapInfo()
-  MythicMaps = C_ChallengeMode.GetMapTable()
-  local bestlevel = 0
-  for i = 1, #MythicMaps do
-    local _, _, level = C_ChallengeMode.GetMapPlayerStats(MythicMaps[i]);
-    if level then
-      if level > bestlevel then
-        bestlevel = level
-      end
-    end
-  end
-  if t.MythicKeyBest and (t.MythicKeyBest.ResetTime or 0) < time() then  -- dont know weekly reset function will run early or not
-    if t.MythicKeyBest.level and t.MythicKeyBest.level > 0 then
-      t.MythicKeyBest.LastWeekLevel = t.MythicKeyBest.level
-    end
-  end
-  t.MythicKeyBest = t.MythicKeyBest or { }
-  t.MythicKeyBest.ResetTime = addon:GetNextWeeklyResetTime()
-  t.MythicKeyBest.level = bestlevel
-  t.MythicKeyBest.WeeklyReward = C_ChallengeMode.IsWeeklyRewardAvailable()
+	local MythicMaps = { }
+	C_ChallengeMode.RequestMapInfo()
+	MythicMaps = C_ChallengeMode.GetMapTable()
+	local bestlevel = 0
+	for i = 1, #MythicMaps do
+		local _, _, level = C_ChallengeMode.GetMapPlayerStats(MythicMaps[i]);
+		if level then
+			if level > bestlevel then
+				bestlevel = level
+			end
+		end
+	end
+	if t.MythicKeyBest and (t.MythicKeyBest.ResetTime or 0) < time() then -- dont know weekly reset function will run early or not
+		if t.MythicKeyBest.level and t.MythicKeyBest.level > 0 then
+			t.MythicKeyBest.LastWeekLevel = t.MythicKeyBest.level
+		end
+	end
+	t.MythicKeyBest = t.MythicKeyBest or { }
+	t.MythicKeyBest.ResetTime = addon:GetNextWeeklyResetTime()
+	t.MythicKeyBest.level = bestlevel
+	t.MythicKeyBest.WeeklyReward = C_ChallengeMode.IsWeeklyRewardAvailable()
 end
 
 function core:RefreshDailyWorldQuestInfo()
