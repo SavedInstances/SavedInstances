@@ -2879,6 +2879,28 @@ function core:RefreshMythicKeyInfo()
 						_,_,_,color = GetItemQualityColor(1)
 					end
 				end
+				if vars.db.Tooltip.DebugMode then
+					DEFAULT_CHAT_FRAME:AddMessage(tostring(KeyInfo[1]))
+					DEFAULT_CHAT_FRAME:AddMessage(tostring(KeyInfo[2]))
+					DEFAULT_CHAT_FRAME:AddMessage(tostring(KeyInfo[3]))
+					DEFAULT_CHAT_FRAME:AddMessage(tostring(KeyInfo[4]))
+					DEFAULT_CHAT_FRAME:AddMessage(tostring(KeyInfo[5]))
+					DEFAULT_CHAT_FRAME:AddMessage(tostring(KeyInfo[6]))
+					DEFAULT_CHAT_FRAME:AddMessage(tostring(KeyInfo[7]))
+					DEFAULT_CHAT_FRAME:AddMessage(tostring(KeyInfo[8]))
+					DEFAULT_CHAT_FRAME:AddMessage(tostring(KeyInfo[9]))
+					DEFAULT_CHAT_FRAME:AddMessage(tostring(KeyInfo[10]))
+					DEFAULT_CHAT_FRAME:AddMessage(tostring(KeyInfo[11]))
+					DEFAULT_CHAT_FRAME:AddMessage(tostring(KeyInfo[12]))
+					DEFAULT_CHAT_FRAME:AddMessage(tostring(KeyInfo[13]))
+					DEFAULT_CHAT_FRAME:AddMessage(tostring(KeyInfo[14]))
+					DEFAULT_CHAT_FRAME:AddMessage(tostring(KeyInfo[15]))
+					DEFAULT_CHAT_FRAME:AddMessage(tostring(KeyInfo[16]))
+					DEFAULT_CHAT_FRAME:AddMessage(tostring(KeyInfo[17]))
+					DEFAULT_CHAT_FRAME:AddMessage(tostring(KeyInfo[18]))
+					DEFAULT_CHAT_FRAME:AddMessage(tostring(KeyInfo[19]))
+					DEFAULT_CHAT_FRAME:AddMessage(tostring(KeyInfo[20]))
+				end
 				t.MythicKey.name = C_ChallengeMode.GetMapInfo(mapID)
 				t.MythicKey.color = color
 				t.MythicKey.level = mapLevel

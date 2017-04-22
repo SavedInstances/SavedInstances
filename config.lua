@@ -239,6 +239,11 @@ function module:BuildOptions()
 					name = L["Instance limit in broker"],
 					order = 4.8,
 				},
+				DebugMode = {
+					type = "toggle",
+					name = L["Debug Mode"],
+					order = 4.8,
+				},
 
 				CategoriesHeader = {
 					order = 11, 
