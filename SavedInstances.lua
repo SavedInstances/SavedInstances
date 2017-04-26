@@ -1,5 +1,5 @@
 local addonName, vars = ...
-SavedInstances = vars
+local SavedInstances = vars
 local addon = vars
 local addonAbbrev = "SI"
 vars.core = LibStub("AceAddon-3.0"):NewAddon(addonName, "AceEvent-3.0", "AceTimer-3.0", "AceBucket-3.0")
@@ -12,6 +12,9 @@ local QTip = LibStub("LibQTip-1.0")
 local dataobject, db, config
 local maxdiff = 23 -- max number of instance difficulties
 local maxcol = 4 -- max columns per player+instance
+
+-- luacheck: globals ICON_LIST ElvUI Tukui DBM BigWigsLoader BonusRollFrame SetTradeSkillCategoryFilter LFDParentFrame LFDQueueFrame RaidFinderFrame
+-- luacheck: globals READY_CHECK_READY_TEXTURE TYPEID_RANDOM_DUNGEON LFG_SUBTYPEID_HEROIC LFG_SUBTYPEID_SCENARIO TYPEID_DUNGEON
 
 addon.svnrev = {}
 addon.svnrev["SavedInstances.lua"] = tonumber(("$Revision$"):match("%d+"))
@@ -376,6 +379,7 @@ local function chatMsg(...)
   DEFAULT_CHAT_FRAME:AddMessage("\124cFFFF0000"..addonName.."\124r: "..string.format(...))
 end
 addon.chatMsg = chatMsg
+
 local function debug(...)
   --addon.db.dbg = true
   if addon.db.dbg then
@@ -383,6 +387,7 @@ local function debug(...)
   end
 end
 addon.debug = debug
+
 local function bugReport(msg)
   addon.bugreport = addon.bugreport or {}
   local now = GetTime()
@@ -413,11 +418,11 @@ function addon:timedebug()
   chatMsg("Local to Server offset: %d hours",SavedInstances:GetServerOffset())
   local t = SavedInstances:GetNextDailyResetTime()
   chatMsg("Next daily reset: %s local, %s server",date("%a %c",t), date("%a %c",t+3600*SavedInstances:GetServerOffset()))
-  local t = SavedInstances:GetNextWeeklyResetTime()
+  t = SavedInstances:GetNextWeeklyResetTime()
   chatMsg("Next weekly reset: %s local, %s server",date("%a %c",t), date("%a %c",t+3600*SavedInstances:GetServerOffset()))
-  local t = SavedInstances:GetNextDailySkillResetTime()
+  t = SavedInstances:GetNextDailySkillResetTime()
   chatMsg("Next skill reset: %s local, %s server",date("%a %c",t), date("%a %c",t+3600*SavedInstances:GetServerOffset()))
-  local t = SavedInstances:GetNextDarkmoonResetTime()
+  t = SavedInstances:GetNextDarkmoonResetTime()
   chatMsg("Next darkmoon reset: %s local, %s server",date("%a %c",t), date("%a %c",t+3600*SavedInstances:GetServerOffset()))
 end
 
@@ -871,23 +876,7 @@ function addon:GetNextDailyResetTime()
     resettime > 24*3600+30 then -- can also be wrong near reset in an instance
     return nil
   end
-  if false then -- this should no longer be a problem after the 7.0 reset time changes
-    -- ticket 177/191: GetQuestResetTime() is wrong for Oceanic+Brazilian characters in PST instances
-    local serverHour, serverMinute = GetGameTime()
-    local serverResetTime = (serverHour*3600 + serverMinute*60 + resettime) % 86400 -- GetGameTime of the reported reset
-    local diff = serverResetTime - 10800 -- how far from 3AM server
-    if math.abs(diff) > 3.5*3600  -- more than 3.5 hours - ignore TZ differences of US continental servers
-      and addon:GetRegion() == "US" then
-      local diffhours = math.floor((diff + 1800)/3600)
-      resettime = resettime - diffhours*3600
-      if resettime < -900 then -- reset already passed, next reset
-        resettime = resettime + 86400
-      elseif resettime > 86400+900 then
-        resettime = resettime - 86400
-      end
-      debug("Adjusting GetQuestResetTime() discrepancy of %d seconds (%d hours). Reset in %d seconds", diff, diffhours, resettime)
-    end
-  end
+
   return time() + resettime
 end
 
@@ -896,30 +885,13 @@ do
   function addon:GetNextDailySkillResetTime() -- trade skill reset time
     -- this is just a "best guess" because in reality,
     -- different trade skills reset at up to 3 different times
-
-    if false then -- at next server midnight
-      midnight.month, midnight.day, midnight.year = select(2,CalendarGetDate()) -- date in server timezone
-      local ret = time(midnight)
-      local offset = addon:GetServerOffset() * 3600
-      ret = ret - offset
-      return ret
-  else -- at next daily quest reset time
     local rt = addon:GetNextDailyResetTime()
     if not rt then return nil end
     --local info = date("*t"); print(info.isdst)
     -- Blizzard's ridiculous reset crap:
     -- trade skills ignore daylight savings after the date it changes UNTIL the next restart, then go back to observing it
-    if false then
-      rt = rt + 3600
-    end
-    if false then
-      rt = rt - 3600
-      if time() > rt then -- past trade reset but before daily reset, next day
-        rt = rt + 24*3600
-      end
-    end
+
     return rt
-  end
   end
 end
 
@@ -1100,7 +1072,7 @@ end
 
 function addon:InstanceCategory(instance)
   if not instance then return nil end
-  local instance = vars.db.Instances[instance]
+  instance = vars.db.Instances[instance]
   if instance.Holiday then return "H" end
   if instance.Random then return "N" end
   return ((instance.Raid and "R") or ((not instance.Raid) and "D")) .. instance.Expansion
@@ -1715,8 +1687,7 @@ function addon:UpdateToonData()
     if IL and tonumber(IL) and tonumber(IL) > 0 then -- can fail during logout
       t.IL, t.ILe = tonumber(IL), tonumber(ILe)
     end
-    local rating = (GetPersonalRatedBGInfo and GetPersonalRatedBGInfo()) -- 5.3
-      or (GetPersonalRatedInfo and GetPersonalRatedInfo(4))
+    local rating = (GetPersonalRatedInfo and GetPersonalRatedInfo(4))
     t.RBGrating = tonumber(rating) or t.RBGrating
     core:scan_item_cds()
     -- Daily Reset
@@ -1773,7 +1744,7 @@ function addon:UpdateToonData()
       end
     end
     -- Weekly Reset
-    local nextreset = addon:GetNextWeeklyResetTime()
+    nextreset = addon:GetNextWeeklyResetTime()
     if nextreset and nextreset > time() then
       for toon, ti in pairs(vars.db.Toons) do
         if not ti.WeeklyResetTime or (ti.WeeklyResetTime < time()) then
@@ -2262,7 +2233,7 @@ local function ShowAccountSummary(cell, arg, ...)
   for _,ii in pairs(db.History) do
     table.insert(tmp,ii)
   end
-  local cnt = #tmp
+  cnt = #tmp
   table.sort(tmp, function(i1,i2) return i1.last < i2.last end)
   indicatortip:SetHeaderFont(tooltip:GetHeaderFont())
   indicatortip:SetCell(indicatortip:AddHeader(),1,GOLDFONT..cnt.." "..L["Recent Instances"]..": "..FONTEND,"LEFT",2)
@@ -2444,13 +2415,13 @@ local function ShowIndicatorTooltip(cell, arg, ...)
 end
 
 local colorpat = "\124c%c%c%c%c%c%c%c%c"
-local weeklycap = CURRENCY_WEEKLY_CAP:gsub("%%%d*\$?([ds])","%%%1")
+local weeklycap = CURRENCY_WEEKLY_CAP:gsub("%%%d*?([ds])","%%%1")
 local weeklycap_scan = weeklycap:gsub("%%d","(%%d+)"):gsub("%%s","(\124c%%x%%x%%x%%x%%x%%x%%x%%x)")
 weeklycap = weeklycap:gsub("%%d","%%s")
-local totalcap = CURRENCY_TOTAL_CAP:gsub("%%%d*\$?([ds])","%%%1")
+local totalcap = CURRENCY_TOTAL_CAP:gsub("%%%d*?([ds])","%%%1")
 local totalcap_scan = totalcap:gsub("%%d","(%%d+)"):gsub("%%s","(\124c%%x%%x%%x%%x%%x%%x%%x%%x)")
 totalcap = totalcap:gsub("%%d","%%s")
-local season_scan = CURRENCY_SEASON_TOTAL:gsub("%%%d*\$?([ds])","(%%%1*)")
+local season_scan = CURRENCY_SEASON_TOTAL:gsub("%%%d*?([ds])","(%%%1*)")
 
 function addon:GetSeasonCurrency(idx)
   scantt:SetOwner(UIParent,"ANCHOR_NONE")
@@ -2495,7 +2466,7 @@ local function ShowCurrencyTooltip(cell, arg, ...)
 
   scantt:SetOwner(UIParent,"ANCHOR_NONE")
   scantt:SetCurrencyByID(idx)
-  local name = scantt:GetName()
+  name = scantt:GetName()
   local spacer
   for i=1,scantt:NumLines() do
     local left = _G[name.."TextLeft"..i]
@@ -2595,7 +2566,7 @@ function core:toonInit()
 end
 
 function core:OnInitialize()
-  SavedInstancesDB = SavedInstancesDB or vars.defaultDB
+  local SavedInstancesDB = SavedInstancesDB or vars.defaultDB
   -- begin backwards compatibility
   if not SavedInstancesDB.DBVersion or SavedInstancesDB.DBVersion < 10 then
     SavedInstancesDB = vars.defaultDB
@@ -2851,6 +2822,7 @@ end
 
 function core:RefreshMythicKeyInfo()
   local t = vars.db.Toons[thisToon]
+  local _
   t.MythicKey = {}
   for bagID = 0, 4 do
     for invID = 1, GetContainerNumSlots(bagID) do
@@ -2928,7 +2900,7 @@ end
 function core:RefreshDailyWorldQuestInfo()
   local t = vars.db.Toons[thisToon]
   t.DailyWorldQuest = {}
-  BountyQuest = GetQuestBountyInfoForMapID(1014)
+  local BountyQuest = GetQuestBountyInfoForMapID(1014)
   for BountyIndex, BountyInfo in ipairs(BountyQuest) do
     local title = GetQuestLogTitle(GetQuestLogIndexByID(BountyInfo.questID))
     local timeleft = C_TaskQuest.GetQuestTimeLeftMinutes(BountyInfo.questID)
@@ -4234,7 +4206,7 @@ function core:ShowTooltip(anchorframe)
     end
     for dayleft = 0 , 2 do
       if show[dayleft] then
-        showday = show[dayleft]
+        local showday = show[dayleft]
         if not firstcategory and vars.db.Tooltip.CategorySpaces then
           addsep()
         end
@@ -5089,4 +5061,3 @@ function addon.BonusRollShow()
 end
 
 hooksecurefunc("BonusRollFrame_StartBonusRoll", addon.BonusRollShow)
-

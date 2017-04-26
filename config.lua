@@ -1,7 +1,7 @@
 local addonName, vars = ...
 local core = vars.core
+local SavedInstances = vars
 local L = vars.L
-local addon = vars
 vars.config = core:NewModule("Config")
 local module = vars.config
 
@@ -9,9 +9,9 @@ local Config = LibStub("AceConfig-3.0")
 
 local db
 
-addon.svnrev["config.lua"] = tonumber(("$Revision$"):match("%d+"))
+SavedInstances.svnrev["config.lua"] = tonumber(("$Revision$"):match("%d+"))
 
-addon.diff_strings = {
+SavedInstances.diff_strings = {
   D1 = DUNGEON_DIFFICULTY1, -- 5 man
   D2 = DUNGEON_DIFFICULTY2, -- 5 man (Heroic)
   D3 = DUNGEON_DIFFICULTY1.." ("..GetDifficultyInfo(23)..")", -- 5 man (Mythic)
@@ -33,7 +33,7 @@ local GOLDFONT = NORMAL_FONT_COLOR_CODE
 function module:OnInitialize()
   db = vars.db
   module:SetupOptions()
-  addon:SetupVersion()
+  SavedInstances:SetupVersion()
 end
 
 BINDING_NAME_SAVEDINSTANCES = L["Show/Hide the SavedInstances tooltip"]
@@ -42,23 +42,23 @@ BINDING_HEADER_SAVEDINSTANCES = "SavedInstances"
 
 -- general helper functions
 
-function addon:idtext(instance,diff,info)
+function SavedInstances:idtext(instance,diff,info)
   if instance.WorldBoss then
     return L["World Boss"]
   elseif info.ID < 0 then
     return "" -- ticket 144: could be RAID_FINDER or FLEX_RAID, but this is already shown in the instance name so it's redundant anyhow
   elseif not instance.Raid then
     if diff == 23 then
-      return addon.diff_strings["D3"]
+      return SavedInstances.diff_strings["D3"]
     else
-      return addon.diff_strings["D"..diff]
+      return SavedInstances.diff_strings["D"..diff]
     end
   elseif instance.Expansion == 0 then -- classic Raid
-    return addon.diff_strings.R0
+    return SavedInstances.diff_strings.R0
   elseif instance.Raid and diff >= 3 and diff <= 7 then -- pre-WoD raids
-    return addon.diff_strings["R"..(diff-2)]
+    return SavedInstances.diff_strings["R"..(diff-2)]
   elseif diff >= 14 and diff <= 16 then -- WoD raids
-    return addon.diff_strings["R"..(diff-8)]
+    return SavedInstances.diff_strings["R"..(diff-8)]
   else
     return ""
   end
@@ -80,7 +80,7 @@ local function IndicatorOptions()
       name = L["You can combine icons and text in a single indicator if you wish. Simply choose an icon, and insert the word ICON into the text field. Anywhere the word ICON is found, the icon you chose will be substituted in."].." "..L["Similarly, the words KILLED and TOTAL will be substituted with the number of bosses killed and total in the lockout."],
     },
   }
-  for diffname, diffstr in pairs(addon.diff_strings) do
+  for diffname, diffstr in pairs(SavedInstances.diff_strings) do
     local dorder = (tonumber(diffname:match("%d+")) or 0) + 10
     if diffname:find("^R") then dorder = dorder + 10 end
     args[diffname] = {
@@ -148,11 +148,11 @@ function module:BuildOptions()
       return db.Tooltip[info[#info]]
     end,
     set = function(info, value)
-      addon.debug(info[#info].." set to: "..tostring(value))
+      SavedInstances.debug(info[#info].." set to: "..tostring(value))
       db.Tooltip[info[#info]] = value
-      wipe(addon.scaleCache)
-      wipe(addon.oi_cache)
-      addon.oc_cache = nil
+      wipe(SavedInstances.scaleCache)
+      wipe(SavedInstances.oi_cache)
+      SavedInstances.oc_cache = nil
     end,
     args = {
       debug = {
@@ -160,7 +160,7 @@ function module:BuildOptions()
         cmdHidden = true,
         guiHidden = true,
         type = "execute",
-        func = function() db.dbg = not db.dbg; addon.debug("Debug set to: "..(db.dbg and "true" or "false")) end,
+        func = function() db.dbg = not db.dbg; SavedInstances.debug("Debug set to: "..(db.dbg and "true" or "false")) end,
       },
       config = {
         name = L["Open config"],
@@ -172,19 +172,19 @@ function module:BuildOptions()
         name = L["Dump time debugging information"],
         guiHidden = true,
         type = "execute",
-        func = function() addon:timedebug() end,
+        func = function() SavedInstances:timedebug() end,
       },
       quest = {
         name = L["Dump quest debugging information"],
         guiHidden = true,
         type = "execute",
-        func = function(...) addon:questdebug(...) end,
+        func = function(...) SavedInstances:questdebug(...) end,
       },
       show = {
         name = L["Show/Hide the SavedInstances tooltip"],
         guiHidden = true,
         type = "execute",
-        func = function() addon:ToggleDetached() end,
+        func = function() SavedInstances:ToggleDetached() end,
       },
       General = {
         order = 1,
@@ -194,7 +194,7 @@ function module:BuildOptions()
           ver = {
             order = 0.5,
             type = "description",
-            name = function() return "Version: SavedInstances "..addon.version end,
+            name = function() return "Version: SavedInstances "..SavedInstances.version end,
           },
           GeneralHeader = {
             order = 2,
@@ -444,11 +444,11 @@ function module:BuildOptions()
           return db.Tooltip[info[#info]]
         end,
         set = function(info, value)
-          addon.debug(info[#info].." set to: "..tostring(value))
+          SavedInstances.debug(info[#info].." set to: "..tostring(value))
           db.Tooltip[info[#info]] = value
-          wipe(addon.scaleCache)
-          wipe(addon.oi_cache)
-          addon.oc_cache = nil
+          wipe(SavedInstances.scaleCache)
+          wipe(SavedInstances.oi_cache)
+          SavedInstances.oc_cache = nil
         end,
         args = {
           CurrencyValueColor = {
@@ -490,7 +490,7 @@ function module:BuildOptions()
           end
         end,
         set = function(info, value)
-          addon.debug("Config set: "..info[#info].." = "..(value and "true" or "false"))
+          SavedInstances.debug("Config set: "..info[#info].." = "..(value and "true" or "false"))
           db.Indicators[info[#info]] = value
         end,
         args = IndicatorOptions(),
@@ -511,7 +511,7 @@ function module:BuildOptions()
               childGroups = "tree",
               args = (function()
                 local iret = {}
-                local insts = addon:OrderedInstances(cat)
+                local insts = SavedInstances:OrderedInstances(cat)
                 for j, inst in ipairs(insts) do
                   iret[inst] = {
                     order = j,
@@ -668,7 +668,7 @@ function module:BuildOptions()
                   return true
                 else
                   local err = L["Order must be a number in [0 - 999]"]
-                  addon.chatMsg(err)
+                  SavedInstances.chatMsg(err)
                   return err
                 end
               end
@@ -726,7 +726,7 @@ function module:BuildOptions()
                       end
                       tret[tn.."_desc"] = {
                         order = function(info) return t.Order*1000 + ord*10 + 0 end,
-                        name = addon.ColoredToon(toon),
+                        name = SavedInstances.ColoredToon(toon),
                         desc = tn, -- unfortunately does nothing in dialog
                         descStyle = "tooltip",
                         type = "description",
@@ -796,7 +796,7 @@ function module:BuildOptions()
   for k,v in pairs(opts) do
     core.Options[k] = v
   end
-  for i, curr in ipairs(addon.currency) do
+  for i, curr in ipairs(SavedInstances.currency) do
     local name,_,tex = GetCurrencyInfo(curr)
     tex = "\124T"..tex..":0\124t "
     core.Options.args.Currency.args["Currency"..curr] = {
@@ -850,7 +850,7 @@ function module:SetupOptions()
   local fgen = ACD:AddToBlizOptions(namespace, nil, nil, "General")
   firstoptiongroup = fgen
   fgen.default = function()
-    addon.debug("RESET: General")
+    SavedInstances.debug("RESET: General")
     db.Tooltip = module:table_clone(vars.defaultDB.Tooltip)
     db.MinimapIcon = module:table_clone(vars.defaultDB.MinimapIcon)
     module:ReopenConfigDisplay(fgen)
@@ -859,13 +859,13 @@ function module:SetupOptions()
   fcur.default = fgen.default
   local find = ACD:AddToBlizOptions(namespace, L["Indicators"], namespace, "Indicators")
   find.default = function()
-    addon.debug("RESET: Indicators")
+    SavedInstances.debug("RESET: Indicators")
     db.Indicators = module:table_clone(vars.defaultDB.Indicators)
     module:ReopenConfigDisplay(find)
   end
   local finst = ACD:AddToBlizOptions(namespace, L["Instances"], namespace, "Instances")
   finst.default = function()
-    addon.debug("RESET: Instances")
+    SavedInstances.debug("RESET: Instances")
     for _,i in pairs(db.Instances) do
       i.Show = "saved"
     end
@@ -875,7 +875,7 @@ function module:SetupOptions()
   lastoptiongroup = ftoon
   module.ftoon = ftoon
   ftoon.default = function()
-    addon.debug("RESET: Toons")
+    SavedInstances.debug("RESET: Toons")
     for _,i in pairs(db.Toons) do
       i.Show = "saved"
     end
