@@ -2861,23 +2861,16 @@ function core:RefreshMythicKeyInfo()
 				local mapID = tonumber(KeyInfo[2])
 				local mapLevel = tonumber(KeyInfo[3])
 				local color
-				_,_,_,color = GetItemQualityColor(0)
-				if mapLevel >= 10 then
-					if KeyInfo[7] == "1" then
-						_,_,_,color = GetItemQualityColor(4)
-					end
+				if KeyInfo[4] == "0" then
+					_,_,_,color = GetItemQualityColor(0)
+				elseif mapLevel >= 10 then
+					_,_,_,color = GetItemQualityColor(4)
 				elseif mapLevel >= 7 then
-					if KeyInfo[6] == "1" then
-						_,_,_,color = GetItemQualityColor(3)
-					end
+					_,_,_,color = GetItemQualityColor(3)
 				elseif mapLevel >= 4 then
-					if KeyInfo[5] == "1" then
-						_,_,_,color = GetItemQualityColor(2)
-					end
+					_,_,_,color = GetItemQualityColor(2)
 				else
-					if KeyInfo[4] == "1" then
-						_,_,_,color = GetItemQualityColor(1)
-					end
+					_,_,_,color = GetItemQualityColor(1)
 				end
 				if vars.db.Tooltip.DebugMode then
 					DEFAULT_CHAT_FRAME:AddMessage(tostring(KeyInfo[1]))
