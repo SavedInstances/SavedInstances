@@ -2905,7 +2905,7 @@ function core:RefreshDailyWorldQuestInfo()
     local title = GetQuestLogTitle(GetQuestLogIndexByID(BountyInfo.questID))
     local timeleft = C_TaskQuest.GetQuestTimeLeftMinutes(BountyInfo.questID)
     local _, _, isFinish, questDone, questNeed = GetQuestObjectiveInfo(BountyInfo.questID, 1, false)
-    if not isFinish then
+    if not isFinish and timeleft then
       if timeleft > 2880 then
         t.DailyWorldQuest.days2 = {}
         t.DailyWorldQuest.days2.name = title
