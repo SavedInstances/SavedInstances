@@ -23,24 +23,24 @@ vars.L = setmetatable({},{
 
 --@localization(locale="enUS", format="lua_additive_table", table-name="Ld")@
 
-if locale == "frFR" then do end
+if locale == "frFR" then
   --@localization(locale="frFR", format="lua_additive_table", table-name="La")@
-elseif locale == "deDE" then do end
+elseif locale == "deDE" then
   --@localization(locale="deDE", format="lua_additive_table", table-name="La")@
-elseif locale == "koKR" then do end
+elseif locale == "koKR" then
   --@localization(locale="koKR", format="lua_additive_table", table-name="La")@
-elseif locale == "esMX" then do end
+elseif locale == "esMX" then
   --@localization(locale="esMX", format="lua_additive_table", table-name="La")@
-elseif locale == "ruRU" then do end
+elseif locale == "ruRU" then
   --@localization(locale="ruRU", format="lua_additive_table", table-name="La")@
-elseif locale == "zhCN" then do end
+elseif locale == "zhCN" then
   --@localization(locale="zhCN", format="lua_additive_table", table-name="La")@
-elseif locale == "esES" then do end
+elseif locale == "esES" then
   --@localization(locale="esES", format="lua_additive_table", table-name="La")@
-elseif locale == "zhTW" then do end
+elseif locale == "zhTW" then
   --@localization(locale="zhTW", format="lua_additive_table", table-name="La")@
-elseif locale == "ptBR" then do end
+elseif locale == "ptBR" then
   --@localization(locale="ptBR", format="lua_additive_table", table-name="La")@
-elseif locale == "itIT" then do end
+elseif locale == "itIT" then
   --@localization(locale="itIT", format="lua_additive_table", table-name="La")@
 end
