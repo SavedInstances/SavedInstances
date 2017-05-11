@@ -16,9 +16,6 @@ local maxcol = 4 -- max columns per player+instance
 -- luacheck: globals ICON_LIST ElvUI Tukui DBM BigWigsLoader BonusRollFrame SetTradeSkillCategoryFilter LFDParentFrame LFDQueueFrame RaidFinderFrame
 -- luacheck: globals READY_CHECK_READY_TEXTURE TYPEID_RANDOM_DUNGEON LFG_SUBTYPEID_HEROIC LFG_SUBTYPEID_SCENARIO TYPEID_DUNGEON
 
-addon.svnrev = {}
-addon.svnrev["SavedInstances.lua"] = tonumber(("$Revision$"):match("%d+"))
-
 -- local (optimal) references to provided functions
 local table, math, bit, string, pairs, ipairs, unpack, strsplit, time, type, wipe, tonumber, select, strsub =
   table, math, bit, string, pairs, ipairs, unpack, strsplit, time, type, wipe, tonumber, select, strsub
@@ -2566,6 +2563,12 @@ function core:toonInit()
 end
 
 function core:OnInitialize()
+  local versionString = GetAddOnMetadata(addonName, "Version")
+  if versionString == "@project-version@" then
+    SavedInstances.version = "Dev"
+  else
+    SavedInstances.version = versionString
+  end
   local SavedInstancesDB = SavedInstancesDB or vars.defaultDB
   -- begin backwards compatibility
   if not SavedInstancesDB.DBVersion or SavedInstancesDB.DBVersion < 10 then
@@ -2574,6 +2577,7 @@ function core:OnInitialize()
     SavedInstancesDB.Indicators = vars.defaultDB.Indicators
     SavedInstancesDB.DBVersion = 12
   end
+
   -- end backwards compatibilty
   db = db or SavedInstancesDB
   vars.db = db
@@ -2622,7 +2626,6 @@ function core:OnInitialize()
       db.QuestDB[escope][qid] = val
     end
   end
-  addon:SetupVersion()
   RequestRaidInfo() -- get lockout data
   RequestLFDPlayerLockInfo()
   vars.dataobject = vars.LDB and vars.LDB:NewDataObject("SavedInstances", {
@@ -2652,27 +2655,6 @@ function core:OnInitialize()
     vars.icon:Refresh(addonName)
   end
   addon.BonusRollShow() -- catch roll-on-load
-end
-
-function addon:SetupVersion()
-  if addon.version then return end
-  local svnrev = 0
-  local T_svnrev = addon.svnrev
-  T_svnrev["X-Build"] = tonumber((GetAddOnMetadata(addonName, "X-Build") or ""):match("%d+"))
-  T_svnrev["X-Revision"] = tonumber((GetAddOnMetadata(addonName, "X-Revision") or ""):match("%d+"))
-  for _,v in pairs(T_svnrev) do -- determine highest file revision
-    if v and v > svnrev then
-      svnrev = v
-  end
-  end
-  addon.revision = svnrev
-
-  T_svnrev["X-Curse-Packaged-Version"] = GetAddOnMetadata(addonName, "X-Curse-Packaged-Version")
-  T_svnrev["Version"] = GetAddOnMetadata(addonName, "Version")
-  addon.version = T_svnrev["X-Curse-Packaged-Version"] or T_svnrev["Version"] or "@"
-  if string.find(addon.version, "@") then -- dev copy uses "@.project-version.@"
-    addon.version = "r"..svnrev
-  end
 end
 
 function core:OnEnable()

@@ -9,8 +9,6 @@ local Config = LibStub("AceConfig-3.0")
 
 local db
 
-SavedInstances.svnrev["config.lua"] = tonumber(("$Revision$"):match("%d+"))
-
 SavedInstances.diff_strings = {
   D1 = DUNGEON_DIFFICULTY1, -- 5 man
   D2 = DUNGEON_DIFFICULTY2, -- 5 man (Heroic)
@@ -33,7 +31,6 @@ local GOLDFONT = NORMAL_FONT_COLOR_CODE
 function module:OnInitialize()
   db = vars.db
   module:SetupOptions()
-  SavedInstances:SetupVersion()
 end
 
 BINDING_NAME_SAVEDINSTANCES = L["Show/Hide the SavedInstances tooltip"]
