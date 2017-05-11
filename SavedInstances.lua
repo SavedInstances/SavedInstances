@@ -13,9 +13,6 @@ local dataobject, db, config
 local maxdiff = 23 -- max number of instance difficulties
 local maxcol = 4 -- max columns per player+instance
 
--- luacheck: globals ICON_LIST ElvUI Tukui DBM BigWigsLoader BonusRollFrame SetTradeSkillCategoryFilter LFDParentFrame LFDQueueFrame RaidFinderFrame
--- luacheck: globals READY_CHECK_READY_TEXTURE TYPEID_RANDOM_DUNGEON LFG_SUBTYPEID_HEROIC LFG_SUBTYPEID_SCENARIO TYPEID_DUNGEON
-
 -- local (optimal) references to provided functions
 local table, math, bit, string, pairs, ipairs, unpack, strsplit, time, type, wipe, tonumber, select, strsub =
   table, math, bit, string, pairs, ipairs, unpack, strsplit, time, type, wipe, tonumber, select, strsub
@@ -67,7 +64,6 @@ end
 local tooltip, indicatortip
 local thisToon = UnitName("player") .. " - " .. GetRealmName()
 local maxlvl = MAX_PLAYER_LEVEL_TABLE[#MAX_PLAYER_LEVEL_TABLE]
-
 local scantt = CreateFrame("GameTooltip", "SavedInstancesScanTooltip", UIParent, "GameTooltipTemplate")
 
 local currency = {
@@ -152,6 +148,7 @@ addon.LFRInstances = {
   [1292] = { total=3, base=7,  parent=1353,altid=nil, remap={ 1, 2, 3 } }, -- NH3: Nightspire
   [1293] = { total=1, base=10, parent=1353,altid=nil, remap={ 1 } }, -- NH4: Betrayer's Rise
 }
+
 local tmp = {}
 for id, info in pairs(addon.LFRInstances) do
   tmp[id] = info
@@ -234,6 +231,7 @@ local _specialQuests = {
   [42517] = { zid=1050, daily=true }, -- Warlock: Ritual of Doom
   [44707] = { zid=1052, daily=true, sid=228651 }, -- Demon Hunter: Twisting Nether
 }
+
 function addon:specialQuests()
   for qid, qinfo in pairs(_specialQuests) do
     qinfo.quest = qid
@@ -277,6 +275,7 @@ function addon:specialQuests()
       qinfo.zone = GetMapNameByID(qinfo.zid)
     end
   end
+
   return _specialQuests
 end
 
@@ -346,9 +345,11 @@ local WoDSealQuests = {
   [37452] = "Weekly",
   [37453] = "Weekly",
 }
+
 for k,v in pairs(WoDSealQuests) do
   QuestExceptions[k] = v
 end
+
 local LegionSealQuests = {
   [43895] = "Weekly",
   [43896] = "Weekly",
@@ -358,6 +359,7 @@ local LegionSealQuests = {
   [43894] = "Weekly",
   [43510] = "Weekly", -- order hall
 }
+
 for k,v in pairs(LegionSealQuests) do
   QuestExceptions[k] = v
 end
@@ -487,6 +489,7 @@ local function abbreviate(iname)
   iname = iname:gsub("Cataclysm", "Cata")
   iname = iname:gsub("Mists of Pandaria", "MoP")
   iname = iname:gsub("Warlords of Draenor", "WoD")
+
   return iname
 end
 
@@ -917,6 +920,7 @@ function addon:GetNextWeeklyResetTime()
   while not addon.resetDays[date("%w",nightlyReset+offset)] do
     nightlyReset = nightlyReset + 24 * 3600
   end
+
   return nightlyReset
 end
 
