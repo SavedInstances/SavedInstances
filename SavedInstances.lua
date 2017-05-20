@@ -2573,7 +2573,7 @@ function core:OnInitialize()
   else
     SavedInstances.version = versionString
   end
-  local SavedInstancesDB = SavedInstancesDB or vars.defaultDB
+  SavedInstancesDB = SavedInstancesDB or vars.defaultDB
   -- begin backwards compatibility
   if not SavedInstancesDB.DBVersion or SavedInstancesDB.DBVersion < 10 then
     SavedInstancesDB = vars.defaultDB
