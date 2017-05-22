@@ -1,6 +1,6 @@
 local addonName, vars = ...
 local core = vars.core
-local SavedInstances = vars
+SavedInstances = vars
 local L = vars.L
 vars.config = core:NewModule("Config")
 local module = vars.config

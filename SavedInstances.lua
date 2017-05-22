@@ -1,5 +1,5 @@
 local addonName, vars = ...
-local SavedInstances = vars
+SavedInstances = vars
 local addon = vars
 local addonAbbrev = "SI"
 vars.core = LibStub("AceAddon-3.0"):NewAddon(addonName, "AceEvent-3.0", "AceTimer-3.0", "AceBucket-3.0")
