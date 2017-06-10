@@ -1,17 +1,17 @@
 package-as: SavedInstances
 
 externals:
-    libs/AceAddon-3.0: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceAddon-3.0
-    libs/AceConfig-3.0: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceConfig-3.0
-    libs/AceConsole-3.0: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceConsole-3.0
-    libs/AceEvent-3.0: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceEvent-3.0
-    libs/AceGUI-3.0: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceGUI-3.0
-    libs/AceTimer-3.0: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceTimer-3.0
-    libs/AceBucket-3.0: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceBucket-3.0
-    libs/CallbackHandler-1.0: svn://svn.wowace.com/wow/callbackhandler/mainline/trunk/CallbackHandler-1.0
-    libs/LibDBIcon-1.0: svn://svn.wowace.com/wow/libdbicon-1-0/mainline/trunk/LibDBIcon-1.0
-    libs/LibQTip-1.0: svn://svn.wowace.com/wow/libqtip-1-0/mainline/trunk
-    libs/LibStub: svn://svn.wowace.com/wow/libstub/mainline/trunk
+    SavedInstances/libs/AceAddon-3.0: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceAddon-3.0
+    SavedInstances/libs/AceConfig-3.0: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceConfig-3.0
+    SavedInstances/libs/AceConsole-3.0: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceConsole-3.0
+    SavedInstances/libs/AceEvent-3.0: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceEvent-3.0
+    SavedInstances/libs/AceGUI-3.0: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceGUI-3.0
+    SavedInstances/libs/AceTimer-3.0: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceTimer-3.0
+    SavedInstances/libs/AceBucket-3.0: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceBucket-3.0
+    SavedInstances/libs/CallbackHandler-1.0: svn://svn.wowace.com/wow/callbackhandler/mainline/trunk/CallbackHandler-1.0
+    SavedInstances/libs/LibDBIcon-1.0: svn://svn.wowace.com/wow/libdbicon-1-0/mainline/trunk/LibDBIcon-1.0
+    SavedInstances/libs/LibQTip-1.0: svn://svn.wowace.com/wow/libqtip-1-0/mainline/trunk
+    SavedInstances/libs/LibStub: svn://svn.wowace.com/wow/libstub/mainline/trunk
 
 
 ignore:
