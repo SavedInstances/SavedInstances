@@ -358,6 +358,9 @@ local LegionSealQuests = {
   [43893] = "Weekly",
   [43894] = "Weekly",
   [43510] = "Weekly", -- order hall
+  [47851] = "Weekly", -- Mark of Honor x5
+  [47864] = "Weekly", -- Mark of Honor x10
+  [47865] = "Weekly", -- Mark of Honor x20
 }
 
 for k,v in pairs(LegionSealQuests) do
