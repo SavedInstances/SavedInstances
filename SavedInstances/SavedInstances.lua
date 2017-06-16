@@ -1868,7 +1868,7 @@ function addon:QuestIsDarkmoonMonthly()
   if scope and scope ~= "Darkmoon" then return false end -- one-time referral quests
   for i=1,GetNumRewardCurrencies() do
     local name,texture,amount = GetQuestCurrencyInfo("reward",i)
-    if texture:find("_ticket_darkmoon_") then
+    if texture == 134481 then
       return true
     end
   end
