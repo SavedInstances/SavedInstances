@@ -12,6 +12,7 @@ local QTip = LibStub("LibQTip-1.0")
 local dataobject, db, config
 local maxdiff = 23 -- max number of instance difficulties
 local maxcol = 4 -- max columns per player+instance
+local maxid = 2000 -- highest possible value for an instanceID, current max (Tomb of Sargeras) is 1676
 
 -- local (optimal) references to provided functions
 local table, math, bit, string, pairs, ipairs, unpack, strsplit, time, type, wipe, tonumber, select, strsub =
@@ -46,6 +47,36 @@ vars.Indicators = {
   ICON_CROSS = ICON_LIST[7] .. "16:16:0:0|t",
   ICON_SKULL = ICON_LIST[8] .. "16:16:0:0|t",
   BLANK = "None",
+}
+
+local KeystoneAbbrev = {
+  [197] = "EoA",
+  [198] = "DHT",
+  [199] = "BRH",
+  [200] = "HoV",
+  [206] = "Nelt",
+  [207] = "VotW",
+  [208] = "MoS",
+  [209] = "Arc",
+  [210] = "CoS",
+  [227] = "L Kara",
+  [233] = "CoEN",
+  [234] = "U Kara",
+}
+
+local KeystonetoAbbrev = {
+  ["Eye of Azshara"] = "EoA",
+  ["Darkheart Thicket"] = "DHT",
+  ["Black Rook Hold"] = "BRH",
+  ["Halls of Valor"] = "HoV",
+  ["Neltharion's Lair"] = "Nelt",
+  ["Vault of the Wardens"] = "VotW",
+  ["Maw of Souls"] = "MoS",
+  ["The Arcway"] = "Arc",
+  ["Court of Stars"] = "CoS",
+  ["Return to Karazhan: Lower"] = "L Kara",
+  ["Cathedral of Eternal Night"] = "CoEN",
+  ["Return to Karazhan: Upper"] = "U Kara",
 }
 
 vars.Categories = { }
@@ -123,19 +154,19 @@ addon.LFRInstances = {
   [724] = { total=3, base=9,  parent=766, altid=841 }, -- SoO3: The Underhold
   [725] = { total=3, base=12, parent=766, altid=842 }, -- SoO4: Downfall
 
-  [849] = { total=3, base=1,  parent=897, altid=nil }, -- Highmaul1: Walled City
-  [850] = { total=3, base=4,  parent=897, altid=nil }, -- Highmaul2: Arcane Sanctum
-  [851] = { total=1, base=7,  parent=897, altid=nil }, -- Highmaul3: Imperator's Rise
-  [847] = { total=3, base=1,  parent=900, altid=nil, remap={ 1, 2, 7 } }, -- BRF1: Slagworks
-  [846] = { total=3, base=4,  parent=900, altid=nil, remap={ 3, 5, 8 } }, -- BRF2: The Black Forge
-  [848] = { total=3, base=7,  parent=900, altid=nil, remap={ 4, 6, 9 } }, -- BRF3: Iron Assembly
-  [823] = { total=1, base=10, parent=900, altid=nil }, -- BRF4: Blackhand's Crucible
+  [849] = { total=3, base=1,  parent=897, altid=1363 }, -- Highmaul1: Walled City
+  [850] = { total=3, base=4,  parent=897, altid=1364 }, -- Highmaul2: Arcane Sanctum
+  [851] = { total=1, base=7,  parent=897, altid=1365 }, -- Highmaul3: Imperator's Rise
+  [847] = { total=3, base=1,  parent=900, altid=1361, remap={ 1, 2, 7 } }, -- BRF1: Slagworks
+  [846] = { total=3, base=4,  parent=900, altid=1360, remap={ 3, 5, 8 } }, -- BRF2: The Black Forge
+  [848] = { total=3, base=7,  parent=900, altid=1362, remap={ 4, 6, 9 } }, -- BRF3: Iron Assembly
+  [823] = { total=1, base=10, parent=900, altid=1359 }, -- BRF4: Blackhand's Crucible
 
-  [982] = { total=3, base=1,  parent=989, altid=nil }, -- Hellfire1: Hellbreach
-  [983] = { total=3, base=4,  parent=989, altid=nil }, -- Hellfire2: Halls of Blood
-  [984] = { total=3, base=7,  parent=989, altid=nil, remap={ 7, 8,  11 } }, -- Hellfire3: Bastion of Shadows
-  [985] = { total=3, base=10, parent=989, altid=nil, remap={ 9, 10, 12 } }, -- Hellfire4: Destructor's Rise
-  [986] = { total=1, base=13, parent=989, altid=nil }, -- Hellfire5: Black Gate
+  [982] = { total=3, base=1,  parent=989, altid=1366 }, -- Hellfire1: Hellbreach
+  [983] = { total=3, base=4,  parent=989, altid=1367 }, -- Hellfire2: Halls of Blood
+  [984] = { total=3, base=7,  parent=989, altid=1368, remap={ 7, 8,  11 } }, -- Hellfire3: Bastion of Shadows
+  [985] = { total=3, base=10, parent=989, altid=1369, remap={ 9, 10, 12 } }, -- Hellfire4: Destructor's Rise
+  [986] = { total=1, base=13, parent=989, altid=1370 }, -- Hellfire5: The Black Gate
 
   [1287] = { total=3, base=1,  parent=1350,altid=nil, remap={ 1, 2, 3 } }, -- EN1: Darkbough
   [1288] = { total=3, base=4,  parent=1350,altid=nil, remap={ 1, 2, 3 } }, -- EN2: Tormented Guardians
@@ -147,6 +178,11 @@ addon.LFRInstances = {
   [1291] = { total=3, base=4,  parent=1353,altid=nil, remap={ 1, 2, 3 } }, -- NH2: Royal Athenaeum
   [1292] = { total=3, base=7,  parent=1353,altid=nil, remap={ 1, 2, 3 } }, -- NH3: Nightspire
   [1293] = { total=1, base=10, parent=1353,altid=nil, remap={ 1 } }, -- NH4: Betrayer's Rise
+  
+  [1494] = { total=3, base=1,  parent=1527,altid=nil }, -- ToS1: The Gates of Hell (6/27/17)
+  [1495] = { total=3, base=4,  parent=1527,altid=nil }, -- ToS2: Wailing Halls (7/11/17)
+  [1496] = { total=3, base=7,  parent=1527,altid=nil }, -- ToS3: Chamber of the Avatar (7/25/17)
+  [1497] = { total=3, base=10,  parent=1527,altid=nil }, -- ToS4: Deceiver's Fall (8/8/17)
 }
 
 local tmp = {}
@@ -710,6 +746,7 @@ vars.defaultDB = {
     MythicKey = true,
     MythicKeyBest = true,
     DailyWorldQuest = true,
+    AbbreviateKeystone = true,
   },
   Instances = { }, 	-- table key: "Instance name"; value:
   -- Show: boolean
@@ -1395,7 +1432,6 @@ function addon:UpdateInstanceData()
   local wbid_to_name = {}
   local id_blacklist = {}
   local starttime = debugprofilestop()
-  local maxid = 1500
   -- previously we used GetFullRaidList() and LFDDungeonList to help populate the instance list
   -- Unfortunately those are loaded lazily, and forcing them to load from here can lead to taint.
   -- They are also somewhat incomplete, so instead we just brute force it, which is reasonably fast anyhow
@@ -2854,6 +2890,7 @@ function core:RefreshMythicKeyInfo()
           DEFAULT_CHAT_FRAME:AddMessage(tostring(KeyInfo[19]))
           DEFAULT_CHAT_FRAME:AddMessage(tostring(KeyInfo[20]))
         end
+        t.MythicKey.abbrev = KeystoneAbbrev[mapID]
         t.MythicKey.name = C_ChallengeMode.GetMapInfo(mapID)
         t.MythicKey.color = color
         t.MythicKey.level = mapLevel
@@ -2893,26 +2930,52 @@ function core:RefreshDailyWorldQuestInfo()
     local title = GetQuestLogTitle(GetQuestLogIndexByID(BountyInfo.questID))
     local timeleft = C_TaskQuest.GetQuestTimeLeftMinutes(BountyInfo.questID)
     local _, _, isFinish, questDone, questNeed = GetQuestObjectiveInfo(BountyInfo.questID, 1, false)
-    if not isFinish and timeleft then
+    if timeleft then
       if timeleft > 2880 then
-        t.DailyWorldQuest.days2 = {}
+        if t.DailyWorldQuest.days2 then else t.DailyWorldQuest.days2 = {} end
         t.DailyWorldQuest.days2.name = title
         t.DailyWorldQuest.days2.dayleft = 2
         t.DailyWorldQuest.days2.questneed = questNeed
         t.DailyWorldQuest.days2.questdone = questDone
+        t.DailyWorldQuest.days2.isfinish = isFinish
+        t.DailyWorldQuest.days2.iscompleted = IsQuestFlaggedCompleted(BountyInfo.questID)
       elseif timeleft > 1440 then
-        t.DailyWorldQuest.days1 = {}
+        if t.DailyWorldQuest.days1 then else t.DailyWorldQuest.days1 = {} end
         t.DailyWorldQuest.days1.name = title
         t.DailyWorldQuest.days1.dayleft = 1
         t.DailyWorldQuest.days1.questneed = questNeed
         t.DailyWorldQuest.days1.questdone = questDone
+        t.DailyWorldQuest.days1.isfinish = isFinish
+        t.DailyWorldQuest.days1.iscompleted = IsQuestFlaggedCompleted(BountyInfo.questID)
       else
-        t.DailyWorldQuest.days0 = {}
+        if t.DailyWorldQuest.days0 then else t.DailyWorldQuest.days0 = {} end
         t.DailyWorldQuest.days0.name = title
         t.DailyWorldQuest.days0.dayleft = 0
         t.DailyWorldQuest.days0.questneed = questNeed
         t.DailyWorldQuest.days0.questdone = questDone
+        t.DailyWorldQuest.days0.isfinish = isFinish
+        t.DailyWorldQuest.days0.iscompleted = IsQuestFlaggedCompleted(BountyInfo.questID)
       end
+    end
+  end
+  if IsQuestFlaggedCompleted(43341) then
+    if t.DailyWorldQuest.days0 == nil then
+      t.DailyWorldQuest.days0 = {}
+      t.DailyWorldQuest.days0.dayleft = 0
+      t.DailyWorldQuest.days0.iscompleted = true
+      t.DailyWorldQuest.days0.name = "Emissary Missing"
+    end
+    if t.DailyWorldQuest.days1 == nil then
+      t.DailyWorldQuest.days1 = {}
+      t.DailyWorldQuest.days1.dayleft = 1
+      t.DailyWorldQuest.days1.iscompleted = true
+      t.DailyWorldQuest.days1.name = "Emissary Missing"
+    end
+    if t.DailyWorldQuest.days2 == nil then
+      t.DailyWorldQuest.days2 = {}
+      t.DailyWorldQuest.days2.dayleft = 2
+      t.DailyWorldQuest.days2.iscompleted = true
+      t.DailyWorldQuest.days2.name = "Emissary Missing"
     end
   end
 end
@@ -4123,13 +4186,22 @@ function core:ShowTooltip(anchorframe)
       if not firstcategory and vars.db.Tooltip.CategorySpaces then
         addsep()
       end
-      show = tooltip:AddLine(YELLOWFONT .. L["MythicKeystone"] .. FONTEND)
+      show = tooltip:AddLine(YELLOWFONT .. L["Mythic Keystone"] .. FONTEND)
     end
     for toon, t in cpairs(vars.db.Toons, true) do
       if t.MythicKey then
         if t.MythicKey.name then
           local col = columns[toon..1]
-          tooltip:SetCell(show, col, "|c"..t.MythicKey.color..t.MythicKey.name.."("..t.MythicKey.level..")"..FONTEND, "CENTER",maxcol)
+          if vars.db.Tooltip.AbbreviateKeystone then
+            if t.MythicKey.abbrev then
+              tooltip:SetCell(show, col, "|c"..t.MythicKey.color..t.MythicKey.abbrev.." ("..t.MythicKey.level..")"..FONTEND, "CENTER",maxcol)
+            else
+              local kabbrev = KeystonetoAbbrev[t.MythicKey.name]
+              tooltip:SetCell(show, col, "|c"..t.MythicKey.color..kabbrev.." ("..t.MythicKey.level..")"..FONTEND, "CENTER",maxcol)
+            end
+          else
+          tooltip:SetCell(show, col, "|c"..t.MythicKey.color..t.MythicKey.name.." ("..t.MythicKey.level..")"..FONTEND, "CENTER",maxcol)
+          end
           tooltip:SetCellScript(show, col, "OnMouseDown", ChatLink, t.MythicKey.link)
         end
       end
@@ -4180,7 +4252,7 @@ function core:ShowTooltip(anchorframe)
     end
   end
 
-  if vars.db.Tooltip.DailyWorldQuest then
+  if vars.db.Tooltip.DailyWorldQuest or showall then
     local show = {}
     for toon, t in cpairs(vars.db.Toons, true) do
       if t.DailyWorldQuest then
@@ -4198,7 +4270,7 @@ function core:ShowTooltip(anchorframe)
         if not firstcategory and vars.db.Tooltip.CategorySpaces then
           addsep()
         end
-        show[dayleft] = tooltip:AddLine(YELLOWFONT .. showday .. "(+" .. dayleft .. L["Day"] .. ")" .. FONTEND)
+        show[dayleft] = tooltip:AddLine(YELLOWFONT .. showday .. " (+" .. dayleft .. " " .. L["Day"] .. ")" .. FONTEND)
       end
     end
     for toon, t in cpairs(vars.db.Toons, true) do
@@ -4206,7 +4278,13 @@ function core:ShowTooltip(anchorframe)
         for day,DailyInfo in pairs(t.DailyWorldQuest) do
           if show[DailyInfo.dayleft] then
             local col = columns[toon..1]
-            tooltip:SetCell(show[DailyInfo.dayleft], col, DailyInfo.questdone .. "/" .. DailyInfo.questneed , "CENTER",maxcol)
+            if DailyInfo.iscompleted == true then
+              tooltip:SetCell(show[DailyInfo.dayleft], col, "\124T"..READY_CHECK_READY_TEXTURE..":0|t", "CENTER", maxcol)
+            elseif DailyInfo.isfinish == true then
+              tooltip:SetCell(show[DailyInfo.dayleft], col, "\124T"..READY_CHECK_WAITING_TEXTURE..":0|t", "CENTER", maxcol)
+            else
+              tooltip:SetCell(show[DailyInfo.dayleft], col, DailyInfo.questdone .. "/" .. DailyInfo.questneed , "CENTER",maxcol)
+            end
           end
         end
       end
