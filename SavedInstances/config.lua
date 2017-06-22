@@ -236,10 +236,16 @@ function module:BuildOptions()
             name = L["Instance limit in broker"],
             order = 4.8,
           },
+          AbbreviateKeystone = {
+            type = "toggle",
+            name = L["Abbreviate keystones"],
+            desc = L["Abbreviate mythic keystone dungeon names"],
+            order = 4.85
+          },
           DebugMode = {
             type = "toggle",
             name = L["Debug Mode"],
-            order = 4.8,
+            order = 4.9,
           },
 
           CategoriesHeader = {
@@ -371,6 +377,11 @@ function module:BuildOptions()
             order = 33.5,
             name = L["Weekly Quests"],
           },
+          DailyWorldQuest = {
+            type = "toggle",
+            order = 33.6,
+            name = L["Emissary quests"],
+          },
           TrackSkills = {
             type = "toggle",
             order = 33.75,
@@ -407,6 +418,18 @@ function module:BuildOptions()
             type = "toggle",
             order = 36,
             name = L["Time /played"],
+          },
+          MythicKey = {
+            type = "toggle",
+            order = 37,
+            name = L["Mythic Keystone"],
+            desc = L["Track mythic keystone acquisition"],
+          },
+          MythicKeyBest = {
+            type = "toggle",
+            order = 37.5,
+            name = L["Mythic Best"],
+            desc = L["Track mythic keystone best run"],
           },
           BindHeader = {
             order = -0.6,
@@ -888,4 +911,3 @@ function module:ShowConfig()
     InterfaceOptionsFrame_OpenToCategory(firstoptiongroup)
   end
 end
-
