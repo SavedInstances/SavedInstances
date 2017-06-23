@@ -32,8 +32,10 @@ globals = {
   "Tukui",
   "DBM",
   "BigWigsLoader",
+  "READY_CHECK_WAITING_TEXTURE",
 
 	-- SavedInstances
+  "SavedInstances",
   "SavedInstancesDB",
   "SetTradeSkillCategoryFilter",
   "LFGGetDungeonInfoByID",

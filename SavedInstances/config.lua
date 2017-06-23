@@ -23,6 +23,7 @@ SavedInstances.diff_strings = {
   R7 = GetDifficultyInfo(15), -- "Heroic raid"
   R8 = GetDifficultyInfo(16), -- "Mythic raid"
 }
+
 local FONTEND = FONT_COLOR_CODE_CLOSE
 local GOLDFONT = NORMAL_FONT_COLOR_CODE
 
@@ -35,7 +36,6 @@ end
 
 BINDING_NAME_SAVEDINSTANCES = L["Show/Hide the SavedInstances tooltip"]
 BINDING_HEADER_SAVEDINSTANCES = "SavedInstances"
-
 
 -- general helper functions
 
@@ -233,13 +233,13 @@ function module:BuildOptions()
           },
           HistoryText = {
             type = "toggle",
-            name = L["Instance limit in broker"],
+            name = L["Instance limit in Broker"],
             order = 4.8,
           },
           AbbreviateKeystone = {
             type = "toggle",
             name = L["Abbreviate keystones"],
-            desc = L["Abbreviate mythic keystone dungeon names"],
+            desc = L["Abbreviate Mythic keystone dungeon names"],
             order = 4.85
           },
           DebugMode = {
@@ -277,7 +277,6 @@ function module:BuildOptions()
           CategorySort = {
             order = 15,
             type = "select",
-            --	style = "radio",
             name = L["Sort categories by"],
             values = {
               ["EXPANSION"] = L["Expansion"],
@@ -320,7 +319,6 @@ function module:BuildOptions()
             bigStep = 0.1,
             isPercent = true,
           },
-
           InstancesHeader = {
             order = 20,
             type = "header",
@@ -423,13 +421,13 @@ function module:BuildOptions()
             type = "toggle",
             order = 37,
             name = L["Mythic Keystone"],
-            desc = L["Track mythic keystone acquisition"],
+            desc = L["Track Mythic keystone acquisition"],
           },
           MythicKeyBest = {
             type = "toggle",
             order = 37.5,
             name = L["Mythic Best"],
-            desc = L["Track mythic keystone best run"],
+            desc = L["Track Mythic keystone best run"],
           },
           BindHeader = {
             order = -0.6,
@@ -437,7 +435,6 @@ function module:BuildOptions()
             name = "",
             cmdHidden = true,
           },
-
           ToggleBind = {
             desc = L["Bind a key to toggle the SavedInstances tooltip"],
             type = "keybinding",
@@ -623,7 +620,6 @@ function module:BuildOptions()
                   ["interleave"] = L["Interleave"],
                 },
               },
-
             }
           },
           Manage = {
@@ -828,13 +824,6 @@ function module:BuildOptions()
 end
 
 -- global functions
-
-local lockoutgroup
---function module:ShowLockoutWindow(lockout)
---	print(tostring(lockout))
---	module.selectedLockout = arg
---	InterfaceOptionsFrame_OpenToCategory(lockoutgroup)
---end
 
 function module:table_clone(t)
   if not t then return nil end

@@ -1,18 +1,17 @@
 package-as: SavedInstances
 
 externals:
-    SavedInstances/libs/AceAddon-3.0: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceAddon-3.0
-    SavedInstances/libs/AceConfig-3.0: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceConfig-3.0
-    SavedInstances/libs/AceConsole-3.0: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceConsole-3.0
-    SavedInstances/libs/AceEvent-3.0: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceEvent-3.0
-    SavedInstances/libs/AceGUI-3.0: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceGUI-3.0
-    SavedInstances/libs/AceTimer-3.0: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceTimer-3.0
-    SavedInstances/libs/AceBucket-3.0: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceBucket-3.0
-    SavedInstances/libs/CallbackHandler-1.0: svn://svn.wowace.com/wow/callbackhandler/mainline/trunk/CallbackHandler-1.0
-    SavedInstances/libs/LibDBIcon-1.0: svn://svn.wowace.com/wow/libdbicon-1-0/mainline/trunk/LibDBIcon-1.0
-    SavedInstances/libs/LibQTip-1.0: svn://svn.wowace.com/wow/libqtip-1-0/mainline/trunk
-    SavedInstances/libs/LibStub: svn://svn.wowace.com/wow/libstub/mainline/trunk
-
+    SavedInstances/libs/AceAddon-3.0: https://repos.wowace.com/wow/ace3/trunk/AceAddon-3.0
+    SavedInstances/libs/AceConfig-3.0: https://repos.wowace.com/wow/ace3/trunk/AceConfig-3.0
+    SavedInstances/libs/AceConsole-3.0: https://repos.wowace.com/wow/ace3/trunk/AceConsole-3.0
+    SavedInstances/libs/AceEvent-3.0: https://repos.wowace.com/wow/ace3/trunk/AceEvent-3.0
+    SavedInstances/libs/AceGUI-3.0: https://repos.wowace.com/wow/ace3/trunk/AceGUI-3.0
+    SavedInstances/libs/AceTimer-3.0: https://repos.wowace.com/wow/ace3/trunk/AceTimer-3.0
+    SavedInstances/libs/AceBucket-3.0: https://repos.wowace.com/wow/ace3/trunk/AceBucket-3.0
+    SavedInstances/libs/CallbackHandler-1.0: https://repos.wowace.com/wow/callbackhandler/trunk/CallbackHandler-1.0
+    SavedInstances/libs/LibDBIcon-1.0: https://repos.wowace.com/wow/libdbicon-1-0/trunk/LibDBIcon-1.0
+    SavedInstances/libs/LibQTip-1.0: https://repos.wowace.com/wow/libqtip-1-0/trunk
+    SavedInstances/libs/LibStub: https://repos.wowace.com/wow/libstub/trunk
 
 ignore:
     - .pkgmeta
@@ -23,4 +22,3 @@ ignore:
 license-output: LICENSE.txt
 
 enable-nolib-creation: yes
-

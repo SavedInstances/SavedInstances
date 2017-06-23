@@ -178,7 +178,7 @@ addon.LFRInstances = {
   [1291] = { total=3, base=4,  parent=1353,altid=nil, remap={ 1, 2, 3 } }, -- NH2: Royal Athenaeum
   [1292] = { total=3, base=7,  parent=1353,altid=nil, remap={ 1, 2, 3 } }, -- NH3: Nightspire
   [1293] = { total=1, base=10, parent=1353,altid=nil, remap={ 1 } }, -- NH4: Betrayer's Rise
-  
+
   [1494] = { total=3, base=1,  parent=1527,altid=nil }, -- ToS1: The Gates of Hell (6/27/17)
   [1495] = { total=3, base=4,  parent=1527,altid=nil }, -- ToS2: Wailing Halls (7/11/17)
   [1496] = { total=2, base=7,  parent=1527,altid=nil }, -- ToS3: Chamber of the Avatar (7/25/17)
@@ -433,7 +433,7 @@ local function bugReport(msg)
   addon.bugreport[msg] = now
   chatMsg(msg)
   if now < (addon.bugreport["url"] or 0)+5 then return end
-  chatMsg("Please report this bug at: http://www.wowace.com/addons/saved_instances/tickets/")
+  chatMsg("Please report this bug at: https://github.com/eTzmNcbkrng/SavedInstances/issues")
   addon.bugreport["url"] = now
 end
 
@@ -1229,6 +1229,7 @@ local _instance_exceptions = {
   },
   [1347] = { total=8 }, -- Return to Karazhan
 }
+
 function addon:instanceException(LFDID)
   if not LFDID then return nil end
   local exc = _instance_exceptions[LFDID]
@@ -2587,9 +2588,7 @@ local function ShowCurrencySummary(cell, arg, ...)
   finishIndicator()
 end
 
-
 -- global addon code below
-
 function core:toonInit()
   local ti = db.Toons[thisToon] or { }
   db.Toons[thisToon] = ti
@@ -3083,7 +3082,7 @@ local raiddiffmsg = ERR_RAID_DIFFICULTY_CHANGED_S:gsub("%%s",".+")
 local dungdiffmsg = ERR_DUNGEON_DIFFICULTY_CHANGED_S:gsub("%%s",".+")
 local delaytime = 3 -- seconds to wait on zone change for settings to stabilize
 function addon.HistoryEvent(f, evt, ...)
-  --myprint("HistoryEvent: "..evt, ...)
+  --debug("HistoryEvent: "..evt, ...)
   if evt == "CHAT_MSG_ADDON" then
     local prefix, message, channel, sender = ...
     if prefix ~= addonName then return end
@@ -3232,7 +3231,7 @@ function addon:HistoryUpdate(forcereset, forcemesg)
       addon.lasthistdbg = msg
       debug(msg)
     end
-    --myprint(vars.db.History)
+    --debug(vars.db.History)
   end
   -- display update
 
@@ -3573,7 +3572,7 @@ do
       end
       end
       table.sort(cnext_list, cpairs_sort)
-      --myprint(cnext_list)
+      --debug(cnext_list)
     end
     cnext_pos = 1
     return cnext, t, nil
@@ -3619,12 +3618,6 @@ function addon:ShowDetached()
       if not tooltip then f:Hide(); return end
       local w,h = tooltip:GetSize()
       self:SetSize(w*tooltip:GetScale(),(h+20)*tooltip:GetScale())
-      --[[
-      tooltip:ClearAllPoints()
-      tooltip:SetPoint("BOTTOMLEFT",addon.detachframe)
-      tooltip:SetFrameLevel(addon.detachframe:GetFrameLevel()+1)
-      tooltip:Show()
-      --]]
     end)
     f:SetScript("OnKeyDown", function(self,key)
       if key == "ESCAPE" then
@@ -4226,7 +4219,7 @@ function core:ShowTooltip(anchorframe)
       if not firstcategory and vars.db.Tooltip.CategorySpaces then
         addsep()
       end
-      show = tooltip:AddLine(YELLOWFONT .. L["MythicKeyBest"] .. FONTEND)
+      show = tooltip:AddLine(YELLOWFONT .. L["Mythic Key Best"] .. FONTEND)
     end
     for toon, t in cpairs(vars.db.Toons, true) do
       if t.MythicKeyBest then
@@ -4242,7 +4235,7 @@ function core:ShowTooltip(anchorframe)
           if t.MythicKeyBest.LastWeekLevel and t.MythicKeyBest.LastWeekLevel > 0 then
             lastlevel = t.MythicKeyBest.LastWeekLevel
           end
-          keydesc = keydesc .."(".. lastlevel ..L["LastWeekRewardUsable"].. ")"
+          keydesc = keydesc .."(".. lastlevel ..L["Last Week Reward Usable"].. ")"
         end
         if keydesc ~= "" then
           local col = columns[toon..1]
@@ -4441,18 +4434,6 @@ function core:ShowTooltip(anchorframe)
         tooltip:GetHeaderFont(), "CENTER", maxcol)
       tooltip:SetCellScript(headLine, col, "OnEnter", ShowToonTooltip, toon)
       tooltip:SetCellScript(headLine, col, "OnLeave", CloseTooltips)
-      --[[
-      tooltip:SetCellScript(headLine, col, "OnEnter", function()
-      for i=0,3 do
-      tooltip:SetColumnColor(col+i,0.5,0.5,0.5)
-      end
-      end)
-      tooltip:SetCellScript(headLine, col, "OnLeave", function()
-      for i=0,3 do
-      tooltip:SetColumnColor(col,0,0,0)
-      end
-      end)
-      --]]
     end
   end
   -- we now know enough to put in the category names where necessary
@@ -4531,12 +4512,6 @@ function core:ShowTooltip(anchorframe)
   else -- render it
     addon:SkinFrame(tooltip,"SavedInstancesTooltip")
     if addon:IsDetached() then
-      --[[
-      tooltip.anchorframe = UIParent
-      tooltip:SmartAnchorTo(UIParent)
-      tooltip:SetAutoHideDelay(nil, UIParent)
-      --]]
-      --tooltip:UpdateScrolling(100000)
       tooltip:Show()
       QTip.layoutCleaner:CleanupLayouts()
       tooltip:ClearAllPoints()
@@ -4937,7 +4912,6 @@ function core:TRADE_SKILL_LIST_UPDATE()
 end
 
 local farm_spells = {
-
     [111102]="plant", -- Plant Green Cabbage
     [123361]="plant", -- Plant Juicycrunch Carrot
     [123388]="plant", -- Plant Scallions
@@ -5019,7 +4993,6 @@ local farm_spells = {
     [130140]="harvest", -- Harvest Autumn Blossom Tree
     [130168]="harvest", -- Harvest Spring Blossom Tree
     [133106]="harvest", -- Harvest Portal Shard
-
 }
 
 function core:record_farm(spellID)
