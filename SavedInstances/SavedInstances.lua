@@ -129,6 +129,7 @@ local currency = {
   1299,-- Brawler's Gold
   1314,-- Lingering Soul Fragment
   1342,-- Legionfall War Supplies
+  1501,-- Writhing Essence
 }
 addon.currency = currency
 
