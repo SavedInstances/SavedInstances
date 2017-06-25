@@ -185,7 +185,6 @@ addon.LFRInstances = {
   [1496] = { total=2, base=7,  parent=1527,altid=nil }, -- ToS3: Chamber of the Avatar (7/25/17)
   [1497] = { total=1, base=9,  parent=1527,altid=nil }, -- ToS4: Deceiver's Fall (8/8/17)
 }
-
 local tmp = {}
 for id, info in pairs(addon.LFRInstances) do
   tmp[id] = info
@@ -230,10 +229,10 @@ addon.WorldBosses = {
   [1790] = { quest=43512, expansion=6, level=110 }, -- Ana-Mouz
   [1795] = { quest=43985, expansion=6, level=110 }, -- Flotsam
   [1796] = { quest=44287, expansion=6, level=110 }, -- Withered Jim
-  [1956] = { quest=47061, expansion=6, level=110 }, -- Apacron
   [1883] = { quest=46947, expansion=6, level=110 }, -- Brutallus
   [1884] = { quest=46948, expansion=6, level=110 }, -- Malificus
-  [1885] = { quest=46945, expansion=6, level=110 }, -- Sivash
+  [1885] = { quest=46945, expansion=6, level=110 }, -- Si'vash 
+  [1956] = { quest=47061, expansion=6, level=110 }, -- Apocron
 
   -- bosses with no EJ entry (eid is a placeholder)
   [9001] = { quest=38276, name=GARRISON_LOCATION_TOOLTIP.." "..BOSS, expansion=5, level=100 },
@@ -2963,19 +2962,19 @@ function core:RefreshDailyWorldQuestInfo()
       t.DailyWorldQuest.days0 = {}
       t.DailyWorldQuest.days0.dayleft = 0
       t.DailyWorldQuest.days0.iscompleted = true
-      t.DailyWorldQuest.days0.name = "Emissary Missing"
+      t.DailyWorldQuest.days0.name = L["Emissary Missing"]
     end
     if t.DailyWorldQuest.days1 == nil then
       t.DailyWorldQuest.days1 = {}
       t.DailyWorldQuest.days1.dayleft = 1
       t.DailyWorldQuest.days1.iscompleted = true
-      t.DailyWorldQuest.days1.name = "Emissary Missing"
+      t.DailyWorldQuest.days1.name = L["Emissary Missing"]
     end
     if t.DailyWorldQuest.days2 == nil then
       t.DailyWorldQuest.days2 = {}
       t.DailyWorldQuest.days2.dayleft = 2
       t.DailyWorldQuest.days2.iscompleted = true
-      t.DailyWorldQuest.days2.name = "Emissary Missing"
+      t.DailyWorldQuest.days2.name = L["Emissary Missing"]
     end
   end
 end
@@ -4252,7 +4251,9 @@ function core:ShowTooltip(anchorframe)
       if t.DailyWorldQuest then
         for day,DailyInfo in pairs(t.DailyWorldQuest) do
           if DailyInfo.name then
-            show[DailyInfo.dayleft] = DailyInfo.name
+			if(not show[DailyInfo.dayleft] or show[DailyInfo.dayleft] == L["Emissary Missing"]) then
+              show[DailyInfo.dayleft] = DailyInfo.name
+			end
             addColumns(columns, toon, tooltip)
           end
         end
