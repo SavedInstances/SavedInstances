@@ -4251,9 +4251,9 @@ function core:ShowTooltip(anchorframe)
       if t.DailyWorldQuest then
         for day,DailyInfo in pairs(t.DailyWorldQuest) do
           if DailyInfo.name then
-			if(not show[DailyInfo.dayleft] or show[DailyInfo.dayleft] == L["Emissary Missing"]) then
+            if(not show[DailyInfo.dayleft] or show[DailyInfo.dayleft] == L["Emissary Missing"]) then
               show[DailyInfo.dayleft] = DailyInfo.name
-			end
+            end
             addColumns(columns, toon, tooltip)
           end
         end
