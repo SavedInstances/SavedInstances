@@ -169,21 +169,21 @@ addon.LFRInstances = {
   [985] = { total=3, base=10, parent=989, altid=1369, remap={ 9, 10, 12 } }, -- Hellfire4: Destructor's Rise
   [986] = { total=1, base=13, parent=989, altid=1370 }, -- Hellfire5: The Black Gate
 
-  [1287] = { total=3, base=1,  parent=1350,altid=nil, remap={ 1, 2, 3 } }, -- EN1: Darkbough
-  [1288] = { total=3, base=4,  parent=1350,altid=nil, remap={ 1, 2, 3 } }, -- EN2: Tormented Guardians
-  [1289] = { total=1, base=7,  parent=1350,altid=nil, remap={ 1 } },       -- EN3: Rift of Aln
+  [1287] = { total=3, base=1,  parent=1350, altid=nil, remap={ 1, 2, 3 } }, -- EN1: Darkbough
+  [1288] = { total=3, base=4,  parent=1350, altid=nil, remap={ 1, 2, 3 } }, -- EN2: Tormented Guardians
+  [1289] = { total=1, base=7,  parent=1350, altid=nil, remap={ 1 } },       -- EN3: Rift of Aln
 
-  [1411] = { total=3, base=1,  parent=1439,altid=nil }, -- ToV
+  [1411] = { total=3, base=1,  parent=1439, altid=nil }, -- ToV
 
-  [1290] = { total=3, base=1,  parent=1353,altid=nil }, -- NH1: Arcing Aqueducts
-  [1291] = { total=3, base=4,  parent=1353,altid=nil, remap={ 1, 2, 3 } }, -- NH2: Royal Athenaeum
-  [1292] = { total=3, base=7,  parent=1353,altid=nil, remap={ 1, 2, 3 } }, -- NH3: Nightspire
-  [1293] = { total=1, base=10, parent=1353,altid=nil, remap={ 1 } }, -- NH4: Betrayer's Rise
+  [1290] = { total=3, base=1,  parent=1353, altid=nil }, -- NH1: Arcing Aqueducts
+  [1291] = { total=3, base=4,  parent=1353, altid=nil, remap={ 1, 2, 3 } }, -- NH2: Royal Athenaeum
+  [1292] = { total=3, base=7,  parent=1353, altid=nil, remap={ 1, 2, 3 } }, -- NH3: Nightspire
+  [1293] = { total=1, base=10, parent=1353, altid=nil, remap={ 1 } }, -- NH4: Betrayer's Rise
 
-  [1494] = { total=3, base=1,  parent=1527,altid=nil }, -- ToS1: The Gates of Hell (6/27/17)
-  [1495] = { total=3, base=4,  parent=1527,altid=nil }, -- ToS2: Wailing Halls (7/11/17)
-  [1496] = { total=2, base=7,  parent=1527,altid=nil }, -- ToS3: Chamber of the Avatar (7/25/17)
-  [1497] = { total=1, base=9,  parent=1527,altid=nil }, -- ToS4: Deceiver's Fall (8/8/17)
+  [1494] = { total=3, base=1, parent=1527, altid=nil, remap={ 1, 2, 3 } }, -- ToS1: The Gates of Hell (6/27/17)
+  [1495] = { total=3, base=4, parent=1527, altid=nil, remap={ 1, 2, 3 } }, -- ToS2: Wailing Halls (7/11/17)
+  [1496] = { total=2, base=7, parent=1527, altid=nil, remap={ 7, 8 } }, -- ToS3: Chamber of the Avatar (7/25/17)
+  [1497] = { total=1, base=9, parent=1527, altid=nil, remap={ 9 } }, -- ToS4: Deceiver's Fall (8/8/17)
 }
 local tmp = {}
 for id, info in pairs(addon.LFRInstances) do
@@ -231,7 +231,7 @@ addon.WorldBosses = {
   [1796] = { quest=44287, expansion=6, level=110 }, -- Withered Jim
   [1883] = { quest=46947, expansion=6, level=110 }, -- Brutallus
   [1884] = { quest=46948, expansion=6, level=110 }, -- Malificus
-  [1885] = { quest=46945, expansion=6, level=110 }, -- Si'vash 
+  [1885] = { quest=46945, expansion=6, level=110 }, -- Si'vash
   [1956] = { quest=47061, expansion=6, level=110 }, -- Apocron
 
   -- bosses with no EJ entry (eid is a placeholder)
