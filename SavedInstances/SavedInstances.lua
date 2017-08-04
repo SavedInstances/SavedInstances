@@ -264,7 +264,7 @@ local _specialQuests = {
   [39289] = { zid=945, daily=true }, -- Doomroller
   [39290] = { zid=945, daily=true }, -- Vengeance
   -- Order Hall
-  [42517] = { zid=1050, daily=true }, -- Warlock: Ritual of Doom
+  [42481] = { zid=1050, daily=true }, -- Warlock: Ritual of Doom
   [44707] = { zid=1052, daily=true, sid=228651 }, -- Demon Hunter: Twisting Nether
 }
 
