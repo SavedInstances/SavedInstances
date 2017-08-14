@@ -183,7 +183,7 @@ addon.LFRInstances = {
   [1494] = { total=3, base=1, parent=1527, altid=nil, remap={ 1, 2, 3 } }, -- ToS1: The Gates of Hell (6/27/17)
   [1495] = { total=3, base=4, parent=1527, altid=nil, remap={ 1, 2, 3 } }, -- ToS2: Wailing Halls (7/11/17)
   [1496] = { total=2, base=7, parent=1527, altid=nil, remap={ 1, 2 } }, -- ToS3: Chamber of the Avatar (7/25/17)
-  [1497] = { total=1, base=9, parent=1527, altid=nil, remap={ 9 } }, -- ToS4: Deceiver's Fall (8/8/17)
+  [1497] = { total=1, base=9, parent=1527, altid=nil, remap={ 1 } }, -- ToS4: Deceiver's Fall (8/8/17)
 }
 local tmp = {}
 for id, info in pairs(addon.LFRInstances) do
