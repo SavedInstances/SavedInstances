@@ -357,12 +357,16 @@ local QuestExceptions = {
   [44175] = "Weekly", -- The World Awaits - Complete Broken Isles World Quests
   [45799] = "Weekly", -- A Shrouded Path Through Time - Mists of Pandaria Timewalking
 
-  --Timewalking Dungeon final boss drops
+  -- Timewalking Dungeon final boss drops
   [40168] = "Weekly", -- The Swirling Vial - Burning Crusade Timewalking
   [40173] = "Weekly", -- The Unstable Prism - Wrath of the Lich King Timewalking
   [40786] = "Weekly", -- The Smoldering Ember - Cataclysm Timewalking - Horde
   [40787] = "Weekly", -- The Smoldering Ember - Cataclysm Timewalking - Alliance
   [45563] = "Weekly", -- The Shrouded Coin - Mists of Pandaria Timewalking
+
+  -- Pet Battle Dungeons
+  [46292] = "Weekly", -- Pet Battle Challenge Dungeon Deadmines
+  [45539] = "Weekly", -- Pet Battle Challenge Dungeon Wailing Caverns
 }
 
 local WoDSealQuests = {
