@@ -116,20 +116,21 @@ local currency = {
   823, -- Apexis Crystal
   824, -- Garrison Resources
   994, -- Seal of Tempered Fate
-  1101,-- Oil
-  1129,-- Seal of Inevitable Fate
-  1149,-- Sightless Eye
-  1155,-- Ancient Mana
-  1166,-- Timewarped Badge
+  1101, -- Oil
+  1129, -- Seal of Inevitable Fate
+  1149, -- Sightless Eye
+  1155, -- Ancient Mana
+  1166, -- Timewarped Badge
   1191, -- Valor Points
-  1220,-- Order Resources
-  1226,-- Nethershards
-  1273,-- Seal of Broken Fate
-  1275,-- Curious Coin
-  1299,-- Brawler's Gold
-  1314,-- Lingering Soul Fragment
-  1342,-- Legionfall War Supplies
-  1501,-- Writhing Essence
+  1220, -- Order Resources
+  1226, -- Nethershards
+  1273, -- Seal of Broken Fate
+  1275, -- Curious Coin
+  1299, -- Brawler's Gold
+  1314, -- Lingering Soul Fragment
+  1342, -- Legionfall War Supplies
+  1501, -- Writhing Essence
+  1508, -- Veiled Argunite
 }
 addon.currency = currency
 
