@@ -4698,6 +4698,7 @@ local trade_spells = {
   [213255] = "legionxmute", -- Transmute: Meat to Pants
   [213256] = "legionxmute", -- Transmute: Meat to Pet
   [213257] = "legionxmute", -- Transmute: Blood of Sargeras
+  [247701] = "legionxmute", -- Transmute: Primal Sargerite
 
   -- Enchanting
   [28027] = "sphere", 	-- Prismatic Sphere (2-day shared, 5.2.0 verified)
