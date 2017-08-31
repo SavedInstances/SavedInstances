@@ -1,5116 +1,5116 @@
-local addonName, vars = ...
-SavedInstances = vars
-local addon = vars
-local addonAbbrev = "SI"
-vars.core = LibStub("AceAddon-3.0"):NewAddon(addonName, "AceEvent-3.0", "AceTimer-3.0", "AceBucket-3.0")
-local core = vars.core
-local L = vars.L
-vars.LDB = LibStub("LibDataBroker-1.1", true)
-vars.icon = vars.LDB and LibStub("LibDBIcon-1.0", true)
+ybpny nqqbaAnzr, inef = ...
+FnirqVafgnaprf = inef
+ybpny nqqba = inef
+ybpny nqqbaNooeri = "FV"
+inef.pber = YvoFgho("NprNqqba-3.0"):ArjNqqba(nqqbaAnzr, "NprRirag-3.0", "NprGvzre-3.0", "NprOhpxrg-3.0")
+ybpny pber = inef.pber
+ybpny Y = inef.Y
+inef.YQO = YvoFgho("YvoQngnOebxre-1.1", gehr)
+inef.vpba = inef.YQO naq YvoFgho("YvoQOVpba-1.0", gehr)
 
-local QTip = LibStub("LibQTip-1.0")
-local dataobject, db, config
-local maxdiff = 23 -- max number of instance difficulties
-local maxcol = 4 -- max columns per player+instance
-local maxid = 2000 -- highest possible value for an instanceID, current max (Tomb of Sargeras) is 1676
+ybpny DGvc = YvoFgho("YvoDGvc-1.0")
+ybpny qngnbowrpg, qo, pbasvt
+ybpny znkqvss = 23 -- znk ahzore bs vafgnapr qvssvphygvrf
+ybpny znkpby = 4 -- znk pbyhzaf cre cynlre+vafgnapr
+ybpny znkvq = 2000 -- uvturfg cbffvoyr inyhr sbe na vafgnaprVQ, pheerag znk (Gbzo bs Fnetrenf) vf 1676
 
--- local (optimal) references to provided functions
-local table, math, bit, string, pairs, ipairs, unpack, strsplit, time, type, wipe, tonumber, select, strsub =
-  table, math, bit, string, pairs, ipairs, unpack, strsplit, time, type, wipe, tonumber, select, strsub
-local GetSavedInstanceInfo, GetNumSavedInstances, GetSavedInstanceChatLink, GetLFGDungeonNumEncounters, GetLFGDungeonEncounterInfo, GetNumRandomDungeons, GetLFGRandomDungeonInfo, GetLFGDungeonInfo, LFGGetDungeonInfoByID, GetLFGDungeonRewards, GetTime, UnitIsUnit, GetInstanceInfo, IsInInstance, SecondsToTime, GetQuestResetTime, GetGameTime, GetCurrencyInfo, GetNumGroupMembers =
-  GetSavedInstanceInfo, GetNumSavedInstances, GetSavedInstanceChatLink, GetLFGDungeonNumEncounters, GetLFGDungeonEncounterInfo, GetNumRandomDungeons, GetLFGRandomDungeonInfo, GetLFGDungeonInfo, LFGGetDungeonInfoByID, GetLFGDungeonRewards, GetTime, UnitIsUnit, GetInstanceInfo, IsInInstance, SecondsToTime, GetQuestResetTime, GetGameTime, GetCurrencyInfo, GetNumGroupMembers
+-- ybpny (bcgvzny) ersreraprf gb cebivqrq shapgvbaf
+ybpny gnoyr, zngu, ovg, fgevat, cnvef, vcnvef, hacnpx, fgefcyvg, gvzr, glcr, jvcr, gbahzore, fryrpg, fgefho =
+  gnoyr, zngu, ovg, fgevat, cnvef, vcnvef, hacnpx, fgefcyvg, gvzr, glcr, jvcr, gbahzore, fryrpg, fgefho
+ybpny TrgFnirqVafgnaprVasb, TrgAhzFnirqVafgnaprf, TrgFnirqVafgnaprPungYvax, TrgYSTQhatrbaAhzRapbhagref, TrgYSTQhatrbaRapbhagreVasb, TrgAhzEnaqbzQhatrbaf, TrgYSTEnaqbzQhatrbaVasb, TrgYSTQhatrbaVasb, YSTTrgQhatrbaVasbOlVQ, TrgYSTQhatrbaErjneqf, TrgGvzr, HavgVfHavg, TrgVafgnaprVasb, VfVaVafgnapr, FrpbaqfGbGvzr, TrgDhrfgErfrgGvzr, TrgTnzrGvzr, TrgPheeraplVasb, TrgAhzTebhcZrzoref =
+  TrgFnirqVafgnaprVasb, TrgAhzFnirqVafgnaprf, TrgFnirqVafgnaprPungYvax, TrgYSTQhatrbaAhzRapbhagref, TrgYSTQhatrbaRapbhagreVasb, TrgAhzEnaqbzQhatrbaf, TrgYSTEnaqbzQhatrbaVasb, TrgYSTQhatrbaVasb, YSTTrgQhatrbaVasbOlVQ, TrgYSTQhatrbaErjneqf, TrgGvzr, HavgVfHavg, TrgVafgnaprVasb, VfVaVafgnapr, FrpbaqfGbGvzr, TrgDhrfgErfrgGvzr, TrgTnzrGvzr, TrgPheeraplVasb, TrgAhzTebhcZrzoref
 
--- local (optimal) references to Blizzard's strings
-local RAID_CLASS_COLORS = RAID_CLASS_COLORS
-local RAID_FINDER = PLAYER_DIFFICULTY3
-local FONTEND = FONT_COLOR_CODE_CLOSE
-local GOLDFONT = NORMAL_FONT_COLOR_CODE
-local YELLOWFONT = LIGHTYELLOW_FONT_COLOR_CODE
-local REDFONT = RED_FONT_COLOR_CODE
-local GREENFONT = GREEN_FONT_COLOR_CODE
-local WHITEFONT = HIGHLIGHT_FONT_COLOR_CODE
-local GRAYFONT = GRAY_FONT_COLOR_CODE
-local GRAY_COLOR = { 0.5, 0.5, 0.5, 1 }
-local LFD_RANDOM_REWARD_EXPLANATION2 = LFD_RANDOM_REWARD_EXPLANATION2
-local INSTANCE_SAVED, TRANSFER_ABORT_TOO_MANY_INSTANCES, NO_RAID_INSTANCES_SAVED =
-  INSTANCE_SAVED, TRANSFER_ABORT_TOO_MANY_INSTANCES, NO_RAID_INSTANCES_SAVED
+-- ybpny (bcgvzny) ersreraprf gb Oyvmmneq'f fgevatf
+ybpny ENVQ_PYNFF_PBYBEF = ENVQ_PYNFF_PBYBEF
+ybpny ENVQ_SVAQRE = CYNLRE_QVSSVPHYGL3
+ybpny SBAGRAQ = SBAG_PBYBE_PBQR_PYBFR
+ybpny TBYQSBAG = ABEZNY_SBAG_PBYBE_PBQR
+ybpny LRYYBJSBAG = YVTUGLRYYBJ_SBAG_PBYBE_PBQR
+ybpny ERQSBAG = ERQ_SBAG_PBYBE_PBQR
+ybpny TERRASBAG = TERRA_SBAG_PBYBE_PBQR
+ybpny JUVGRSBAG = UVTUYVTUG_SBAG_PBYBE_PBQR
+ybpny TENLSBAG = TENL_SBAG_PBYBE_PBQR
+ybpny TENL_PBYBE = { 0.5, 0.5, 0.5, 1 }
+ybpny YSQ_ENAQBZ_ERJNEQ_RKCYNANGVBA2 = YSQ_ENAQBZ_ERJNEQ_RKCYNANGVBA2
+ybpny VAFGNAPR_FNIRQ, GENAFSRE_NOBEG_GBB_ZNAL_VAFGNAPRF, AB_ENVQ_VAFGNAPRF_FNIRQ =
+  VAFGNAPR_FNIRQ, GENAFSRE_NOBEG_GBB_ZNAL_VAFGNAPRF, AB_ENVQ_VAFGNAPRF_FNIRQ
 
-local ALREADY_LOOTED = ERR_LOOT_GONE:gsub("%(.*%)","")
+ybpny NYERNQL_YBBGRQ = REE_YBBG_TBAR:tfho("%(.*%)","")
 
-vars.Indicators = {
-  ICON_STAR = ICON_LIST[1] .. "16:16:0:0|t",
-  ICON_CIRCLE = ICON_LIST[2] .. "16:16:0:0|t",
-  ICON_DIAMOND = ICON_LIST[3] .. "16:16:0:0|t",
-  ICON_TRIANGLE = ICON_LIST[4] .. "16:16:0:0|t",
-  ICON_MOON = ICON_LIST[5] .. "16:16:0:0|t",
-  ICON_SQUARE = ICON_LIST[6] .. "16:16:0:0|t",
-  ICON_CROSS = ICON_LIST[7] .. "16:16:0:0|t",
-  ICON_SKULL = ICON_LIST[8] .. "16:16:0:0|t",
-  BLANK = "None",
+inef.Vaqvpngbef = {
+  VPBA_FGNE = VPBA_YVFG[1] .. "16:16:0:0|g",
+  VPBA_PVEPYR = VPBA_YVFG[2] .. "16:16:0:0|g",
+  VPBA_QVNZBAQ = VPBA_YVFG[3] .. "16:16:0:0|g",
+  VPBA_GEVNATYR = VPBA_YVFG[4] .. "16:16:0:0|g",
+  VPBA_ZBBA = VPBA_YVFG[5] .. "16:16:0:0|g",
+  VPBA_FDHNER = VPBA_YVFG[6] .. "16:16:0:0|g",
+  VPBA_PEBFF = VPBA_YVFG[7] .. "16:16:0:0|g",
+  VPBA_FXHYY = VPBA_YVFG[8] .. "16:16:0:0|g",
+  OYNAX = "Abar",
 }
 
-local KeystoneAbbrev = {
-  [197] = L["EoA"],
-  [198] = L["DHT"],
-  [199] = L["BRH"],
-  [200] = L["HoV"],
-  [206] = L["Nelt"],
-  [207] = L["VotW"],
-  [208] = L["MoS"],
-  [209] = L["Arc"],
-  [210] = L["CoS"],
-  [227] = L["L Kara"],
-  [233] = L["CoEN"],
-  [234] = L["U Kara"],
+ybpny XrlfgbarNooeri = {
+  [197] = Y["RbN"],
+  [198] = Y["QUG"],
+  [199] = Y["OEU"],
+  [200] = Y["UbI"],
+  [206] = Y["Aryg"],
+  [207] = Y["IbgJ"],
+  [208] = Y["ZbF"],
+  [209] = Y["Nep"],
+  [210] = Y["PbF"],
+  [227] = Y["Y Xnen"],
+  [233] = Y["PbRA"],
+  [234] = Y["H Xnen"],
 }
 
-local KeystonetoAbbrev = {
-  ["Eye of Azshara"] = L["EoA"],
-  ["Darkheart Thicket"] = L["DHT"],
-  ["Black Rook Hold"] = L["BRH"],
-  ["Halls of Valor"] = L["HoV"],
-  ["Neltharion's Lair"] = L["Nelt"],
-  ["Vault of the Wardens"] = L["VotW"],
-  ["Maw of Souls"] = L["MoS"],
-  ["The Arcway"] = L["Arc"],
-  ["Court of Stars"] = L["CoS"],
-  ["Return to Karazhan: Lower"] = L["L Kara"],
-  ["Cathedral of Eternal Night"] = L["CoEN"],
-  ["Return to Karazhan: Upper"] = L["U Kara"],
+ybpny XrlfgbargbNooeri = {
+  ["Rlr bs Nmfunen"] = Y["RbN"],
+  ["Qnexurneg Guvpxrg"] = Y["QUG"],
+  ["Oynpx Ebbx Ubyq"] = Y["OEU"],
+  ["Unyyf bs Inybe"] = Y["UbI"],
+  ["Arygunevba'f Ynve"] = Y["Aryg"],
+  ["Inhyg bs gur Jneqraf"] = Y["IbgJ"],
+  ["Znj bs Fbhyf"] = Y["ZbF"],
+  ["Gur Nepjnl"] = Y["Nep"],
+  ["Pbheg bs Fgnef"] = Y["PbF"],
+  ["Erghea gb Xnenmuna: Ybjre"] = Y["Y Xnen"],
+  ["Pngurqeny bs Rgreany Avtug"] = Y["PbRA"],
+  ["Erghea gb Xnenmuna: Hccre"] = Y["H Xnen"],
 }
 
-vars.Categories = { }
-local maxExpansion
-for i = 0,10 do
-  local ename = _G["EXPANSION_NAME"..i]
-  if ename then
-    maxExpansion = i
-    vars.Categories["D"..i] = ename .. ": " .. LFG_TYPE_DUNGEON
-    vars.Categories["R"..i] = ename .. ": " .. LFG_TYPE_RAID
-  else
-    break
-  end
-end
+inef.Pngrtbevrf = { }
+ybpny znkRkcnafvba
+sbe v = 0,10 qb
+  ybpny ranzr = _T["RKCNAFVBA_ANZR"..v]
+  vs ranzr gura
+    znkRkcnafvba = v
+    inef.Pngrtbevrf["Q"..v] = ranzr .. ": " .. YST_GLCR_QHATRBA
+    inef.Pngrtbevrf["E"..v] = ranzr .. ": " .. YST_GLCR_ENVQ
+  ryfr
+    oernx
+  raq
+raq
 
-local tooltip, indicatortip
-local thisToon = UnitName("player") .. " - " .. GetRealmName()
-local maxlvl = MAX_PLAYER_LEVEL_TABLE[#MAX_PLAYER_LEVEL_TABLE]
-local scantt = CreateFrame("GameTooltip", "SavedInstancesScanTooltip", UIParent, "GameTooltipTemplate")
+ybpny gbbygvc, vaqvpngbegvc
+ybpny guvfGbba = HavgAnzr("cynlre") .. " - " .. TrgErnyzAnzr()
+ybpny znkyiy = ZNK_CYNLRE_YRIRY_GNOYR[#ZNK_CYNLRE_YRIRY_GNOYR]
+ybpny fpnagg = PerngrSenzr("TnzrGbbygvc", "FnirqVafgnaprfFpnaGbbygvc", HVCnerag, "TnzrGbbygvcGrzcyngr")
 
-local currency = {
-  --390, -- Conquest Points
-  --392, -- Honor Points
-  --395, -- Justice Points
-  81, -- Epicurean Award
-  241, -- Champion's Seal
-  391, -- Tol Barad Commendation
-  402, -- Ironpaw Token
-  416, -- Mark of the World Tree
-  515, -- Darkmoon Prize Ticket
-  697, -- Elder Charm of Good Fortune
-  738, -- Lesser Charm of Good Fortune
-  752, -- Mogu Rune of Fate
-  776, -- Warforged Seal
-  777, -- Timeless Coin
-  789, -- Bloody Coin
-  823, -- Apexis Crystal
-  824, -- Garrison Resources
-  994, -- Seal of Tempered Fate
-  1101, -- Oil
-  1129, -- Seal of Inevitable Fate
-  1149, -- Sightless Eye
-  1155, -- Ancient Mana
-  1166, -- Timewarped Badge
-  1191, -- Valor Points
-  1220, -- Order Resources
-  1226, -- Nethershards
-  1273, -- Seal of Broken Fate
-  1275, -- Curious Coin
-  1299, -- Brawler's Gold
-  1314, -- Lingering Soul Fragment
-  1342, -- Legionfall War Supplies
-  1501, -- Writhing Essence
-  1508, -- Veiled Argunite
+ybpny pheerapl = {
+  --390, -- Pbadhrfg Cbvagf
+  --392, -- Ubabe Cbvagf
+  --395, -- Whfgvpr Cbvagf
+  81, -- Rcvpherna Njneq
+  241, -- Punzcvba'f Frny
+  391, -- Gby Onenq Pbzzraqngvba
+  402, -- Vebacnj Gbxra
+  416, -- Znex bs gur Jbeyq Gerr
+  515, -- Qnexzbba Cevmr Gvpxrg
+  697, -- Ryqre Punez bs Tbbq Sbeghar
+  738, -- Yrffre Punez bs Tbbq Sbeghar
+  752, -- Zbth Ehar bs Sngr
+  776, -- Jnesbetrq Frny
+  777, -- Gvzryrff Pbva
+  789, -- Oybbql Pbva
+  823, -- Ncrkvf Pelfgny
+  824, -- Tneevfba Erfbheprf
+  994, -- Frny bs Grzcrerq Sngr
+  1101, -- Bvy
+  1129, -- Frny bs Varivgnoyr Sngr
+  1149, -- Fvtugyrff Rlr
+  1155, -- Napvrag Znan
+  1166, -- Gvzrjnecrq Onqtr
+  1191, -- Inybe Cbvagf
+  1220, -- Beqre Erfbheprf
+  1226, -- Argurefuneqf
+  1273, -- Frny bs Oebxra Sngr
+  1275, -- Phevbhf Pbva
+  1299, -- Oenjyre'f Tbyq
+  1314, -- Yvatrevat Fbhy Sentzrag
+  1342, -- Yrtvbasnyy Jne Fhccyvrf
+  1501, -- Jevguvat Rffrapr
+  1508, -- Irvyrq Nethavgr
 }
-addon.currency = currency
+nqqba.pheerapl = pheerapl
 
-addon.LFRInstances = {
-  -- index is the id found in LFGDungeons.dbc
-  -- total is boss count, base is boss offset,
-  -- parent is instance name to use, GetLFGDungeonInfo()
-  -- altid is for alternate LFRID for higher level toons
+nqqba.YSEVafgnaprf = {
+  -- vaqrk vf gur vq sbhaq va YSTQhatrbaf.qop
+  -- gbgny vf obff pbhag, onfr vf obff bssfrg,
+  -- cnerag vf vafgnapr anzr gb hfr, TrgYSTQhatrbaVasb()
+  -- nygvq vf sbe nygreangr YSEVQ sbe uvture yriry gbbaf
 
-  [416] = { total=4, base=1,  parent=448, altid=843 }, -- DS1: The Siege of Wyrmrest Temple
-  [417] = { total=4, base=5,  parent=448, altid=844 }, -- DS2: Fall of Deathwing
+  [416] = { gbgny=4, onfr=1,  cnerag=448, nygvq=843 }, -- QF1: Gur Fvrtr bs Jlezerfg Grzcyr
+  [417] = { gbgny=4, onfr=5,  cnerag=448, nygvq=844 }, -- QF2: Snyy bs Qrngujvat
 
-  [527] = { total=3, base=1,  parent=532, altid=830 }, -- MSV1: Guardians of Mogu'shan
-  [528] = { total=3, base=4,  parent=532, altid=831 }, -- MSV2: The Vault of Mysteries
-  [529] = { total=3, base=1,  parent=534, altid=832 }, -- HoF1: The Dread Approach
-  [530] = { total=3, base=4,  parent=534, altid=833 }, -- HoF2: Nightmare of Shek'zeer
-  [526] = { total=4, base=1,  parent=536, altid=834 }, -- TeS1: Terrace of Endless Spring
-  [610] = { total=3, base=1,  parent=634, altid=835 }, -- ToT1: Last Stand of the Zandalari
-  [611] = { total=3, base=4,  parent=634, altid=836 }, -- ToT2: Forgotten Depths
-  [612] = { total=3, base=7,  parent=634, altid=837 }, -- ToT3: Halls of Flesh-Shaping
-  [613] = { total=3, base=10, parent=634, altid=838 }, -- ToT4: Pinnacle of Storms
-  [716] = { total=4, base=1,  parent=766, altid=839 }, -- SoO1: Vale of Eternal Sorrows
-  [717] = { total=4, base=5,  parent=766, altid=840 }, -- SoO2: Gates of Retribution
-  [724] = { total=3, base=9,  parent=766, altid=841 }, -- SoO3: The Underhold
-  [725] = { total=3, base=12, parent=766, altid=842 }, -- SoO4: Downfall
+  [527] = { gbgny=3, onfr=1,  cnerag=532, nygvq=830 }, -- ZFI1: Thneqvnaf bs Zbth'funa
+  [528] = { gbgny=3, onfr=4,  cnerag=532, nygvq=831 }, -- ZFI2: Gur Inhyg bs Zlfgrevrf
+  [529] = { gbgny=3, onfr=1,  cnerag=534, nygvq=832 }, -- UbS1: Gur Qernq Nccebnpu
+  [530] = { gbgny=3, onfr=4,  cnerag=534, nygvq=833 }, -- UbS2: Avtugzner bs Furx'mrre
+  [526] = { gbgny=4, onfr=1,  cnerag=536, nygvq=834 }, -- GrF1: Greenpr bs Raqyrff Fcevat
+  [610] = { gbgny=3, onfr=1,  cnerag=634, nygvq=835 }, -- GbG1: Ynfg Fgnaq bs gur Mnaqnynev
+  [611] = { gbgny=3, onfr=4,  cnerag=634, nygvq=836 }, -- GbG2: Sbetbggra Qrcguf
+  [612] = { gbgny=3, onfr=7,  cnerag=634, nygvq=837 }, -- GbG3: Unyyf bs Syrfu-Funcvat
+  [613] = { gbgny=3, onfr=10, cnerag=634, nygvq=838 }, -- GbG4: Cvaanpyr bs Fgbezf
+  [716] = { gbgny=4, onfr=1,  cnerag=766, nygvq=839 }, -- FbB1: Inyr bs Rgreany Fbeebjf
+  [717] = { gbgny=4, onfr=5,  cnerag=766, nygvq=840 }, -- FbB2: Tngrf bs Ergevohgvba
+  [724] = { gbgny=3, onfr=9,  cnerag=766, nygvq=841 }, -- FbB3: Gur Haqreubyq
+  [725] = { gbgny=3, onfr=12, cnerag=766, nygvq=842 }, -- FbB4: Qbjasnyy
 
-  [849] = { total=3, base=1,  parent=897, altid=1363 }, -- Highmaul1: Walled City
-  [850] = { total=3, base=4,  parent=897, altid=1364 }, -- Highmaul2: Arcane Sanctum
-  [851] = { total=1, base=7,  parent=897, altid=1365 }, -- Highmaul3: Imperator's Rise
-  [847] = { total=3, base=1,  parent=900, altid=1361, remap={ 1, 2, 7 } }, -- BRF1: Slagworks
-  [846] = { total=3, base=4,  parent=900, altid=1360, remap={ 3, 5, 8 } }, -- BRF2: The Black Forge
-  [848] = { total=3, base=7,  parent=900, altid=1362, remap={ 4, 6, 9 } }, -- BRF3: Iron Assembly
-  [823] = { total=1, base=10, parent=900, altid=1359 }, -- BRF4: Blackhand's Crucible
+  [849] = { gbgny=3, onfr=1,  cnerag=897, nygvq=1363 }, -- Uvtuznhy1: Jnyyrq Pvgl
+  [850] = { gbgny=3, onfr=4,  cnerag=897, nygvq=1364 }, -- Uvtuznhy2: Nepnar Fnapghz
+  [851] = { gbgny=1, onfr=7,  cnerag=897, nygvq=1365 }, -- Uvtuznhy3: Vzcrengbe'f Evfr
+  [847] = { gbgny=3, onfr=1,  cnerag=900, nygvq=1361, erznc={ 1, 2, 7 } }, -- OES1: Fyntjbexf
+  [846] = { gbgny=3, onfr=4,  cnerag=900, nygvq=1360, erznc={ 3, 5, 8 } }, -- OES2: Gur Oynpx Sbetr
+  [848] = { gbgny=3, onfr=7,  cnerag=900, nygvq=1362, erznc={ 4, 6, 9 } }, -- OES3: Veba Nffrzoyl
+  [823] = { gbgny=1, onfr=10, cnerag=900, nygvq=1359 }, -- OES4: Oynpxunaq'f Pehpvoyr
 
-  [982] = { total=3, base=1,  parent=989, altid=1366 }, -- Hellfire1: Hellbreach
-  [983] = { total=3, base=4,  parent=989, altid=1367 }, -- Hellfire2: Halls of Blood
-  [984] = { total=3, base=7,  parent=989, altid=1368, remap={ 7, 8,  11 } }, -- Hellfire3: Bastion of Shadows
-  [985] = { total=3, base=10, parent=989, altid=1369, remap={ 9, 10, 12 } }, -- Hellfire4: Destructor's Rise
-  [986] = { total=1, base=13, parent=989, altid=1370 }, -- Hellfire5: The Black Gate
+  [982] = { gbgny=3, onfr=1,  cnerag=989, nygvq=1366 }, -- Uryysver1: Uryyoernpu
+  [983] = { gbgny=3, onfr=4,  cnerag=989, nygvq=1367 }, -- Uryysver2: Unyyf bs Oybbq
+  [984] = { gbgny=3, onfr=7,  cnerag=989, nygvq=1368, erznc={ 7, 8,  11 } }, -- Uryysver3: Onfgvba bs Funqbjf
+  [985] = { gbgny=3, onfr=10, cnerag=989, nygvq=1369, erznc={ 9, 10, 12 } }, -- Uryysver4: Qrfgehpgbe'f Evfr
+  [986] = { gbgny=1, onfr=13, cnerag=989, nygvq=1370 }, -- Uryysver5: Gur Oynpx Tngr
 
-  [1287] = { total=3, base=1,  parent=1350, altid=nil, remap={ 1, 2, 3 } }, -- EN1: Darkbough
-  [1288] = { total=3, base=4,  parent=1350, altid=nil, remap={ 1, 2, 3 } }, -- EN2: Tormented Guardians
-  [1289] = { total=1, base=7,  parent=1350, altid=nil, remap={ 1 } },       -- EN3: Rift of Aln
+  [1287] = { gbgny=3, onfr=1,  cnerag=1350, nygvq=avy, erznc={ 1, 2, 3 } }, -- RA1: Qnexobhtu
+  [1288] = { gbgny=3, onfr=4,  cnerag=1350, nygvq=avy, erznc={ 1, 2, 3 } }, -- RA2: Gbezragrq Thneqvnaf
+  [1289] = { gbgny=1, onfr=7,  cnerag=1350, nygvq=avy, erznc={ 1 } },       -- RA3: Evsg bs Nya
 
-  [1411] = { total=3, base=1,  parent=1439, altid=nil }, -- ToV
+  [1411] = { gbgny=3, onfr=1,  cnerag=1439, nygvq=avy }, -- GbI
 
-  [1290] = { total=3, base=1,  parent=1353, altid=nil }, -- NH1: Arcing Aqueducts
-  [1291] = { total=3, base=4,  parent=1353, altid=nil, remap={ 1, 2, 3 } }, -- NH2: Royal Athenaeum
-  [1292] = { total=3, base=7,  parent=1353, altid=nil, remap={ 1, 2, 3 } }, -- NH3: Nightspire
-  [1293] = { total=1, base=10, parent=1353, altid=nil, remap={ 1 } }, -- NH4: Betrayer's Rise
+  [1290] = { gbgny=3, onfr=1,  cnerag=1353, nygvq=avy }, -- AU1: Nepvat Ndhrqhpgf
+  [1291] = { gbgny=3, onfr=4,  cnerag=1353, nygvq=avy, erznc={ 1, 2, 3 } }, -- AU2: Eblny Nguranrhz
+  [1292] = { gbgny=3, onfr=7,  cnerag=1353, nygvq=avy, erznc={ 1, 2, 3 } }, -- AU3: Avtugfcver
+  [1293] = { gbgny=1, onfr=10, cnerag=1353, nygvq=avy, erznc={ 1 } }, -- AU4: Orgenlre'f Evfr
 
-  [1494] = { total=3, base=1, parent=1527, altid=nil, remap={ 1, 2, 3 } }, -- ToS1: The Gates of Hell (6/27/17)
-  [1495] = { total=3, base=4, parent=1527, altid=nil, remap={ 1, 2, 3 } }, -- ToS2: Wailing Halls (7/11/17)
-  [1496] = { total=2, base=7, parent=1527, altid=nil, remap={ 1, 2 } }, -- ToS3: Chamber of the Avatar (7/25/17)
-  [1497] = { total=1, base=9, parent=1527, altid=nil, remap={ 1 } }, -- ToS4: Deceiver's Fall (8/8/17)
+  [1494] = { gbgny=3, onfr=1, cnerag=1527, nygvq=avy, erznc={ 1, 2, 3 } }, -- GbF1: Gur Tngrf bs Uryy (6/27/17)
+  [1495] = { gbgny=3, onfr=4, cnerag=1527, nygvq=avy, erznc={ 1, 2, 3 } }, -- GbF2: Jnvyvat Unyyf (7/11/17)
+  [1496] = { gbgny=2, onfr=7, cnerag=1527, nygvq=avy, erznc={ 1, 2 } }, -- GbF3: Punzore bs gur Ningne (7/25/17)
+  [1497] = { gbgny=1, onfr=9, cnerag=1527, nygvq=avy, erznc={ 1 } }, -- GbF4: Qrprvire'f Snyy (8/8/17)
 
-  [1610] = { total=3, base=1, parent=1640, altid=nil, remap={ 1, 2, 3 } }, -- Antorus: Light's Breach
-  [1611] = { total=3, base=4, parent=1640, altid=nil, remap={ 1, 2, 3 } }, -- Antorus: Forbidden Descent
-  [1612] = { total=3, base=7, parent=1640, altid=nil, remap={ 1, 2, 3 } }, -- Antorus: Hope's End
-  [1613] = { total=2, base=10, parent=1640, altid=nil, remap={ 1, 2 } }, -- Antorus: Seat of the Pantheon
+  [1610] = { gbgny=3, onfr=1, cnerag=1640, nygvq=avy, erznc={ 1, 2, 3 } }, -- Nagbehf: Yvtug'f Oernpu
+  [1611] = { gbgny=3, onfr=4, cnerag=1640, nygvq=avy, erznc={ 1, 2, 3 } }, -- Nagbehf: Sbeovqqra Qrfprag
+  [1612] = { gbgny=3, onfr=7, cnerag=1640, nygvq=avy, erznc={ 1, 2, 3 } }, -- Nagbehf: Ubcr'f Raq
+  [1613] = { gbgny=2, onfr=10, cnerag=1640, nygvq=avy, erznc={ 1, 2 } }, -- Nagbehf: Frng bs gur Cnagurba
 }
 
-local tmp = {}
-for id, info in pairs(addon.LFRInstances) do
-  tmp[id] = info
-  if info.altid then
-    tmp[info.altid] = info
-  end
-end
-addon.LFRInstances = tmp
+ybpny gzc = {}
+sbe vq, vasb va cnvef(nqqba.YSEVafgnaprf) qb
+  gzc[vq] = vasb
+  vs vasb.nygvq gura
+    gzc[vasb.nygvq] = vasb
+  raq
+raq
+nqqba.YSEVafgnaprf = gzc
 
-addon.WorldBosses = {
-  -- encounter index is embedded in the Hjournal hyperlink
-  [691] = { quest=32099, expansion=4, level=90 }, -- Sha of Anger
-  [725] = { quest=32098, expansion=4, level=90 }, -- Galleon
-  [814] = { quest=32518, expansion=4, level=90 }, -- Nalak
-  [826] = { quest=32519, expansion=4, level=90 }, -- Oondasta
-  [857] = { quest=33117,   expansion=4, level=90, name=L["The Four Celestials"]  }, -- Chi-Ji
-  --[858] = { quest=nil, expansion=4, level=90 }, -- Yu'lon
-  --[859] = { quest=nil, expansion=4, level=90 }, -- Niuzao
-  --[860] = { quest=nil, expansion=4, level=90 }, -- Xuen
-  [861] = { quest=nil,   expansion=4, level=90 }, -- Ordos
+nqqba.JbeyqObffrf = {
+  -- rapbhagre vaqrk vf rzorqqrq va gur Uwbheany ulcreyvax
+  [691] = { dhrfg=32099, rkcnafvba=4, yriry=90 }, -- Fun bs Natre
+  [725] = { dhrfg=32098, rkcnafvba=4, yriry=90 }, -- Tnyyrba
+  [814] = { dhrfg=32518, rkcnafvba=4, yriry=90 }, -- Anynx
+  [826] = { dhrfg=32519, rkcnafvba=4, yriry=90 }, -- Bbaqnfgn
+  [857] = { dhrfg=33117,   rkcnafvba=4, yriry=90, anzr=Y["Gur Sbhe Pryrfgvnyf"]  }, -- Puv-Wv
+  --[858] = { dhrfg=avy, rkcnafvba=4, yriry=90 }, -- Lh'yba
+  --[859] = { dhrfg=avy, rkcnafvba=4, yriry=90 }, -- Avhmnb
+  --[860] = { dhrfg=avy, rkcnafvba=4, yriry=90 }, -- Khra
+  [861] = { dhrfg=avy,   rkcnafvba=4, yriry=90 }, -- Beqbf
 
   --[[
-  [1291] = { quest=37460,  expansion=5, level=100 }, -- Drov the Ruiner
-  [1211] = { quest=37462,  expansion=5, level=100 }, -- Tarlna the Ageless
+  [1291] = { dhrfg=37460,  rkcnafvba=5, yriry=100 }, -- Qebi gur Ehvare
+  [1211] = { dhrfg=37462,  rkcnafvba=5, yriry=100 }, -- Gneyan gur Ntryrff
   --]]
-  [1211] = { quest=37462,  expansion=5, level=100, -- Drov/Tarlna share a loot and quest atm
-    name=select(2,EJ_GetCreatureInfo(1,1291)):match("^[^ ]+").." / "..
-    select(2,EJ_GetCreatureInfo(1,1211)):match("^[^ ]+")},
-  [1291] = { remove=true }, -- Drov cleanup
+  [1211] = { dhrfg=37462,  rkcnafvba=5, yriry=100, -- Qebi/Gneyan funer n ybbg naq dhrfg ngz
+    anzr=fryrpg(2,RW_TrgPerngherVasb(1,1291)):zngpu("^[^ ]+").." / "..
+    fryrpg(2,RW_TrgPerngherVasb(1,1211)):zngpu("^[^ ]+")},
+  [1291] = { erzbir=gehr }, -- Qebi pyrnahc
 
-  [1262] = { quest=37464, expansion=5, level=100 }, -- Rukhmar
-  [1452] = { quest=94015, expansion=5, level=100 }, -- Kazzak
+  [1262] = { dhrfg=37464, rkcnafvba=5, yriry=100 }, -- Ehxuzne
+  [1452] = { dhrfg=94015, rkcnafvba=5, yriry=100 }, -- Xnmmnx
 
-  [1749] = { quest=42270, expansion=6, level=110 }, -- Nithogg
-  [1756] = { quest=42269, expansion=6, level=110, name=EJ_GetEncounterInfo(1756) }, -- The Soultakers
-  [1763] = { quest=42779, expansion=6, level=110 }, -- Shar'thos
-  [1769] = { quest=43192, expansion=6, level=110 }, -- Levantus
-  [1770] = { quest=42819, expansion=6, level=110 }, -- Humongris
-  [1774] = { quest=43193, expansion=6, level=110 }, -- Calamir
-  [1783] = { quest=43513, expansion=6, level=110 }, -- Na'zak the Fiend
-  [1789] = { quest=43448, expansion=6, level=110 }, -- Drugon the Frostblood
-  [1790] = { quest=43512, expansion=6, level=110 }, -- Ana-Mouz
-  [1795] = { quest=43985, expansion=6, level=110 }, -- Flotsam
-  [1796] = { quest=44287, expansion=6, level=110 }, -- Withered Jim
-  [1883] = { quest=46947, expansion=6, level=110 }, -- Brutallus
-  [1884] = { quest=46948, expansion=6, level=110 }, -- Malificus
-  [1885] = { quest=46945, expansion=6, level=110 }, -- Si'vash
-  [1956] = { quest=47061, expansion=6, level=110 }, -- Apocron
+  [1749] = { dhrfg=42270, rkcnafvba=6, yriry=110 }, -- Avgubtt
+  [1756] = { dhrfg=42269, rkcnafvba=6, yriry=110, anzr=RW_TrgRapbhagreVasb(1756) }, -- Gur Fbhygnxref
+  [1763] = { dhrfg=42779, rkcnafvba=6, yriry=110 }, -- Fune'gubf
+  [1769] = { dhrfg=43192, rkcnafvba=6, yriry=110 }, -- Yrinaghf
+  [1770] = { dhrfg=42819, rkcnafvba=6, yriry=110 }, -- Uhzbatevf
+  [1774] = { dhrfg=43193, rkcnafvba=6, yriry=110 }, -- Pnynzve
+  [1783] = { dhrfg=43513, rkcnafvba=6, yriry=110 }, -- An'mnx gur Svraq
+  [1789] = { dhrfg=43448, rkcnafvba=6, yriry=110 }, -- Qehtba gur Sebfgoybbq
+  [1790] = { dhrfg=43512, rkcnafvba=6, yriry=110 }, -- Nan-Zbhm
+  [1795] = { dhrfg=43985, rkcnafvba=6, yriry=110 }, -- Sybgfnz
+  [1796] = { dhrfg=44287, rkcnafvba=6, yriry=110 }, -- Jvgurerq Wvz
+  [1883] = { dhrfg=46947, rkcnafvba=6, yriry=110 }, -- Oehgnyyhf
+  [1884] = { dhrfg=46948, rkcnafvba=6, yriry=110 }, -- Znyvsvphf
+  [1885] = { dhrfg=46945, rkcnafvba=6, yriry=110 }, -- Fv'infu
+  [1956] = { dhrfg=47061, rkcnafvba=6, yriry=110 }, -- Ncbpeba
 
-  -- bosses with no EJ entry (eid is a placeholder)
-  [9001] = { quest=38276, name=GARRISON_LOCATION_TOOLTIP.." "..BOSS, expansion=5, level=100 },
+  -- obffrf jvgu ab RW ragel (rvq vf n cynprubyqre)
+  [9001] = { dhrfg=38276, anzr=TNEEVFBA_YBPNGVBA_GBBYGVC.." "..OBFF, rkcnafvba=5, yriry=100 },
 }
 
-local _specialQuests = {
-  -- Isle of Thunder
-  [32610] = { zid=928, lid=94221 }, -- Shan'ze Ritual Stone looted
-  [32611] = { zid=928, lid1=95350 },-- Incantation of X looted
-  [32626] = { zid=928, lid=94222 }, -- Key to the Palace of Lei Shen looted
-  [32609] = { zid=928, aid=8104, aline="Left5"  }, -- Trove of the Thunder King (outdoor chest)
-  -- Timeless Isle
-  [32962] = { zid=951, aid=8743, daily=true },  -- Zarhym
-  [32961] = { zid=951, daily=true },  -- Scary Ghosts and Nice Sprites
-  [32956] = { zid=951, aid=8727, acid=2, aline="Right7" }, -- Blackguard's Jetsam
-  [32957] = { zid=951, aid=8727, acid=1, aline="Left7" },  -- Sunken Treasure
-  [32970] = { zid=951, aid=8727, acid=3, aline="Left8" },  -- Gleaming Treasure Satchel
-  [32968] = { zid=951, aid=8726, acid=2, aline="Right7" }, -- Rope-Bound Treasure Chest
-  [32969] = { zid=951, aid=8726, acid=1, aline="Left7" },  -- Gleaming Treasure Chest
-  [32971] = { zid=951, aid=8726, acid=3, aline="Left8" },  -- Mist-Covered Treasure Chest
-  -- Garrison
-  [37638] = { zone=GARRISON_LOCATION_TOOLTIP, aid=9162 }, -- Bronze Defender
-  [37639] = { zone=GARRISON_LOCATION_TOOLTIP, aid=9164 }, -- Silver Defender
-  [37640] = { zone=GARRISON_LOCATION_TOOLTIP, aid=9165 }, -- Golden Defender
-  [38482] = { zone=GARRISON_LOCATION_TOOLTIP, aid=9826 }, -- Platinum Defender
-  -- Tanaan Jungle
-  [39287] = { zid=945, daily=true }, -- Deathtalon
-  [39288] = { zid=945, daily=true }, -- Terrorfist
-  [39289] = { zid=945, daily=true }, -- Doomroller
-  [39290] = { zid=945, daily=true }, -- Vengeance
-  -- Order Hall
-  [42481] = { zid=1050, daily=true }, -- Warlock: Ritual of Doom
-  [44707] = { zid=1052, daily=true, sid=228651 }, -- Demon Hunter: Twisting Nether
+ybpny _fcrpvnyDhrfgf = {
+  -- Vfyr bs Guhaqre
+  [32610] = { mvq=928, yvq=94221 }, -- Funa'mr Evghny Fgbar ybbgrq
+  [32611] = { mvq=928, yvq1=95350 },-- Vapnagngvba bs K ybbgrq
+  [32626] = { mvq=928, yvq=94222 }, -- Xrl gb gur Cnynpr bs Yrv Fura ybbgrq
+  [32609] = { mvq=928, nvq=8104, nyvar="Yrsg5"  }, -- Gebir bs gur Guhaqre Xvat (bhgqbbe purfg)
+  -- Gvzryrff Vfyr
+  [32962] = { mvq=951, nvq=8743, qnvyl=gehr },  -- Mneulz
+  [32961] = { mvq=951, qnvyl=gehr },  -- Fpnel Tubfgf naq Avpr Fcevgrf
+  [32956] = { mvq=951, nvq=8727, npvq=2, nyvar="Evtug7" }, -- Oynpxthneq'f Wrgfnz
+  [32957] = { mvq=951, nvq=8727, npvq=1, nyvar="Yrsg7" },  -- Fhaxra Gernfher
+  [32970] = { mvq=951, nvq=8727, npvq=3, nyvar="Yrsg8" },  -- Tyrnzvat Gernfher Fngpury
+  [32968] = { mvq=951, nvq=8726, npvq=2, nyvar="Evtug7" }, -- Ebcr-Obhaq Gernfher Purfg
+  [32969] = { mvq=951, nvq=8726, npvq=1, nyvar="Yrsg7" },  -- Tyrnzvat Gernfher Purfg
+  [32971] = { mvq=951, nvq=8726, npvq=3, nyvar="Yrsg8" },  -- Zvfg-Pbirerq Gernfher Purfg
+  -- Tneevfba
+  [37638] = { mbar=TNEEVFBA_YBPNGVBA_GBBYGVC, nvq=9162 }, -- Oebamr Qrsraqre
+  [37639] = { mbar=TNEEVFBA_YBPNGVBA_GBBYGVC, nvq=9164 }, -- Fvyire Qrsraqre
+  [37640] = { mbar=TNEEVFBA_YBPNGVBA_GBBYGVC, nvq=9165 }, -- Tbyqra Qrsraqre
+  [38482] = { mbar=TNEEVFBA_YBPNGVBA_GBBYGVC, nvq=9826 }, -- Cyngvahz Qrsraqre
+  -- Gnanna Whatyr
+  [39287] = { mvq=945, qnvyl=gehr }, -- Qrngugnyba
+  [39288] = { mvq=945, qnvyl=gehr }, -- Greebesvfg
+  [39289] = { mvq=945, qnvyl=gehr }, -- Qbbzebyyre
+  [39290] = { mvq=945, qnvyl=gehr }, -- Iratrnapr
+  -- Beqre Unyy
+  [42481] = { mvq=1050, qnvyl=gehr }, -- Jneybpx: Evghny bs Qbbz
+  [44707] = { mvq=1052, qnvyl=gehr, fvq=228651 }, -- Qrzba Uhagre: Gjvfgvat Argure
 }
 
-function addon:specialQuests()
-  for qid, qinfo in pairs(_specialQuests) do
-    qinfo.quest = qid
+shapgvba nqqba:fcrpvnyDhrfgf()
+  sbe dvq, dvasb va cnvef(_fcrpvnyDhrfgf) qb
+    dvasb.dhrfg = dvq
 
-    if not qinfo.name and (qinfo.lid or qinfo.lid1) then
-      local itemname, itemlink = GetItemInfo(qinfo.lid or qinfo.lid1)
-      if itemlink and qinfo.lid then
-        qinfo.name = itemlink.." ("..LOOT..")"
-      elseif itemname and qinfo.lid1 then
-        local name = itemname:match("^[^%s]+")
-        if name and #name > 0 then
-          qinfo.name = name.." ("..LOOT..")"
-        end
-      end
-    elseif not qinfo.name and qinfo.aid and qinfo.acid then
-      local l = GetAchievementCriteriaInfo(qinfo.aid, qinfo.acid)
-      if l then
-        qinfo.name = l:gsub("%p$","")
-      end
-    elseif not qinfo.name and qinfo.aid then
-      scantt:SetOwner(UIParent,"ANCHOR_NONE")
-      scantt:SetAchievementByID(qinfo.aid)
-      local l = _G[scantt:GetName().."Text"..(qinfo.aline or "Left1")]
-      l = l and l:GetText()
-      if l then
-        qinfo.name = l:gsub("%p$","")
-      end
-    elseif not qinfo.name and qinfo.sid then
-      qinfo.name = GetSpellInfo(qinfo.sid)
-    end
-    if not qinfo.name or #qinfo.name == 0 then
-      local title, link = addon:QuestInfo(qid)
-      if title then
-        title = title:gsub("%p?%s*[Tt]racking%s*[Qq]uest","")
-        title = strtrim(title)
-        qinfo.name = title
-      end
-    end
+    vs abg dvasb.anzr naq (dvasb.yvq be dvasb.yvq1) gura
+      ybpny vgrzanzr, vgrzyvax = TrgVgrzVasb(dvasb.yvq be dvasb.yvq1)
+      vs vgrzyvax naq dvasb.yvq gura
+        dvasb.anzr = vgrzyvax.." ("..YBBG..")"
+      ryfrvs vgrzanzr naq dvasb.yvq1 gura
+        ybpny anzr = vgrzanzr:zngpu("^[^%f]+")
+        vs anzr naq #anzr > 0 gura
+          dvasb.anzr = anzr.." ("..YBBG..")"
+        raq
+      raq
+    ryfrvs abg dvasb.anzr naq dvasb.nvq naq dvasb.npvq gura
+      ybpny y = TrgNpuvrirzragPevgrevnVasb(dvasb.nvq, dvasb.npvq)
+      vs y gura
+        dvasb.anzr = y:tfho("%c$","")
+      raq
+    ryfrvs abg dvasb.anzr naq dvasb.nvq gura
+      fpnagg:FrgBjare(HVCnerag,"NAPUBE_ABAR")
+      fpnagg:FrgNpuvrirzragOlVQ(dvasb.nvq)
+      ybpny y = _T[fpnagg:TrgAnzr().."Grkg"..(dvasb.nyvar be "Yrsg1")]
+      y = y naq y:TrgGrkg()
+      vs y gura
+        dvasb.anzr = y:tfho("%c$","")
+      raq
+    ryfrvs abg dvasb.anzr naq dvasb.fvq gura
+      dvasb.anzr = TrgFcryyVasb(dvasb.fvq)
+    raq
+    vs abg dvasb.anzr be #dvasb.anzr == 0 gura
+      ybpny gvgyr, yvax = nqqba:DhrfgVasb(dvq)
+      vs gvgyr gura
+        gvgyr = gvgyr:tfho("%c?%f*[Gg]enpxvat%f*[Dd]hrfg","")
+        gvgyr = fgegevz(gvgyr)
+        dvasb.anzr = gvgyr
+      raq
+    raq
 
-    if not qinfo.zone and qinfo.zid then
-      qinfo.zone = GetMapNameByID(qinfo.zid)
-    end
-  end
+    vs abg dvasb.mbar naq dvasb.mvq gura
+      dvasb.mbar = TrgZncAnzrOlVQ(dvasb.mvq)
+    raq
+  raq
 
-  return _specialQuests
-end
+  erghea _fcrpvnyDhrfgf
+raq
 
-local QuestExceptions = {
-  -- some quests are misidentified in scope
-  [7905]  = "Regular", -- Darkmoon Faire referral -- old addon versions misidentified this as monthly
-  [7926]  = "Regular", -- Darkmoon Faire referral
-  [37819] = "Regular", -- Darkmoon Faire races referral
+ybpny DhrfgRkprcgvbaf = {
+  -- fbzr dhrfgf ner zvfvqragvsvrq va fpbcr
+  [7905]  = "Erthyne", -- Qnexzbba Snver ersreeny -- byq nqqba irefvbaf zvfvqragvsvrq guvf nf zbaguyl
+  [7926]  = "Erthyne", -- Qnexzbba Snver ersreeny
+  [37819] = "Erthyne", -- Qnexzbba Snver enprf ersreeny
 
-  -- order hall quests that old addon versions misidentified as weekly (fixed in r548/7.0.8)
-  [44226] = "Regular", -- order hall: DH
-  [44235] = "Regular", -- order hall: Druid
-  [44236] = "Regular", -- order hall: Druid?
-  [44212] = "Regular", -- order hall: Hunter
-  [44208] = "Regular", -- order hall: Mage
-  [44238] = "Regular", -- order hall: Monk
-  [44219] = "Regular", -- order hall: Paladin
-  [44230] = "Regular", -- order hall: Priest
-  [44204] = "Regular", -- order hall: Rogue
-  [44205] = "Regular", -- order hall: Shaman
+  -- beqre unyy dhrfgf gung byq nqqba irefvbaf zvfvqragvsvrq nf jrrxyl (svkrq va e548/7.0.8)
+  [44226] = "Erthyne", -- beqre unyy: QU
+  [44235] = "Erthyne", -- beqre unyy: Qehvq
+  [44236] = "Erthyne", -- beqre unyy: Qehvq?
+  [44212] = "Erthyne", -- beqre unyy: Uhagre
+  [44208] = "Erthyne", -- beqre unyy: Zntr
+  [44238] = "Erthyne", -- beqre unyy: Zbax
+  [44219] = "Erthyne", -- beqre unyy: Cnynqva
+  [44230] = "Erthyne", -- beqre unyy: Cevrfg
+  [44204] = "Erthyne", -- beqre unyy: Ebthr
+  [44205] = "Erthyne", -- beqre unyy: Funzna
 
-  [31752] = "AccountDaily", -- Blingtron
-  [34774] = "AccountDaily", -- Blingtron 5000
-  [40753] = "AccountDaily", -- Blingtron 6000
-  -- also pre-populate a few important quests
-  [32640] = "Weekly",  -- Champions of the Thunder King
-  [32641] = "Weekly",  -- Champions of the Thunder King
-  [32718] = "Regular",  -- Mogu Runes of Fate -- ticket 142: outdated quest flag still shows up
-  [32719] = "Regular",  -- Mogu Runes of Fate
-  [33133] = "Regular",  -- Warforged Seals outdated quests, no longer weekly
-  [33134] = "Regular",  -- Warforged Seals
-  [33338] = "Weekly",  -- Empowering the Hourglass
-  [33334] = "Weekly",  -- Strong Enough to Survive
+  [31752] = "NppbhagQnvyl", -- Oyvatgeba
+  [34774] = "NppbhagQnvyl", -- Oyvatgeba 5000
+  [40753] = "NppbhagQnvyl", -- Oyvatgeba 6000
+  -- nyfb cer-cbchyngr n srj vzcbegnag dhrfgf
+  [32640] = "Jrrxyl",  -- Punzcvbaf bs gur Guhaqre Xvat
+  [32641] = "Jrrxyl",  -- Punzcvbaf bs gur Guhaqre Xvat
+  [32718] = "Erthyne",  -- Zbth Eharf bs Sngr -- gvpxrg 142: bhgqngrq dhrfg synt fgvyy fubjf hc
+  [32719] = "Erthyne",  -- Zbth Eharf bs Sngr
+  [33133] = "Erthyne",  -- Jnesbetrq Frnyf bhgqngrq dhrfgf, ab ybatre jrrxyl
+  [33134] = "Erthyne",  -- Jnesbetrq Frnyf
+  [33338] = "Jrrxyl",  -- Rzcbjrevat gur Ubhetynff
+  [33334] = "Jrrxyl",  -- Fgebat Rabhtu gb Fheivir
 
-  -- From Archmage Timear -
-  [44164] = "Weekly", -- A Burning Path Through Time - Burning Crusade Timewalking
-  [44166] = "Weekly", -- A Frozen Path Through Time - Wrath of the Lich King Timewalking
-  [44167] = "Weekly", -- A Shattered Path Through Time - Cataclysm Timewalking
-  [44171] = "Weekly", -- Emisary of War - Complete Legion Mythics
-  [44172] = "Weekly", -- The Arena Calls - Win Legion Arena Skirmishes
-  [44173] = "Weekly", -- A Call to Battle - Win Battlegrounds
-  [44174] = "Weekly", -- The Very Best - Win PvP Pet Battles
-  [44175] = "Weekly", -- The World Awaits - Complete Broken Isles World Quests
-  [45799] = "Weekly", -- A Shrouded Path Through Time - Mists of Pandaria Timewalking
+  -- Sebz Nepuzntr Gvzrne -
+  [44164] = "Jrrxyl", -- N Oheavat Cngu Guebhtu Gvzr - Oheavat Pehfnqr Gvzrjnyxvat
+  [44166] = "Jrrxyl", -- N Sebmra Cngu Guebhtu Gvzr - Jengu bs gur Yvpu Xvat Gvzrjnyxvat
+  [44167] = "Jrrxyl", -- N Funggrerq Cngu Guebhtu Gvzr - Pngnpylfz Gvzrjnyxvat
+  [44171] = "Jrrxyl", -- Rzvfnel bs Jne - Pbzcyrgr Yrtvba Zlguvpf
+  [44172] = "Jrrxyl", -- Gur Neran Pnyyf - Jva Yrtvba Neran Fxvezvfurf
+  [44173] = "Jrrxyl", -- N Pnyy gb Onggyr - Jva Onggyrtebhaqf
+  [44174] = "Jrrxyl", -- Gur Irel Orfg - Jva CiC Crg Onggyrf
+  [44175] = "Jrrxyl", -- Gur Jbeyq Njnvgf - Pbzcyrgr Oebxra Vfyrf Jbeyq Dhrfgf
+  [45799] = "Jrrxyl", -- N Fuebhqrq Cngu Guebhtu Gvzr - Zvfgf bs Cnaqnevn Gvzrjnyxvat
 
-  -- Timewalking Dungeon final boss drops
-  [40168] = "Weekly", -- The Swirling Vial - Burning Crusade Timewalking
-  [40173] = "Weekly", -- The Unstable Prism - Wrath of the Lich King Timewalking
-  [40786] = "Weekly", -- The Smoldering Ember - Cataclysm Timewalking - Horde
-  [40787] = "Weekly", -- The Smoldering Ember - Cataclysm Timewalking - Alliance
-  [45563] = "Weekly", -- The Shrouded Coin - Mists of Pandaria Timewalking
+  -- Gvzrjnyxvat Qhatrba svany obff qebcf
+  [40168] = "Jrrxyl", -- Gur Fjveyvat Ivny - Oheavat Pehfnqr Gvzrjnyxvat
+  [40173] = "Jrrxyl", -- Gur Hafgnoyr Cevfz - Jengu bs gur Yvpu Xvat Gvzrjnyxvat
+  [40786] = "Jrrxyl", -- Gur Fzbyqrevat Rzore - Pngnpylfz Gvzrjnyxvat - Ubeqr
+  [40787] = "Jrrxyl", -- Gur Fzbyqrevat Rzore - Pngnpylfz Gvzrjnyxvat - Nyyvnapr
+  [45563] = "Jrrxyl", -- Gur Fuebhqrq Pbva - Zvfgf bs Cnaqnevn Gvzrjnyxvat
 
-  -- Pet Battle Dungeons
-  [46292] = "Weekly", -- Pet Battle Challenge Dungeon Deadmines
-  [45539] = "Weekly", -- Pet Battle Challenge Dungeon Wailing Caverns
+  -- Crg Onggyr Qhatrbaf
+  [46292] = "Jrrxyl", -- Crg Onggyr Punyyratr Qhatrba Qrnqzvarf
+  [45539] = "Jrrxyl", -- Crg Onggyr Punyyratr Qhatrba Jnvyvat Pnireaf
 }
 
-local WoDSealQuests = {
-  [36058] = "Weekly",  -- Seal of Dwarven Bunker
-  -- Seal of Ashran quests
-  [36054] = "Weekly",
-  [37454] = "Weekly",
-  [37455] = "Weekly",
-  [36056] = "Weekly",
-  [37456] = "Weekly",
-  [37457] = "Weekly",
-  [36057] = "Weekly",
-  [37458] = "Weekly",
-  [37459] = "Weekly",
-  [36055] = "Weekly",
-  [37452] = "Weekly",
-  [37453] = "Weekly",
+ybpny JbQFrnyDhrfgf = {
+  [36058] = "Jrrxyl",  -- Frny bs Qjneira Ohaxre
+  -- Frny bs Nfuena dhrfgf
+  [36054] = "Jrrxyl",
+  [37454] = "Jrrxyl",
+  [37455] = "Jrrxyl",
+  [36056] = "Jrrxyl",
+  [37456] = "Jrrxyl",
+  [37457] = "Jrrxyl",
+  [36057] = "Jrrxyl",
+  [37458] = "Jrrxyl",
+  [37459] = "Jrrxyl",
+  [36055] = "Jrrxyl",
+  [37452] = "Jrrxyl",
+  [37453] = "Jrrxyl",
 }
 
-for k,v in pairs(WoDSealQuests) do
-  QuestExceptions[k] = v
-end
+sbe x,i va cnvef(JbQFrnyDhrfgf) qb
+  DhrfgRkprcgvbaf[x] = i
+raq
 
-local LegionSealQuests = {
-  [43895] = "Weekly",
-  [43896] = "Weekly",
-  [43897] = "Weekly",
-  [43892] = "Weekly",
-  [43893] = "Weekly",
-  [43894] = "Weekly",
-  [43510] = "Weekly", -- order hall
-  [47851] = "Weekly", -- Mark of Honor x5
-  [47864] = "Weekly", -- Mark of Honor x10
-  [47865] = "Weekly", -- Mark of Honor x20
+ybpny YrtvbaFrnyDhrfgf = {
+  [43895] = "Jrrxyl",
+  [43896] = "Jrrxyl",
+  [43897] = "Jrrxyl",
+  [43892] = "Jrrxyl",
+  [43893] = "Jrrxyl",
+  [43894] = "Jrrxyl",
+  [43510] = "Jrrxyl", -- beqre unyy
+  [47851] = "Jrrxyl", -- Znex bs Ubabe k5
+  [47864] = "Jrrxyl", -- Znex bs Ubabe k10
+  [47865] = "Jrrxyl", -- Znex bs Ubabe k20
 }
 
-for k,v in pairs(LegionSealQuests) do
-  QuestExceptions[k] = v
-end
+sbe x,i va cnvef(YrtvbaFrnyDhrfgf) qb
+  DhrfgRkprcgvbaf[x] = i
+raq
 
-function addon:QuestInfo(questid)
-  if not questid or questid == 0 then return nil end
-  scantt:SetOwner(UIParent,"ANCHOR_NONE")
-  scantt:SetHyperlink("\124cffffff00\124Hquest:"..questid..":90\124h[]\124h\124r")
-  local l = _G[scantt:GetName().."TextLeft1"]
-  l = l and l:GetText()
-  if not l or #l == 0 then return nil end -- cache miss
-  return l, "\124cffffff00\124Hquest:"..questid..":90\124h["..l.."]\124h\124r"
-end
+shapgvba nqqba:DhrfgVasb(dhrfgvq)
+  vs abg dhrfgvq be dhrfgvq == 0 gura erghea avy raq
+  fpnagg:FrgBjare(HVCnerag,"NAPUBE_ABAR")
+  fpnagg:FrgUlcreyvax("\124pssssss00\124Udhrfg:"..dhrfgvq..":90\124u[]\124u\124e")
+  ybpny y = _T[fpnagg:TrgAnzr().."GrkgYrsg1"]
+  y = y naq y:TrgGrkg()
+  vs abg y be #y == 0 gura erghea avy raq -- pnpur zvff
+  erghea y, "\124pssssss00\124Udhrfg:"..dhrfgvq..":90\124u["..y.."]\124u\124e"
+raq
 
-local function chatMsg(...)
-  DEFAULT_CHAT_FRAME:AddMessage("\124cFFFF0000"..addonName.."\124r: "..string.format(...))
-end
-addon.chatMsg = chatMsg
+ybpny shapgvba pungZft(...)
+  QRSNHYG_PUNG_SENZR:NqqZrffntr("\124pSSSS0000"..nqqbaAnzr.."\124e: "..fgevat.sbezng(...))
+raq
+nqqba.pungZft = pungZft
 
-local function debug(...)
-  --addon.db.dbg = true
-  if addon.db.dbg then
-    chatMsg(...)
-  end
-end
-addon.debug = debug
+ybpny shapgvba qroht(...)
+  --nqqba.qo.qot = gehr
+  vs nqqba.qo.qot gura
+    pungZft(...)
+  raq
+raq
+nqqba.qroht = qroht
 
-local function bugReport(msg)
-  addon.bugreport = addon.bugreport or {}
-  local now = GetTime()
-  if now < (addon.bugreport[msg] or 0)+60 then return end
-  addon.bugreport[msg] = now
-  chatMsg(msg)
-  if now < (addon.bugreport["url"] or 0)+5 then return end
-  chatMsg("Please report this bug at: https://github.com/eTzmNcbkrng/SavedInstances/issues")
-  addon.bugreport["url"] = now
-end
+ybpny shapgvba ohtErcbeg(zft)
+  nqqba.ohtercbeg = nqqba.ohtercbeg be {}
+  ybpny abj = TrgGvzr()
+  vs abj < (nqqba.ohtercbeg[zft] be 0)+60 gura erghea raq
+  nqqba.ohtercbeg[zft] = abj
+  pungZft(zft)
+  vs abj < (nqqba.ohtercbeg["hey"] be 0)+5 gura erghea raq
+  pungZft("Cyrnfr ercbeg guvf oht ng: uggcf://tvguho.pbz/rGmzApoxeat/FnirqVafgnaprf/vffhrf")
+  nqqba.ohtercbeg["hey"] = abj
+raq
 
-local GTToffset = time() - GetTime()
-local function GetTimeToTime(val)
-  if not val then return nil end
-  return val + GTToffset
-end
+ybpny TGGbssfrg = gvzr() - TrgGvzr()
+ybpny shapgvba TrgGvzrGbGvzr(iny)
+  vs abg iny gura erghea avy raq
+  erghea iny + TGGbssfrg
+raq
 
-function addon:timedebug()
-  chatMsg("Version: %s (%s)", addon.version, addon.revision)
-  chatMsg("Realm: %s (%s)", GetRealmName(), addon:GetRegion())
-  chatMsg("Zone: %s (%s)", GetRealZoneText(), addon:GetCurrentMapAreaID())
-  chatMsg("time()=%s GetTime()=%s", time(), GetTime())
-  chatMsg("Local time: %s local", date("%A %c"))
-  chatMsg("GetGameTime: %s:%s server",GetGameTime())
-  chatMsg("CalendarGetDate: %s %s/%s/%s server",CalendarGetDate())
-  chatMsg("GetQuestResetTime: %s",SecondsToTime(GetQuestResetTime()))
-  chatMsg(date("Daily reset: %a %c local (based on GetQuestResetTime)",time()+GetQuestResetTime()))
-  chatMsg("Local to Server offset: %d hours",SavedInstances:GetServerOffset())
-  local t = SavedInstances:GetNextDailyResetTime()
-  chatMsg("Next daily reset: %s local, %s server",date("%a %c",t), date("%a %c",t+3600*SavedInstances:GetServerOffset()))
-  t = SavedInstances:GetNextWeeklyResetTime()
-  chatMsg("Next weekly reset: %s local, %s server",date("%a %c",t), date("%a %c",t+3600*SavedInstances:GetServerOffset()))
-  t = SavedInstances:GetNextDailySkillResetTime()
-  chatMsg("Next skill reset: %s local, %s server",date("%a %c",t), date("%a %c",t+3600*SavedInstances:GetServerOffset()))
-  t = SavedInstances:GetNextDarkmoonResetTime()
-  chatMsg("Next darkmoon reset: %s local, %s server",date("%a %c",t), date("%a %c",t+3600*SavedInstances:GetServerOffset()))
-end
+shapgvba nqqba:gvzrqroht()
+  pungZft("Irefvba: %f (%f)", nqqba.irefvba, nqqba.erivfvba)
+  pungZft("Ernyz: %f (%f)", TrgErnyzAnzr(), nqqba:TrgErtvba())
+  pungZft("Mbar: %f (%f)", TrgErnyMbarGrkg(), nqqba:TrgPheeragZncNernVQ())
+  pungZft("gvzr()=%f TrgGvzr()=%f", gvzr(), TrgGvzr())
+  pungZft("Ybpny gvzr: %f ybpny", qngr("%N %p"))
+  pungZft("TrgTnzrGvzr: %f:%f freire",TrgTnzrGvzr())
+  pungZft("PnyraqneTrgQngr: %f %f/%f/%f freire",PnyraqneTrgQngr())
+  pungZft("TrgDhrfgErfrgGvzr: %f",FrpbaqfGbGvzr(TrgDhrfgErfrgGvzr()))
+  pungZft(qngr("Qnvyl erfrg: %n %p ybpny (onfrq ba TrgDhrfgErfrgGvzr)",gvzr()+TrgDhrfgErfrgGvzr()))
+  pungZft("Ybpny gb Freire bssfrg: %q ubhef",FnirqVafgnaprf:TrgFreireBssfrg())
+  ybpny g = FnirqVafgnaprf:TrgArkgQnvylErfrgGvzr()
+  pungZft("Arkg qnvyl erfrg: %f ybpny, %f freire",qngr("%n %p",g), qngr("%n %p",g+3600*FnirqVafgnaprf:TrgFreireBssfrg()))
+  g = FnirqVafgnaprf:TrgArkgJrrxylErfrgGvzr()
+  pungZft("Arkg jrrxyl erfrg: %f ybpny, %f freire",qngr("%n %p",g), qngr("%n %p",g+3600*FnirqVafgnaprf:TrgFreireBssfrg()))
+  g = FnirqVafgnaprf:TrgArkgQnvylFxvyyErfrgGvzr()
+  pungZft("Arkg fxvyy erfrg: %f ybpny, %f freire",qngr("%n %p",g), qngr("%n %p",g+3600*FnirqVafgnaprf:TrgFreireBssfrg()))
+  g = FnirqVafgnaprf:TrgArkgQnexzbbaErfrgGvzr()
+  pungZft("Arkg qnexzbba erfrg: %f ybpny, %f freire",qngr("%n %p",g), qngr("%n %p",g+3600*FnirqVafgnaprf:TrgFreireBssfrg()))
+raq
 
-local function questTableToString(t)
-  local ret = ""
-  local lvl = UnitLevel("player")
-  for k,v in pairs(t) do
-    ret = string.format("%s%s\124cffffff00\124Hquest:%s:%s\124h[%s]\124h\124r", ret, (#ret == 0 and "" or ", "),k,lvl,k)
-  end
-  return ret
-end
+ybpny shapgvba dhrfgGnoyrGbFgevat(g)
+  ybpny erg = ""
+  ybpny yiy = HavgYriry("cynlre")
+  sbe x,i va cnvef(g) qb
+    erg = fgevat.sbezng("%f%f\124pssssss00\124Udhrfg:%f:%f\124u[%f]\124u\124e", erg, (#erg == 0 naq "" be ", "),x,yiy,x)
+  raq
+  erghea erg
+raq
 
-function addon:questdebug(info)
-  local t = vars.db.Toons[thisToon]
-  local ql = GetQuestsCompleted()
+shapgvba nqqba:dhrfgqroht(vasb)
+  ybpny g = inef.qo.Gbbaf[guvfGbba]
+  ybpny dy = TrgDhrfgfPbzcyrgrq()
 
-  local cmd = info.input
-  cmd = cmd and strtrim(cmd:gsub("^%s*(%w+)%s*","")):lower()
-  if t.completedquests and (cmd == "load" or not addon.completedquests) then
-    chatMsg("Loaded quest list")
-    addon.completedquests = t.completedquests
-  elseif cmd == "load" then
-    chatMsg("No saved quest list")
-  elseif cmd == "save" then
-    chatMsg("Saved quest list")
-    t.completedquests = ql
-  elseif cmd == "clear" then
-    chatMsg("Cleared quest list")
-    addon.completedquests = nil
-    t.completedquests = nil
-    return
-  elseif cmd and #cmd > 0 then
-    chatMsg("Quest command not understood: '"..cmd.."'")
-    chatMsg("/si quest ([save|load|clear])")
-    return
-  end
-  local cnt = 0
-  local add = {}
-  local remove = {}
-  for id,_ in pairs(ql) do
-    cnt = cnt + 1
-  end
-  chatMsg("Completed quests: "..cnt)
-  if addon.completedquests then
-    for id,_ in pairs(ql) do
-      if not addon.completedquests[id] then
-        add[id] = true
-      end
-    end
-    for id,_ in pairs(addon.completedquests) do
-      if not ql[id] then
-        remove[id] = true
-      end
-    end
-    if next(add) then chatMsg("Added IDs:   "..questTableToString(add)) end
-    if next(remove) then chatMsg("Removed IDs: "..questTableToString(remove)) end
-  end
-  addon.completedquests = ql
-end
+  ybpny pzq = vasb.vachg
+  pzq = pzq naq fgegevz(pzq:tfho("^%f*(%j+)%f*","")):ybjre()
+  vs g.pbzcyrgrqdhrfgf naq (pzq == "ybnq" be abg nqqba.pbzcyrgrqdhrfgf) gura
+    pungZft("Ybnqrq dhrfg yvfg")
+    nqqba.pbzcyrgrqdhrfgf = g.pbzcyrgrqdhrfgf
+  ryfrvs pzq == "ybnq" gura
+    pungZft("Ab fnirq dhrfg yvfg")
+  ryfrvs pzq == "fnir" gura
+    pungZft("Fnirq dhrfg yvfg")
+    g.pbzcyrgrqdhrfgf = dy
+  ryfrvs pzq == "pyrne" gura
+    pungZft("Pyrnerq dhrfg yvfg")
+    nqqba.pbzcyrgrqdhrfgf = avy
+    g.pbzcyrgrqdhrfgf = avy
+    erghea
+  ryfrvs pzq naq #pzq > 0 gura
+    pungZft("Dhrfg pbzznaq abg haqrefgbbq: '"..pzq.."'")
+    pungZft("/fv dhrfg ([fnir|ybnq|pyrne])")
+    erghea
+  raq
+  ybpny pag = 0
+  ybpny nqq = {}
+  ybpny erzbir = {}
+  sbe vq,_ va cnvef(dy) qb
+    pag = pag + 1
+  raq
+  pungZft("Pbzcyrgrq dhrfgf: "..pag)
+  vs nqqba.pbzcyrgrqdhrfgf gura
+    sbe vq,_ va cnvef(dy) qb
+      vs abg nqqba.pbzcyrgrqdhrfgf[vq] gura
+        nqq[vq] = gehr
+      raq
+    raq
+    sbe vq,_ va cnvef(nqqba.pbzcyrgrqdhrfgf) qb
+      vs abg dy[vq] gura
+        erzbir[vq] = gehr
+      raq
+    raq
+    vs arkg(nqq) gura pungZft("Nqqrq VQf:   "..dhrfgGnoyrGbFgevat(nqq)) raq
+    vs arkg(erzbir) gura pungZft("Erzbirq VQf: "..dhrfgGnoyrGbFgevat(erzbir)) raq
+  raq
+  nqqba.pbzcyrgrqdhrfgf = dy
+raq
 
--- abbreviate expansion names (which apparently are not localized in any western character set)
-local function abbreviate(iname)
-  iname = iname:gsub("Burning Crusade", "BC")
-  iname = iname:gsub("Wrath of the Lich King", "WotLK")
-  iname = iname:gsub("Cataclysm", "Cata")
-  iname = iname:gsub("Mists of Pandaria", "MoP")
-  iname = iname:gsub("Warlords of Draenor", "WoD")
+-- nooerivngr rkcnafvba anzrf (juvpu nccneragyl ner abg ybpnyvmrq va nal jrfgrea punenpgre frg)
+ybpny shapgvba nooerivngr(vanzr)
+  vanzr = vanzr:tfho("Oheavat Pehfnqr", "OP")
+  vanzr = vanzr:tfho("Jengu bs gur Yvpu Xvat", "JbgYX")
+  vanzr = vanzr:tfho("Pngnpylfz", "Pngn")
+  vanzr = vanzr:tfho("Zvfgf bs Cnaqnevn", "ZbC")
+  vanzr = vanzr:tfho("Jneybeqf bs Qenrabe", "JbQ")
 
-  return iname
-end
+  erghea vanzr
+raq
 
-function addon:formatNumber(num,ismoney)
-  num = tonumber(num)
-  if not num then return "" end
-  local post = ""
-  if ismoney then
-    if num < 1000*10000 then -- less than 1k, show it all
-      return GetMoneyString(num)
-    end
-    num = math.floor(num / 10000)
-    post = " \124TInterface\\MoneyFrame\\UI-GoldIcon:0:0:2:0\124t"
-  end
-  if vars.db.Tooltip.NumberFormat then
-    local str = ""
-    local neg = num < 0
-    num = math.abs(num)
-    local int = math.floor(num)
-    local dec = num - int
-    local t = tostring(int)
-    if #t > 4 then -- leave 4 digit numbers
-      while #t > 3 do
-        str = LARGE_NUMBER_SEPERATOR .. t:sub(-3) .. str
-        t = t:sub(1,-4)
-    end
-    end
-    str = t..str
-    if dec > 0 then
-      str = str..string.format("%15g",dec):match("(%..*)$")
-    end
-    if neg then
-      str = "-"..str
-    end
-    return str..post
-  else
-    return num..post
-  end
-end
+shapgvba nqqba:sbezngAhzore(ahz,vfzbarl)
+  ahz = gbahzore(ahz)
+  vs abg ahz gura erghea "" raq
+  ybpny cbfg = ""
+  vs vfzbarl gura
+    vs ahz < 1000*10000 gura -- yrff guna 1x, fubj vg nyy
+      erghea TrgZbarlFgevat(ahz)
+    raq
+    ahz = zngu.sybbe(ahz / 10000)
+    cbfg = " \124GVagresnpr\\ZbarlSenzr\\HV-TbyqVpba:0:0:2:0\124g"
+  raq
+  vs inef.qo.Gbbygvc.AhzoreSbezng gura
+    ybpny fge = ""
+    ybpny art = ahz < 0
+    ahz = zngu.nof(ahz)
+    ybpny vag = zngu.sybbe(ahz)
+    ybpny qrp = ahz - vag
+    ybpny g = gbfgevat(vag)
+    vs #g > 4 gura -- yrnir 4 qvtvg ahzoref
+      juvyr #g > 3 qb
+        fge = YNETR_AHZORE_FRCRENGBE .. g:fho(-3) .. fge
+        g = g:fho(1,-4)
+    raq
+    raq
+    fge = g..fge
+    vs qrp > 0 gura
+      fge = fge..fgevat.sbezng("%15t",qrp):zngpu("(%..*)$")
+    raq
+    vs art gura
+      fge = "-"..fge
+    raq
+    erghea fge..cbfg
+  ryfr
+    erghea ahz..cbfg
+  raq
+raq
 
-vars.defaultDB = {
-  DBVersion = 12,
-  History = { }, -- for tracking 5 instance per hour limit
-  -- key: instance string; value: time first entered
-  Toons = { }, 	-- table key: "Toon - Realm"; value:
-  -- Class: string
-  -- Level: integer
-  -- AlwaysShow: boolean REMOVED
-  -- Show: string "always", "never", "saved"
-  -- Daily1: expiry (normal) REMOVED
-  -- Daily2: expiry (heroic) REMOVED
-  -- LFG1: expiry (random dungeon)
-  -- LFG2: expiry (deserter)
-  -- WeeklyResetTime: expiry
-  -- DailyResetTime: expiry
-  -- DailyCount: integer REMOVED
-  -- PlayedLevel: integer
-  -- PlayedTotal: integer
-  -- Money: integer
-  -- Zone: string
+inef.qrsnhygQO = {
+  QOIrefvba = 12,
+  Uvfgbel = { }, -- sbe genpxvat 5 vafgnapr cre ubhe yvzvg
+  -- xrl: vafgnapr fgevat; inyhr: gvzr svefg ragrerq
+  Gbbaf = { }, 	-- gnoyr xrl: "Gbba - Ernyz"; inyhr:
+  -- Pynff: fgevat
+  -- Yriry: vagrtre
+  -- NyjnlfFubj: obbyrna ERZBIRQ
+  -- Fubj: fgevat "nyjnlf", "arire", "fnirq"
+  -- Qnvyl1: rkcvel (abezny) ERZBIRQ
+  -- Qnvyl2: rkcvel (urebvp) ERZBIRQ
+  -- YST1: rkcvel (enaqbz qhatrba)
+  -- YST2: rkcvel (qrfregre)
+  -- JrrxylErfrgGvzr: rkcvel
+  -- QnvylErfrgGvzr: rkcvel
+  -- QnvylPbhag: vagrtre ERZBIRQ
+  -- CynlrqYriry: vagrtre
+  -- CynlrqGbgny: vagrtre
+  -- Zbarl: vagrtre
+  -- Mbar: fgevat
 
-  -- currency: key: currencyID  value:
-  -- amount: integer
-  -- earnedThisWeek: integer
-  -- weeklyMax: integer
-  -- totalMax: integer
-  -- season: integer
+  -- pheerapl: xrl: pheeraplVQ  inyhr:
+  -- nzbhag: vagrtre
+  -- rnearqGuvfJrrx: vagrtre
+  -- jrrxylZnk: vagrtre
+  -- gbgnyZnk: vagrtre
+  -- frnfba: vagrtre
 
-  -- Quests:  key: QuestID  value:
-  -- Title: string
-  -- Link: hyperlink
-  -- Zone: string
-  -- isDaily: boolean
-  -- Expires: expiration (non-daily)
+  -- Dhrfgf:  xrl: DhrfgVQ  inyhr:
+  -- Gvgyr: fgevat
+  -- Yvax: ulcreyvax
+  -- Mbar: fgevat
+  -- vfQnvyl: obbyrna
+  -- Rkcverf: rkcvengvba (aba-qnvyl)
 
-  -- Skills: key: SpellID or CDID value:
-  -- Title: string
-  -- Link: hyperlink
-  -- Expires: expiration
+  -- Fxvyyf: xrl: FcryyVQ be PQVQ inyhr:
+  -- Gvgyr: fgevat
+  -- Yvax: ulcreyvax
+  -- Rkcverf: rkcvengvba
 
-  -- FarmPlanted: integer
-  -- FarmHarvested: integer
-  -- FarmCropPlanted: key: spellID value: count
-  -- FarmCropReady: key: spellID value: count
-  -- FarmExpires: expiration
+  -- SnezCynagrq: vagrtre
+  -- SnezUneirfgrq: vagrtre
+  -- SnezPebcCynagrq: xrl: fcryyVQ inyhr: pbhag
+  -- SnezPebcErnql: xrl: fcryyVQ inyhr: pbhag
+  -- SnezRkcverf: rkcvengvba
 
-  -- BonusRoll: key: int value:
-  -- name: string
-  -- time: int
-  -- currencyID: int
-  -- money: integer or nil
-  -- item: linkstring or nil
+  -- ObahfEbyy: xrl: vag inyhr:
+  -- anzr: fgevat
+  -- gvzr: vag
+  -- pheeraplVQ: vag
+  -- zbarl: vagrtre be avy
+  -- vgrz: yvaxfgevat be avy
 
-  -- MythicKey
-  -- name: string
-  -- ResetTime: expiry
-  -- level: string
-  -- color: string
-  -- link: string
-  -- MythicKeyBest
-  -- lastweeklevel: int
-  -- ResetTime: expiry
-  -- level: string
-  -- weeklyReward: boolean
-  -- DailyWorldQuest
-  -- days[0,1,2]
-  -- name
-  -- dayleft
-  -- questneed
-  -- questdone
+  -- ZlguvpXrl
+  -- anzr: fgevat
+  -- ErfrgGvzr: rkcvel
+  -- yriry: fgevat
+  -- pbybe: fgevat
+  -- yvax: fgevat
+  -- ZlguvpXrlOrfg
+  -- ynfgjrrxyriry: vag
+  -- ErfrgGvzr: rkcvel
+  -- yriry: fgevat
+  -- jrrxylErjneq: obbyrna
+  -- QnvylJbeyqDhrfg
+  -- qnlf[0,1,2]
+  -- anzr
+  -- qnlyrsg
+  -- dhrfgarrq
+  -- dhrfgqbar
 
-  Indicators = {
-    D1Indicator = "BLANK", -- indicator: ICON_*, BLANK
-    D1Text = "KILLED/TOTAL",
-    D1Color = { 0, 0.6, 0 }, -- dark green
-    D1ClassColor = true,
-    D2Indicator = "BLANK",
-    D2Text = "KILLED/TOTALH",
-    D2Color = { 0, 1, 0 }, -- green
-    D2ClassColor = true,
-    D3Indicator = "BLANK",
-    D3Text = "KILLED/TOTALM",
-    D3Color = { 1, 0, 0 }, -- red
-    D3ClassColor = true,
-    R0Indicator = "BLANK",
-    R0Text = "KILLED/TOTAL",
-    R0Color = { 0.6, 0.6, 0 }, -- dark yellow
-    R0ClassColor = true,
-    R1Indicator = "BLANK",
-    R1Text = "KILLED/TOTAL",
-    R1Color = { 0.6, 0.6, 0 }, -- dark yellow
-    R1ClassColor = true,
-    R2Indicator = "BLANK",
-    R2Text = "KILLED/TOTAL",
-    R2Color = { 0.6, 0, 0 }, -- dark red
-    R2ClassColor = true,
-    R3Indicator = "BLANK",
-    R3Text = "KILLED/TOTALH",
-    R3Color = { 1, 1, 0 }, -- yellow
-    R3ClassColor = true,
-    R4Indicator = "BLANK",
-    R4Text = "KILLED/TOTALH",
-    R4Color = { 1, 0, 0 }, -- red
-    R4ClassColor = true,
-    R5Indicator = "BLANK",
-    R5Text = "KILLED/TOTAL",
-    R5Color = { 0, 0, 1 }, -- blue
-    R5ClassColor = true,
-    R6Indicator = "BLANK",
-    R6Text = "KILLED/TOTAL",
-    R6Color = { 0, 1, 0 }, -- green
-    R6ClassColor = true,
-    R7Indicator = "BLANK",
-    R7Text = "KILLED/TOTALH",
-    R7Color = { 1, 1, 0 }, -- yellow
-    R7ClassColor = true,
-    R8Indicator = "BLANK",
-    R8Text = "KILLED/TOTALM",
-    R8Color = { 1, 0, 0 }, -- red
-    R8ClassColor = true,
+  Vaqvpngbef = {
+    Q1Vaqvpngbe = "OYNAX", -- vaqvpngbe: VPBA_*, OYNAX
+    Q1Grkg = "XVYYRQ/GBGNY",
+    Q1Pbybe = { 0, 0.6, 0 }, -- qnex terra
+    Q1PynffPbybe = gehr,
+    Q2Vaqvpngbe = "OYNAX",
+    Q2Grkg = "XVYYRQ/GBGNYU",
+    Q2Pbybe = { 0, 1, 0 }, -- terra
+    Q2PynffPbybe = gehr,
+    Q3Vaqvpngbe = "OYNAX",
+    Q3Grkg = "XVYYRQ/GBGNYZ",
+    Q3Pbybe = { 1, 0, 0 }, -- erq
+    Q3PynffPbybe = gehr,
+    E0Vaqvpngbe = "OYNAX",
+    E0Grkg = "XVYYRQ/GBGNY",
+    E0Pbybe = { 0.6, 0.6, 0 }, -- qnex lryybj
+    E0PynffPbybe = gehr,
+    E1Vaqvpngbe = "OYNAX",
+    E1Grkg = "XVYYRQ/GBGNY",
+    E1Pbybe = { 0.6, 0.6, 0 }, -- qnex lryybj
+    E1PynffPbybe = gehr,
+    E2Vaqvpngbe = "OYNAX",
+    E2Grkg = "XVYYRQ/GBGNY",
+    E2Pbybe = { 0.6, 0, 0 }, -- qnex erq
+    E2PynffPbybe = gehr,
+    E3Vaqvpngbe = "OYNAX",
+    E3Grkg = "XVYYRQ/GBGNYU",
+    E3Pbybe = { 1, 1, 0 }, -- lryybj
+    E3PynffPbybe = gehr,
+    E4Vaqvpngbe = "OYNAX",
+    E4Grkg = "XVYYRQ/GBGNYU",
+    E4Pbybe = { 1, 0, 0 }, -- erq
+    E4PynffPbybe = gehr,
+    E5Vaqvpngbe = "OYNAX",
+    E5Grkg = "XVYYRQ/GBGNY",
+    E5Pbybe = { 0, 0, 1 }, -- oyhr
+    E5PynffPbybe = gehr,
+    E6Vaqvpngbe = "OYNAX",
+    E6Grkg = "XVYYRQ/GBGNY",
+    E6Pbybe = { 0, 1, 0 }, -- terra
+    E6PynffPbybe = gehr,
+    E7Vaqvpngbe = "OYNAX",
+    E7Grkg = "XVYYRQ/GBGNYU",
+    E7Pbybe = { 1, 1, 0 }, -- lryybj
+    E7PynffPbybe = gehr,
+    E8Vaqvpngbe = "OYNAX",
+    E8Grkg = "XVYYRQ/GBGNYZ",
+    E8Pbybe = { 1, 0, 0 }, -- erq
+    E8PynffPbybe = gehr,
   },
-  Tooltip = {
-    ReverseInstances = false,
-    ShowExpired = false,
-    ShowHoliday = true,
-    ShowRandom = true,
-    CombineWorldBosses = false,
-    CombineLFR = true,
-    TrackDailyQuests = true,
-    TrackWeeklyQuests = true,
-    ShowCategories = false,
-    CategorySpaces = false,
-    RowHighlight = 0.1,
-    Scale = 1,
-    FitToScreen = true,
-    NewFirst = true,
-    RaidsFirst = true,
-    NumberFormat = true,
-    CategorySort = "EXPANSION", -- "EXPANSION", "TYPE"
-    ShowSoloCategory = false,
-    ShowHints = true,
-    ReportResets = true,
-    LimitWarn = true,
-    HistoryText = false,
-    ShowServer = false,
-    ServerSort = true,
-    ServerOnly = false,
-    ConnectedRealms = "group",
-    SelfFirst = true,
-    SelfAlways = false,
-    TrackLFG = true,
-    TrackDeserter = true,
-    TrackSkills = true,
-    TrackFarm = true,
-    TrackBonus = false,
-    TrackPlayed = true,
-    AugmentBonus = true,
-    CurrencyValueColor = true,
-    Currency776 = false, -- Warforged Seals
-    Currency738 = false, -- Lesser Charm of Good Fortune
-    Currency823 = false,  -- Apexis Crystal
-    Currency824 = false,  -- Garrison Resources
-    Currency1101= false,  -- Oil
-    Currency994 = false, -- Seal of Tempered Fate
-    Currency1129= false, -- Seal of Inevitable Fate
-    Currency1155= true,  -- Ancient Mana
-    Currency1166= true,  -- Timewarped Badge
-    Currency1191= true,  -- Valor Points
-    Currency1220= true,  -- Order Resources
-    Currency1226= false, -- Nethershards
-    Currency1273= true,  -- Seal of Broken Fate
-    Currency1149= true,  -- Sightless Eye
-    CurrencyMax = false,
-    CurrencyEarned = true,
-    MythicKey = true,
-    MythicKeyBest = true,
-    DailyWorldQuest = true,
-    AbbreviateKeystone = true,
+  Gbbygvc = {
+    ErirefrVafgnaprf = snyfr,
+    FubjRkcverq = snyfr,
+    FubjUbyvqnl = gehr,
+    FubjEnaqbz = gehr,
+    PbzovarJbeyqObffrf = snyfr,
+    PbzovarYSE = gehr,
+    GenpxQnvylDhrfgf = gehr,
+    GenpxJrrxylDhrfgf = gehr,
+    FubjPngrtbevrf = snyfr,
+    PngrtbelFcnprf = snyfr,
+    EbjUvtuyvtug = 0.1,
+    Fpnyr = 1,
+    SvgGbFperra = gehr,
+    ArjSvefg = gehr,
+    EnvqfSvefg = gehr,
+    AhzoreSbezng = gehr,
+    PngrtbelFbeg = "RKCNAFVBA", -- "RKCNAFVBA", "GLCR"
+    FubjFbybPngrtbel = snyfr,
+    FubjUvagf = gehr,
+    ErcbegErfrgf = gehr,
+    YvzvgJnea = gehr,
+    UvfgbelGrkg = snyfr,
+    FubjFreire = snyfr,
+    FreireFbeg = gehr,
+    FreireBayl = snyfr,
+    PbaarpgrqErnyzf = "tebhc",
+    FrysSvefg = gehr,
+    FrysNyjnlf = snyfr,
+    GenpxYST = gehr,
+    GenpxQrfregre = gehr,
+    GenpxFxvyyf = gehr,
+    GenpxSnez = gehr,
+    GenpxObahf = snyfr,
+    GenpxCynlrq = gehr,
+    NhtzragObahf = gehr,
+    PheeraplInyhrPbybe = gehr,
+    Pheerapl776 = snyfr, -- Jnesbetrq Frnyf
+    Pheerapl738 = snyfr, -- Yrffre Punez bs Tbbq Sbeghar
+    Pheerapl823 = snyfr,  -- Ncrkvf Pelfgny
+    Pheerapl824 = snyfr,  -- Tneevfba Erfbheprf
+    Pheerapl1101= snyfr,  -- Bvy
+    Pheerapl994 = snyfr, -- Frny bs Grzcrerq Sngr
+    Pheerapl1129= snyfr, -- Frny bs Varivgnoyr Sngr
+    Pheerapl1155= gehr,  -- Napvrag Znan
+    Pheerapl1166= gehr,  -- Gvzrjnecrq Onqtr
+    Pheerapl1191= gehr,  -- Inybe Cbvagf
+    Pheerapl1220= gehr,  -- Beqre Erfbheprf
+    Pheerapl1226= snyfr, -- Argurefuneqf
+    Pheerapl1273= gehr,  -- Frny bs Oebxra Sngr
+    Pheerapl1149= gehr,  -- Fvtugyrff Rlr
+    PheeraplZnk = snyfr,
+    PheeraplRnearq = gehr,
+    ZlguvpXrl = gehr,
+    ZlguvpXrlOrfg = gehr,
+    QnvylJbeyqDhrfg = gehr,
+    NooerivngrXrlfgbar = gehr,
   },
-  Instances = { }, 	-- table key: "Instance name"; value:
-  -- Show: boolean
-  -- Raid: boolean
-  -- Holiday: boolean
-  -- Random: boolean
-  -- Expansion: integer
-  -- RecLevel: integer
-  -- LFDID: integer
-  -- LFDupdated: integer REMOVED
-  -- REMOVED Encounters[integer] = { GUID : integer, Name : string }
-  -- table key: "Toon - Realm"; value:
-  -- table key: "Difficulty"; value:
-  -- ID: integer, positive for a Blizzard Raid ID,
-  --  negative value for an LFR encounter count
-  -- Expires: integer
-  -- Locked: boolean, whether toon is locked to the save
-  -- Extended: boolean, whether this is an extended raid lockout
-  -- Link: string hyperlink to the save
-  -- 1..numEncounters: boolean LFR isLooted
-  MinimapIcon = { hide = false },
-  Quests = {},  -- Account-wide Quests:  key: QuestID  value: same as toon Quest database
-  QuestDB = {   -- permanent repeatable quest DB: key: questid  value: mapid
-    Daily = {},
-    Weekly = {},
-    Darkmoon = {},
-    AccountDaily = {},
-    AccountWeekly = {},
+  Vafgnaprf = { }, 	-- gnoyr xrl: "Vafgnapr anzr"; inyhr:
+  -- Fubj: obbyrna
+  -- Envq: obbyrna
+  -- Ubyvqnl: obbyrna
+  -- Enaqbz: obbyrna
+  -- Rkcnafvba: vagrtre
+  -- ErpYriry: vagrtre
+  -- YSQVQ: vagrtre
+  -- YSQhcqngrq: vagrtre ERZBIRQ
+  -- ERZBIRQ Rapbhagref[vagrtre] = { THVQ : vagrtre, Anzr : fgevat }
+  -- gnoyr xrl: "Gbba - Ernyz"; inyhr:
+  -- gnoyr xrl: "Qvssvphygl"; inyhr:
+  -- VQ: vagrtre, cbfvgvir sbe n Oyvmmneq Envq VQ,
+  --  artngvir inyhr sbe na YSE rapbhagre pbhag
+  -- Rkcverf: vagrtre
+  -- Ybpxrq: obbyrna, jurgure gbba vf ybpxrq gb gur fnir
+  -- Rkgraqrq: obbyrna, jurgure guvf vf na rkgraqrq envq ybpxbhg
+  -- Yvax: fgevat ulcreyvax gb gur fnir
+  -- 1..ahzRapbhagref: obbyrna YSE vfYbbgrq
+  ZvavzncVpba = { uvqr = snyfr },
+  Dhrfgf = {},  -- Nppbhag-jvqr Dhrfgf:  xrl: DhrfgVQ  inyhr: fnzr nf gbba Dhrfg qngnonfr
+  DhrfgQO = {   -- creznarag ercrngnoyr dhrfg QO: xrl: dhrfgvq  inyhr: zncvq
+    Qnvyl = {},
+    Jrrxyl = {},
+    Qnexzbba = {},
+    NppbhagQnvyl = {},
+    NppbhagJrrxyl = {},
   },
-  RealmMap = {},
+  ErnyzZnc = {},
 }
 
--- skinning support
--- skinning addons should hook this function, eg:
---   hooksecurefunc(SavedInstances,"SkinFrame",function(self,frame,name) frame:SetWhatever() end)
-function addon:SkinFrame(frame,name)
-  -- default behavior (ticket 81)
-  if IsAddOnLoaded("ElvUI") or IsAddOnLoaded("Tukui") then
-    if frame.StripTextures then
-      frame:StripTextures()
-    end
-    if frame.SetTemplate then
-      frame:SetTemplate("Transparent")
-    end
-    local close = _G[name.."CloseButton"] or frame.CloseButton
-    if close and close.SetAlpha then
-      if ElvUI then
-        ElvUI[1]:GetModule('Skins'):HandleCloseButton(close)
-      end
-      if Tukui and Tukui[1] and Tukui[1].SkinCloseButton then
-        Tukui[1].SkinCloseButton(close)
-      end
-      close:SetAlpha(1)
-    end
-  end
-end
+-- fxvaavat fhccbeg
+-- fxvaavat nqqbaf fubhyq ubbx guvf shapgvba, rt:
+--   ubbxfrphershap(FnirqVafgnaprf,"FxvaSenzr",shapgvba(frys,senzr,anzr) senzr:FrgJungrire() raq)
+shapgvba nqqba:FxvaSenzr(senzr,anzr)
+  -- qrsnhyg orunivbe (gvpxrg 81)
+  vs VfNqqBaYbnqrq("RyiHV") be VfNqqBaYbnqrq("Ghxhv") gura
+    vs senzr.FgevcGrkgherf gura
+      senzr:FgevcGrkgherf()
+    raq
+    vs senzr.FrgGrzcyngr gura
+      senzr:FrgGrzcyngr("Genafcnerag")
+    raq
+    ybpny pybfr = _T[anzr.."PybfrOhggba"] be senzr.PybfrOhggba
+    vs pybfr naq pybfr.FrgNycun gura
+      vs RyiHV gura
+        RyiHV[1]:TrgZbqhyr('Fxvaf'):UnaqyrPybfrOhggba(pybfr)
+      raq
+      vs Ghxhv naq Ghxhv[1] naq Ghxhv[1].FxvaPybfrOhggba gura
+        Ghxhv[1].FxvaPybfrOhggba(pybfr)
+      raq
+      pybfr:FrgNycun(1)
+    raq
+  raq
+raq
 
--- general helper functions below
+-- trareny urycre shapgvbaf orybj
 
-local function ColorCodeOpenRGB(r,g,b,a)
-  return format("|c%02x%02x%02x%02x", math.floor(a * 255), math.floor(r * 255), math.floor(g * 255), math.floor(b * 255))
-end
+ybpny shapgvba PbybePbqrBcraETO(e,t,o,n)
+  erghea sbezng("|p%02k%02k%02k%02k", zngu.sybbe(n * 255), zngu.sybbe(e * 255), zngu.sybbe(t * 255), zngu.sybbe(o * 255))
+raq
 
-local function ColorCodeOpen(color)
-  return ColorCodeOpenRGB(color[1] or color.r,
-    color[2] or color.g,
-    color[3] or color.b,
-    color[4] or color.a or 1)
-end
+ybpny shapgvba PbybePbqrBcra(pbybe)
+  erghea PbybePbqrBcraETO(pbybe[1] be pbybe.e,
+    pbybe[2] be pbybe.t,
+    pbybe[3] be pbybe.o,
+    pbybe[4] be pbybe.n be 1)
+raq
 
-local function ClassColorise(class, targetstring)
-  local c = (CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[class]) or RAID_CLASS_COLORS[class]
-  if c.colorStr then
-    c = "|c"..c.colorStr
-  else
-    c = ColorCodeOpen( c )
-  end
-  return c .. targetstring .. FONTEND
-end
+ybpny shapgvba PynffPbybevfr(pynff, gnetrgfgevat)
+  ybpny p = (PHFGBZ_PYNFF_PBYBEF naq PHFGBZ_PYNFF_PBYBEF[pynff]) be ENVQ_PYNFF_PBYBEF[pynff]
+  vs p.pbybeFge gura
+    p = "|p"..p.pbybeFge
+  ryfr
+    p = PbybePbqrBcra( p )
+  raq
+  erghea p .. gnetrgfgevat .. SBAGRAQ
+raq
 
-function addon.ColoredToon(toon, fullname)
-  local str = (fullname and toon) or strsplit(' ',toon)
-  local t = vars.db.Toons[toon]
-  local class = t and t.Class
-  if class then
-    return ClassColorise(class, str)
-  else
-    return str
-  end
-end
+shapgvba nqqba.PbyberqGbba(gbba, shyyanzr)
+  ybpny fge = (shyyanzr naq gbba) be fgefcyvg(' ',gbba)
+  ybpny g = inef.qo.Gbbaf[gbba]
+  ybpny pynff = g naq g.Pynff
+  vs pynff gura
+    erghea PynffPbybevfr(pynff, fge)
+  ryfr
+    erghea fge
+  raq
+raq
 
-local function CurrencyColor(amt, max)
-  amt = amt or 0
-  local samt = addon:formatNumber(amt)
-  if max == nil or max == 0 then
-    return samt
-  end
-  if vars.db.Tooltip.CurrencyValueColor then
-    local pct = amt / max
-    local color = GREENFONT
-    if pct == 1 then
-      color = REDFONT
-    elseif pct > 0.75 then
-      color = GOLDFONT
-    end
-    samt = color .. samt .. FONTEND
-  end
-  return samt
-end
+ybpny shapgvba PheeraplPbybe(nzg, znk)
+  nzg = nzg be 0
+  ybpny fnzg = nqqba:sbezngAhzore(nzg)
+  vs znk == avy be znk == 0 gura
+    erghea fnzg
+  raq
+  vs inef.qo.Gbbygvc.PheeraplInyhrPbybe gura
+    ybpny cpg = nzg / znk
+    ybpny pbybe = TERRASBAG
+    vs cpg == 1 gura
+      pbybe = ERQSBAG
+    ryfrvs cpg > 0.75 gura
+      pbybe = TBYQSBAG
+    raq
+    fnzg = pbybe .. fnzg .. SBAGRAQ
+  raq
+  erghea fnzg
+raq
 
-local function TableLen(table)
-  local i = 0
-  for _, _ in pairs(table) do
-    i = i + 1
-  end
-  return i
-end
+ybpny shapgvba GnoyrYra(gnoyr)
+  ybpny v = 0
+  sbe _, _ va cnvef(gnoyr) qb
+    v = v + 1
+  raq
+  erghea v
+raq
 
--- returns how many hours the server time is ahead of local time
--- convert local time -> server time: add this value
--- convert server time -> local time: subtract this value
-function addon:GetServerOffset()
-  local serverDay = CalendarGetDate() - 1 -- 1-based starts on Sun
-  local localDay = tonumber(date("%w")) -- 0-based starts on Sun
-  local serverHour, serverMinute = GetGameTime()
-  local localHour, localMinute = tonumber(date("%H")), tonumber(date("%M"))
-  if serverDay == (localDay + 1)%7 then -- server is a day ahead
-    serverHour = serverHour + 24
-  elseif localDay == (serverDay + 1)%7 then -- local is a day ahead
-    localHour = localHour + 24
-  end
-  local server = serverHour + serverMinute / 60
-  local localT = localHour + localMinute / 60
-  local offset = floor((server - localT) * 2 + 0.5) / 2
-  return offset
-end
+-- ergheaf ubj znal ubhef gur freire gvzr vf nurnq bs ybpny gvzr
+-- pbaireg ybpny gvzr -> freire gvzr: nqq guvf inyhr
+-- pbaireg freire gvzr -> ybpny gvzr: fhogenpg guvf inyhr
+shapgvba nqqba:TrgFreireBssfrg()
+  ybpny freireQnl = PnyraqneTrgQngr() - 1 -- 1-onfrq fgnegf ba Fha
+  ybpny ybpnyQnl = gbahzore(qngr("%j")) -- 0-onfrq fgnegf ba Fha
+  ybpny freireUbhe, freireZvahgr = TrgTnzrGvzr()
+  ybpny ybpnyUbhe, ybpnyZvahgr = gbahzore(qngr("%U")), gbahzore(qngr("%Z"))
+  vs freireQnl == (ybpnyQnl + 1)%7 gura -- freire vf n qnl nurnq
+    freireUbhe = freireUbhe + 24
+  ryfrvs ybpnyQnl == (freireQnl + 1)%7 gura -- ybpny vf n qnl nurnq
+    ybpnyUbhe = ybpnyUbhe + 24
+  raq
+  ybpny freire = freireUbhe + freireZvahgr / 60
+  ybpny ybpnyG = ybpnyUbhe + ybpnyZvahgr / 60
+  ybpny bssfrg = sybbe((freire - ybpnyG) * 2 + 0.5) / 2
+  erghea bssfrg
+raq
 
-function addon:GetRegion()
-  if not addon.region then
-    local reg
-    reg = GetCVar("portal")
-    if reg == "public-test" then -- PTR uses US region resets, despite the misleading realm name suffix
-      reg = "US"
-    end
-    if not reg or #reg ~= 2 then
-      local gcr = GetCurrentRegion()
-      reg = gcr and ({ "US", "KR", "EU", "TW", "CN" })[gcr]
-    end
-    if not reg or #reg ~= 2 then
-      reg = (GetCVar("realmList") or ""):match("^(%a+)%.")
-    end
-    if not reg or #reg ~= 2 then -- other test realms?
-      reg = (GetRealmName() or ""):match("%((%a%a)%)")
-    end
-    reg = reg and reg:upper()
-    if reg and #reg == 2 then
-      addon.region = reg
-    end
-  end
-  return addon.region
-end
+shapgvba nqqba:TrgErtvba()
+  vs abg nqqba.ertvba gura
+    ybpny ert
+    ert = TrgPIne("cbegny")
+    vs ert == "choyvp-grfg" gura -- CGE hfrf HF ertvba erfrgf, qrfcvgr gur zvfyrnqvat ernyz anzr fhssvk
+      ert = "HF"
+    raq
+    vs abg ert be #ert ~= 2 gura
+      ybpny tpe = TrgPheeragErtvba()
+      ert = tpe naq ({ "HF", "XE", "RH", "GJ", "PA" })[tpe]
+    raq
+    vs abg ert be #ert ~= 2 gura
+      ert = (TrgPIne("ernyzYvfg") be ""):zngpu("^(%n+)%.")
+    raq
+    vs abg ert be #ert ~= 2 gura -- bgure grfg ernyzf?
+      ert = (TrgErnyzAnzr() be ""):zngpu("%((%n%n)%)")
+    raq
+    ert = ert naq ert:hccre()
+    vs ert naq #ert == 2 gura
+      nqqba.ertvba = ert
+    raq
+  raq
+  erghea nqqba.ertvba
+raq
 
-function addon:GetNextDailyResetTime()
-  local resettime = GetQuestResetTime()
-  if not resettime or resettime <= 0 or -- ticket 43: can fail during startup
-    -- also right after a daylight savings rollover, when it returns negative values >.<
-    resettime > 24*3600+30 then -- can also be wrong near reset in an instance
-    return nil
-  end
+shapgvba nqqba:TrgArkgQnvylErfrgGvzr()
+  ybpny erfrggvzr = TrgDhrfgErfrgGvzr()
+  vs abg erfrggvzr be erfrggvzr <= 0 be -- gvpxrg 43: pna snvy qhevat fgneghc
+    -- nyfb evtug nsgre n qnlyvtug fnivatf ebyybire, jura vg ergheaf artngvir inyhrf >.<
+    erfrggvzr > 24*3600+30 gura -- pna nyfb or jebat arne erfrg va na vafgnapr
+    erghea avy
+  raq
 
-  return time() + resettime
-end
+  erghea gvzr() + erfrggvzr
+raq
 
-do
-  local midnight = {hour=23, min=59, sec=59}
-  function addon:GetNextDailySkillResetTime() -- trade skill reset time
-    -- this is just a "best guess" because in reality,
-    -- different trade skills reset at up to 3 different times
-    local rt = addon:GetNextDailyResetTime()
-    if not rt then return nil end
-    --local info = date("*t"); print(info.isdst)
-    -- Blizzard's ridiculous reset crap:
-    -- trade skills ignore daylight savings after the date it changes UNTIL the next restart, then go back to observing it
+qb
+  ybpny zvqavtug = {ubhe=23, zva=59, frp=59}
+  shapgvba nqqba:TrgArkgQnvylFxvyyErfrgGvzr() -- genqr fxvyy erfrg gvzr
+    -- guvf vf whfg n "orfg thrff" orpnhfr va ernyvgl,
+    -- qvssrerag genqr fxvyyf erfrg ng hc gb 3 qvssrerag gvzrf
+    ybpny eg = nqqba:TrgArkgQnvylErfrgGvzr()
+    vs abg eg gura erghea avy raq
+    --ybpny vasb = qngr("*g"); cevag(vasb.vfqfg)
+    -- Oyvmmneq'f evqvphybhf erfrg penc:
+    -- genqr fxvyyf vtaber qnlyvtug fnivatf nsgre gur qngr vg punatrf HAGVY gur arkg erfgneg, gura tb onpx gb bofreivat vg
 
-    return rt
-  end
-end
+    erghea eg
+  raq
+raq
 
-function addon:GetNextWeeklyResetTime()
-  if not addon.resetDays then
-    local region = addon:GetRegion()
-    if not region then return nil end
-    addon.resetDays = {}
-    addon.resetDays.DLHoffset = 0
-    if region == "US" then
-      addon.resetDays["2"] = true -- tuesday
-      -- ensure oceanic servers over the dateline still reset on tues UTC (wed 1/2 AM server)
-      addon.resetDays.DLHoffset = -3
-    elseif region == "EU" then
-      addon.resetDays["3"] = true -- wednesday
-    elseif region == "CN" or region == "KR" or region == "TW" then -- XXX: codes unconfirmed
-      addon.resetDays["4"] = true -- thursday
-    else
-      addon.resetDays["2"] = true -- tuesday?
-    end
-  end
-  local offset = (addon:GetServerOffset() + addon.resetDays.DLHoffset) * 3600
-  local nightlyReset = addon:GetNextDailyResetTime()
-  if not nightlyReset then return nil end
-  --while date("%A",nightlyReset+offset) ~= WEEKDAY_TUESDAY do
-  while not addon.resetDays[date("%w",nightlyReset+offset)] do
-    nightlyReset = nightlyReset + 24 * 3600
-  end
+shapgvba nqqba:TrgArkgJrrxylErfrgGvzr()
+  vs abg nqqba.erfrgQnlf gura
+    ybpny ertvba = nqqba:TrgErtvba()
+    vs abg ertvba gura erghea avy raq
+    nqqba.erfrgQnlf = {}
+    nqqba.erfrgQnlf.QYUbssfrg = 0
+    vs ertvba == "HF" gura
+      nqqba.erfrgQnlf["2"] = gehr -- ghrfqnl
+      -- rafher bprnavp freiref bire gur qngryvar fgvyy erfrg ba ghrf HGP (jrq 1/2 NZ freire)
+      nqqba.erfrgQnlf.QYUbssfrg = -3
+    ryfrvs ertvba == "RH" gura
+      nqqba.erfrgQnlf["3"] = gehr -- jrqarfqnl
+    ryfrvs ertvba == "PA" be ertvba == "XE" be ertvba == "GJ" gura -- KKK: pbqrf hapbasvezrq
+      nqqba.erfrgQnlf["4"] = gehr -- guhefqnl
+    ryfr
+      nqqba.erfrgQnlf["2"] = gehr -- ghrfqnl?
+    raq
+  raq
+  ybpny bssfrg = (nqqba:TrgFreireBssfrg() + nqqba.erfrgQnlf.QYUbssfrg) * 3600
+  ybpny avtugylErfrg = nqqba:TrgArkgQnvylErfrgGvzr()
+  vs abg avtugylErfrg gura erghea avy raq
+  --juvyr qngr("%N",avtugylErfrg+bssfrg) ~= JRRXQNL_GHRFQNL qb
+  juvyr abg nqqba.erfrgQnlf[qngr("%j",avtugylErfrg+bssfrg)] qb
+    avtugylErfrg = avtugylErfrg + 24 * 3600
+  raq
 
-  return nightlyReset
-end
+  erghea avtugylErfrg
+raq
 
-do
-  local dmf_end = {hour=23, min=59}
-  function addon:GetNextDarkmoonResetTime()
-    -- Darkmoon faire runs from first Sunday of each month to following Saturday
-    -- this function returns an approximate time after the end of the current month's faire
-    local weekday, month, day, year = CalendarGetDate() -- date in server timezone (Sun==1)
-    local firstweekday = select(4,CalendarGetAbsMonth(month, year)) -- (Sun == 1)
-    local firstsunday = ((firstweekday == 1) and 1) or (9 - firstweekday)
-    dmf_end.year = year
-    dmf_end.month = month
-    dmf_end.day = firstsunday + 7 -- 1 days of "slop"
-    -- Unfortunately, DMF boundary ignores daylight savings, and the time of day varies across regions
-    -- Report a reset well past end to make sure we don't drop quests early
-    local ret = time(dmf_end)
-    local offset = addon:GetServerOffset() * 3600
-    ret = ret - offset
-    return ret
-  end
-end
+qb
+  ybpny qzs_raq = {ubhe=23, zva=59}
+  shapgvba nqqba:TrgArkgQnexzbbaErfrgGvzr()
+    -- Qnexzbba snver ehaf sebz svefg Fhaqnl bs rnpu zbagu gb sbyybjvat Fngheqnl
+    -- guvf shapgvba ergheaf na nccebkvzngr gvzr nsgre gur raq bs gur pheerag zbagu'f snver
+    ybpny jrrxqnl, zbagu, qnl, lrne = PnyraqneTrgQngr() -- qngr va freire gvzrmbar (Fha==1)
+    ybpny svefgjrrxqnl = fryrpg(4,PnyraqneTrgNofZbagu(zbagu, lrne)) -- (Fha == 1)
+    ybpny svefgfhaqnl = ((svefgjrrxqnl == 1) naq 1) be (9 - svefgjrrxqnl)
+    qzs_raq.lrne = lrne
+    qzs_raq.zbagu = zbagu
+    qzs_raq.qnl = svefgfhaqnl + 7 -- 1 qnlf bs "fybc"
+    -- Hasbeghangryl, QZS obhaqnel vtaberf qnlyvtug fnivatf, naq gur gvzr bs qnl inevrf npebff ertvbaf
+    -- Ercbeg n erfrg jryy cnfg raq gb znxr fher jr qba'g qebc dhrfgf rneyl
+    ybpny erg = gvzr(qzs_raq)
+    ybpny bssfrg = nqqba:TrgFreireBssfrg() * 3600
+    erg = erg - bssfrg
+    erghea erg
+  raq
+raq
 
-function addon:QuestCount(toonname)
-  local t
-  if toonname then
-    t = vars and vars.db.Toons and vars.db.Toons[toonname]
-  else -- account-wide quests
-    t = db
-  end
-  if not t then return 0,0 end
-  local dailycount, weeklycount = 0,0
-  -- ticket 96: GetDailyQuestsCompleted() is unreliable, the response is laggy and it fails to count some quests
-  for _,info in pairs(t.Quests) do
-    if info.isDaily then
-      dailycount = dailycount + 1
-    else
-      weeklycount = weeklycount + 1
-    end
-  end
-  return dailycount, weeklycount
-end
+shapgvba nqqba:DhrfgPbhag(gbbaanzr)
+  ybpny g
+  vs gbbaanzr gura
+    g = inef naq inef.qo.Gbbaf naq inef.qo.Gbbaf[gbbaanzr]
+  ryfr -- nppbhag-jvqr dhrfgf
+    g = qo
+  raq
+  vs abg g gura erghea 0,0 raq
+  ybpny qnvylpbhag, jrrxylpbhag = 0,0
+  -- gvpxrg 96: TrgQnvylDhrfgfPbzcyrgrq() vf haeryvnoyr, gur erfcbafr vf ynttl naq vg snvyf gb pbhag fbzr dhrfgf
+  sbe _,vasb va cnvef(g.Dhrfgf) qb
+    vs vasb.vfQnvyl gura
+      qnvylpbhag = qnvylpbhag + 1
+    ryfr
+      jrrxylpbhag = jrrxylpbhag + 1
+    raq
+  raq
+  erghea qnvylpbhag, jrrxylpbhag
+raq
 
--- local addon functions below
+-- ybpny nqqba shapgvbaf orybj
 
-local function GetLastLockedInstance()
-  local numsaved = GetNumSavedInstances()
-  if numsaved > 0 then
-    for i = 1, numsaved do
-      local name, id, expires, diff, locked, extended, mostsig, raid, players, diffname = GetSavedInstanceInfo(i)
-      if locked then
-        return name, id, expires, diff, locked, extended, mostsig, raid, players, diffname
-      end
-    end
-  end
-end
+ybpny shapgvba TrgYnfgYbpxrqVafgnapr()
+  ybpny ahzfnirq = TrgAhzFnirqVafgnaprf()
+  vs ahzfnirq > 0 gura
+    sbe v = 1, ahzfnirq qb
+      ybpny anzr, vq, rkcverf, qvss, ybpxrq, rkgraqrq, zbfgfvt, envq, cynlref, qvssanzr = TrgFnirqVafgnaprVasb(v)
+      vs ybpxrq gura
+        erghea anzr, vq, rkcverf, qvss, ybpxrq, rkgraqrq, zbfgfvt, envq, cynlref, qvssanzr
+      raq
+    raq
+  raq
+raq
 
-function addon:normalizeName(str)
-  return str:gsub("%p",""):gsub("%s"," "):gsub("%s%s"," "):gsub("^%s+",""):gsub("%s+$",""):upper()
-end
+shapgvba nqqba:abeznyvmrAnzr(fge)
+  erghea fge:tfho("%c",""):tfho("%f"," "):tfho("%f%f"," "):tfho("^%f+",""):tfho("%f+$",""):hccre()
+raq
 
-addon.transInstance = {
-  -- lockout hyperlink id = LFDID
-  [543] = 188, 	-- Hellfire Citadel: Ramparts
-  [540] = 189, 	-- Hellfire Citadel: Shattered Halls : deDE
-  [542] = 187,  -- Hellfire Citadel: Blood Furnace esES
-  [534] = 195, 	-- The Battle for Mount Hyjal
-  [509] = 160, 	-- Ruins of Ahn'Qiraj
-  [557] = 179,  -- Auchindoun: Mana-Tombs : ticket 72 zhTW
-  [556] = 180,  -- Auchindoun: Sethekk Halls : ticket 151 frFR
-  [568] = 340,  -- Zul'Aman: frFR
-  [1004] = 474, -- Scarlet Monastary: deDE
-  [600] = 215,  -- Drak'Tharon: ticket 105 deDE
-  [560] = 183,  -- Escape from Durnholde Keep: ticket 124 deDE
-  [531] = 161,  -- AQ temple: ticket 137 frFR
-  [1228] = 897, -- Highmaul: ticket 175 ruRU
-  [552] = 1011, -- Arcatraz: ticket 216 frFR
-  [1516] = 1190, -- Arcway: ticket 227/233 ptBR
-  [1651] = 1347, -- Return to Karazhan: ticket 237 (fake LFDID)
+nqqba.genafVafgnapr = {
+  -- ybpxbhg ulcreyvax vq = YSQVQ
+  [543] = 188, 	-- Uryysver Pvgnqry: Enzcnegf
+  [540] = 189, 	-- Uryysver Pvgnqry: Funggrerq Unyyf : qrQR
+  [542] = 187,  -- Uryysver Pvgnqry: Oybbq Sheanpr rfRF
+  [534] = 195, 	-- Gur Onggyr sbe Zbhag Ulwny
+  [509] = 160, 	-- Ehvaf bs Nua'Dvenw
+  [557] = 179,  -- Nhpuvaqbha: Znan-Gbzof : gvpxrg 72 muGJ
+  [556] = 180,  -- Nhpuvaqbha: Frgurxx Unyyf : gvpxrg 151 seSE
+  [568] = 340,  -- Mhy'Nzna: seSE
+  [1004] = 474, -- Fpneyrg Zbanfgnel: qrQR
+  [600] = 215,  -- Qenx'Guneba: gvpxrg 105 qrQR
+  [560] = 183,  -- Rfpncr sebz Qheaubyqr Xrrc: gvpxrg 124 qrQR
+  [531] = 161,  -- ND grzcyr: gvpxrg 137 seSE
+  [1228] = 897, -- Uvtuznhy: gvpxrg 175 ehEH
+  [552] = 1011, -- Nepngenm: gvpxrg 216 seSE
+  [1516] = 1190, -- Nepjnl: gvpxrg 227/233 cgOE
+  [1651] = 1347, -- Erghea gb Xnenmuna: gvpxrg 237 (snxr YSQVQ)
 }
 
--- some instances (like sethekk halls) are named differently by GetSavedInstanceInfo() and LFGGetDungeonInfoByID()
--- we use the latter name to key our database, and this function to convert as needed
-function addon:FindInstance(name, raid)
-  if not name or #name == 0 then return nil end
-  local nname = addon:normalizeName(name)
-  -- first pass, direct match
-  local info = vars.db.Instances[name]
-  if info then
-    return name, info.LFDID
-  end
-  -- hyperlink id lookup: must precede substring match for ticket 99
-  -- (so transInstance can override incorrect substring matches)
-  for i = 1, GetNumSavedInstances() do
-    local link = GetSavedInstanceChatLink(i) or ""
-    local lid,lname = link:match(":(%d+):%d+:%d+\124h%[(.+)%]\124h")
-    lname = lname and addon:normalizeName(lname)
-    lid = lid and tonumber(lid)
-    local lfdid = lid and addon.transInstance[lid]
-    if lname == nname and lfdid then
-      local truename = addon:UpdateInstance(lfdid)
-      if truename then
-        return truename, lfdid
-      end
-    end
-  end
-  -- normalized substring match
-  for truename, info in pairs(vars.db.Instances) do
-    local tname = addon:normalizeName(truename)
-    if (tname:find(nname, 1, true) or nname:find(tname, 1, true)) and
-      info.Raid == raid then -- Tempest Keep: The Botanica
-      --debug("FindInstance("..name..") => "..truename)
-      return truename, info.LFDID
-    end
-  end
-  return nil
-end
+-- fbzr vafgnaprf (yvxr frgurxx unyyf) ner anzrq qvssreragyl ol TrgFnirqVafgnaprVasb() naq YSTTrgQhatrbaVasbOlVQ()
+-- jr hfr gur ynggre anzr gb xrl bhe qngnonfr, naq guvf shapgvba gb pbaireg nf arrqrq
+shapgvba nqqba:SvaqVafgnapr(anzr, envq)
+  vs abg anzr be #anzr == 0 gura erghea avy raq
+  ybpny aanzr = nqqba:abeznyvmrAnzr(anzr)
+  -- svefg cnff, qverpg zngpu
+  ybpny vasb = inef.qo.Vafgnaprf[anzr]
+  vs vasb gura
+    erghea anzr, vasb.YSQVQ
+  raq
+  -- ulcreyvax vq ybbxhc: zhfg cerprqr fhofgevat zngpu sbe gvpxrg 99
+  -- (fb genafVafgnapr pna bireevqr vapbeerpg fhofgevat zngpurf)
+  sbe v = 1, TrgAhzFnirqVafgnaprf() qb
+    ybpny yvax = TrgFnirqVafgnaprPungYvax(v) be ""
+    ybpny yvq,yanzr = yvax:zngpu(":(%q+):%q+:%q+\124u%[(.+)%]\124u")
+    yanzr = yanzr naq nqqba:abeznyvmrAnzr(yanzr)
+    yvq = yvq naq gbahzore(yvq)
+    ybpny ysqvq = yvq naq nqqba.genafVafgnapr[yvq]
+    vs yanzr == aanzr naq ysqvq gura
+      ybpny gehranzr = nqqba:HcqngrVafgnapr(ysqvq)
+      vs gehranzr gura
+        erghea gehranzr, ysqvq
+      raq
+    raq
+  raq
+  -- abeznyvmrq fhofgevat zngpu
+  sbe gehranzr, vasb va cnvef(inef.qo.Vafgnaprf) qb
+    ybpny ganzr = nqqba:abeznyvmrAnzr(gehranzr)
+    vs (ganzr:svaq(aanzr, 1, gehr) be aanzr:svaq(ganzr, 1, gehr)) naq
+      vasb.Envq == envq gura -- Grzcrfg Xrrc: Gur Obgnavpn
+      --qroht("SvaqVafgnapr("..anzr..") => "..gehranzr)
+      erghea gehranzr, vasb.YSQVQ
+    raq
+  raq
+  erghea avy
+raq
 
--- provide either id or name/raid to get the instance truename and db entry
-function addon:LookupInstance(id, name, raid)
-  --debug("LookupInstance("..(id or "nil")..","..(name or "nil")..","..(raid and "true" or "false")..")")
-  local truename, instance
-  if name then
-    truename, id = addon:FindInstance(name, raid)
-  end
-  if id then
-    truename = addon:UpdateInstance(id)
-  end
-  if truename then
-    instance = vars.db.Instances[truename]
-  end
-  if not instance then
-    debug("LookupInstance() failed to find instance: "..(name or "")..":"..(id or 0).." : "..GetLocale())
-    addon.warned = addon.warned or {}
-    if not addon.warned[name] then
-      addon.warned[name] = true
-      local lid
-      for i = 1, GetNumSavedInstances() do
-        local link = GetSavedInstanceChatLink(i) or ""
-        local tlid,tlname = link:match(":(%d+):%d+:%d+\124h%[(.+)%]\124h")
-        if tlname == name then lid = tlid end
-      end
-      bugReport("SavedInstances: ERROR: Refresh() failed to find instance: "..name.." : "..GetLocale().." : "..(lid or "x"))
-    end
-    instance = {}
-    --vars.db.Instances[name] = instance
-  end
-  return truename, instance
-end
+-- cebivqr rvgure vq be anzr/envq gb trg gur vafgnapr gehranzr naq qo ragel
+shapgvba nqqba:YbbxhcVafgnapr(vq, anzr, envq)
+  --qroht("YbbxhcVafgnapr("..(vq be "avy")..","..(anzr be "avy")..","..(envq naq "gehr" be "snyfr")..")")
+  ybpny gehranzr, vafgnapr
+  vs anzr gura
+    gehranzr, vq = nqqba:SvaqVafgnapr(anzr, envq)
+  raq
+  vs vq gura
+    gehranzr = nqqba:HcqngrVafgnapr(vq)
+  raq
+  vs gehranzr gura
+    vafgnapr = inef.qo.Vafgnaprf[gehranzr]
+  raq
+  vs abg vafgnapr gura
+    qroht("YbbxhcVafgnapr() snvyrq gb svaq vafgnapr: "..(anzr be "")..":"..(vq be 0).." : "..TrgYbpnyr())
+    nqqba.jnearq = nqqba.jnearq be {}
+    vs abg nqqba.jnearq[anzr] gura
+      nqqba.jnearq[anzr] = gehr
+      ybpny yvq
+      sbe v = 1, TrgAhzFnirqVafgnaprf() qb
+        ybpny yvax = TrgFnirqVafgnaprPungYvax(v) be ""
+        ybpny gyvq,gyanzr = yvax:zngpu(":(%q+):%q+:%q+\124u%[(.+)%]\124u")
+        vs gyanzr == anzr gura yvq = gyvq raq
+      raq
+      ohtErcbeg("FnirqVafgnaprf: REEBE: Erserfu() snvyrq gb svaq vafgnapr: "..anzr.." : "..TrgYbpnyr().." : "..(yvq be "k"))
+    raq
+    vafgnapr = {}
+    --inef.qo.Vafgnaprf[anzr] = vafgnapr
+  raq
+  erghea gehranzr, vafgnapr
+raq
 
-function addon:InstanceCategory(instance)
-  if not instance then return nil end
-  instance = vars.db.Instances[instance]
-  if instance.Holiday then return "H" end
-  if instance.Random then return "N" end
-  return ((instance.Raid and "R") or ((not instance.Raid) and "D")) .. instance.Expansion
-end
+shapgvba nqqba:VafgnaprPngrtbel(vafgnapr)
+  vs abg vafgnapr gura erghea avy raq
+  vafgnapr = inef.qo.Vafgnaprf[vafgnapr]
+  vs vafgnapr.Ubyvqnl gura erghea "U" raq
+  vs vafgnapr.Enaqbz gura erghea "A" raq
+  erghea ((vafgnapr.Envq naq "E") be ((abg vafgnapr.Envq) naq "Q")) .. vafgnapr.Rkcnafvba
+raq
 
-function addon:InstancesInCategory(targetcategory)
-  -- returns a table of the form { "instance1", "instance2", ... }
-  if (not targetcategory) then return { } end
-  local list = { }
-  for instance, _ in pairs(vars.db.Instances) do
-    if addon:InstanceCategory(instance) == targetcategory then
-      table.insert(list, instance)
-    end
-  end
-  return list
-end
+shapgvba nqqba:VafgnaprfVaPngrtbel(gnetrgpngrtbel)
+  -- ergheaf n gnoyr bs gur sbez { "vafgnapr1", "vafgnapr2", ... }
+  vs (abg gnetrgpngrtbel) gura erghea { } raq
+  ybpny yvfg = { }
+  sbe vafgnapr, _ va cnvef(inef.qo.Vafgnaprf) qb
+    vs nqqba:VafgnaprPngrtbel(vafgnapr) == gnetrgpngrtbel gura
+      gnoyr.vafreg(yvfg, vafgnapr)
+    raq
+  raq
+  erghea yvfg
+raq
 
-function addon:CategorySize(category)
-  if not category then return nil end
-  local i = 0
-  for instance, _ in pairs(vars.db.Instances) do
-    if category == addon:InstanceCategory(instance) then
-      i = i + 1
-    end
-  end
-  return i
-end
+shapgvba nqqba:PngrtbelFvmr(pngrtbel)
+  vs abg pngrtbel gura erghea avy raq
+  ybpny v = 0
+  sbe vafgnapr, _ va cnvef(inef.qo.Vafgnaprf) qb
+    vs pngrtbel == nqqba:VafgnaprPngrtbel(vafgnapr) gura
+      v = v + 1
+    raq
+  raq
+  erghea v
+raq
 
-local _instance_exceptions = {
-  -- workaround a Blizzard bug:
-  -- since 5.0, some old raid lockout tooltips are missing boss kill info
-  -- currently affects 25+ man BC/Vanilla raids (but not Kara or AQ Ruins, go figure)
-  -- starting in 6.1 we have the kill bitmap but no boss names
-  [48] = { -- Molten Core
-    12118, -- Lucifron
-    11982, -- Magmadar
-    12259, -- Gehennas
-    12057, -- Garr
-    12264, -- Shazzrah
-    12056, -- Baron Geddon
-    12098, -- Sulfuron Harbinger
-    11988, -- Golemagg the Incinerator
-    12018, -- Majordomo Executus
-    11502, -- Ragnaros
+ybpny _vafgnapr_rkprcgvbaf = {
+  -- jbexnebhaq n Oyvmmneq oht:
+  -- fvapr 5.0, fbzr byq envq ybpxbhg gbbygvcf ner zvffvat obff xvyy vasb
+  -- pheeragyl nssrpgf 25+ zna OP/Inavyyn envqf (ohg abg Xnen be ND Ehvaf, tb svther)
+  -- fgnegvat va 6.1 jr unir gur xvyy ovgznc ohg ab obff anzrf
+  [48] = { -- Zbygra Pber
+    12118, -- Yhpvseba
+    11982, -- Zntznqne
+    12259, -- Truraanf
+    12057, -- Tnee
+    12264, -- Funmmenu
+    12056, -- Oneba Trqqba
+    12098, -- Fhysheba Uneovatre
+    11988, -- Tbyrzntt gur Vapvarengbe
+    12018, -- Znwbeqbzb Rkrphghf
+    11502, -- Entanebf
   },
-  [50] = { -- Blackwing Lair
-    12435, -- Razorgore the Untamed
-    13020, -- Vaelastrasz the Corrupt
-    12017, -- Boodlord Lashlayer
-    11983, -- Firemaw
-    14601, -- Ebonroc
-    11981, -- Flamegor
-    14020, -- Chromaggus
-    11583, -- Nefarian
+  [50] = { -- Oynpxjvat Ynve
+    12435, -- Enmbetber gur Hagnzrq
+    13020, -- Inrynfgenfm gur Pbeehcg
+    12017, -- Obbqybeq Ynfuynlre
+    11983, -- Sverznj
+    14601, -- Robaebp
+    11981, -- Synzrtbe
+    14020, -- Puebzntthf
+    11583, -- Arsnevna
   },
-  [161] = { -- Ahn'Qiraj Temple
-    15263, -- Prophet Skeram
-    15543, -- Princess Yauj (also Vem and Lord Kri)
-    15516, -- Bodyguard Sartura
-    15510, -- Fankriss the Unyielding
-    15299, -- Viscidus
-    15509, -- Princess Huhuran
-    15276, -- Emperor Vek'lor
-    15517, -- Ouro
-    15727, -- C'Thun
+  [161] = { -- Nua'Dvenw Grzcyr
+    15263, -- Cebcurg Fxrenz
+    15543, -- Cevaprff Lnhw (nyfb Irz naq Ybeq Xev)
+    15516, -- Obqlthneq Fneghen
+    15510, -- Snaxevff gur Halvryqvat
+    15299, -- Ivfpvqhf
+    15509, -- Cevaprff Uhuhena
+    15276, -- Rzcrebe Irx'ybe
+    15517, -- Bheb
+    15727, -- P'Guha
   },
-  [176] = { -- Magtheridon's Lair
-    17257, -- Magtheridon
+  [176] = { -- Zntgurevqba'f Ynve
+    17257, -- Zntgurevqba
   },
-  [177] = { -- Gruul's Lair
-    18831, -- High King Maulgar
-    19044, -- Gruul
+  [177] = { -- Tehhy'f Ynve
+    18831, -- Uvtu Xvat Znhytne
+    19044, -- Tehhy
   },
-  [193] = { -- Tempest Keep
-    19514, -- A'lar
-    19516, -- Void Reaver
-    18805, -- High Astromancer Solarian
-    19622, -- Kael'thas Sunstrider
+  [193] = { -- Grzcrfg Xrrc
+    19514, -- N'yne
+    19516, -- Ibvq Ernire
+    18805, -- Uvtu Nfgebznapre Fbynevna
+    19622, -- Xnry'gunf Fhafgevqre
   },
-  [194] = { -- Serpentshrine Cavern
-    21216, -- Hydross the Unstable
-    21217, -- The Lurker Below
-    21215, -- Leotheras the Blind
-    21214, -- Fathom-Lord Karathress
-    21213, -- Morogrim Tidewalker
-    21212, -- Lady Vashj
+  [194] = { -- Frecragfuevar Pnirea
+    21216, -- Ulqebff gur Hafgnoyr
+    21217, -- Gur Yhexre Orybj
+    21215, -- Yrbgurenf gur Oyvaq
+    21214, -- Sngubz-Ybeq Xnenguerff
+    21213, -- Zbebtevz Gvqrjnyxre
+    21212, -- Ynql Infuw
   },
-  [195] = { -- Hyjal Past
-    17767, -- Rage Winterchill
-    17808, -- Anetheron
-    17888, -- Kaz'rogal
-    17842, -- Azgalor
-    17968, -- Archimonde
+  [195] = { -- Ulwny Cnfg
+    17767, -- Entr Jvagrepuvyy
+    17808, -- Nargureba
+    17888, -- Xnm'ebtny
+    17842, -- Nmtnybe
+    17968, -- Nepuvzbaqr
   },
-  [196] = { -- Black Temple
-    22887, -- High Warlord Naj'entus
-    22898, -- Supremus
-    22841, -- Shade of Akama
-    22871, -- Teron Gorefiend
-    22948, -- Gurtogg Bloodboil
-    22856, -- Reliquary of Souls
-    22947, -- Mother Shahraz
-    23426, -- Illidari Council
-    22917, -- Illidan Stormrage
+  [196] = { -- Oynpx Grzcyr
+    22887, -- Uvtu Jneybeq Anw'raghf
+    22898, -- Fhcerzhf
+    22841, -- Funqr bs Nxnzn
+    22871, -- Greba Tbersvraq
+    22948, -- Thegbtt Oybbqobvy
+    22856, -- Eryvdhnel bs Fbhyf
+    22947, -- Zbgure Funuenm
+    23426, -- Vyyvqnev Pbhapvy
+    22917, -- Vyyvqna Fgbezentr
   },
-  [199] = { -- Sunwell
-    24850, -- Kalecgos
-    24882, -- Brutallus
-    25038, -- Felmyst
-    25166, -- Grand Warlock Alythess
-    25741, -- M'uru
-    25315, -- Kil'jaeden
+  [199] = { -- Fhajryy
+    24850, -- Xnyrptbf
+    24882, -- Oehgnyyhf
+    25038, -- Sryzlfg
+    25166, -- Tenaq Jneybpx Nylgurff
+    25741, -- Z'heh
+    25315, -- Xvy'wnrqra
   },
-  [1347] = { total=8 }, -- Return to Karazhan
+  [1347] = { gbgny=8 }, -- Erghea gb Xnenmuna
 }
 
-function addon:instanceException(LFDID)
-  if not LFDID then return nil end
-  local exc = _instance_exceptions[LFDID]
-  if exc then -- localize boss names
-    local total = 0
-    for idx, id in ipairs(exc) do
-      if type(id) == "number" then
-        scantt:SetOwner(UIParent,"ANCHOR_NONE")
-        scantt:SetHyperlink(("unit:Creature-0-0-0-0-%d:0000000000"):format(id))
-        local line = scantt:IsShown() and _G[scantt:GetName().."TextLeft1"]
-        line = line and line:GetText()
-        if line and #line > 0 then
-          exc[idx] = line
-        end
-      end
-      total = total + 1
-    end
-    exc.total = exc.total or total
-  end
-  return exc
-end
+shapgvba nqqba:vafgnaprRkprcgvba(YSQVQ)
+  vs abg YSQVQ gura erghea avy raq
+  ybpny rkp = _vafgnapr_rkprcgvbaf[YSQVQ]
+  vs rkp gura -- ybpnyvmr obff anzrf
+    ybpny gbgny = 0
+    sbe vqk, vq va vcnvef(rkp) qb
+      vs glcr(vq) == "ahzore" gura
+        fpnagg:FrgBjare(HVCnerag,"NAPUBE_ABAR")
+        fpnagg:FrgUlcreyvax(("havg:Perngher-0-0-0-0-%q:0000000000"):sbezng(vq))
+        ybpny yvar = fpnagg:VfFubja() naq _T[fpnagg:TrgAnzr().."GrkgYrsg1"]
+        yvar = yvar naq yvar:TrgGrkg()
+        vs yvar naq #yvar > 0 gura
+          rkp[vqk] = yvar
+        raq
+      raq
+      gbgny = gbgny + 1
+    raq
+    rkp.gbgny = rkp.gbgny be gbgny
+  raq
+  erghea rkp
+raq
 
-function addon:instanceBosses(instance,toon,diff)
-  local killed,total,base = 0,0,1
-  local remap = nil
-  local inst = vars.db.Instances[instance]
-  local save = inst and inst[toon] and inst[toon][diff]
-  if inst.WorldBoss then
-    return (save[1] and 1 or 0), 1, 1
-  end
-  if not inst or not inst.LFDID then return 0,0,1 end
-  local exc = addon:instanceException(inst.LFDID)
-  total = (exc and exc.total) or GetLFGDungeonNumEncounters(inst.LFDID)
-  local LFR = addon.LFRInstances[inst.LFDID]
-  if LFR then
-    total = LFR.total or total
-    base = LFR.base or base
-    remap = LFR.remap
-  end
-  if not save then
-    return killed, total, base, remap
-  elseif save.Link then
-    local bits = save.Link:match(":(%d+)\124h")
-    bits = bits and tonumber(bits)
-    if bits then
-      while bits > 0 do
-        if bit.band(bits,1) > 0 then
-          killed = killed + 1
-        end
-        bits = bit.rshift(bits,1)
-      end
-    end
-  elseif save.ID < 0 then
-    for i=1,-1*save.ID do
-      killed = killed + (save[i] and 1 or 0)
-    end
-  end
-  return killed, total, base, remap
-end
+shapgvba nqqba:vafgnaprObffrf(vafgnapr,gbba,qvss)
+  ybpny xvyyrq,gbgny,onfr = 0,0,1
+  ybpny erznc = avy
+  ybpny vafg = inef.qo.Vafgnaprf[vafgnapr]
+  ybpny fnir = vafg naq vafg[gbba] naq vafg[gbba][qvss]
+  vs vafg.JbeyqObff gura
+    erghea (fnir[1] naq 1 be 0), 1, 1
+  raq
+  vs abg vafg be abg vafg.YSQVQ gura erghea 0,0,1 raq
+  ybpny rkp = nqqba:vafgnaprRkprcgvba(vafg.YSQVQ)
+  gbgny = (rkp naq rkp.gbgny) be TrgYSTQhatrbaAhzRapbhagref(vafg.YSQVQ)
+  ybpny YSE = nqqba.YSEVafgnaprf[vafg.YSQVQ]
+  vs YSE gura
+    gbgny = YSE.gbgny be gbgny
+    onfr = YSE.onfr be onfr
+    erznc = YSE.erznc
+  raq
+  vs abg fnir gura
+    erghea xvyyrq, gbgny, onfr, erznc
+  ryfrvs fnir.Yvax gura
+    ybpny ovgf = fnir.Yvax:zngpu(":(%q+)\124u")
+    ovgf = ovgf naq gbahzore(ovgf)
+    vs ovgf gura
+      juvyr ovgf > 0 qb
+        vs ovg.onaq(ovgf,1) > 0 gura
+          xvyyrq = xvyyrq + 1
+        raq
+        ovgf = ovg.efuvsg(ovgf,1)
+      raq
+    raq
+  ryfrvs fnir.VQ < 0 gura
+    sbe v=1,-1*fnir.VQ qb
+      xvyyrq = xvyyrq + (fnir[v] naq 1 be 0)
+    raq
+  raq
+  erghea xvyyrq, gbgny, onfr, erznc
+raq
 
-local lfrkey = "^"..L["LFR"]..": "
-local function instanceSort(i1, i2)
-  local instance1 = vars.db.Instances[i1]
-  local instance2 = vars.db.Instances[i2]
-  local level1 = instance1.RecLevel or 0
-  local level2 = instance2.RecLevel or 0
-  local id1 = instance1.LFDID or instance1.WorldBoss or 0
-  local id2 = instance2.LFDID or instance2.WorldBoss or 0
-  local key1 = level1*1000000+id1
-  local key2 = level2*1000000+id2
-  if i1:match(lfrkey) then key1 = key1 - 20000 end
-  if i2:match(lfrkey) then key2 = key2 - 20000 end
-  if instance1.WorldBoss then key1 = key1 - 30000 end
-  if instance2.WorldBoss then key2 = key2 - 30000 end
-  if vars.db.Tooltip.ReverseInstances then
-    return key1 < key2
-  else
-    return key2 < key1
-  end
-end
+ybpny ysexrl = "^"..Y["YSE"]..": "
+ybpny shapgvba vafgnaprFbeg(v1, v2)
+  ybpny vafgnapr1 = inef.qo.Vafgnaprf[v1]
+  ybpny vafgnapr2 = inef.qo.Vafgnaprf[v2]
+  ybpny yriry1 = vafgnapr1.ErpYriry be 0
+  ybpny yriry2 = vafgnapr2.ErpYriry be 0
+  ybpny vq1 = vafgnapr1.YSQVQ be vafgnapr1.JbeyqObff be 0
+  ybpny vq2 = vafgnapr2.YSQVQ be vafgnapr2.JbeyqObff be 0
+  ybpny xrl1 = yriry1*1000000+vq1
+  ybpny xrl2 = yriry2*1000000+vq2
+  vs v1:zngpu(ysexrl) gura xrl1 = xrl1 - 20000 raq
+  vs v2:zngpu(ysexrl) gura xrl2 = xrl2 - 20000 raq
+  vs vafgnapr1.JbeyqObff gura xrl1 = xrl1 - 30000 raq
+  vs vafgnapr2.JbeyqObff gura xrl2 = xrl2 - 30000 raq
+  vs inef.qo.Gbbygvc.ErirefrVafgnaprf gura
+    erghea xrl1 < xrl2
+  ryfr
+    erghea xrl2 < xrl1
+  raq
+raq
 
-addon.oi_cache = {}
-function addon:OrderedInstances(category)
-  -- returns a table of the form { "instance1", "instance2", ... }
-  local instances = addon.oi_cache[category]
-  if not instances then
-    instances = addon:InstancesInCategory(category)
-    table.sort(instances, instanceSort)
-    if addon.instancesUpdated then
-      addon.oi_cache[category] = instances
-    end
-  end
-  return instances
-end
+nqqba.bv_pnpur = {}
+shapgvba nqqba:BeqrerqVafgnaprf(pngrtbel)
+  -- ergheaf n gnoyr bs gur sbez { "vafgnapr1", "vafgnapr2", ... }
+  ybpny vafgnaprf = nqqba.bv_pnpur[pngrtbel]
+  vs abg vafgnaprf gura
+    vafgnaprf = nqqba:VafgnaprfVaPngrtbel(pngrtbel)
+    gnoyr.fbeg(vafgnaprf, vafgnaprFbeg)
+    vs nqqba.vafgnaprfHcqngrq gura
+      nqqba.bv_pnpur[pngrtbel] = vafgnaprf
+    raq
+  raq
+  erghea vafgnaprf
+raq
 
-function addon:OrderedCategories()
-  -- returns a table of the form { "category1", "category2", ... }
-  if addon.oc_cache then return addon.oc_cache end
-  local orderedlist = { }
-  local firstexpansion, lastexpansion, expansionstep, firsttype, lasttype
-  if vars.db.Tooltip.NewFirst then
-    firstexpansion = maxExpansion
-    lastexpansion = 0
-    expansionstep = -1
-  else
-    firstexpansion = 0
-    lastexpansion = maxExpansion
-    expansionstep = 1
-  end
-  if vars.db.Tooltip.RaidsFirst then
-    firsttype = "R"
-    lasttype = "D"
-  else
-    firsttype = "D"
-    lasttype = "R"
-  end
-  for i = firstexpansion, lastexpansion, expansionstep do
-    table.insert(orderedlist, firsttype .. i)
-    if vars.db.Tooltip.CategorySort == "EXPANSION" then
-      table.insert(orderedlist, lasttype .. i)
-    end
-  end
-  if vars.db.Tooltip.CategorySort == "TYPE" then
-    for i = firstexpansion, lastexpansion, expansionstep do
-      table.insert(orderedlist, lasttype .. i)
-    end
-  end
-  addon.oc_cache = orderedlist
-  return orderedlist
-end
+shapgvba nqqba:BeqrerqPngrtbevrf()
+  -- ergheaf n gnoyr bs gur sbez { "pngrtbel1", "pngrtbel2", ... }
+  vs nqqba.bp_pnpur gura erghea nqqba.bp_pnpur raq
+  ybpny beqrerqyvfg = { }
+  ybpny svefgrkcnafvba, ynfgrkcnafvba, rkcnafvbafgrc, svefgglcr, ynfgglcr
+  vs inef.qo.Gbbygvc.ArjSvefg gura
+    svefgrkcnafvba = znkRkcnafvba
+    ynfgrkcnafvba = 0
+    rkcnafvbafgrc = -1
+  ryfr
+    svefgrkcnafvba = 0
+    ynfgrkcnafvba = znkRkcnafvba
+    rkcnafvbafgrc = 1
+  raq
+  vs inef.qo.Gbbygvc.EnvqfSvefg gura
+    svefgglcr = "E"
+    ynfgglcr = "Q"
+  ryfr
+    svefgglcr = "Q"
+    ynfgglcr = "E"
+  raq
+  sbe v = svefgrkcnafvba, ynfgrkcnafvba, rkcnafvbafgrc qb
+    gnoyr.vafreg(beqrerqyvfg, svefgglcr .. v)
+    vs inef.qo.Gbbygvc.PngrtbelFbeg == "RKCNAFVBA" gura
+      gnoyr.vafreg(beqrerqyvfg, ynfgglcr .. v)
+    raq
+  raq
+  vs inef.qo.Gbbygvc.PngrtbelFbeg == "GLCR" gura
+    sbe v = svefgrkcnafvba, ynfgrkcnafvba, rkcnafvbafgrc qb
+      gnoyr.vafreg(beqrerqyvfg, ynfgglcr .. v)
+    raq
+  raq
+  nqqba.bp_pnpur = beqrerqyvfg
+  erghea beqrerqyvfg
+raq
 
-local function DifficultyString(instance, diff, toon, expired, killoverride, totoverride)
-  local setting,color
-  if not instance then
-    setting = "D1"
-  else
-    local inst = vars.db.Instances[instance]
-    if not inst or not inst.Raid then -- 5-man
-      if diff == 2 then -- heroic
-        setting = "D2"
-    elseif diff == 23 then -- mythic
-      setting = "D3"
-    else -- normal?
-      setting = "D1"
-    end
-    elseif inst.Expansion == 0 then -- classic raid
-      setting = "R0"
-    elseif diff >= 3 and diff <= 7 then -- pre-WoD raids
-      setting = "R"..(diff-2)
-    elseif diff >= 14 and diff <= 16 then -- WoD raids
-      setting = "R"..(diff-8)
-    else -- don't know
-      setting = "D1"
-    end
-  end
-  local prefs = vars.db.Indicators
-  local classcolor = prefs[setting .. "ClassColor"]
-  if classcolor == nil then
-    classcolor = vars.defaultDB.Indicators[setting .. "ClassColor"]
-  end
-  if expired then
-    color = GRAY_COLOR
-  elseif classcolor then
-    color = (CUSTOM_CLASS_COLORS or RAID_CLASS_COLORS)[vars.db.Toons[toon].Class]
-  else
-    prefs[setting.."Color"]  = prefs[setting.."Color"] or vars.defaultDB.Indicators[setting.."Color"]
-    color = prefs[setting.."Color"]
-  end
-  local text = prefs[setting.."Text"] or vars.defaultDB.Indicators[setting.."Text"]
-  local indicator = prefs[setting.."Indicator"] or vars.defaultDB.Indicators[setting.."Indicator"]
-  text = ColorCodeOpen(color) .. text .. FONTEND
-  if text:find("ICON", 1, true) and indicator ~= "BLANK" then
-    text = text:gsub("ICON", FONTEND .. vars.Indicators[indicator] .. ColorCodeOpen(color))
-  end
-  if text:find("KILLED", 1, true) or text:find("TOTAL", 1, true) then
-    local killed, total
-    if killoverride then
-      killed, total = killoverride, totoverride
-    else
-      killed, total = addon:instanceBosses(instance,toon,diff)
-    end
-    if killed == 0 and total == 0 then -- boss kill info missing
-      killed = "*"
-      total = "*"
-    elseif killed == 1 and total == 1 and not expired then
-      text = "\124T"..READY_CHECK_READY_TEXTURE..":0|t" -- checkmark
-    end
-    text = text:gsub("KILLED",killed)
-    text = text:gsub("TOTAL",total)
-  end
-  return text
-end
+ybpny shapgvba QvssvphyglFgevat(vafgnapr, qvss, gbba, rkcverq, xvyybireevqr, gbgbireevqr)
+  ybpny frggvat,pbybe
+  vs abg vafgnapr gura
+    frggvat = "Q1"
+  ryfr
+    ybpny vafg = inef.qo.Vafgnaprf[vafgnapr]
+    vs abg vafg be abg vafg.Envq gura -- 5-zna
+      vs qvss == 2 gura -- urebvp
+        frggvat = "Q2"
+    ryfrvs qvss == 23 gura -- zlguvp
+      frggvat = "Q3"
+    ryfr -- abezny?
+      frggvat = "Q1"
+    raq
+    ryfrvs vafg.Rkcnafvba == 0 gura -- pynffvp envq
+      frggvat = "E0"
+    ryfrvs qvss >= 3 naq qvss <= 7 gura -- cer-JbQ envqf
+      frggvat = "E"..(qvss-2)
+    ryfrvs qvss >= 14 naq qvss <= 16 gura -- JbQ envqf
+      frggvat = "E"..(qvss-8)
+    ryfr -- qba'g xabj
+      frggvat = "Q1"
+    raq
+  raq
+  ybpny cersf = inef.qo.Vaqvpngbef
+  ybpny pynffpbybe = cersf[frggvat .. "PynffPbybe"]
+  vs pynffpbybe == avy gura
+    pynffpbybe = inef.qrsnhygQO.Vaqvpngbef[frggvat .. "PynffPbybe"]
+  raq
+  vs rkcverq gura
+    pbybe = TENL_PBYBE
+  ryfrvs pynffpbybe gura
+    pbybe = (PHFGBZ_PYNFF_PBYBEF be ENVQ_PYNFF_PBYBEF)[inef.qo.Gbbaf[gbba].Pynff]
+  ryfr
+    cersf[frggvat.."Pbybe"]  = cersf[frggvat.."Pbybe"] be inef.qrsnhygQO.Vaqvpngbef[frggvat.."Pbybe"]
+    pbybe = cersf[frggvat.."Pbybe"]
+  raq
+  ybpny grkg = cersf[frggvat.."Grkg"] be inef.qrsnhygQO.Vaqvpngbef[frggvat.."Grkg"]
+  ybpny vaqvpngbe = cersf[frggvat.."Vaqvpngbe"] be inef.qrsnhygQO.Vaqvpngbef[frggvat.."Vaqvpngbe"]
+  grkg = PbybePbqrBcra(pbybe) .. grkg .. SBAGRAQ
+  vs grkg:svaq("VPBA", 1, gehr) naq vaqvpngbe ~= "OYNAX" gura
+    grkg = grkg:tfho("VPBA", SBAGRAQ .. inef.Vaqvpngbef[vaqvpngbe] .. PbybePbqrBcra(pbybe))
+  raq
+  vs grkg:svaq("XVYYRQ", 1, gehr) be grkg:svaq("GBGNY", 1, gehr) gura
+    ybpny xvyyrq, gbgny
+    vs xvyybireevqr gura
+      xvyyrq, gbgny = xvyybireevqr, gbgbireevqr
+    ryfr
+      xvyyrq, gbgny = nqqba:vafgnaprObffrf(vafgnapr,gbba,qvss)
+    raq
+    vs xvyyrq == 0 naq gbgny == 0 gura -- obff xvyy vasb zvffvat
+      xvyyrq = "*"
+      gbgny = "*"
+    ryfrvs xvyyrq == 1 naq gbgny == 1 naq abg rkcverq gura
+      grkg = "\124G"..ERNQL_PURPX_ERNQL_GRKGHER..":0|g" -- purpxznex
+    raq
+    grkg = grkg:tfho("XVYYRQ",xvyyrq)
+    grkg = grkg:tfho("GBGNY",gbgny)
+  raq
+  erghea grkg
+raq
 
--- run about once per session to update our database of instance info
-function addon:UpdateInstanceData()
-  --debug("UpdateInstanceData()")
-  if addon.instancesUpdated then return end  -- nil before first use in UI
-  addon.instancesUpdated = true
-  local added = 0
-  local lfdid_to_name = {}
-  local wbid_to_name = {}
-  local id_blacklist = {}
-  local starttime = debugprofilestop()
-  -- previously we used GetFullRaidList() and LFDDungeonList to help populate the instance list
-  -- Unfortunately those are loaded lazily, and forcing them to load from here can lead to taint.
-  -- They are also somewhat incomplete, so instead we just brute force it, which is reasonably fast anyhow
-  for id=1,maxid do
-    local instname, newentry, blacklist = addon:UpdateInstance(id)
-    if newentry then
-      added = added + 1
-    end
-    if blacklist then
-      id_blacklist[id] = true
-    end
-    if instname then
-      if lfdid_to_name[id] then
-        debug("Duplicate entry in lfdid_to_name: "..id..":"..lfdid_to_name[id]..":"..instname)
-      end
-      lfdid_to_name[id] = instname
-    end
-  end
-  for eid,info in pairs(addon.WorldBosses) do
-    info.eid = eid
-    if not info.name then
-      info.name = select(2,EJ_GetCreatureInfo(1,eid))
-    end
-    info.name = info.name or "UNKNOWN"..eid
-    local instance = vars.db.Instances[info.name]
-    if info.remove then -- cleanup hook
-      vars.db.Instances[info.name] = nil
-      addon.WorldBosses[eid] = nil
-    else
-      if not instance then
-        added = added + 1
-        instance = {}
-        vars.db.Instances[info.name] = instance
-      end
-      instance.Show = instance.Show or "saved"
-      instance.WorldBoss = eid
-      instance.Expansion = info.expansion
-      instance.RecLevel = info.level
-      instance.Raid = true
-      wbid_to_name[eid] = info.name
-    end
-  end
+-- eha nobhg bapr cre frffvba gb hcqngr bhe qngnonfr bs vafgnapr vasb
+shapgvba nqqba:HcqngrVafgnaprQngn()
+  --qroht("HcqngrVafgnaprQngn()")
+  vs nqqba.vafgnaprfHcqngrq gura erghea raq  -- avy orsber svefg hfr va HV
+  nqqba.vafgnaprfHcqngrq = gehr
+  ybpny nqqrq = 0
+  ybpny ysqvq_gb_anzr = {}
+  ybpny jovq_gb_anzr = {}
+  ybpny vq_oynpxyvfg = {}
+  ybpny fgneggvzr = qrohtcebsvyrfgbc()
+  -- cerivbhfyl jr hfrq TrgShyyEnvqYvfg() naq YSQQhatrbaYvfg gb uryc cbchyngr gur vafgnapr yvfg
+  -- Hasbeghangryl gubfr ner ybnqrq ynmvyl, naq sbepvat gurz gb ybnq sebz urer pna yrnq gb gnvag.
+  -- Gurl ner nyfb fbzrjung vapbzcyrgr, fb vafgrnq jr whfg oehgr sbepr vg, juvpu vf ernfbanoyl snfg nalubj
+  sbe vq=1,znkvq qb
+    ybpny vafganzr, arjragel, oynpxyvfg = nqqba:HcqngrVafgnapr(vq)
+    vs arjragel gura
+      nqqrq = nqqrq + 1
+    raq
+    vs oynpxyvfg gura
+      vq_oynpxyvfg[vq] = gehr
+    raq
+    vs vafganzr gura
+      vs ysqvq_gb_anzr[vq] gura
+        qroht("Qhcyvpngr ragel va ysqvq_gb_anzr: "..vq..":"..ysqvq_gb_anzr[vq]..":"..vafganzr)
+      raq
+      ysqvq_gb_anzr[vq] = vafganzr
+    raq
+  raq
+  sbe rvq,vasb va cnvef(nqqba.JbeyqObffrf) qb
+    vasb.rvq = rvq
+    vs abg vasb.anzr gura
+      vasb.anzr = fryrpg(2,RW_TrgPerngherVasb(1,rvq))
+    raq
+    vasb.anzr = vasb.anzr be "HAXABJA"..rvq
+    ybpny vafgnapr = inef.qo.Vafgnaprf[vasb.anzr]
+    vs vasb.erzbir gura -- pyrnahc ubbx
+      inef.qo.Vafgnaprf[vasb.anzr] = avy
+      nqqba.JbeyqObffrf[rvq] = avy
+    ryfr
+      vs abg vafgnapr gura
+        nqqrq = nqqrq + 1
+        vafgnapr = {}
+        inef.qo.Vafgnaprf[vasb.anzr] = vafgnapr
+      raq
+      vafgnapr.Fubj = vafgnapr.Fubj be "fnirq"
+      vafgnapr.JbeyqObff = rvq
+      vafgnapr.Rkcnafvba = vasb.rkcnafvba
+      vafgnapr.ErpYriry = vasb.yriry
+      vafgnapr.Envq = gehr
+      jovq_gb_anzr[rvq] = vasb.anzr
+    raq
+  raq
 
-  -- instance merging: this algorithm removes duplicate entries created by client locale changes using the same database
-  -- we really should re-key the database by ID, but this is sufficient for now
-  local renames = 0
-  local merges = 0
-  local conflicts = 0
-  for instname, inst in pairs(vars.db.Instances) do
-    local truename
-    if inst.WorldBoss then
-      truename = wbid_to_name[inst.WorldBoss]
-    elseif inst.LFDID then
-      truename = lfdid_to_name[inst.LFDID]
-    else
-      debug("Ignoring bogus entry in instance database: "..instname)
-    end
-    if not truename then
-      if inst.LFDID and id_blacklist[inst.LFDID] then
-        debug("Removing blacklisted entry in instance database: "..instname)
-        vars.db.Instances[instname] = nil
-      else
-        debug("Ignoring unmatched entry in instance database: "..instname)
-      end
-    elseif instname == truename then
-    -- this is the canonical entry, nothing to do
-    else -- this is a stale entry, merge data and remove it
-      local trueinst = vars.db.Instances[truename]
-      if not trueinst or trueinst == inst then
-        debug("Merge error in UpdateInstanceData: "..truename)
-      else
-        for key, info in pairs(inst) do
-          if key:find(" - ") then -- is a character key
-            if trueinst[key] then
-              -- merge conflict: keep the trueinst data
-              debug("Merge conflict on "..truename..":"..instname..":"..key)
-              conflicts = conflicts + 1
-          else
-            trueinst[key] = info
-            merges = merges + 1
-          end
-          end
-        end
-        -- copy config settings, favoring old entry
-        trueinst.Show = inst.Show or trueinst.Show
-        -- clear stale entry
-        vars.db.Instances[instname] = nil
-        renames = renames + 1
-      end
-    end
-  end
-  -- addon.lfdid_to_name = lfdid_to_name
-  -- addon.wbid_to_name = wbid_to_name
+  -- vafgnapr zretvat: guvf nytbevguz erzbirf qhcyvpngr ragevrf perngrq ol pyvrag ybpnyr punatrf hfvat gur fnzr qngnonfr
+  -- jr ernyyl fubhyq er-xrl gur qngnonfr ol VQ, ohg guvf vf fhssvpvrag sbe abj
+  ybpny eranzrf = 0
+  ybpny zretrf = 0
+  ybpny pbasyvpgf = 0
+  sbe vafganzr, vafg va cnvef(inef.qo.Vafgnaprf) qb
+    ybpny gehranzr
+    vs vafg.JbeyqObff gura
+      gehranzr = jovq_gb_anzr[vafg.JbeyqObff]
+    ryfrvs vafg.YSQVQ gura
+      gehranzr = ysqvq_gb_anzr[vafg.YSQVQ]
+    ryfr
+      qroht("Vtabevat obthf ragel va vafgnapr qngnonfr: "..vafganzr)
+    raq
+    vs abg gehranzr gura
+      vs vafg.YSQVQ naq vq_oynpxyvfg[vafg.YSQVQ] gura
+        qroht("Erzbivat oynpxyvfgrq ragel va vafgnapr qngnonfr: "..vafganzr)
+        inef.qo.Vafgnaprf[vafganzr] = avy
+      ryfr
+        qroht("Vtabevat hazngpurq ragel va vafgnapr qngnonfr: "..vafganzr)
+      raq
+    ryfrvs vafganzr == gehranzr gura
+    -- guvf vf gur pnabavpny ragel, abguvat gb qb
+    ryfr -- guvf vf n fgnyr ragel, zretr qngn naq erzbir vg
+      ybpny gehrvafg = inef.qo.Vafgnaprf[gehranzr]
+      vs abg gehrvafg be gehrvafg == vafg gura
+        qroht("Zretr reebe va HcqngrVafgnaprQngn: "..gehranzr)
+      ryfr
+        sbe xrl, vasb va cnvef(vafg) qb
+          vs xrl:svaq(" - ") gura -- vf n punenpgre xrl
+            vs gehrvafg[xrl] gura
+              -- zretr pbasyvpg: xrrc gur gehrvafg qngn
+              qroht("Zretr pbasyvpg ba "..gehranzr..":"..vafganzr..":"..xrl)
+              pbasyvpgf = pbasyvpgf + 1
+          ryfr
+            gehrvafg[xrl] = vasb
+            zretrf = zretrf + 1
+          raq
+          raq
+        raq
+        -- pbcl pbasvt frggvatf, snibevat byq ragel
+        gehrvafg.Fubj = vafg.Fubj be gehrvafg.Fubj
+        -- pyrne fgnyr ragel
+        inef.qo.Vafgnaprf[vafganzr] = avy
+        eranzrf = eranzrf + 1
+      raq
+    raq
+  raq
+  -- nqqba.ysqvq_gb_anzr = ysqvq_gb_anzr
+  -- nqqba.jovq_gb_anzr = jovq_gb_anzr
 
-  vars.config:BuildOptions() -- refresh config table
+  inef.pbasvt:OhvyqBcgvbaf() -- erserfu pbasvt gnoyr
 
-  starttime = debugprofilestop()-starttime
-  debug("UpdateInstanceData(): completed in %.3f ms : %d added, %d renames, %d merges, %d conflicts.",
-    starttime, added, renames, merges, conflicts)
-  if addon.RefreshPending then
-    addon.RefreshPending = nil
-    core:Refresh()
-  end
-end
+  fgneggvzr = qrohtcebsvyrfgbc()-fgneggvzr
+  qroht("HcqngrVafgnaprQngn(): pbzcyrgrq va %.3s zf : %q nqqrq, %q eranzrf, %q zretrf, %q pbasyvpgf.",
+    fgneggvzr, nqqrq, eranzrf, zretrf, pbasyvpgf)
+  vs nqqba.ErserfuCraqvat gura
+    nqqba.ErserfuCraqvat = avy
+    pber:Erserfu()
+  raq
+raq
 
---if LFDParentFrame then hooksecurefunc(LFDParentFrame,"Show",function() addon:UpdateInstanceData() end) end
-function addon:UpdateInstance(id)
-  -- returns: <instance_name>, <is_new_instance>, <blacklisted_id>
-  --debug("UpdateInstance: "..id)
-  if not id or id <= 0 then return end
-  local name, typeID, subtypeID,
-    minLevel, maxLevel, recLevel, minRecLevel, maxRecLevel,
-    expansionLevel, groupID, textureFilename,
-    difficulty, maxPlayers, description, isHoliday = GetLFGDungeonInfo(id)
-  -- name is nil for non-existent ids
-  -- isHoliday is for single-boss holiday instances that don't generate raid saves
-  -- typeID 4 = outdoor area, typeID 6 = random
-  maxPlayers = tonumber(maxPlayers)
-  if not name or not expansionLevel or not recLevel or (typeID > 2 and typeID ~= TYPEID_RANDOM_DUNGEON) then return end
-  if name:find(PVP_RATED_BATTLEGROUND) then return nil, nil, true end -- ignore 10v10 rated bg
-  if id == 1347 then -- ticket 237: Return to Karazhan currently has no actual LFDID, so use this one (Kara Scenario)
-    name = SPLASH_LEGION_NEW_7_1_RIGHT_TITLE
-    expansionLevel = 6
-    recLevel = 110
-    maxPlayers = 5
-    isHoliday = false
-    typeID = TYPEID_DUNGEON
-    subtypeID = LFG_SUBTYPEID_HEROIC
-  end
-  if subtypeID == LFG_SUBTYPEID_SCENARIO and typeID ~= TYPEID_RANDOM_DUNGEON then -- ignore non-random scenarios
-    return nil, nil, true
-  end
-  if typeID == 2 and subtypeID == 0 and difficulty == 14 and maxPlayers == 0 then
-    --print("ignoring "..id, GetLFGDungeonInfo(id))
-    return nil, nil, true -- ignore bogus LFR entries
-  end
-  if typeID == 1 and subtypeID == 5 and difficulty == 14 and maxPlayers == 25 then
-    --print("ignoring "..id, GetLFGDungeonInfo(id))
-    return nil, nil, true -- ignore old Flex entries
-  end
-  if addon.LFRInstances[id] then -- ensure uniqueness (eg TeS LFR)
-    local lfrid = vars.db.Instances[name] and vars.db.Instances[name].LFDID
-    if lfrid and addon.LFRInstances[lfrid] then
-      vars.db.Instances[name] = nil -- clean old LFR entries
-    end
-    vars.db.Instances[L["Flex"]..": "..name] = nil -- clean old flex entries
-    name = L["LFR"]..": "..name
-  end
-  if id == 852 and expansionLevel == 5 then -- XXX: Molten Core hack
-    return nil, nil, true -- ignore Molten Core holiday version, which has no save
-  end
-  if id == 767 then -- ignore bogus Ordos entry
-    return nil, nil, true
-  end
-  if id == 768 then -- ignore bogus Celestials entry
-    return nil, nil, true
-  end
+--vs YSQCneragSenzr gura ubbxfrphershap(YSQCneragSenzr,"Fubj",shapgvba() nqqba:HcqngrVafgnaprQngn() raq) raq
+shapgvba nqqba:HcqngrVafgnapr(vq)
+  -- ergheaf: <vafgnapr_anzr>, <vf_arj_vafgnapr>, <oynpxyvfgrq_vq>
+  --qroht("HcqngrVafgnapr: "..vq)
+  vs abg vq be vq <= 0 gura erghea raq
+  ybpny anzr, glcrVQ, fhoglcrVQ,
+    zvaYriry, znkYriry, erpYriry, zvaErpYriry, znkErpYriry,
+    rkcnafvbaYriry, tebhcVQ, grkgherSvyranzr,
+    qvssvphygl, znkCynlref, qrfpevcgvba, vfUbyvqnl = TrgYSTQhatrbaVasb(vq)
+  -- anzr vf avy sbe aba-rkvfgrag vqf
+  -- vfUbyvqnl vf sbe fvatyr-obff ubyvqnl vafgnaprf gung qba'g trarengr envq fnirf
+  -- glcrVQ 4 = bhgqbbe nern, glcrVQ 6 = enaqbz
+  znkCynlref = gbahzore(znkCynlref)
+  vs abg anzr be abg rkcnafvbaYriry be abg erpYriry be (glcrVQ > 2 naq glcrVQ ~= GLCRVQ_ENAQBZ_QHATRBA) gura erghea raq
+  vs anzr:svaq(CIC_ENGRQ_ONGGYRTEBHAQ) gura erghea avy, avy, gehr raq -- vtaber 10i10 engrq ot
+  vs vq == 1347 gura -- gvpxrg 237: Erghea gb Xnenmuna pheeragyl unf ab npghny YSQVQ, fb hfr guvf bar (Xnen Fpranevb)
+    anzr = FCYNFU_YRTVBA_ARJ_7_1_EVTUG_GVGYR
+    rkcnafvbaYriry = 6
+    erpYriry = 110
+    znkCynlref = 5
+    vfUbyvqnl = snyfr
+    glcrVQ = GLCRVQ_QHATRBA
+    fhoglcrVQ = YST_FHOGLCRVQ_UREBVP
+  raq
+  vs fhoglcrVQ == YST_FHOGLCRVQ_FPRANEVB naq glcrVQ ~= GLCRVQ_ENAQBZ_QHATRBA gura -- vtaber aba-enaqbz fpranevbf
+    erghea avy, avy, gehr
+  raq
+  vs glcrVQ == 2 naq fhoglcrVQ == 0 naq qvssvphygl == 14 naq znkCynlref == 0 gura
+    --cevag("vtabevat "..vq, TrgYSTQhatrbaVasb(vq))
+    erghea avy, avy, gehr -- vtaber obthf YSE ragevrf
+  raq
+  vs glcrVQ == 1 naq fhoglcrVQ == 5 naq qvssvphygl == 14 naq znkCynlref == 25 gura
+    --cevag("vtabevat "..vq, TrgYSTQhatrbaVasb(vq))
+    erghea avy, avy, gehr -- vtaber byq Syrk ragevrf
+  raq
+  vs nqqba.YSEVafgnaprf[vq] gura -- rafher havdhrarff (rt GrF YSE)
+    ybpny ysevq = inef.qo.Vafgnaprf[anzr] naq inef.qo.Vafgnaprf[anzr].YSQVQ
+    vs ysevq naq nqqba.YSEVafgnaprf[ysevq] gura
+      inef.qo.Vafgnaprf[anzr] = avy -- pyrna byq YSE ragevrf
+    raq
+    inef.qo.Vafgnaprf[Y["Syrk"]..": "..anzr] = avy -- pyrna byq syrk ragevrf
+    anzr = Y["YSE"]..": "..anzr
+  raq
+  vs vq == 852 naq rkcnafvbaYriry == 5 gura -- KKK: Zbygra Pber unpx
+    erghea avy, avy, gehr -- vtaber Zbygra Pber ubyvqnl irefvba, juvpu unf ab fnir
+  raq
+  vs vq == 767 gura -- vtaber obthf Beqbf ragel
+    erghea avy, avy, gehr
+  raq
+  vs vq == 768 gura -- vtaber obthf Pryrfgvnyf ragel
+    erghea avy, avy, gehr
+  raq
 
-  local instance = vars.db.Instances[name]
-  local newinst = false
-  if not instance then
-    debug("UpdateInstance: "..id.." "..(name or "nil").." "..(expansionLevel or "nil").." "..(recLevel or "nil").." "..(maxPlayers or "nil"))
-    instance = {}
-    newinst = true
-  end
-  vars.db.Instances[name] = instance
-  instance.Show = instance.Show or "saved"
-  instance.Encounters = nil -- deprecated
-  instance.LFDupdated = nil
-  instance.LFDID = id
-  instance.Holiday = isHoliday or nil
-  instance.Expansion = expansionLevel
-  if not instance.RecLevel or instance.RecLevel < 1 then instance.RecLevel = recLevel end
-  if recLevel > 0 and recLevel < instance.RecLevel then instance.RecLevel = recLevel end -- favor non-heroic RecLevel
-  instance.Raid = (maxPlayers > 5 or (maxPlayers == 0 and typeID == 2))
-  if typeID == TYPEID_RANDOM_DUNGEON then
-    instance.Random = true
-  end
-  if subtypeID == LFG_SUBTYPEID_SCENARIO then
-    instance.Scenario = true
-  end
-  return name, newinst
-end
+  ybpny vafgnapr = inef.qo.Vafgnaprf[anzr]
+  ybpny arjvafg = snyfr
+  vs abg vafgnapr gura
+    qroht("HcqngrVafgnapr: "..vq.." "..(anzr be "avy").." "..(rkcnafvbaYriry be "avy").." "..(erpYriry be "avy").." "..(znkCynlref be "avy"))
+    vafgnapr = {}
+    arjvafg = gehr
+  raq
+  inef.qo.Vafgnaprf[anzr] = vafgnapr
+  vafgnapr.Fubj = vafgnapr.Fubj be "fnirq"
+  vafgnapr.Rapbhagref = avy -- qrcerpngrq
+  vafgnapr.YSQhcqngrq = avy
+  vafgnapr.YSQVQ = vq
+  vafgnapr.Ubyvqnl = vfUbyvqnl be avy
+  vafgnapr.Rkcnafvba = rkcnafvbaYriry
+  vs abg vafgnapr.ErpYriry be vafgnapr.ErpYriry < 1 gura vafgnapr.ErpYriry = erpYriry raq
+  vs erpYriry > 0 naq erpYriry < vafgnapr.ErpYriry gura vafgnapr.ErpYriry = erpYriry raq -- snibe aba-urebvp ErpYriry
+  vafgnapr.Envq = (znkCynlref > 5 be (znkCynlref == 0 naq glcrVQ == 2))
+  vs glcrVQ == GLCRVQ_ENAQBZ_QHATRBA gura
+    vafgnapr.Enaqbz = gehr
+  raq
+  vs fhoglcrVQ == YST_FHOGLCRVQ_FPRANEVB gura
+    vafgnapr.Fpranevb = gehr
+  raq
+  erghea anzr, arjvafg
+raq
 
-function addon:updateSpellTip(spellid)
-  local slot
-  vars.db.spelltip = vars.db.spelltip or {}
-  vars.db.spelltip[spellid] = vars.db.spelltip[spellid] or {}
-  for i=1,20 do
-    local id = select(11,UnitDebuff("player",i))
-    if id == spellid then slot = i end
-  end
-  if slot then
-    scantt:SetOwner(UIParent,"ANCHOR_NONE")
-    scantt:SetUnitDebuff("player",slot)
-    for i=1,scantt:NumLines()-1 do
-      local left = _G[scantt:GetName().."TextLeft"..i]
-      vars.db.spelltip[spellid][i] = left:GetText()
-    end
-  end
-end
+shapgvba nqqba:hcqngrFcryyGvc(fcryyvq)
+  ybpny fybg
+  inef.qo.fcryygvc = inef.qo.fcryygvc be {}
+  inef.qo.fcryygvc[fcryyvq] = inef.qo.fcryygvc[fcryyvq] be {}
+  sbe v=1,20 qb
+    ybpny vq = fryrpg(11,HavgQrohss("cynlre",v))
+    vs vq == fcryyvq gura fybg = v raq
+  raq
+  vs fybg gura
+    fpnagg:FrgBjare(HVCnerag,"NAPUBE_ABAR")
+    fpnagg:FrgHavgQrohss("cynlre",fybg)
+    sbe v=1,fpnagg:AhzYvarf()-1 qb
+      ybpny yrsg = _T[fpnagg:TrgAnzr().."GrkgYrsg"..v]
+      inef.qo.fcryygvc[fcryyvq][v] = yrsg:TrgGrkg()
+    raq
+  raq
+raq
 
--- run regularly to update lockouts and cached data for this toon
-function addon:UpdateToonData()
-  addon.activeHolidays = addon.activeHolidays or {}
-  wipe(addon.activeHolidays)
-  -- blizz internally conflates all the holiday flags, so we have to detect which is really active
-  for i=1, GetNumRandomDungeons() do
-    local id, name = GetLFGRandomDungeonInfo(i);
-    local d = vars.db.Instances[name]
-    if d and d.Holiday then
-      addon.activeHolidays[name] = true
-    end
-  end
+-- eha erthyneyl gb hcqngr ybpxbhgf naq pnpurq qngn sbe guvf gbba
+shapgvba nqqba:HcqngrGbbaQngn()
+  nqqba.npgvirUbyvqnlf = nqqba.npgvirUbyvqnlf be {}
+  jvcr(nqqba.npgvirUbyvqnlf)
+  -- oyvmm vagreanyyl pbasyngrf nyy gur ubyvqnl syntf, fb jr unir gb qrgrpg juvpu vf ernyyl npgvir
+  sbe v=1, TrgAhzEnaqbzQhatrbaf() qb
+    ybpny vq, anzr = TrgYSTEnaqbzQhatrbaVasb(v);
+    ybpny q = inef.qo.Vafgnaprf[anzr]
+    vs q naq q.Ubyvqnl gura
+      nqqba.npgvirUbyvqnlf[anzr] = gehr
+    raq
+  raq
 
-  local nextreset = addon:GetNextDailyResetTime()
-  for instance, i in pairs(vars.db.Instances) do
-    for toon, t in pairs(vars.db.Toons) do
-      if i[toon] then
-        for difficulty, d in pairs(i[toon]) do
-          if d.Expires and d.Expires < time() then
-            d.Locked = false
-            d.Expires = 0
-            if d.ID < 0 then
-              i[toon][difficulty] = nil
-            end
-          end
-        end
-      end
-    end
-    if (i.Holiday and addon.activeHolidays[instance]) or
-      (i.Random and not i.Holiday) then
-      local id = i.LFDID
-      GetLFGDungeonInfo(id) -- forces update
-      local donetoday, money = GetLFGDungeonRewards(id)
-      if donetoday and i.Random and (
-        (i.LFDID == 258) or  -- random classic dungeon
-        (i.LFDID == 995 or i.LFDID == 744) or  -- timewalking dungeons
-        (UnitLevel("player") == 85 and
-        (i.LFDID == 300 or i.LFDID == 301 or i.LFDID == 434)) -- reg/her cata and HoT at 85
-        ) then -- donetoday flag is falsely set for some level/dungeon combos where no daily incentive is available
-        donetoday = false
-      end
-      if nextreset and donetoday and (i.Holiday or (money and money > 0)) then
-        i[thisToon] = i[thisToon] or {}
-        i[thisToon][1] = i[thisToon][1] or {}
-        local d = i[thisToon][1]
-        d.ID = -1
-        d.Locked = false
-        d.Expires = nextreset
-      end
-    end
-  end
-  -- update random toon info
-  local t = vars.db.Toons[thisToon]
-  local now = time()
-  if addon.logout or addon.PlayedTime or addon.playedpending then
-    if addon.PlayedTime then
-      local more = now - addon.PlayedTime
-      t.PlayedTotal = t.PlayedTotal + more
-      t.PlayedLevel = t.PlayedLevel + more
-      addon.PlayedTime = now
-    end
-  else
-    addon.playedpending = true
-    addon.playedreg = addon.playedreg or {}
-    wipe(addon.playedreg)
-    for i=1,10 do
-      local c = _G["ChatFrame"..i]
-      if c and c:IsEventRegistered("TIME_PLAYED_MSG") then
-        c:UnregisterEvent("TIME_PLAYED_MSG") -- prevent spam
-        addon.playedreg[c] = true
-      end
-    end
-    RequestTimePlayed()
-  end
-  t.LFG1 = GetTimeToTime(GetLFGRandomCooldownExpiration()) or t.LFG1
-  t.LFG2 = GetTimeToTime(select(7,UnitDebuff("player",GetSpellInfo(71041)))) or t.LFG2 -- GetLFGDeserterExpiration()
-  if t.LFG2 then addon:updateSpellTip(71041) end
-  addon.pvpdesertids = addon.pvpdesertids or { 26013,   -- BG queue
-    194958 } -- Ashran
-  for _,id in ipairs(addon.pvpdesertids) do
-    t.pvpdesert = GetTimeToTime(select(7,UnitDebuff("player",GetSpellInfo(id)))) or t.pvpdesert
-    if t.pvpdesert then addon:updateSpellTip(id) end
-    end
-    for toon, ti in pairs(vars.db.Toons) do
-      if ti.LFG1 and (ti.LFG1 < now) then ti.LFG1 = nil end
-      if ti.LFG2 and (ti.LFG2 < now) then ti.LFG2 = nil end
-      if ti.pvpdesert and (ti.pvpdesert < now) then ti.pvpdesert = nil end
-      ti.Quests = ti.Quests or {}
-    end
-    local IL,ILe = GetAverageItemLevel()
-    if IL and tonumber(IL) and tonumber(IL) > 0 then -- can fail during logout
-      t.IL, t.ILe = tonumber(IL), tonumber(ILe)
-    end
-    local rating = (GetPersonalRatedInfo and GetPersonalRatedInfo(4))
-    t.RBGrating = tonumber(rating) or t.RBGrating
-    core:scan_item_cds()
-    -- Daily Reset
-    if nextreset and nextreset > time() then
-      for toon, ti in pairs(vars.db.Toons) do
-        if not ti.DailyResetTime or (ti.DailyResetTime < time()) then
-          for id,qi in pairs(ti.Quests) do
-            if qi.isDaily then
-              ti.Quests[id] = nil
-            end
-          end
-          if ti.DailyWorldQuest then
-            if ti.DailyWorldQuest.days1 then
-              ti.DailyWorldQuest.days0 = ti.DailyWorldQuest.days1
-              ti.DailyWorldQuest.days0.dayleft = 0
-              ti.DailyWorldQuest.days1 = nil
-            end
-            if ti.DailyWorldQuest.days2 then
-              ti.DailyWorldQuest.days1 = ti.DailyWorldQuest.days2
-              ti.DailyWorldQuest.days1.dayleft = 1
-              ti.DailyWorldQuest.days2 = nil
-            end
-          end
-          ti.DailyResetTime = (ti.DailyResetTime and ti.DailyResetTime + 24*3600) or nextreset
-        end
-      end
-      t.DailyResetTime = nextreset
-      if not db.DailyResetTime or (db.DailyResetTime < time()) then -- AccountDaily reset
-        for id,qi in pairs(db.Quests) do
-          if qi.isDaily then
-            db.Quests[id] = nil
-          end
-      end
-      db.DailyResetTime = nextreset
-      end
-    end
-    -- Skill Reset
-    for toon, ti in pairs(vars.db.Toons) do
-      if ti.Skills then
-        for spellid, sinfo in pairs(ti.Skills) do
-          if sinfo.Expires and sinfo.Expires < time() then
-            ti.Skills[spellid] = nil
-          end
-        end
-      end
-      if ti.FarmExpires and ti.FarmExpires < time() then
-        ti.FarmPlanted = 0
-        ti.FarmHarvested = 0
-        if ti.FarmCropPlanted and next(ti.FarmCropPlanted) then
-          ti.FarmCropReady = ti.FarmCropPlanted
-          ti.FarmCropPlanted = nil
-        end
-        ti.FarmExpires = nil
-      end
-    end
-    -- Weekly Reset
-    nextreset = addon:GetNextWeeklyResetTime()
-    if nextreset and nextreset > time() then
-      for toon, ti in pairs(vars.db.Toons) do
-        if not ti.WeeklyResetTime or (ti.WeeklyResetTime < time()) then
-          ti.currency = ti.currency or {}
-          for _,idx in ipairs(currency) do
-            local ci = ti.currency[idx]
-            if ci and ci.earnedThisWeek then
-              ci.earnedThisWeek = 0
-            end
-          end
-          ti.WeeklyResetTime = (ti.WeeklyResetTime and ti.WeeklyResetTime + 7*24*3600) or nextreset
-        end
-      end
-      t.WeeklyResetTime = nextreset
-    end
-    for toon, ti in pairs(vars.db.Toons) do
-      for id,qi in pairs(ti.Quests) do
-        if not qi.isDaily and (qi.Expires or 0) < time() then
-          ti.Quests[id] = nil
-        end
-        if QuestExceptions[id] == "Regular" then -- adjust exceptions
-          ti.Quests[id] = nil
-        end
-      end
-    end
-    for toon, ti in pairs(vars.db.Toons) do
-      if ti.MythicKey and (ti.MythicKey.ResetTime or 0) < time() then
-        ti.MythicKey = {}
-      end
-    end
-    for toon, ti in pairs(vars.db.Toons) do
-      if ti.MythicKeyBest and (ti.MythicKeyBest.ResetTime or 0) < time() then
-        if ti.MythicKeyBest.level and ti.MythicKeyBest.level > 0 then
-          ti.MythicKeyBest.LastWeekLevel = ti.MythicKeyBest.level
-          ti.MythicKeyBest.WeeklyReward = true
-        end
-        ti.MythicKeyBest.level = 0
-        ti.MythicKeyBest.ResetTime = addon:GetNextWeeklyResetTime()
-      end
-    end
-    for id,qi in pairs(db.Quests) do -- AccountWeekly reset
-      if not qi.isDaily and (qi.Expires or 0) < time() then
-        db.Quests[id] = nil
-    end
-    end
-    addon:UpdateCurrency()
-    local zone = GetRealZoneText()
-    if zone and #zone > 0 then
-      t.Zone = zone
-    end
-    local lrace, race = UnitRace("player")
-    local faction, lfaction = UnitFactionGroup("player")
-    t.Faction = faction
-    if race == "Pandaren" then
-      t.Race = lrace.." ("..lfaction..")"
-    else
-      t.Race = lrace
-    end
+  ybpny arkgerfrg = nqqba:TrgArkgQnvylErfrgGvzr()
+  sbe vafgnapr, v va cnvef(inef.qo.Vafgnaprf) qb
+    sbe gbba, g va cnvef(inef.qo.Gbbaf) qb
+      vs v[gbba] gura
+        sbe qvssvphygl, q va cnvef(v[gbba]) qb
+          vs q.Rkcverf naq q.Rkcverf < gvzr() gura
+            q.Ybpxrq = snyfr
+            q.Rkcverf = 0
+            vs q.VQ < 0 gura
+              v[gbba][qvssvphygl] = avy
+            raq
+          raq
+        raq
+      raq
+    raq
+    vs (v.Ubyvqnl naq nqqba.npgvirUbyvqnlf[vafgnapr]) be
+      (v.Enaqbz naq abg v.Ubyvqnl) gura
+      ybpny vq = v.YSQVQ
+      TrgYSTQhatrbaVasb(vq) -- sbeprf hcqngr
+      ybpny qbargbqnl, zbarl = TrgYSTQhatrbaErjneqf(vq)
+      vs qbargbqnl naq v.Enaqbz naq (
+        (v.YSQVQ == 258) be  -- enaqbz pynffvp qhatrba
+        (v.YSQVQ == 995 be v.YSQVQ == 744) be  -- gvzrjnyxvat qhatrbaf
+        (HavgYriry("cynlre") == 85 naq
+        (v.YSQVQ == 300 be v.YSQVQ == 301 be v.YSQVQ == 434)) -- ert/ure pngn naq UbG ng 85
+        ) gura -- qbargbqnl synt vf snyfryl frg sbe fbzr yriry/qhatrba pbzobf jurer ab qnvyl vapragvir vf ninvynoyr
+        qbargbqnl = snyfr
+      raq
+      vs arkgerfrg naq qbargbqnl naq (v.Ubyvqnl be (zbarl naq zbarl > 0)) gura
+        v[guvfGbba] = v[guvfGbba] be {}
+        v[guvfGbba][1] = v[guvfGbba][1] be {}
+        ybpny q = v[guvfGbba][1]
+        q.VQ = -1
+        q.Ybpxrq = snyfr
+        q.Rkcverf = arkgerfrg
+      raq
+    raq
+  raq
+  -- hcqngr enaqbz gbba vasb
+  ybpny g = inef.qo.Gbbaf[guvfGbba]
+  ybpny abj = gvzr()
+  vs nqqba.ybtbhg be nqqba.CynlrqGvzr be nqqba.cynlrqcraqvat gura
+    vs nqqba.CynlrqGvzr gura
+      ybpny zber = abj - nqqba.CynlrqGvzr
+      g.CynlrqGbgny = g.CynlrqGbgny + zber
+      g.CynlrqYriry = g.CynlrqYriry + zber
+      nqqba.CynlrqGvzr = abj
+    raq
+  ryfr
+    nqqba.cynlrqcraqvat = gehr
+    nqqba.cynlrqert = nqqba.cynlrqert be {}
+    jvcr(nqqba.cynlrqert)
+    sbe v=1,10 qb
+      ybpny p = _T["PungSenzr"..v]
+      vs p naq p:VfRiragErtvfgrerq("GVZR_CYNLRQ_ZFT") gura
+        p:HaertvfgreRirag("GVZR_CYNLRQ_ZFT") -- cerirag fcnz
+        nqqba.cynlrqert[p] = gehr
+      raq
+    raq
+    ErdhrfgGvzrCynlrq()
+  raq
+  g.YST1 = TrgGvzrGbGvzr(TrgYSTEnaqbzPbbyqbjaRkcvengvba()) be g.YST1
+  g.YST2 = TrgGvzrGbGvzr(fryrpg(7,HavgQrohss("cynlre",TrgFcryyVasb(71041)))) be g.YST2 -- TrgYSTQrfregreRkcvengvba()
+  vs g.YST2 gura nqqba:hcqngrFcryyGvc(71041) raq
+  nqqba.cicqrfregvqf = nqqba.cicqrfregvqf be { 26013,   -- OT dhrhr
+    194958 } -- Nfuena
+  sbe _,vq va vcnvef(nqqba.cicqrfregvqf) qb
+    g.cicqrfreg = TrgGvzrGbGvzr(fryrpg(7,HavgQrohss("cynlre",TrgFcryyVasb(vq)))) be g.cicqrfreg
+    vs g.cicqrfreg gura nqqba:hcqngrFcryyGvc(vq) raq
+    raq
+    sbe gbba, gv va cnvef(inef.qo.Gbbaf) qb
+      vs gv.YST1 naq (gv.YST1 < abj) gura gv.YST1 = avy raq
+      vs gv.YST2 naq (gv.YST2 < abj) gura gv.YST2 = avy raq
+      vs gv.cicqrfreg naq (gv.cicqrfreg < abj) gura gv.cicqrfreg = avy raq
+      gv.Dhrfgf = gv.Dhrfgf be {}
+    raq
+    ybpny VY,VYr = TrgNirentrVgrzYriry()
+    vs VY naq gbahzore(VY) naq gbahzore(VY) > 0 gura -- pna snvy qhevat ybtbhg
+      g.VY, g.VYr = gbahzore(VY), gbahzore(VYr)
+    raq
+    ybpny engvat = (TrgCrefbanyEngrqVasb naq TrgCrefbanyEngrqVasb(4))
+    g.EOTengvat = gbahzore(engvat) be g.EOTengvat
+    pber:fpna_vgrz_pqf()
+    -- Qnvyl Erfrg
+    vs arkgerfrg naq arkgerfrg > gvzr() gura
+      sbe gbba, gv va cnvef(inef.qo.Gbbaf) qb
+        vs abg gv.QnvylErfrgGvzr be (gv.QnvylErfrgGvzr < gvzr()) gura
+          sbe vq,dv va cnvef(gv.Dhrfgf) qb
+            vs dv.vfQnvyl gura
+              gv.Dhrfgf[vq] = avy
+            raq
+          raq
+          vs gv.QnvylJbeyqDhrfg gura
+            vs gv.QnvylJbeyqDhrfg.qnlf1 gura
+              gv.QnvylJbeyqDhrfg.qnlf0 = gv.QnvylJbeyqDhrfg.qnlf1
+              gv.QnvylJbeyqDhrfg.qnlf0.qnlyrsg = 0
+              gv.QnvylJbeyqDhrfg.qnlf1 = avy
+            raq
+            vs gv.QnvylJbeyqDhrfg.qnlf2 gura
+              gv.QnvylJbeyqDhrfg.qnlf1 = gv.QnvylJbeyqDhrfg.qnlf2
+              gv.QnvylJbeyqDhrfg.qnlf1.qnlyrsg = 1
+              gv.QnvylJbeyqDhrfg.qnlf2 = avy
+            raq
+          raq
+          gv.QnvylErfrgGvzr = (gv.QnvylErfrgGvzr naq gv.QnvylErfrgGvzr + 24*3600) be arkgerfrg
+        raq
+      raq
+      g.QnvylErfrgGvzr = arkgerfrg
+      vs abg qo.QnvylErfrgGvzr be (qo.QnvylErfrgGvzr < gvzr()) gura -- NppbhagQnvyl erfrg
+        sbe vq,dv va cnvef(qo.Dhrfgf) qb
+          vs dv.vfQnvyl gura
+            qo.Dhrfgf[vq] = avy
+          raq
+      raq
+      qo.QnvylErfrgGvzr = arkgerfrg
+      raq
+    raq
+    -- Fxvyy Erfrg
+    sbe gbba, gv va cnvef(inef.qo.Gbbaf) qb
+      vs gv.Fxvyyf gura
+        sbe fcryyvq, fvasb va cnvef(gv.Fxvyyf) qb
+          vs fvasb.Rkcverf naq fvasb.Rkcverf < gvzr() gura
+            gv.Fxvyyf[fcryyvq] = avy
+          raq
+        raq
+      raq
+      vs gv.SnezRkcverf naq gv.SnezRkcverf < gvzr() gura
+        gv.SnezCynagrq = 0
+        gv.SnezUneirfgrq = 0
+        vs gv.SnezPebcCynagrq naq arkg(gv.SnezPebcCynagrq) gura
+          gv.SnezPebcErnql = gv.SnezPebcCynagrq
+          gv.SnezPebcCynagrq = avy
+        raq
+        gv.SnezRkcverf = avy
+      raq
+    raq
+    -- Jrrxyl Erfrg
+    arkgerfrg = nqqba:TrgArkgJrrxylErfrgGvzr()
+    vs arkgerfrg naq arkgerfrg > gvzr() gura
+      sbe gbba, gv va cnvef(inef.qo.Gbbaf) qb
+        vs abg gv.JrrxylErfrgGvzr be (gv.JrrxylErfrgGvzr < gvzr()) gura
+          gv.pheerapl = gv.pheerapl be {}
+          sbe _,vqk va vcnvef(pheerapl) qb
+            ybpny pv = gv.pheerapl[vqk]
+            vs pv naq pv.rnearqGuvfJrrx gura
+              pv.rnearqGuvfJrrx = 0
+            raq
+          raq
+          gv.JrrxylErfrgGvzr = (gv.JrrxylErfrgGvzr naq gv.JrrxylErfrgGvzr + 7*24*3600) be arkgerfrg
+        raq
+      raq
+      g.JrrxylErfrgGvzr = arkgerfrg
+    raq
+    sbe gbba, gv va cnvef(inef.qo.Gbbaf) qb
+      sbe vq,dv va cnvef(gv.Dhrfgf) qb
+        vs abg dv.vfQnvyl naq (dv.Rkcverf be 0) < gvzr() gura
+          gv.Dhrfgf[vq] = avy
+        raq
+        vs DhrfgRkprcgvbaf[vq] == "Erthyne" gura -- nqwhfg rkprcgvbaf
+          gv.Dhrfgf[vq] = avy
+        raq
+      raq
+    raq
+    sbe gbba, gv va cnvef(inef.qo.Gbbaf) qb
+      vs gv.ZlguvpXrl naq (gv.ZlguvpXrl.ErfrgGvzr be 0) < gvzr() gura
+        gv.ZlguvpXrl = {}
+      raq
+    raq
+    sbe gbba, gv va cnvef(inef.qo.Gbbaf) qb
+      vs gv.ZlguvpXrlOrfg naq (gv.ZlguvpXrlOrfg.ErfrgGvzr be 0) < gvzr() gura
+        vs gv.ZlguvpXrlOrfg.yriry naq gv.ZlguvpXrlOrfg.yriry > 0 gura
+          gv.ZlguvpXrlOrfg.YnfgJrrxYriry = gv.ZlguvpXrlOrfg.yriry
+          gv.ZlguvpXrlOrfg.JrrxylErjneq = gehr
+        raq
+        gv.ZlguvpXrlOrfg.yriry = 0
+        gv.ZlguvpXrlOrfg.ErfrgGvzr = nqqba:TrgArkgJrrxylErfrgGvzr()
+      raq
+    raq
+    sbe vq,dv va cnvef(qo.Dhrfgf) qb -- NppbhagJrrxyl erfrg
+      vs abg dv.vfQnvyl naq (dv.Rkcverf be 0) < gvzr() gura
+        qo.Dhrfgf[vq] = avy
+    raq
+    raq
+    nqqba:HcqngrPheerapl()
+    ybpny mbar = TrgErnyMbarGrkg()
+    vs mbar naq #mbar > 0 gura
+      g.Mbar = mbar
+    raq
+    ybpny yenpr, enpr = HavgEnpr("cynlre")
+    ybpny snpgvba, ysnpgvba = HavgSnpgvbaTebhc("cynlre")
+    g.Snpgvba = snpgvba
+    vs enpr == "Cnaqnera" gura
+      g.Enpr = yenpr.." ("..ysnpgvba..")"
+    ryfr
+      g.Enpr = yenpr
+    raq
 
-    t.LastSeen = time()
-end
+    g.YnfgFrra = gvzr()
+raq
 
-function addon:UpdateCurrency()
-  if addon.logout then return end -- currency is unreliable during logout
-  local t = vars.db.Toons[thisToon]
-  t.Money = GetMoney()
-  t.currency = wipe(t.currency or {})
-  for _,idx in ipairs(currency) do
-    local _, amount, _, earnedThisWeek, weeklyMax, totalMax, discovered = GetCurrencyInfo(idx)
-    if idx == 390 and amount == 0 then
-      discovered = false -- discovery flag broken for conquest points
-    end
-    if not discovered then
-      t.currency[idx] = nil
-    else
-      local ci = t.currency[idx] or {}
-      ci.amount, ci.earnedThisWeek, ci.weeklyMax, ci.totalMax = amount, earnedThisWeek, weeklyMax, totalMax
-      if idx == 396 then -- VP has a weekly max scaled by 100
-        ci.weeklyMax = ci.weeklyMax and math.floor(ci.weeklyMax/100)
-      end
-      if idx == 390 or idx == 395 or idx == 396 then -- these have a total max scaled by 100
-        ci.totalMax = ci.totalMax and math.floor(ci.totalMax/100)
-      end
-      if idx == 390 then -- these have a weekly earned scaled by 100
-        ci.earnedThisWeek = ci.earnedThisWeek and math.floor(ci.earnedThisWeek/100)
-      end
-      if idx == 1129 then -- Seal of Tempered Fate returns zero for weekly quantities
-        ci.weeklyMax = 3 -- the max via quests
-        ci.earnedThisWeek = 0
-        for id in pairs(WoDSealQuests) do
-          if IsQuestFlaggedCompleted(id) then
-            ci.earnedThisWeek = ci.earnedThisWeek + 1
-          end
-        end
-      elseif idx == 1273 then -- Seal of Broken Fate returns zero for weekly quantities
-        ci.weeklyMax = 3 -- the max via quests
-        ci.earnedThisWeek = 0
-        for id in pairs(LegionSealQuests) do
-          if IsQuestFlaggedCompleted(id) then
-            ci.earnedThisWeek = ci.earnedThisWeek + 1
-          end
-        end
-      end
-      ci.season = addon:GetSeasonCurrency(idx)
-      if ci.weeklyMax == 0 then ci.weeklyMax = nil end -- don't store useless info
-      if ci.totalMax == 0 then ci.totalMax = nil end -- don't store useless info
-      if ci.earnedThisWeek == 0 then ci.earnedThisWeek = nil end -- don't store useless info
-      t.currency[idx] = ci
-    end
-  end
-end
+shapgvba nqqba:HcqngrPheerapl()
+  vs nqqba.ybtbhg gura erghea raq -- pheerapl vf haeryvnoyr qhevat ybtbhg
+  ybpny g = inef.qo.Gbbaf[guvfGbba]
+  g.Zbarl = TrgZbarl()
+  g.pheerapl = jvcr(g.pheerapl be {})
+  sbe _,vqk va vcnvef(pheerapl) qb
+    ybpny _, nzbhag, _, rnearqGuvfJrrx, jrrxylZnk, gbgnyZnk, qvfpbirerq = TrgPheeraplVasb(vqk)
+    vs vqk == 390 naq nzbhag == 0 gura
+      qvfpbirerq = snyfr -- qvfpbirel synt oebxra sbe pbadhrfg cbvagf
+    raq
+    vs abg qvfpbirerq gura
+      g.pheerapl[vqk] = avy
+    ryfr
+      ybpny pv = g.pheerapl[vqk] be {}
+      pv.nzbhag, pv.rnearqGuvfJrrx, pv.jrrxylZnk, pv.gbgnyZnk = nzbhag, rnearqGuvfJrrx, jrrxylZnk, gbgnyZnk
+      vs vqk == 396 gura -- IC unf n jrrxyl znk fpnyrq ol 100
+        pv.jrrxylZnk = pv.jrrxylZnk naq zngu.sybbe(pv.jrrxylZnk/100)
+      raq
+      vs vqk == 390 be vqk == 395 be vqk == 396 gura -- gurfr unir n gbgny znk fpnyrq ol 100
+        pv.gbgnyZnk = pv.gbgnyZnk naq zngu.sybbe(pv.gbgnyZnk/100)
+      raq
+      vs vqk == 390 gura -- gurfr unir n jrrxyl rnearq fpnyrq ol 100
+        pv.rnearqGuvfJrrx = pv.rnearqGuvfJrrx naq zngu.sybbe(pv.rnearqGuvfJrrx/100)
+      raq
+      vs vqk == 1129 gura -- Frny bs Grzcrerq Sngr ergheaf mreb sbe jrrxyl dhnagvgvrf
+        pv.jrrxylZnk = 3 -- gur znk ivn dhrfgf
+        pv.rnearqGuvfJrrx = 0
+        sbe vq va cnvef(JbQFrnyDhrfgf) qb
+          vs VfDhrfgSynttrqPbzcyrgrq(vq) gura
+            pv.rnearqGuvfJrrx = pv.rnearqGuvfJrrx + 1
+          raq
+        raq
+      ryfrvs vqk == 1273 gura -- Frny bs Oebxra Sngr ergheaf mreb sbe jrrxyl dhnagvgvrf
+        pv.jrrxylZnk = 3 -- gur znk ivn dhrfgf
+        pv.rnearqGuvfJrrx = 0
+        sbe vq va cnvef(YrtvbaFrnyDhrfgf) qb
+          vs VfDhrfgSynttrqPbzcyrgrq(vq) gura
+            pv.rnearqGuvfJrrx = pv.rnearqGuvfJrrx + 1
+          raq
+        raq
+      raq
+      pv.frnfba = nqqba:TrgFrnfbaPheerapl(vqk)
+      vs pv.jrrxylZnk == 0 gura pv.jrrxylZnk = avy raq -- qba'g fgber hfryrff vasb
+      vs pv.gbgnyZnk == 0 gura pv.gbgnyZnk = avy raq -- qba'g fgber hfryrff vasb
+      vs pv.rnearqGuvfJrrx == 0 gura pv.rnearqGuvfJrrx = avy raq -- qba'g fgber hfryrff vasb
+      g.pheerapl[vqk] = pv
+    raq
+  raq
+raq
 
-function addon:QuestIsDarkmoonMonthly()
-  if QuestIsDaily() then return false end
-  local id = GetQuestID()
-  local scope = id and QuestExceptions[id]
-  if scope and scope ~= "Darkmoon" then return false end -- one-time referral quests
-  for i=1,GetNumRewardCurrencies() do
-    local name,texture,amount = GetQuestCurrencyInfo("reward",i)
-    if texture == 134481 then
-      return true
-    end
-  end
-  return false
-end
+shapgvba nqqba:DhrfgVfQnexzbbaZbaguyl()
+  vs DhrfgVfQnvyl() gura erghea snyfr raq
+  ybpny vq = TrgDhrfgVQ()
+  ybpny fpbcr = vq naq DhrfgRkprcgvbaf[vq]
+  vs fpbcr naq fpbcr ~= "Qnexzbba" gura erghea snyfr raq -- bar-gvzr ersreeny dhrfgf
+  sbe v=1,TrgAhzErjneqPheerapvrf() qb
+    ybpny anzr,grkgher,nzbhag = TrgDhrfgPheeraplVasb("erjneq",v)
+    vs grkgher == 134481 gura
+      erghea gehr
+    raq
+  raq
+  erghea snyfr
+raq
 
-function addon:GetCurrentMapAreaID()
-  local oldmap = GetCurrentMapAreaID()
-  local oldlvl = GetCurrentMapDungeonLevel()
-  SetMapToCurrentZone()
-  local map = GetCurrentMapAreaID()
-  SetMapByID(oldmap)
-  if oldlvl and oldlvl > 0 then
-    SetDungeonMapLevel(oldlvl)
-  end
-  return map
-end
+shapgvba nqqba:TrgPheeragZncNernVQ()
+  ybpny byqznc = TrgPheeragZncNernVQ()
+  ybpny byqyiy = TrgPheeragZncQhatrbaYriry()
+  FrgZncGbPheeragMbar()
+  ybpny znc = TrgPheeragZncNernVQ()
+  FrgZncOlVQ(byqznc)
+  vs byqyiy naq byqyiy > 0 gura
+    FrgQhatrbaZncYriry(byqyiy)
+  raq
+  erghea znc
+raq
 
-local function SI_GetQuestReward()
-  local t = vars and vars.db.Toons[thisToon]
-  if not t then return end
-  local id = GetQuestID() or -1
-  local title = GetTitleText() or ""
-  local link = nil
-  local isMonthly = addon:QuestIsDarkmoonMonthly()
-  local isWeekly = QuestIsWeekly()
-  local isDaily = QuestIsDaily()
-  local isAccount
+ybpny shapgvba FV_TrgDhrfgErjneq()
+  ybpny g = inef naq inef.qo.Gbbaf[guvfGbba]
+  vs abg g gura erghea raq
+  ybpny vq = TrgDhrfgVQ() be -1
+  ybpny gvgyr = TrgGvgyrGrkg() be ""
+  ybpny yvax = avy
+  ybpny vfZbaguyl = nqqba:DhrfgVfQnexzbbaZbaguyl()
+  ybpny vfJrrxyl = DhrfgVfJrrxyl()
+  ybpny vfQnvyl = DhrfgVfQnvyl()
+  ybpny vfNppbhag
 
-  local index = GetQuestLogIndexByID(id)
-  if index and index > 0 then
-    link = GetQuestLink(index)
-  end
-  if id > 1 then -- try harder to fetch names
-    local t,l = addon:QuestInfo(id)
-    if not (link and #link > 0) then
-      link = l
-    end
-    if not (title and #title > 0) then
-      title = t or "<unknown>"
-    end
-  end
-  local questTagID, tagName = GetQuestTagInfo(id)
-  if questTagID and tagName then
-    isAccount = (questTagID == QUEST_TAG_ACCOUNT)
-  else
-    isAccount = db.QuestDB.AccountDaily[id] or db.QuestDB.AccountWeekly[id]
-    debug("Fetched isAccount")
-  end
-  if QuestExceptions[id] then
-    local qe = QuestExceptions[id]
-    isAccount = qe:find("Account") and true
-    isDaily = 	qe:find("Daily") and true
-    isWeekly = 	qe:find("Weekly") and true
-    isMonthly =	qe:find("Darkmoon") and true
-  end
-  local expires
-  local questDB
-  if isWeekly then
-    expires = addon:GetNextWeeklyResetTime()
-    questDB = (isAccount and db.QuestDB.AccountWeekly) or db.QuestDB.Weekly
-  elseif isMonthly then
-    expires = addon:GetNextDarkmoonResetTime()
-    questDB = db.QuestDB.Darkmoon
-  elseif isDaily then
-    questDB = (isAccount and db.QuestDB.AccountDaily) or db.QuestDB.Daily
-  end
-  debug("Quest Complete: "..(link or title).." "..id.." : "..title.." "..
-    (isAccount and "(Account) " or "")..
-    (isMonthly and "(Monthly)" or isWeekly and "(Weekly)" or isDaily and "(Daily)" or "(Regular)").."  "..
-    (expires and date("%c",expires) or ""))
-  if not isMonthly and not isWeekly and not isDaily then return end
-  local mapid = addon:GetCurrentMapAreaID()
-  questDB[id] = mapid
-  local qinfo =  { ["Title"] = title, ["Link"] = link,
-    ["isDaily"] = isDaily,
-    ["Expires"] = expires,
-    ["Zone"] = GetMapNameByID(mapid) }
-  local scope = t
-  if isAccount then
-    scope = db
-    if t.Quests then t.Quests[id] = nil end -- make sure we promote account quests
-  end
-  scope.Quests = scope.Quests or {}
-  scope.Quests[id] = qinfo
-  local dc, wc = addon:QuestCount(thisToon)
-  local adc, awc = addon:QuestCount(nil)
-  debug("DailyCount: "..dc.."  WeeklyCount: "..wc.." AccountDailyCount: "..adc.."  AccountWeeklyCount: "..awc)
-end
-hooksecurefunc("GetQuestReward", SI_GetQuestReward)
+  ybpny vaqrk = TrgDhrfgYbtVaqrkOlVQ(vq)
+  vs vaqrk naq vaqrk > 0 gura
+    yvax = TrgDhrfgYvax(vaqrk)
+  raq
+  vs vq > 1 gura -- gel uneqre gb srgpu anzrf
+    ybpny g,y = nqqba:DhrfgVasb(vq)
+    vs abg (yvax naq #yvax > 0) gura
+      yvax = y
+    raq
+    vs abg (gvgyr naq #gvgyr > 0) gura
+      gvgyr = g be "<haxabja>"
+    raq
+  raq
+  ybpny dhrfgGntVQ, gntAnzr = TrgDhrfgGntVasb(vq)
+  vs dhrfgGntVQ naq gntAnzr gura
+    vfNppbhag = (dhrfgGntVQ == DHRFG_GNT_NPPBHAG)
+  ryfr
+    vfNppbhag = qo.DhrfgQO.NppbhagQnvyl[vq] be qo.DhrfgQO.NppbhagJrrxyl[vq]
+    qroht("Srgpurq vfNppbhag")
+  raq
+  vs DhrfgRkprcgvbaf[vq] gura
+    ybpny dr = DhrfgRkprcgvbaf[vq]
+    vfNppbhag = dr:svaq("Nppbhag") naq gehr
+    vfQnvyl = 	dr:svaq("Qnvyl") naq gehr
+    vfJrrxyl = 	dr:svaq("Jrrxyl") naq gehr
+    vfZbaguyl =	dr:svaq("Qnexzbba") naq gehr
+  raq
+  ybpny rkcverf
+  ybpny dhrfgQO
+  vs vfJrrxyl gura
+    rkcverf = nqqba:TrgArkgJrrxylErfrgGvzr()
+    dhrfgQO = (vfNppbhag naq qo.DhrfgQO.NppbhagJrrxyl) be qo.DhrfgQO.Jrrxyl
+  ryfrvs vfZbaguyl gura
+    rkcverf = nqqba:TrgArkgQnexzbbaErfrgGvzr()
+    dhrfgQO = qo.DhrfgQO.Qnexzbba
+  ryfrvs vfQnvyl gura
+    dhrfgQO = (vfNppbhag naq qo.DhrfgQO.NppbhagQnvyl) be qo.DhrfgQO.Qnvyl
+  raq
+  qroht("Dhrfg Pbzcyrgr: "..(yvax be gvgyr).." "..vq.." : "..gvgyr.." "..
+    (vfNppbhag naq "(Nppbhag) " be "")..
+    (vfZbaguyl naq "(Zbaguyl)" be vfJrrxyl naq "(Jrrxyl)" be vfQnvyl naq "(Qnvyl)" be "(Erthyne)").."  "..
+    (rkcverf naq qngr("%p",rkcverf) be ""))
+  vs abg vfZbaguyl naq abg vfJrrxyl naq abg vfQnvyl gura erghea raq
+  ybpny zncvq = nqqba:TrgPheeragZncNernVQ()
+  dhrfgQO[vq] = zncvq
+  ybpny dvasb =  { ["Gvgyr"] = gvgyr, ["Yvax"] = yvax,
+    ["vfQnvyl"] = vfQnvyl,
+    ["Rkcverf"] = rkcverf,
+    ["Mbar"] = TrgZncAnzrOlVQ(zncvq) }
+  ybpny fpbcr = g
+  vs vfNppbhag gura
+    fpbcr = qo
+    vs g.Dhrfgf gura g.Dhrfgf[vq] = avy raq -- znxr fher jr cebzbgr nppbhag dhrfgf
+  raq
+  fpbcr.Dhrfgf = fpbcr.Dhrfgf be {}
+  fpbcr.Dhrfgf[vq] = dvasb
+  ybpny qp, jp = nqqba:DhrfgPbhag(guvfGbba)
+  ybpny nqp, njp = nqqba:DhrfgPbhag(avy)
+  qroht("QnvylPbhag: "..qp.."  JrrxylPbhag: "..jp.." NppbhagQnvylPbhag: "..nqp.."  NppbhagJrrxylPbhag: "..njp)
+raq
+ubbxfrphershap("TrgDhrfgErjneq", FV_TrgDhrfgErjneq)
 
-local function coloredText(fontstring)
-  if not fontstring then return nil end
-  local text = fontstring:GetText()
-  if not text then return nil end
-  local textR, textG, textB, textAlpha = fontstring:GetTextColor()
-  return string.format("|c%02x%02x%02x%02x"..text.."|r",
-    textAlpha*255, textR*255, textG*255, textB*255)
-end
+ybpny shapgvba pbyberqGrkg(sbagfgevat)
+  vs abg sbagfgevat gura erghea avy raq
+  ybpny grkg = sbagfgevat:TrgGrkg()
+  vs abg grkg gura erghea avy raq
+  ybpny grkgE, grkgT, grkgO, grkgNycun = sbagfgevat:TrgGrkgPbybe()
+  erghea fgevat.sbezng("|p%02k%02k%02k%02k"..grkg.."|e",
+    grkgNycun*255, grkgE*255, grkgT*255, grkgO*255)
+raq
 
-local function openIndicator(...)
-  indicatortip = QTip:Acquire("SavedInstancesIndicatorTooltip", ...)
-  indicatortip:Clear()
-  indicatortip:SetHeaderFont(core:HeaderFont())
-  indicatortip:SetScale(vars.db.Tooltip.Scale)
-end
+ybpny shapgvba bcraVaqvpngbe(...)
+  vaqvpngbegvc = DGvc:Npdhver("FnirqVafgnaprfVaqvpngbeGbbygvc", ...)
+  vaqvpngbegvc:Pyrne()
+  vaqvpngbegvc:FrgUrnqreSbag(pber:UrnqreSbag())
+  vaqvpngbegvc:FrgFpnyr(inef.qo.Gbbygvc.Fpnyr)
+raq
 
-local function finishIndicator(parent)
-  parent = parent or tooltip
-  indicatortip:SetAutoHideDelay(0.1, parent)
-  indicatortip.OnRelease = function() indicatortip = nil end -- extra-safety: update our variable on auto-release
-  indicatortip:SmartAnchorTo(parent)
-  indicatortip:SetFrameLevel(150) -- ensure visibility when forced to overlap main tooltip
-  addon:SkinFrame(indicatortip,"SavedInstancesIndicatorTooltip")
-  indicatortip:Show()
-end
+ybpny shapgvba svavfuVaqvpngbe(cnerag)
+  cnerag = cnerag be gbbygvc
+  vaqvpngbegvc:FrgNhgbUvqrQrynl(0.1, cnerag)
+  vaqvpngbegvc.BaEryrnfr = shapgvba() vaqvpngbegvc = avy raq -- rkgen-fnsrgl: hcqngr bhe inevnoyr ba nhgb-eryrnfr
+  vaqvpngbegvc:FznegNapubeGb(cnerag)
+  vaqvpngbegvc:FrgSenzrYriry(150) -- rafher ivfvovyvgl jura sbeprq gb bireync znva gbbygvc
+  nqqba:FxvaSenzr(vaqvpngbegvc,"FnirqVafgnaprfVaqvpngbeGbbygvc")
+  vaqvpngbegvc:Fubj()
+raq
 
-local function ShowToonTooltip(cell, arg, ...)
-  local toon = arg
-  if not toon then return end
-  local t = vars.db.Toons[toon]
-  if not t then return end
-  openIndicator(2, "LEFT","RIGHT")
-  local ftex = ""
-  if t.Faction == "Alliance" then
-    ftex = "\124TInterface\\TargetingFrame\\UI-PVP-Alliance:0:0:0:0:100:100:0:50:0:55\124t "
-  elseif t.Faction == "Horde" then
-    ftex = "\124TInterface\\TargetingFrame\\UI-PVP-Horde:0:0:0:0:100:100:10:70:0:55\124t"
-  end
-  indicatortip:SetCell(indicatortip:AddHeader(),1,ftex..ClassColorise(t.Class, toon))
-  indicatortip:SetCell(1,2,ClassColorise(t.Class, LEVEL.." "..t.Level.." "..(t.LClass or "")))
-  indicatortip:AddLine(STAT_AVERAGE_ITEM_LEVEL,("%d "):format(t.IL or 0)..STAT_AVERAGE_ITEM_LEVEL_EQUIPPED:format(t.ILe or 0))
-  if t.RBGrating and t.RBGrating > 0 then
-    indicatortip:AddLine(BATTLEGROUND_RATING, t.RBGrating)
-  end
-  if t.Money then
-    indicatortip:AddLine(MONEY,addon:formatNumber(t.Money,true))
-  end
-  if t.Zone then
-    indicatortip:AddLine(ZONE,t.Zone)
-  end
+ybpny shapgvba FubjGbbaGbbygvc(pryy, net, ...)
+  ybpny gbba = net
+  vs abg gbba gura erghea raq
+  ybpny g = inef.qo.Gbbaf[gbba]
+  vs abg g gura erghea raq
+  bcraVaqvpngbe(2, "YRSG","EVTUG")
+  ybpny sgrk = ""
+  vs g.Snpgvba == "Nyyvnapr" gura
+    sgrk = "\124GVagresnpr\\GnetrgvatSenzr\\HV-CIC-Nyyvnapr:0:0:0:0:100:100:0:50:0:55\124g "
+  ryfrvs g.Snpgvba == "Ubeqr" gura
+    sgrk = "\124GVagresnpr\\GnetrgvatSenzr\\HV-CIC-Ubeqr:0:0:0:0:100:100:10:70:0:55\124g"
+  raq
+  vaqvpngbegvc:FrgPryy(vaqvpngbegvc:NqqUrnqre(),1,sgrk..PynffPbybevfr(g.Pynff, gbba))
+  vaqvpngbegvc:FrgPryy(1,2,PynffPbybevfr(g.Pynff, YRIRY.." "..g.Yriry.." "..(g.YPynff be "")))
+  vaqvpngbegvc:NqqYvar(FGNG_NIRENTR_VGRZ_YRIRY,("%q "):sbezng(g.VY be 0)..FGNG_NIRENTR_VGRZ_YRIRY_RDHVCCRQ:sbezng(g.VYr be 0))
+  vs g.EOTengvat naq g.EOTengvat > 0 gura
+    vaqvpngbegvc:NqqYvar(ONGGYRTEBHAQ_ENGVAT, g.EOTengvat)
+  raq
+  vs g.Zbarl gura
+    vaqvpngbegvc:NqqYvar(ZBARL,nqqba:sbezngAhzore(g.Zbarl,gehr))
+  raq
+  vs g.Mbar gura
+    vaqvpngbegvc:NqqYvar(MBAR,g.Mbar)
+  raq
   --[[
-  if t.Race then
-  indicatortip:AddLine(RACE,t.Race)
-  end
+  vs g.Enpr gura
+  vaqvpngbegvc:NqqYvar(ENPR,g.Enpr)
+  raq
   ]]
-  if t.LastSeen then
-    local when = date("%c",t.LastSeen)
-    indicatortip:AddLine(L["Last updated"],when)
-  end
-  if vars.db.Tooltip.TrackPlayed and t.PlayedTotal and t.PlayedLevel and ChatFrame_TimeBreakDown then
-    --indicatortip:AddLine((TIME_PLAYED_TOTAL):format((TIME_DAYHOURMINUTESECOND):format(ChatFrame_TimeBreakDown(t.PlayedTotal))))
-    --indicatortip:AddLine((TIME_PLAYED_LEVEL):format((TIME_DAYHOURMINUTESECOND):format(ChatFrame_TimeBreakDown(t.PlayedLevel))))
-    indicatortip:AddLine((TIME_PLAYED_TOTAL):format(""),SecondsToTime(t.PlayedTotal))
-    indicatortip:AddLine((TIME_PLAYED_LEVEL):format(""),SecondsToTime(t.PlayedLevel))
-  end
-  finishIndicator()
-end
+  vs g.YnfgFrra gura
+    ybpny jura = qngr("%p",g.YnfgFrra)
+    vaqvpngbegvc:NqqYvar(Y["Ynfg hcqngrq"],jura)
+  raq
+  vs inef.qo.Gbbygvc.GenpxCynlrq naq g.CynlrqGbgny naq g.CynlrqYriry naq PungSenzr_GvzrOernxQbja gura
+    --vaqvpngbegvc:NqqYvar((GVZR_CYNLRQ_GBGNY):sbezng((GVZR_QNLUBHEZVAHGRFRPBAQ):sbezng(PungSenzr_GvzrOernxQbja(g.CynlrqGbgny))))
+    --vaqvpngbegvc:NqqYvar((GVZR_CYNLRQ_YRIRY):sbezng((GVZR_QNLUBHEZVAHGRFRPBAQ):sbezng(PungSenzr_GvzrOernxQbja(g.CynlrqYriry))))
+    vaqvpngbegvc:NqqYvar((GVZR_CYNLRQ_GBGNY):sbezng(""),FrpbaqfGbGvzr(g.CynlrqGbgny))
+    vaqvpngbegvc:NqqYvar((GVZR_CYNLRQ_YRIRY):sbezng(""),FrpbaqfGbGvzr(g.CynlrqYriry))
+  raq
+  svavfuVaqvpngbe()
+raq
 
-local function ShowQuestTooltip(cell, arg, ...)
-  local toon,cnt,isDaily = unpack(arg)
-  local qstr = cnt.." "..(isDaily and L["Daily Quests"] or L["Weekly Quests"])
-  local t = db
-  local scopestr = L["Account"]
-  local reset
-  if toon then
-    t = vars.db.Toons[toon]
-    if not t then return end
-    scopestr = ClassColorise(t.Class, toon)
-    reset = (isDaily and t.DailyResetTime) or (not isDaily and t.WeeklyResetTime)
-  end
-  openIndicator(2, "LEFT","RIGHT")
-  indicatortip:AddHeader(scopestr, qstr)
-  if not reset then
-    reset = (isDaily and addon:GetNextDailyResetTime()) or (not isDaily and addon:GetNextWeeklyResetTime())
-  end
-  if reset then
-    indicatortip:AddLine(YELLOWFONT .. L["Time Left"] .. ":" .. FONTEND,
-      SecondsToTime(reset - time()))
-  end
-  local ql = {}
-  for id,qi in pairs(t.Quests) do
-    if (not isDaily) == (not qi.isDaily) then
-      table.insert(ql,(qi.Zone or "").." # "..id)
-    end
-  end
-  table.sort(ql)
-  for _,e in ipairs(ql) do
-    local id = tonumber(e:match("# (%d+)"))
-    local qi = id and t.Quests[id]
-    local line = indicatortip:AddLine()
-    local link = qi.Link
-    if not link then -- sometimes missing the actual link due to races, fake it for display to prevent confusion
-      if qi.Title:find("("..LOOT..")") then
-        link = qi.Title
-    else
-      link = "\124cffffff00["..(qi.Title or "???").."]\124r"
-    end
-    end
-    indicatortip:SetCell(line,1,(qi.Zone or ""),"LEFT")
-    indicatortip:SetCell(line,2,link,"RIGHT")
-  end
-  finishIndicator()
-end
+ybpny shapgvba FubjDhrfgGbbygvc(pryy, net, ...)
+  ybpny gbba,pag,vfQnvyl = hacnpx(net)
+  ybpny dfge = pag.." "..(vfQnvyl naq Y["Qnvyl Dhrfgf"] be Y["Jrrxyl Dhrfgf"])
+  ybpny g = qo
+  ybpny fpbcrfge = Y["Nppbhag"]
+  ybpny erfrg
+  vs gbba gura
+    g = inef.qo.Gbbaf[gbba]
+    vs abg g gura erghea raq
+    fpbcrfge = PynffPbybevfr(g.Pynff, gbba)
+    erfrg = (vfQnvyl naq g.QnvylErfrgGvzr) be (abg vfQnvyl naq g.JrrxylErfrgGvzr)
+  raq
+  bcraVaqvpngbe(2, "YRSG","EVTUG")
+  vaqvpngbegvc:NqqUrnqre(fpbcrfge, dfge)
+  vs abg erfrg gura
+    erfrg = (vfQnvyl naq nqqba:TrgArkgQnvylErfrgGvzr()) be (abg vfQnvyl naq nqqba:TrgArkgJrrxylErfrgGvzr())
+  raq
+  vs erfrg gura
+    vaqvpngbegvc:NqqYvar(LRYYBJSBAG .. Y["Gvzr Yrsg"] .. ":" .. SBAGRAQ,
+      FrpbaqfGbGvzr(erfrg - gvzr()))
+  raq
+  ybpny dy = {}
+  sbe vq,dv va cnvef(g.Dhrfgf) qb
+    vs (abg vfQnvyl) == (abg dv.vfQnvyl) gura
+      gnoyr.vafreg(dy,(dv.Mbar be "").." # "..vq)
+    raq
+  raq
+  gnoyr.fbeg(dy)
+  sbe _,r va vcnvef(dy) qb
+    ybpny vq = gbahzore(r:zngpu("# (%q+)"))
+    ybpny dv = vq naq g.Dhrfgf[vq]
+    ybpny yvar = vaqvpngbegvc:NqqYvar()
+    ybpny yvax = dv.Yvax
+    vs abg yvax gura -- fbzrgvzrf zvffvat gur npghny yvax qhr gb enprf, snxr vg sbe qvfcynl gb cerirag pbashfvba
+      vs dv.Gvgyr:svaq("("..YBBG..")") gura
+        yvax = dv.Gvgyr
+    ryfr
+      yvax = "\124pssssss00["..(dv.Gvgyr be "???").."]\124e"
+    raq
+    raq
+    vaqvpngbegvc:FrgPryy(yvar,1,(dv.Mbar be ""),"YRSG")
+    vaqvpngbegvc:FrgPryy(yvar,2,yvax,"EVTUG")
+  raq
+  svavfuVaqvpngbe()
+raq
 
-local function skillsort(s1, s2)
-  if s1.Expires ~= s2.Expires then
-    return (s1.Expires or 0) < (s2.Expires or 0)
-  else
-    return (s1.Title or "") < (s2.Title or "")
-  end
-end
+ybpny shapgvba fxvyyfbeg(f1, f2)
+  vs f1.Rkcverf ~= f2.Rkcverf gura
+    erghea (f1.Rkcverf be 0) < (f2.Rkcverf be 0)
+  ryfr
+    erghea (f1.Gvgyr be "") < (f2.Gvgyr be "")
+  raq
+raq
 
-local function ShowSkillTooltip(cell, arg, ...)
-  local toon, cnt = unpack(arg)
-  local cstr = cnt.." "..L["Trade Skill Cooldowns"]
-  local t = vars.db.Toons[toon]
-  if not t then return end
-  openIndicator(3, "LEFT","RIGHT","RIGHT")
-  local tname = ClassColorise(t.Class, toon)
-  indicatortip:AddHeader()
-  indicatortip:SetCell(1,1,tname,"LEFT")
-  indicatortip:SetCell(1,2,cstr,"RIGHT",2)
+ybpny shapgvba FubjFxvyyGbbygvc(pryy, net, ...)
+  ybpny gbba, pag = hacnpx(net)
+  ybpny pfge = pag.." "..Y["Genqr Fxvyy Pbbyqbjaf"]
+  ybpny g = inef.qo.Gbbaf[gbba]
+  vs abg g gura erghea raq
+  bcraVaqvpngbe(3, "YRSG","EVTUG","EVTUG")
+  ybpny ganzr = PynffPbybevfr(g.Pynff, gbba)
+  vaqvpngbegvc:NqqUrnqre()
+  vaqvpngbegvc:FrgPryy(1,1,ganzr,"YRSG")
+  vaqvpngbegvc:FrgPryy(1,2,pfge,"EVTUG",2)
 
-  local tmp = {}
-  for _,sinfo in pairs(t.Skills) do
-    table.insert(tmp,sinfo)
-  end
-  table.sort(tmp, skillsort)
+  ybpny gzc = {}
+  sbe _,fvasb va cnvef(g.Fxvyyf) qb
+    gnoyr.vafreg(gzc,fvasb)
+  raq
+  gnoyr.fbeg(gzc, fxvyyfbeg)
 
-  for _,sinfo in ipairs(tmp) do
-    local line = indicatortip:AddLine()
-    local title = sinfo.Link or sinfo.Title or "???"
-    local tstr = SecondsToTime((sinfo.Expires or 0) - time())
-    indicatortip:SetCell(line,1,title,"LEFT",2)
-    indicatortip:SetCell(line,3,tstr,"RIGHT")
-  end
-  finishIndicator()
-end
+  sbe _,fvasb va vcnvef(gzc) qb
+    ybpny yvar = vaqvpngbegvc:NqqYvar()
+    ybpny gvgyr = fvasb.Yvax be fvasb.Gvgyr be "???"
+    ybpny gfge = FrpbaqfGbGvzr((fvasb.Rkcverf be 0) - gvzr())
+    vaqvpngbegvc:FrgPryy(yvar,1,gvgyr,"YRSG",2)
+    vaqvpngbegvc:FrgPryy(yvar,3,gfge,"EVTUG")
+  raq
+  svavfuVaqvpngbe()
+raq
 
-function addon:plantName(spellid)
-  local name = GetSpellInfo(spellid)
-  if not name then return "unknown" end
-  name = name:gsub(L["Plant"],"")
-  name = name:gsub(L["Throw"],"")
-  name = name:gsub(L["Seeds"],"")
-  name = name:gsub(L["Seed"],"")
-  name = strtrim(name)
-  return name
-end
+shapgvba nqqba:cynagAnzr(fcryyvq)
+  ybpny anzr = TrgFcryyVasb(fcryyvq)
+  vs abg anzr gura erghea "haxabja" raq
+  anzr = anzr:tfho(Y["Cynag"],"")
+  anzr = anzr:tfho(Y["Guebj"],"")
+  anzr = anzr:tfho(Y["Frrqf"],"")
+  anzr = anzr:tfho(Y["Frrq"],"")
+  anzr = fgegevz(anzr)
+  erghea anzr
+raq
 
-local function ShowFarmTooltip(cell, arg, ...)
-  local toon = arg
-  local t = vars.db.Toons[toon]
-  if not t then return end
-  openIndicator(2, "LEFT","RIGHT")
-  local tname = ClassColorise(t.Class, toon)
-  indicatortip:AddHeader()
-  indicatortip:SetCell(1,1,tname,"LEFT")
-  indicatortip:SetCell(1,2,L["Farm Crops"],"RIGHT")
+ybpny shapgvba FubjSnezGbbygvc(pryy, net, ...)
+  ybpny gbba = net
+  ybpny g = inef.qo.Gbbaf[gbba]
+  vs abg g gura erghea raq
+  bcraVaqvpngbe(2, "YRSG","EVTUG")
+  ybpny ganzr = PynffPbybevfr(g.Pynff, gbba)
+  vaqvpngbegvc:NqqUrnqre()
+  vaqvpngbegvc:FrgPryy(1,1,ganzr,"YRSG")
+  vaqvpngbegvc:FrgPryy(1,2,Y["Snez Pebcf"],"EVTUG")
 
-  local exp = t.FarmExpires
-  if exp and exp > time() then
-    indicatortip:AddLine(YELLOWFONT .. L["Time Left"] .. ":" .. FONTEND, SecondsToTime(exp - time()))
-  end
-  indicatortip:AddLine(YELLOWFONT .. L["Crops harvested today"] .. ":" .. FONTEND,(t.FarmHarvested or 0))
-  indicatortip:AddLine(YELLOWFONT .. L["Crops planted today"] .. ":" .. FONTEND,  (t.FarmPlanted or 0))
-  local crops
-  if t.FarmCropPlanted and next(t.FarmCropPlanted) then
-    crops = t.FarmCropPlanted
-    indicatortip:AddLine(YELLOWFONT .. L["Crops growing"] .. ":" .. FONTEND)
-  elseif t.FarmCropReady and next(t.FarmCropReady) then
-    crops = t.FarmCropReady
-    indicatortip:AddLine(YELLOWFONT .. L["Crops ready"] .. ":" .. FONTEND)
-  end
-  if crops then
-    for spellid,cnt in pairs(crops) do
-      local line = indicatortip:AddLine()
-      indicatortip:SetCell(line,1, addon:plantName(spellid),"LEFT")
-      indicatortip:SetCell(line,2,"x"..cnt,"RIGHT")
-    end
-  end
-  finishIndicator()
-end
+  ybpny rkc = g.SnezRkcverf
+  vs rkc naq rkc > gvzr() gura
+    vaqvpngbegvc:NqqYvar(LRYYBJSBAG .. Y["Gvzr Yrsg"] .. ":" .. SBAGRAQ, FrpbaqfGbGvzr(rkc - gvzr()))
+  raq
+  vaqvpngbegvc:NqqYvar(LRYYBJSBAG .. Y["Pebcf uneirfgrq gbqnl"] .. ":" .. SBAGRAQ,(g.SnezUneirfgrq be 0))
+  vaqvpngbegvc:NqqYvar(LRYYBJSBAG .. Y["Pebcf cynagrq gbqnl"] .. ":" .. SBAGRAQ,  (g.SnezCynagrq be 0))
+  ybpny pebcf
+  vs g.SnezPebcCynagrq naq arkg(g.SnezPebcCynagrq) gura
+    pebcf = g.SnezPebcCynagrq
+    vaqvpngbegvc:NqqYvar(LRYYBJSBAG .. Y["Pebcf tebjvat"] .. ":" .. SBAGRAQ)
+  ryfrvs g.SnezPebcErnql naq arkg(g.SnezPebcErnql) gura
+    pebcf = g.SnezPebcErnql
+    vaqvpngbegvc:NqqYvar(LRYYBJSBAG .. Y["Pebcf ernql"] .. ":" .. SBAGRAQ)
+  raq
+  vs pebcf gura
+    sbe fcryyvq,pag va cnvef(pebcf) qb
+      ybpny yvar = vaqvpngbegvc:NqqYvar()
+      vaqvpngbegvc:FrgPryy(yvar,1, nqqba:cynagAnzr(fcryyvq),"YRSG")
+      vaqvpngbegvc:FrgPryy(yvar,2,"k"..pag,"EVTUG")
+    raq
+  raq
+  svavfuVaqvpngbe()
+raq
 
-local function ShowBonusTooltip(cell, arg, ...)
-  local toon = arg
-  local parent
-  if type(toon) == "table" then
-    toon, parent = unpack(toon)
-  end
-  local t = vars.db.Toons[toon]
-  if not t or not t.BonusRoll then return end
-  openIndicator(4, "LEFT","LEFT","LEFT","LEFT")
-  local tname = ClassColorise(t.Class, toon)
-  indicatortip:AddHeader()
-  indicatortip:SetCell(1,1,tname,"LEFT",2)
-  indicatortip:SetCell(1,3,L["Recent Bonus Rolls"],"RIGHT",2)
+ybpny shapgvba FubjObahfGbbygvc(pryy, net, ...)
+  ybpny gbba = net
+  ybpny cnerag
+  vs glcr(gbba) == "gnoyr" gura
+    gbba, cnerag = hacnpx(gbba)
+  raq
+  ybpny g = inef.qo.Gbbaf[gbba]
+  vs abg g be abg g.ObahfEbyy gura erghea raq
+  bcraVaqvpngbe(4, "YRSG","YRSG","YRSG","YRSG")
+  ybpny ganzr = PynffPbybevfr(g.Pynff, gbba)
+  vaqvpngbegvc:NqqUrnqre()
+  vaqvpngbegvc:FrgPryy(1,1,ganzr,"YRSG",2)
+  vaqvpngbegvc:FrgPryy(1,3,Y["Erprag Obahf Ebyyf"],"EVTUG",2)
 
-  local line = indicatortip:AddLine()
-  for i,roll in ipairs(t.BonusRoll) do
-    if i > 10 then break end
-    local line = indicatortip:AddLine()
-    local icon = roll.currencyID and select(3,GetCurrencyInfo(roll.currencyID))
-    if icon then
-      indicatortip:SetCell(line,1, " \124T"..icon..":0\124t ")
-    end
-    if roll.name then
-      indicatortip:SetCell(line,2,roll.name)
-    end
-    if roll.item then
-      indicatortip:SetCell(line,3,roll.item)
-    elseif roll.money then
-      indicatortip:SetCell(line,3,GetMoneyString(roll.money))
-    end
-    if roll.time then
-      indicatortip:SetCell(line,4,date("%b %d %H:%M",roll.time))
-    end
-  end
-  finishIndicator(parent)
-end
+  ybpny yvar = vaqvpngbegvc:NqqYvar()
+  sbe v,ebyy va vcnvef(g.ObahfEbyy) qb
+    vs v > 10 gura oernx raq
+    ybpny yvar = vaqvpngbegvc:NqqYvar()
+    ybpny vpba = ebyy.pheeraplVQ naq fryrpg(3,TrgPheeraplVasb(ebyy.pheeraplVQ))
+    vs vpba gura
+      vaqvpngbegvc:FrgPryy(yvar,1, " \124G"..vpba..":0\124g ")
+    raq
+    vs ebyy.anzr gura
+      vaqvpngbegvc:FrgPryy(yvar,2,ebyy.anzr)
+    raq
+    vs ebyy.vgrz gura
+      vaqvpngbegvc:FrgPryy(yvar,3,ebyy.vgrz)
+    ryfrvs ebyy.zbarl gura
+      vaqvpngbegvc:FrgPryy(yvar,3,TrgZbarlFgevat(ebyy.zbarl))
+    raq
+    vs ebyy.gvzr gura
+      vaqvpngbegvc:FrgPryy(yvar,4,qngr("%o %q %U:%Z",ebyy.gvzr))
+    raq
+  raq
+  svavfuVaqvpngbe(cnerag)
+raq
 
-local function ShowAccountSummary(cell, arg, ...)
-  openIndicator(2, "LEFT","RIGHT")
-  indicatortip:SetCell(indicatortip:AddHeader(),1,GOLDFONT..L["Account Summary"]..FONTEND,"LEFT",2)
+ybpny shapgvba FubjNppbhagFhzznel(pryy, net, ...)
+  bcraVaqvpngbe(2, "YRSG","EVTUG")
+  vaqvpngbegvc:FrgPryy(vaqvpngbegvc:NqqUrnqre(),1,TBYQSBAG..Y["Nppbhag Fhzznel"]..SBAGRAQ,"YRSG",2)
 
-  local tmoney = 0
-  local ttime = 0
-  local ttoons = 0
-  local tmaxtoons = 0
-  local r = {}
-  for toon, t in pairs(vars.db.Toons) do -- deliberately include ALL toons
-    local realm = toon:match(" %- (.+)$")
-    local money = t.Money or 0
-    tmoney = tmoney + money
-    local ri = r[realm] or { ["realm"] = realm, ["money"] = 0, ["cnt"] = 0 }
-    ri.money = ri.money + money
-    ri.cnt = ri.cnt + 1
-    r[realm] = ri
-    ttime = ttime + (t.PlayedTotal or 0)
-    ttoons = ttoons + 1
-    if t.Level == maxlvl then
-      tmaxtoons = tmaxtoons + 1
-    end
-  end
-  indicatortip:AddLine(L["Characters"], ttoons)
-  indicatortip:AddLine(string.format(L["Level %d Characters"],maxlvl), tmaxtoons)
-  if vars.db.Tooltip.TrackPlayed then
-    indicatortip:AddLine((TIME_PLAYED_TOTAL):format(""),SecondsToTime(ttime))
-  end
-  indicatortip:AddLine(TOTAL.." "..MONEY,addon:formatNumber(tmoney,true))
-  local rmoney = {}
-  for _,ri in pairs(r) do table.insert(rmoney,ri) end
-  table.sort(rmoney,function(a,b) return a.money > b.money end)
-  for _,ri in ipairs(rmoney) do
-    if ri.money > 10000*10000 and ri.cnt > 1 then -- show multi-toon servers with over 10k wealth
-      indicatortip:AddLine(ri.realm.." "..MONEY,addon:formatNumber(ri.money,true))
-    end
-  end
+  ybpny gzbarl = 0
+  ybpny ggvzr = 0
+  ybpny ggbbaf = 0
+  ybpny gznkgbbaf = 0
+  ybpny e = {}
+  sbe gbba, g va cnvef(inef.qo.Gbbaf) qb -- qryvorengryl vapyhqr NYY gbbaf
+    ybpny ernyz = gbba:zngpu(" %- (.+)$")
+    ybpny zbarl = g.Zbarl be 0
+    gzbarl = gzbarl + zbarl
+    ybpny ev = e[ernyz] be { ["ernyz"] = ernyz, ["zbarl"] = 0, ["pag"] = 0 }
+    ev.zbarl = ev.zbarl + zbarl
+    ev.pag = ev.pag + 1
+    e[ernyz] = ev
+    ggvzr = ggvzr + (g.CynlrqGbgny be 0)
+    ggbbaf = ggbbaf + 1
+    vs g.Yriry == znkyiy gura
+      gznkgbbaf = gznkgbbaf + 1
+    raq
+  raq
+  vaqvpngbegvc:NqqYvar(Y["Punenpgref"], ggbbaf)
+  vaqvpngbegvc:NqqYvar(fgevat.sbezng(Y["Yriry %q Punenpgref"],znkyiy), gznkgbbaf)
+  vs inef.qo.Gbbygvc.GenpxCynlrq gura
+    vaqvpngbegvc:NqqYvar((GVZR_CYNLRQ_GBGNY):sbezng(""),FrpbaqfGbGvzr(ggvzr))
+  raq
+  vaqvpngbegvc:NqqYvar(GBGNY.." "..ZBARL,nqqba:sbezngAhzore(gzbarl,gehr))
+  ybpny ezbarl = {}
+  sbe _,ev va cnvef(e) qb gnoyr.vafreg(ezbarl,ev) raq
+  gnoyr.fbeg(ezbarl,shapgvba(n,o) erghea n.zbarl > o.zbarl raq)
+  sbe _,ev va vcnvef(ezbarl) qb
+    vs ev.zbarl > 10000*10000 naq ev.pag > 1 gura -- fubj zhygv-gbba freiref jvgu bire 10x jrnygu
+      vaqvpngbegvc:NqqYvar(ev.ernyz.." "..ZBARL,nqqba:sbezngAhzore(ev.zbarl,gehr))
+    raq
+  raq
 
-  -- history information
-  indicatortip:AddLine("")
-  addon:HistoryUpdate()
-  local tmp = {}
-  local cnt = 0
-  for _,ii in pairs(db.History) do
-    table.insert(tmp,ii)
-  end
-  cnt = #tmp
-  table.sort(tmp, function(i1,i2) return i1.last < i2.last end)
-  indicatortip:SetHeaderFont(tooltip:GetHeaderFont())
-  indicatortip:SetCell(indicatortip:AddHeader(),1,GOLDFONT..cnt.." "..L["Recent Instances"]..": "..FONTEND,"LEFT",2)
-  for _,ii in ipairs(tmp) do
-    local tstr = REDFONT..SecondsToTime(ii.last+addon.histReapTime - time(),false,false,1)..FONTEND
-    indicatortip:AddLine(tstr, ii.desc)
-  end
-  indicatortip:AddLine("")
-  indicatortip:SetCell(indicatortip:AddLine(),1,
-    string.format(L["These are the instances that count towards the %i instances per hour account limit, and the time until they expire."],
-      addon.histLimit),"LEFT",2,nil,nil,nil,250)
-  finishIndicator()
-end
+  -- uvfgbel vasbezngvba
+  vaqvpngbegvc:NqqYvar("")
+  nqqba:UvfgbelHcqngr()
+  ybpny gzc = {}
+  ybpny pag = 0
+  sbe _,vv va cnvef(qo.Uvfgbel) qb
+    gnoyr.vafreg(gzc,vv)
+  raq
+  pag = #gzc
+  gnoyr.fbeg(gzc, shapgvba(v1,v2) erghea v1.ynfg < v2.ynfg raq)
+  vaqvpngbegvc:FrgUrnqreSbag(gbbygvc:TrgUrnqreSbag())
+  vaqvpngbegvc:FrgPryy(vaqvpngbegvc:NqqUrnqre(),1,TBYQSBAG..pag.." "..Y["Erprag Vafgnaprf"]..": "..SBAGRAQ,"YRSG",2)
+  sbe _,vv va vcnvef(gzc) qb
+    ybpny gfge = ERQSBAG..FrpbaqfGbGvzr(vv.ynfg+nqqba.uvfgErncGvzr - gvzr(),snyfr,snyfr,1)..SBAGRAQ
+    vaqvpngbegvc:NqqYvar(gfge, vv.qrfp)
+  raq
+  vaqvpngbegvc:NqqYvar("")
+  vaqvpngbegvc:FrgPryy(vaqvpngbegvc:NqqYvar(),1,
+    fgevat.sbezng(Y["Gurfr ner gur vafgnaprf gung pbhag gbjneqf gur %v vafgnaprf cre ubhe nppbhag yvzvg, naq gur gvzr hagvy gurl rkcver."],
+      nqqba.uvfgYvzvg),"YRSG",2,avy,avy,avy,250)
+  svavfuVaqvpngbe()
+raq
 
-local function ShowWorldBossTooltip(cell, arg, ...)
-  local worldbosses = arg[1]
-  local toon = arg[2]
-  local saved = arg[3]
-  if not worldbosses or not toon then return end
-  openIndicator(2, "LEFT","RIGHT")
-  local line = indicatortip:AddHeader()
-  local toonstr = (db.Tooltip.ShowServer and toon) or strsplit(' ', toon)
-  local t = vars.db.Toons[toon]
-  local reset = t.WeeklyResetTime or addon:GetNextWeeklyResetTime()
-  indicatortip:SetCell(line, 1, ClassColorise(vars.db.Toons[toon].Class, toonstr), indicatortip:GetHeaderFont(), "LEFT")
-  indicatortip:SetCell(line, 2, GOLDFONT .. L["World Bosses"] .. FONTEND, indicatortip:GetHeaderFont(), "RIGHT")
-  indicatortip:AddLine(YELLOWFONT .. L["Time Left"] .. ":" .. FONTEND, SecondsToTime(reset - time()))
-  for _, instance in ipairs(worldbosses) do
-    local thisinstance = vars.db.Instances[instance]
-    if thisinstance then
-      local info = thisinstance[toon] and thisinstance[toon][2]
-      local n = indicatortip:AddLine()
-      indicatortip:SetCell(n, 1, instance, "LEFT")
-      if info and info[1] then
-        indicatortip:SetCell(n, 2, REDFONT..ALREADY_LOOTED..FONTEND, "RIGHT")
-      else
-        indicatortip:SetCell(n, 2, GREENFONT..AVAILABLE..FONTEND, "RIGHT")
-      end
-    end
-  end
-  finishIndicator()
-end
+ybpny shapgvba FubjJbeyqObffGbbygvc(pryy, net, ...)
+  ybpny jbeyqobffrf = net[1]
+  ybpny gbba = net[2]
+  ybpny fnirq = net[3]
+  vs abg jbeyqobffrf be abg gbba gura erghea raq
+  bcraVaqvpngbe(2, "YRSG","EVTUG")
+  ybpny yvar = vaqvpngbegvc:NqqUrnqre()
+  ybpny gbbafge = (qo.Gbbygvc.FubjFreire naq gbba) be fgefcyvg(' ', gbba)
+  ybpny g = inef.qo.Gbbaf[gbba]
+  ybpny erfrg = g.JrrxylErfrgGvzr be nqqba:TrgArkgJrrxylErfrgGvzr()
+  vaqvpngbegvc:FrgPryy(yvar, 1, PynffPbybevfr(inef.qo.Gbbaf[gbba].Pynff, gbbafge), vaqvpngbegvc:TrgUrnqreSbag(), "YRSG")
+  vaqvpngbegvc:FrgPryy(yvar, 2, TBYQSBAG .. Y["Jbeyq Obffrf"] .. SBAGRAQ, vaqvpngbegvc:TrgUrnqreSbag(), "EVTUG")
+  vaqvpngbegvc:NqqYvar(LRYYBJSBAG .. Y["Gvzr Yrsg"] .. ":" .. SBAGRAQ, FrpbaqfGbGvzr(erfrg - gvzr()))
+  sbe _, vafgnapr va vcnvef(jbeyqobffrf) qb
+    ybpny guvfvafgnapr = inef.qo.Vafgnaprf[vafgnapr]
+    vs guvfvafgnapr gura
+      ybpny vasb = guvfvafgnapr[gbba] naq guvfvafgnapr[gbba][2]
+      ybpny a = vaqvpngbegvc:NqqYvar()
+      vaqvpngbegvc:FrgPryy(a, 1, vafgnapr, "YRSG")
+      vs vasb naq vasb[1] gura
+        vaqvpngbegvc:FrgPryy(a, 2, ERQSBAG..NYERNQL_YBBGRQ..SBAGRAQ, "EVTUG")
+      ryfr
+        vaqvpngbegvc:FrgPryy(a, 2, TERRASBAG..NINVYNOYR..SBAGRAQ, "EVTUG")
+      raq
+    raq
+  raq
+  svavfuVaqvpngbe()
+raq
 
-local function ShowLFRTooltip(cell, arg, ...)
-  local boxname = arg[1]
-  local toon = arg[2]
-  local lfrmap = arg[3]
-  local t = vars.db.Toons[toon]
-  if not boxname or not t or not lfrmap then return end
-  openIndicator(3, "LEFT", "LEFT","RIGHT")
-  local line = indicatortip:AddHeader()
-  local toonstr = (db.Tooltip.ShowServer and toon) or strsplit(' ', toon)
-  local reset = t.WeeklyResetTime or addon:GetNextWeeklyResetTime()
-  indicatortip:SetCell(line, 1, ClassColorise(vars.db.Toons[toon].Class, toonstr), indicatortip:GetHeaderFont(), "LEFT", 1)
-  indicatortip:SetCell(line, 2, GOLDFONT .. boxname .. FONTEND, indicatortip:GetHeaderFont(), "RIGHT", 2)
-  indicatortip:AddLine(YELLOWFONT .. L["Time Left"] .. ":" .. FONTEND, nil, SecondsToTime(reset - time()))
-  for i=1,20 do
-    local instance = lfrmap[boxname..":"..i]
-    local diff = 2
-    if instance then
-      indicatortip:SetCell(indicatortip:AddLine(), 1, YELLOWFONT .. instance .. FONTEND, "CENTER",3)
-      local thisinstance = vars.db.Instances[instance]
-      local info = thisinstance[toon] and thisinstance[toon][diff]
-      local killed, total, base, remap = addon:instanceBosses(instance,toon,diff)
-      for i=base,base+total-1 do
-        local bossid = i
-        if remap then
-          bossid = remap[i-base+1]
-        end
-        local bossname = GetLFGDungeonEncounterInfo(thisinstance.LFDID, bossid);
-        local n = indicatortip:AddLine()
-        indicatortip:SetCell(n, 1, bossname, "LEFT", 2)
-        if info and info[bossid] then
-          indicatortip:SetCell(n, 3, REDFONT..ALREADY_LOOTED..FONTEND, "RIGHT", 1)
-        else
-          indicatortip:SetCell(n, 3, GREENFONT..AVAILABLE..FONTEND, "RIGHT", 1)
-        end
-      end
-    end
-  end
-  finishIndicator()
-end
+ybpny shapgvba FubjYSEGbbygvc(pryy, net, ...)
+  ybpny obkanzr = net[1]
+  ybpny gbba = net[2]
+  ybpny yseznc = net[3]
+  ybpny g = inef.qo.Gbbaf[gbba]
+  vs abg obkanzr be abg g be abg yseznc gura erghea raq
+  bcraVaqvpngbe(3, "YRSG", "YRSG","EVTUG")
+  ybpny yvar = vaqvpngbegvc:NqqUrnqre()
+  ybpny gbbafge = (qo.Gbbygvc.FubjFreire naq gbba) be fgefcyvg(' ', gbba)
+  ybpny erfrg = g.JrrxylErfrgGvzr be nqqba:TrgArkgJrrxylErfrgGvzr()
+  vaqvpngbegvc:FrgPryy(yvar, 1, PynffPbybevfr(inef.qo.Gbbaf[gbba].Pynff, gbbafge), vaqvpngbegvc:TrgUrnqreSbag(), "YRSG", 1)
+  vaqvpngbegvc:FrgPryy(yvar, 2, TBYQSBAG .. obkanzr .. SBAGRAQ, vaqvpngbegvc:TrgUrnqreSbag(), "EVTUG", 2)
+  vaqvpngbegvc:NqqYvar(LRYYBJSBAG .. Y["Gvzr Yrsg"] .. ":" .. SBAGRAQ, avy, FrpbaqfGbGvzr(erfrg - gvzr()))
+  sbe v=1,20 qb
+    ybpny vafgnapr = yseznc[obkanzr..":"..v]
+    ybpny qvss = 2
+    vs vafgnapr gura
+      vaqvpngbegvc:FrgPryy(vaqvpngbegvc:NqqYvar(), 1, LRYYBJSBAG .. vafgnapr .. SBAGRAQ, "PRAGRE",3)
+      ybpny guvfvafgnapr = inef.qo.Vafgnaprf[vafgnapr]
+      ybpny vasb = guvfvafgnapr[gbba] naq guvfvafgnapr[gbba][qvss]
+      ybpny xvyyrq, gbgny, onfr, erznc = nqqba:vafgnaprObffrf(vafgnapr,gbba,qvss)
+      sbe v=onfr,onfr+gbgny-1 qb
+        ybpny obffvq = v
+        vs erznc gura
+          obffvq = erznc[v-onfr+1]
+        raq
+        ybpny obffanzr = TrgYSTQhatrbaRapbhagreVasb(guvfvafgnapr.YSQVQ, obffvq);
+        ybpny a = vaqvpngbegvc:NqqYvar()
+        vaqvpngbegvc:FrgPryy(a, 1, obffanzr, "YRSG", 2)
+        vs vasb naq vasb[obffvq] gura
+          vaqvpngbegvc:FrgPryy(a, 3, ERQSBAG..NYERNQL_YBBGRQ..SBAGRAQ, "EVTUG", 1)
+        ryfr
+          vaqvpngbegvc:FrgPryy(a, 3, TERRASBAG..NINVYNOYR..SBAGRAQ, "EVTUG", 1)
+        raq
+      raq
+    raq
+  raq
+  svavfuVaqvpngbe()
+raq
 
-local function ShowIndicatorTooltip(cell, arg, ...)
-  local instance = arg[1]
-  local toon = arg[2]
-  local diff = arg[3]
-  if not instance or not toon or not diff then return end
-  openIndicator(3, "LEFT", "LEFT","RIGHT")
-  local thisinstance = vars.db.Instances[instance]
-  local worldboss = thisinstance and thisinstance.WorldBoss
-  local info = thisinstance[toon][diff]
-  local id = info.ID
-  local nameline = indicatortip:AddHeader()
-  indicatortip:SetCell(nameline, 1, DifficultyString(instance, diff, toon), indicatortip:GetHeaderFont(), "LEFT", 1)
-  indicatortip:SetCell(nameline, 2, GOLDFONT .. instance .. FONTEND, indicatortip:GetHeaderFont(), "RIGHT", 2)
-  local toonline = indicatortip:AddHeader()
-  local toonstr = (db.Tooltip.ShowServer and toon) or strsplit(' ', toon)
-  indicatortip:SetCell(toonline, 1, ClassColorise(vars.db.Toons[toon].Class, toonstr), indicatortip:GetHeaderFont(), "LEFT", 1)
-  indicatortip:SetCell(toonline, 2, addon:idtext(thisinstance,diff,info), "RIGHT", 2)
-  local EMPH = " !!! "
-  if info.Extended then
-    indicatortip:SetCell(indicatortip:AddLine(),1,WHITEFONT .. EMPH .. L["Extended Lockout - Not yet saved"] .. EMPH .. FONTEND,"CENTER",3)
-  elseif info.Locked == false and info.ID > 0 then
-    indicatortip:SetCell(indicatortip:AddLine(),1,WHITEFONT .. EMPH .. L["Expired Lockout - Can be extended"] .. EMPH .. FONTEND,"CENTER",3)
-  end
-  if info.Expires > 0 then
-    indicatortip:AddLine(YELLOWFONT .. L["Time Left"] .. ":" .. FONTEND, nil, SecondsToTime(thisinstance[toon][diff].Expires - time()))
-  end
-  if (info.ID or 0) > 0 and (
-    (thisinstance.Raid and (diff == 5 or diff == 6 or diff == 16)) -- raid: 10 heroic, 25 heroic or mythic
-    or
-    (diff == 23) -- mythic 5-man
-    ) then
-    local n = indicatortip:AddLine()
-    indicatortip:SetCell(n, 1, YELLOWFONT .. ID .. ":" .. FONTEND, "LEFT", 1)
-    indicatortip:SetCell(n, 2, info.ID, "RIGHT", 2)
-  end
-  if info.Link then
-    scantt:SetOwner(UIParent,"ANCHOR_NONE")
-    scantt:SetHyperlink(info.Link)
-    local name = scantt:GetName()
-    local gotbossinfo
-    for i=2,scantt:NumLines() do
-      local left,right = _G[name.."TextLeft"..i], _G[name.."TextRight"..i]
-      if right and right:GetText() then
-        local n = indicatortip:AddLine()
-        indicatortip:SetCell(n, 1, coloredText(left), "LEFT", 2)
-        indicatortip:SetCell(n, 3, coloredText(right), "RIGHT", 1)
-        gotbossinfo = true
-      else
-        indicatortip:SetCell(indicatortip:AddLine(),1,coloredText(left),"CENTER",3)
-      end
-    end
-    if not gotbossinfo then
-      local exc = addon:instanceException(thisinstance.LFDID)
-      local bits = tonumber(info.Link:match(":(%d+)\124h"))
-      if exc and bits then
-        for i=1,exc.total do
-          local n = indicatortip:AddLine()
-          indicatortip:SetCell(n, 1, exc[i], "LEFT", 2)
-          local text = "\124cff00ff00"..BOSS_ALIVE.."\124r"
-          if bit.band(bits,1) > 0 then
-            text = "\124cffff1f1f"..BOSS_DEAD.."\124r"
-          end
-          indicatortip:SetCell(n, 3, text, "RIGHT", 1)
-          bits = bit.rshift(bits,1)
-        end
-      else
-        indicatortip:SetCell(indicatortip:AddLine(),1,WHITEFONT ..
-          L["Boss kill information is missing for this lockout.\nThis is a Blizzard bug affecting certain old raids."] ..
-          FONTEND,"CENTER",3)
-      end
-    end
-  end
-  if info.ID < 0 then
-    local killed, total, base, remap = addon:instanceBosses(instance,toon,diff)
-    for i=base,base+total-1 do
-      local bossid = i
-      if remap then
-        bossid = remap[i-base+1]
-      end
-      local bossname
-      if worldboss then
-        bossname = addon.WorldBosses[worldboss].name or "UNKNOWN"
-      else
-        bossname = GetLFGDungeonEncounterInfo(thisinstance.LFDID, bossid);
-      end
-      local n = indicatortip:AddLine()
-      indicatortip:SetCell(n, 1, bossname, "LEFT", 2)
-      if info[bossid] then
-        indicatortip:SetCell(n, 3, REDFONT..ALREADY_LOOTED..FONTEND, "RIGHT", 1)
-      else
-        indicatortip:SetCell(n, 3, GREENFONT..AVAILABLE..FONTEND, "RIGHT", 1)
-      end
-    end
-  end
-  finishIndicator()
-end
+ybpny shapgvba FubjVaqvpngbeGbbygvc(pryy, net, ...)
+  ybpny vafgnapr = net[1]
+  ybpny gbba = net[2]
+  ybpny qvss = net[3]
+  vs abg vafgnapr be abg gbba be abg qvss gura erghea raq
+  bcraVaqvpngbe(3, "YRSG", "YRSG","EVTUG")
+  ybpny guvfvafgnapr = inef.qo.Vafgnaprf[vafgnapr]
+  ybpny jbeyqobff = guvfvafgnapr naq guvfvafgnapr.JbeyqObff
+  ybpny vasb = guvfvafgnapr[gbba][qvss]
+  ybpny vq = vasb.VQ
+  ybpny anzryvar = vaqvpngbegvc:NqqUrnqre()
+  vaqvpngbegvc:FrgPryy(anzryvar, 1, QvssvphyglFgevat(vafgnapr, qvss, gbba), vaqvpngbegvc:TrgUrnqreSbag(), "YRSG", 1)
+  vaqvpngbegvc:FrgPryy(anzryvar, 2, TBYQSBAG .. vafgnapr .. SBAGRAQ, vaqvpngbegvc:TrgUrnqreSbag(), "EVTUG", 2)
+  ybpny gbbayvar = vaqvpngbegvc:NqqUrnqre()
+  ybpny gbbafge = (qo.Gbbygvc.FubjFreire naq gbba) be fgefcyvg(' ', gbba)
+  vaqvpngbegvc:FrgPryy(gbbayvar, 1, PynffPbybevfr(inef.qo.Gbbaf[gbba].Pynff, gbbafge), vaqvpngbegvc:TrgUrnqreSbag(), "YRSG", 1)
+  vaqvpngbegvc:FrgPryy(gbbayvar, 2, nqqba:vqgrkg(guvfvafgnapr,qvss,vasb), "EVTUG", 2)
+  ybpny RZCU = " !!! "
+  vs vasb.Rkgraqrq gura
+    vaqvpngbegvc:FrgPryy(vaqvpngbegvc:NqqYvar(),1,JUVGRSBAG .. RZCU .. Y["Rkgraqrq Ybpxbhg - Abg lrg fnirq"] .. RZCU .. SBAGRAQ,"PRAGRE",3)
+  ryfrvs vasb.Ybpxrq == snyfr naq vasb.VQ > 0 gura
+    vaqvpngbegvc:FrgPryy(vaqvpngbegvc:NqqYvar(),1,JUVGRSBAG .. RZCU .. Y["Rkcverq Ybpxbhg - Pna or rkgraqrq"] .. RZCU .. SBAGRAQ,"PRAGRE",3)
+  raq
+  vs vasb.Rkcverf > 0 gura
+    vaqvpngbegvc:NqqYvar(LRYYBJSBAG .. Y["Gvzr Yrsg"] .. ":" .. SBAGRAQ, avy, FrpbaqfGbGvzr(guvfvafgnapr[gbba][qvss].Rkcverf - gvzr()))
+  raq
+  vs (vasb.VQ be 0) > 0 naq (
+    (guvfvafgnapr.Envq naq (qvss == 5 be qvss == 6 be qvss == 16)) -- envq: 10 urebvp, 25 urebvp be zlguvp
+    be
+    (qvss == 23) -- zlguvp 5-zna
+    ) gura
+    ybpny a = vaqvpngbegvc:NqqYvar()
+    vaqvpngbegvc:FrgPryy(a, 1, LRYYBJSBAG .. VQ .. ":" .. SBAGRAQ, "YRSG", 1)
+    vaqvpngbegvc:FrgPryy(a, 2, vasb.VQ, "EVTUG", 2)
+  raq
+  vs vasb.Yvax gura
+    fpnagg:FrgBjare(HVCnerag,"NAPUBE_ABAR")
+    fpnagg:FrgUlcreyvax(vasb.Yvax)
+    ybpny anzr = fpnagg:TrgAnzr()
+    ybpny tbgobffvasb
+    sbe v=2,fpnagg:AhzYvarf() qb
+      ybpny yrsg,evtug = _T[anzr.."GrkgYrsg"..v], _T[anzr.."GrkgEvtug"..v]
+      vs evtug naq evtug:TrgGrkg() gura
+        ybpny a = vaqvpngbegvc:NqqYvar()
+        vaqvpngbegvc:FrgPryy(a, 1, pbyberqGrkg(yrsg), "YRSG", 2)
+        vaqvpngbegvc:FrgPryy(a, 3, pbyberqGrkg(evtug), "EVTUG", 1)
+        tbgobffvasb = gehr
+      ryfr
+        vaqvpngbegvc:FrgPryy(vaqvpngbegvc:NqqYvar(),1,pbyberqGrkg(yrsg),"PRAGRE",3)
+      raq
+    raq
+    vs abg tbgobffvasb gura
+      ybpny rkp = nqqba:vafgnaprRkprcgvba(guvfvafgnapr.YSQVQ)
+      ybpny ovgf = gbahzore(vasb.Yvax:zngpu(":(%q+)\124u"))
+      vs rkp naq ovgf gura
+        sbe v=1,rkp.gbgny qb
+          ybpny a = vaqvpngbegvc:NqqYvar()
+          vaqvpngbegvc:FrgPryy(a, 1, rkp[v], "YRSG", 2)
+          ybpny grkg = "\124pss00ss00"..OBFF_NYVIR.."\124e"
+          vs ovg.onaq(ovgf,1) > 0 gura
+            grkg = "\124pssss1s1s"..OBFF_QRNQ.."\124e"
+          raq
+          vaqvpngbegvc:FrgPryy(a, 3, grkg, "EVTUG", 1)
+          ovgf = ovg.efuvsg(ovgf,1)
+        raq
+      ryfr
+        vaqvpngbegvc:FrgPryy(vaqvpngbegvc:NqqYvar(),1,JUVGRSBAG ..
+          Y["Obff xvyy vasbezngvba vf zvffvat sbe guvf ybpxbhg.\aGuvf vf n Oyvmmneq oht nssrpgvat pregnva byq envqf."] ..
+          SBAGRAQ,"PRAGRE",3)
+      raq
+    raq
+  raq
+  vs vasb.VQ < 0 gura
+    ybpny xvyyrq, gbgny, onfr, erznc = nqqba:vafgnaprObffrf(vafgnapr,gbba,qvss)
+    sbe v=onfr,onfr+gbgny-1 qb
+      ybpny obffvq = v
+      vs erznc gura
+        obffvq = erznc[v-onfr+1]
+      raq
+      ybpny obffanzr
+      vs jbeyqobff gura
+        obffanzr = nqqba.JbeyqObffrf[jbeyqobff].anzr be "HAXABJA"
+      ryfr
+        obffanzr = TrgYSTQhatrbaRapbhagreVasb(guvfvafgnapr.YSQVQ, obffvq);
+      raq
+      ybpny a = vaqvpngbegvc:NqqYvar()
+      vaqvpngbegvc:FrgPryy(a, 1, obffanzr, "YRSG", 2)
+      vs vasb[obffvq] gura
+        vaqvpngbegvc:FrgPryy(a, 3, ERQSBAG..NYERNQL_YBBGRQ..SBAGRAQ, "EVTUG", 1)
+      ryfr
+        vaqvpngbegvc:FrgPryy(a, 3, TERRASBAG..NINVYNOYR..SBAGRAQ, "EVTUG", 1)
+      raq
+    raq
+  raq
+  svavfuVaqvpngbe()
+raq
 
-local colorpat = "\124c%c%c%c%c%c%c%c%c"
-local weeklycap = CURRENCY_WEEKLY_CAP:gsub("%%%d*?([ds])","%%%1")
-local weeklycap_scan = weeklycap:gsub("%%d","(%%d+)"):gsub("%%s","(\124c%%x%%x%%x%%x%%x%%x%%x%%x)")
-weeklycap = weeklycap:gsub("%%d","%%s")
-local totalcap = CURRENCY_TOTAL_CAP:gsub("%%%d*?([ds])","%%%1")
-local totalcap_scan = totalcap:gsub("%%d","(%%d+)"):gsub("%%s","(\124c%%x%%x%%x%%x%%x%%x%%x%%x)")
-totalcap = totalcap:gsub("%%d","%%s")
-local season_scan = CURRENCY_SEASON_TOTAL:gsub("%%%d*?([ds])","(%%%1*)")
+ybpny pbybecng = "\124p%p%p%p%p%p%p%p%p"
+ybpny jrrxylpnc = PHEERAPL_JRRXYL_PNC:tfho("%%%q*?([qf])","%%%1")
+ybpny jrrxylpnc_fpna = jrrxylpnc:tfho("%%q","(%%q+)"):tfho("%%f","(\124p%%k%%k%%k%%k%%k%%k%%k%%k)")
+jrrxylpnc = jrrxylpnc:tfho("%%q","%%f")
+ybpny gbgnypnc = PHEERAPL_GBGNY_PNC:tfho("%%%q*?([qf])","%%%1")
+ybpny gbgnypnc_fpna = gbgnypnc:tfho("%%q","(%%q+)"):tfho("%%f","(\124p%%k%%k%%k%%k%%k%%k%%k%%k)")
+gbgnypnc = gbgnypnc:tfho("%%q","%%f")
+ybpny frnfba_fpna = PHEERAPL_FRNFBA_GBGNY:tfho("%%%q*?([qf])","(%%%1*)")
 
-function addon:GetSeasonCurrency(idx)
-  scantt:SetOwner(UIParent,"ANCHOR_NONE")
-  scantt:SetCurrencyByID(idx)
-  local name = scantt:GetName()
-  for i=1,scantt:NumLines() do
-    local left = _G[name.."TextLeft"..i]
-    if left:GetText():find(season_scan) then
-      return left:GetText()
-    end
-  end
-  return nil
-end
+shapgvba nqqba:TrgFrnfbaPheerapl(vqk)
+  fpnagg:FrgBjare(HVCnerag,"NAPUBE_ABAR")
+  fpnagg:FrgPheeraplOlVQ(vqk)
+  ybpny anzr = fpnagg:TrgAnzr()
+  sbe v=1,fpnagg:AhzYvarf() qb
+    ybpny yrsg = _T[anzr.."GrkgYrsg"..v]
+    vs yrsg:TrgGrkg():svaq(frnfba_fpna) gura
+      erghea yrsg:TrgGrkg()
+    raq
+  raq
+  erghea avy
+raq
 
-local function ShowSpellIDTooltip(cell, arg, ...)
-  local toon, spellid, timestr = unpack(arg)
-  if not toon or not spellid or not timestr then return end
-  openIndicator(2, "LEFT","RIGHT")
-  indicatortip:AddHeader(ClassColorise(vars.db.Toons[toon].Class, strsplit(' ', toon)), timestr)
-  if spellid > 0 then
-    local tip = vars.db.spelltip and vars.db.spelltip[spellid]
-    for i=1,#tip do
-      indicatortip:AddLine("")
-      indicatortip:SetCell(indicatortip:GetLineCount(),1,tip[i], nil, "LEFT",2, nil, nil, nil, 250)
-    end
-  else
-    local queuestr = LFG_RANDOM_COOLDOWN_YOU:match("^(.+)\n")
-    indicatortip:AddLine(LFG_TYPE_RANDOM_DUNGEON)
-    indicatortip:AddLine("")
-    indicatortip:SetCell(indicatortip:GetLineCount(),1,queuestr, nil, "LEFT",2, nil, nil, nil, 250)
-  end
-  finishIndicator()
-end
+ybpny shapgvba FubjFcryyVQGbbygvc(pryy, net, ...)
+  ybpny gbba, fcryyvq, gvzrfge = hacnpx(net)
+  vs abg gbba be abg fcryyvq be abg gvzrfge gura erghea raq
+  bcraVaqvpngbe(2, "YRSG","EVTUG")
+  vaqvpngbegvc:NqqUrnqre(PynffPbybevfr(inef.qo.Gbbaf[gbba].Pynff, fgefcyvg(' ', gbba)), gvzrfge)
+  vs fcryyvq > 0 gura
+    ybpny gvc = inef.qo.fcryygvc naq inef.qo.fcryygvc[fcryyvq]
+    sbe v=1,#gvc qb
+      vaqvpngbegvc:NqqYvar("")
+      vaqvpngbegvc:FrgPryy(vaqvpngbegvc:TrgYvarPbhag(),1,gvc[v], avy, "YRSG",2, avy, avy, avy, 250)
+    raq
+  ryfr
+    ybpny dhrhrfge = YST_ENAQBZ_PBBYQBJA_LBH:zngpu("^(.+)\a")
+    vaqvpngbegvc:NqqYvar(YST_GLCR_ENAQBZ_QHATRBA)
+    vaqvpngbegvc:NqqYvar("")
+    vaqvpngbegvc:FrgPryy(vaqvpngbegvc:TrgYvarPbhag(),1,dhrhrfge, avy, "YRSG",2, avy, avy, avy, 250)
+  raq
+  svavfuVaqvpngbe()
+raq
 
-local function ShowCurrencyTooltip(cell, arg, ...)
-  local toon, idx, ci = unpack(arg)
-  if not toon or not idx or not ci then return end
-  local name,_,tex = GetCurrencyInfo(idx)
-  tex = " \124T"..tex..":0\124t"
-  openIndicator(2, "LEFT","RIGHT")
-  indicatortip:AddHeader(ClassColorise(vars.db.Toons[toon].Class, strsplit(' ', toon)), CurrencyColor(ci.amount or 0,ci.totalMax)..tex)
+ybpny shapgvba FubjPheeraplGbbygvc(pryy, net, ...)
+  ybpny gbba, vqk, pv = hacnpx(net)
+  vs abg gbba be abg vqk be abg pv gura erghea raq
+  ybpny anzr,_,grk = TrgPheeraplVasb(vqk)
+  grk = " \124G"..grk..":0\124g"
+  bcraVaqvpngbe(2, "YRSG","EVTUG")
+  vaqvpngbegvc:NqqUrnqre(PynffPbybevfr(inef.qo.Gbbaf[gbba].Pynff, fgefcyvg(' ', gbba)), PheeraplPbybe(pv.nzbhag be 0,pv.gbgnyZnk)..grk)
 
-  scantt:SetOwner(UIParent,"ANCHOR_NONE")
-  scantt:SetCurrencyByID(idx)
-  name = scantt:GetName()
-  local spacer
-  for i=1,scantt:NumLines() do
-    local left = _G[name.."TextLeft"..i]
-    local text = left:GetText()
-    if text:find(weeklycap_scan) or
-      text:find(totalcap_scan) or
-      text:find(season_scan) then
-    -- omit player's values
-    else
-      indicatortip:AddLine("")
-      indicatortip:SetCell(indicatortip:GetLineCount(),1,coloredText(left), nil, "LEFT",2, nil, nil, nil, 250)
-      spacer = #strtrim(text) == 0
-    end
-  end
-  if ci.weeklyMax and ci.weeklyMax > 0 then
-    if not spacer then indicatortip:AddLine(" "); spacer = true end
-    indicatortip:AddLine(weeklycap:format("", CurrencyColor(ci.earnedThisWeek or 0,ci.weeklyMax), addon:formatNumber(ci.weeklyMax)))
-  end
-  if ci.totalMax and ci.totalMax > 0 then
-    if not spacer then indicatortip:AddLine(" "); spacer = true end
-    indicatortip:AddLine(totalcap:format("", CurrencyColor(ci.amount or 0,ci.totalMax), addon:formatNumber(ci.totalMax)))
-  end
-  if ci.season and #ci.season > 0 then
-    if not spacer then indicatortip:AddLine(" "); spacer = true end
-    local str = ci.season
-    local num = str:match("(%d+)")
-    if num then
-      str = str:gsub(num,addon:formatNumber(num))
-    end
-    indicatortip:AddLine(str)
-  end
-  finishIndicator()
-end
+  fpnagg:FrgBjare(HVCnerag,"NAPUBE_ABAR")
+  fpnagg:FrgPheeraplOlVQ(vqk)
+  anzr = fpnagg:TrgAnzr()
+  ybpny fcnpre
+  sbe v=1,fpnagg:AhzYvarf() qb
+    ybpny yrsg = _T[anzr.."GrkgYrsg"..v]
+    ybpny grkg = yrsg:TrgGrkg()
+    vs grkg:svaq(jrrxylpnc_fpna) be
+      grkg:svaq(gbgnypnc_fpna) be
+      grkg:svaq(frnfba_fpna) gura
+    -- bzvg cynlre'f inyhrf
+    ryfr
+      vaqvpngbegvc:NqqYvar("")
+      vaqvpngbegvc:FrgPryy(vaqvpngbegvc:TrgYvarPbhag(),1,pbyberqGrkg(yrsg), avy, "YRSG",2, avy, avy, avy, 250)
+      fcnpre = #fgegevz(grkg) == 0
+    raq
+  raq
+  vs pv.jrrxylZnk naq pv.jrrxylZnk > 0 gura
+    vs abg fcnpre gura vaqvpngbegvc:NqqYvar(" "); fcnpre = gehr raq
+    vaqvpngbegvc:NqqYvar(jrrxylpnc:sbezng("", PheeraplPbybe(pv.rnearqGuvfJrrx be 0,pv.jrrxylZnk), nqqba:sbezngAhzore(pv.jrrxylZnk)))
+  raq
+  vs pv.gbgnyZnk naq pv.gbgnyZnk > 0 gura
+    vs abg fcnpre gura vaqvpngbegvc:NqqYvar(" "); fcnpre = gehr raq
+    vaqvpngbegvc:NqqYvar(gbgnypnc:sbezng("", PheeraplPbybe(pv.nzbhag be 0,pv.gbgnyZnk), nqqba:sbezngAhzore(pv.gbgnyZnk)))
+  raq
+  vs pv.frnfba naq #pv.frnfba > 0 gura
+    vs abg fcnpre gura vaqvpngbegvc:NqqYvar(" "); fcnpre = gehr raq
+    ybpny fge = pv.frnfba
+    ybpny ahz = fge:zngpu("(%q+)")
+    vs ahz gura
+      fge = fge:tfho(ahz,nqqba:sbezngAhzore(ahz))
+    raq
+    vaqvpngbegvc:NqqYvar(fge)
+  raq
+  svavfuVaqvpngbe()
+raq
 
-local function ShowCurrencySummary(cell, arg, ...)
-  local idx = arg
-  if not idx then return end
-  local name,_,tex = GetCurrencyInfo(idx)
-  tex = " \124T"..tex..":0\124t"
-  openIndicator(2, "LEFT","RIGHT")
-  indicatortip:AddHeader(name, "")
-  local total = 0
-  local tmax
-  local temp = {}
-  for toon, t in pairs(vars.db.Toons) do -- deliberately include ALL toons
-    local ci = t.currency and t.currency[idx]
-    if ci and ci.amount then
-      tmax = tmax or ci.totalMax
-      table.insert(temp, { ["toon"] = toon, ["amount"] = ci.amount,
-        ["str1"] = ClassColorise(t.Class, toon),
-        ["str2"] = CurrencyColor(ci.amount or 0,tmax)..tex,
+ybpny shapgvba FubjPheeraplFhzznel(pryy, net, ...)
+  ybpny vqk = net
+  vs abg vqk gura erghea raq
+  ybpny anzr,_,grk = TrgPheeraplVasb(vqk)
+  grk = " \124G"..grk..":0\124g"
+  bcraVaqvpngbe(2, "YRSG","EVTUG")
+  vaqvpngbegvc:NqqUrnqre(anzr, "")
+  ybpny gbgny = 0
+  ybpny gznk
+  ybpny grzc = {}
+  sbe gbba, g va cnvef(inef.qo.Gbbaf) qb -- qryvorengryl vapyhqr NYY gbbaf
+    ybpny pv = g.pheerapl naq g.pheerapl[vqk]
+    vs pv naq pv.nzbhag gura
+      gznk = gznk be pv.gbgnyZnk
+      gnoyr.vafreg(grzc, { ["gbba"] = gbba, ["nzbhag"] = pv.nzbhag,
+        ["fge1"] = PynffPbybevfr(g.Pynff, gbba),
+        ["fge2"] = PheeraplPbybe(pv.nzbhag be 0,gznk)..grk,
       })
-      total = total + ci.amount
-    end
-  end
-  indicatortip:SetCell(1,2,CurrencyColor(total,0)..tex)
-  --indicatortip:AddLine(TOTAL, CurrencyColor(total,tmax)..tex)
-  --indicatortip:AddLine(" ")
-  addon.currency_sort = addon.currency_sort or function(a,b)
-    if a.amount > b.amount then
-      return true
-    elseif a.amount < b.amount then
-      return false
-    end
-    local an, as = a.toon:match('^(.*) [-] (.*)$')
-    local bn, bs = b.toon:match('^(.*) [-] (.*)$')
-    if db.Tooltip.ServerSort and as ~= bs then
-      return as < bs
-    else
-      return a.toon < b.toon
-    end
-  end
-  table.sort(temp, addon.currency_sort)
-  for _,t in ipairs(temp) do
-    indicatortip:AddLine(t.str1, t.str2)
-  end
+      gbgny = gbgny + pv.nzbhag
+    raq
+  raq
+  vaqvpngbegvc:FrgPryy(1,2,PheeraplPbybe(gbgny,0)..grk)
+  --vaqvpngbegvc:NqqYvar(GBGNY, PheeraplPbybe(gbgny,gznk)..grk)
+  --vaqvpngbegvc:NqqYvar(" ")
+  nqqba.pheerapl_fbeg = nqqba.pheerapl_fbeg be shapgvba(n,o)
+    vs n.nzbhag > o.nzbhag gura
+      erghea gehr
+    ryfrvs n.nzbhag < o.nzbhag gura
+      erghea snyfr
+    raq
+    ybpny na, nf = n.gbba:zngpu('^(.*) [-] (.*)$')
+    ybpny oa, of = o.gbba:zngpu('^(.*) [-] (.*)$')
+    vs qo.Gbbygvc.FreireFbeg naq nf ~= of gura
+      erghea nf < of
+    ryfr
+      erghea n.gbba < o.gbba
+    raq
+  raq
+  gnoyr.fbeg(grzc, nqqba.pheerapl_fbeg)
+  sbe _,g va vcnvef(grzc) qb
+    vaqvpngbegvc:NqqYvar(g.fge1, g.fge2)
+  raq
 
-  finishIndicator()
-end
+  svavfuVaqvpngbe()
+raq
 
--- global addon code below
-function core:toonInit()
-  local ti = db.Toons[thisToon] or { }
-  db.Toons[thisToon] = ti
-  ti.LClass, ti.Class = UnitClass("player")
-  ti.Level = UnitLevel("player")
-  ti.Show = ti.Show or "saved"
-  ti.Order = ti.Order or 50
-  ti.Quests = ti.Quests or {}
-  ti.Skills = ti.Skills or {}
-  -- try to get a reset time, but don't overwrite existing, which could break quest list
-  -- real update comes later in UpdateToonData
-  ti.DailyResetTime = ti.DailyResetTime or addon:GetNextDailyResetTime()
-  ti.WeeklyResetTime = ti.WeeklyResetTime or addon:GetNextWeeklyResetTime()
-end
+-- tybony nqqba pbqr orybj
+shapgvba pber:gbbaVavg()
+  ybpny gv = qo.Gbbaf[guvfGbba] be { }
+  qo.Gbbaf[guvfGbba] = gv
+  gv.YPynff, gv.Pynff = HavgPynff("cynlre")
+  gv.Yriry = HavgYriry("cynlre")
+  gv.Fubj = gv.Fubj be "fnirq"
+  gv.Beqre = gv.Beqre be 50
+  gv.Dhrfgf = gv.Dhrfgf be {}
+  gv.Fxvyyf = gv.Fxvyyf be {}
+  -- gel gb trg n erfrg gvzr, ohg qba'g birejevgr rkvfgvat, juvpu pbhyq oernx dhrfg yvfg
+  -- erny hcqngr pbzrf yngre va HcqngrGbbaQngn
+  gv.QnvylErfrgGvzr = gv.QnvylErfrgGvzr be nqqba:TrgArkgQnvylErfrgGvzr()
+  gv.JrrxylErfrgGvzr = gv.JrrxylErfrgGvzr be nqqba:TrgArkgJrrxylErfrgGvzr()
+raq
 
-function core:OnInitialize()
-  local versionString = GetAddOnMetadata(addonName, "Version")
-  if versionString == "@project-version@" then
-    SavedInstances.version = "Dev"
-  else
-    SavedInstances.version = versionString
-  end
-  SavedInstancesDB = SavedInstancesDB or vars.defaultDB
-  -- begin backwards compatibility
-  if not SavedInstancesDB.DBVersion or SavedInstancesDB.DBVersion < 10 then
-    SavedInstancesDB = vars.defaultDB
-  elseif SavedInstancesDB.DBVersion < 12 then
-    SavedInstancesDB.Indicators = vars.defaultDB.Indicators
-    SavedInstancesDB.DBVersion = 12
-  end
+shapgvba pber:BaVavgvnyvmr()
+  ybpny irefvbaFgevat = TrgNqqBaZrgnqngn(nqqbaAnzr, "Irefvba")
+  vs irefvbaFgevat == "@cebwrpg-irefvba@" gura
+    FnirqVafgnaprf.irefvba = "Qri"
+  ryfr
+    FnirqVafgnaprf.irefvba = irefvbaFgevat
+  raq
+  FnirqVafgnaprfQO = FnirqVafgnaprfQO be inef.qrsnhygQO
+  -- ortva onpxjneqf pbzcngvovyvgl
+  vs abg FnirqVafgnaprfQO.QOIrefvba be FnirqVafgnaprfQO.QOIrefvba < 10 gura
+    FnirqVafgnaprfQO = inef.qrsnhygQO
+  ryfrvs FnirqVafgnaprfQO.QOIrefvba < 12 gura
+    FnirqVafgnaprfQO.Vaqvpngbef = inef.qrsnhygQO.Vaqvpngbef
+    FnirqVafgnaprfQO.QOIrefvba = 12
+  raq
 
-  -- end backwards compatibilty
-  db = db or SavedInstancesDB
-  vars.db = db
-  config = vars.config
-  core:toonInit()
-  db.Lockouts = nil -- deprecated
-  db.History = db.History or {}
-  db.Quests = db.Quests or vars.defaultDB.Quests
-  db.QuestDB = db.QuestDB or vars.defaultDB.QuestDB
-  for name,default in pairs(vars.defaultDB.Tooltip) do
-    db.Tooltip[name] = (db.Tooltip[name]==nil and default) or db.Tooltip[name]
-  end
-  for _, id in ipairs(addon.currency) do
-    local name = "Currency"..id
-    db.Tooltip[name] = (db.Tooltip[name]==nil and  vars.defaultDB.Tooltip[name]) or db.Tooltip[name]
-  end
-  local currtmp = {}
-  for _,idx in ipairs(currency) do currtmp[idx] = true end
-  for toon, t in pairs(vars.db.Toons) do
-    t.Order = t.Order or 50
-    if t.currency then -- clean old undiscovered currency entries
-      for idx, ci in pairs(t.currency) do
-        -- detect outdated entries because new version doesn't explicitly store max zeros
-        if (ci.amount == 0 and (ci.weeklyMax == 0 or ci.totalMax == 0))
-          or ci.amount == nil -- another outdated entry type created by old weekly reset logic
-          or not currtmp[idx] -- removed currency
-        then
-          t.currency[idx] = nil
-        end
-    end
-    end
-  end
-  for qid, _ in pairs(db.QuestDB.Daily) do
-    if db.QuestDB.AccountDaily[qid] then
-      debug("Removing duplicate questDB entry: "..qid)
-      db.QuestDB.Daily[qid] = nil
-    end
-  end
-  for qid, escope in pairs(QuestExceptions) do -- upgrade QuestDB with new exceptions
-    local val = -1 -- default to a blank zone
-    for scope, qdb in pairs(db.QuestDB) do
-      val = qdb[qid] or val
-      qdb[qid] = nil
-    end
-    if db.QuestDB[escope] then
-      db.QuestDB[escope][qid] = val
-    end
-  end
-  RequestRaidInfo() -- get lockout data
-  RequestLFDPlayerLockInfo()
-  vars.dataobject = vars.LDB and vars.LDB:NewDataObject("SavedInstances", {
-    text = addonAbbrev,
-    type = "launcher",
-    icon = "Interface\\Addons\\SavedInstances\\icon.tga",
-    OnEnter = function(frame)
-      if not addon:IsDetached() and not db.Tooltip.DisableMouseover then
-        core:ShowTooltip(frame)
-      end
-    end,
-    OnLeave = function(frame) end,
-    OnClick = function(frame, button)
-      if button == "MiddleButton" then
-        if InCombatLockdown() then return end
-        ToggleFriendsFrame(4) -- open Blizzard Raid window
-        RaidInfoFrame:Show()
-      elseif button == "LeftButton" then
-        addon:ToggleDetached()
-      else
-        config:ShowConfig()
-      end
-    end
+  -- raq onpxjneqf pbzcngvovygl
+  qo = qo be FnirqVafgnaprfQO
+  inef.qo = qo
+  pbasvt = inef.pbasvt
+  pber:gbbaVavg()
+  qo.Ybpxbhgf = avy -- qrcerpngrq
+  qo.Uvfgbel = qo.Uvfgbel be {}
+  qo.Dhrfgf = qo.Dhrfgf be inef.qrsnhygQO.Dhrfgf
+  qo.DhrfgQO = qo.DhrfgQO be inef.qrsnhygQO.DhrfgQO
+  sbe anzr,qrsnhyg va cnvef(inef.qrsnhygQO.Gbbygvc) qb
+    qo.Gbbygvc[anzr] = (qo.Gbbygvc[anzr]==avy naq qrsnhyg) be qo.Gbbygvc[anzr]
+  raq
+  sbe _, vq va vcnvef(nqqba.pheerapl) qb
+    ybpny anzr = "Pheerapl"..vq
+    qo.Gbbygvc[anzr] = (qo.Gbbygvc[anzr]==avy naq  inef.qrsnhygQO.Gbbygvc[anzr]) be qo.Gbbygvc[anzr]
+  raq
+  ybpny pheegzc = {}
+  sbe _,vqk va vcnvef(pheerapl) qb pheegzc[vqk] = gehr raq
+  sbe gbba, g va cnvef(inef.qo.Gbbaf) qb
+    g.Beqre = g.Beqre be 50
+    vs g.pheerapl gura -- pyrna byq haqvfpbirerq pheerapl ragevrf
+      sbe vqk, pv va cnvef(g.pheerapl) qb
+        -- qrgrpg bhgqngrq ragevrf orpnhfr arj irefvba qbrfa'g rkcyvpvgyl fgber znk mrebf
+        vs (pv.nzbhag == 0 naq (pv.jrrxylZnk == 0 be pv.gbgnyZnk == 0))
+          be pv.nzbhag == avy -- nabgure bhgqngrq ragel glcr perngrq ol byq jrrxyl erfrg ybtvp
+          be abg pheegzc[vqk] -- erzbirq pheerapl
+        gura
+          g.pheerapl[vqk] = avy
+        raq
+    raq
+    raq
+  raq
+  sbe dvq, _ va cnvef(qo.DhrfgQO.Qnvyl) qb
+    vs qo.DhrfgQO.NppbhagQnvyl[dvq] gura
+      qroht("Erzbivat qhcyvpngr dhrfgQO ragel: "..dvq)
+      qo.DhrfgQO.Qnvyl[dvq] = avy
+    raq
+  raq
+  sbe dvq, rfpbcr va cnvef(DhrfgRkprcgvbaf) qb -- hctenqr DhrfgQO jvgu arj rkprcgvbaf
+    ybpny iny = -1 -- qrsnhyg gb n oynax mbar
+    sbe fpbcr, dqo va cnvef(qo.DhrfgQO) qb
+      iny = dqo[dvq] be iny
+      dqo[dvq] = avy
+    raq
+    vs qo.DhrfgQO[rfpbcr] gura
+      qo.DhrfgQO[rfpbcr][dvq] = iny
+    raq
+  raq
+  ErdhrfgEnvqVasb() -- trg ybpxbhg qngn
+  ErdhrfgYSQCynlreYbpxVasb()
+  inef.qngnbowrpg = inef.YQO naq inef.YQO:ArjQngnBowrpg("FnirqVafgnaprf", {
+    grkg = nqqbaNooeri,
+    glcr = "ynhapure",
+    vpba = "Vagresnpr\\Nqqbaf\\FnirqVafgnaprf\\vpba.gtn",
+    BaRagre = shapgvba(senzr)
+      vs abg nqqba:VfQrgnpurq() naq abg qo.Gbbygvc.QvfnoyrZbhfrbire gura
+        pber:FubjGbbygvc(senzr)
+      raq
+    raq,
+    BaYrnir = shapgvba(senzr) raq,
+    BaPyvpx = shapgvba(senzr, ohggba)
+      vs ohggba == "ZvqqyrOhggba" gura
+        vs VaPbzongYbpxqbja() gura erghea raq
+        GbttyrSevraqfSenzr(4) -- bcra Oyvmmneq Envq jvaqbj
+        EnvqVasbSenzr:Fubj()
+      ryfrvs ohggba == "YrsgOhggba" gura
+        nqqba:GbttyrQrgnpurq()
+      ryfr
+        pbasvt:FubjPbasvt()
+      raq
+    raq
   })
-  if vars.icon then
-    vars.icon:Register(addonName, vars.dataobject, db.MinimapIcon)
-    vars.icon:Refresh(addonName)
-  end
-  addon.BonusRollShow() -- catch roll-on-load
-end
+  vs inef.vpba gura
+    inef.vpba:Ertvfgre(nqqbaAnzr, inef.qngnbowrpg, qo.ZvavzncVpba)
+    inef.vpba:Erserfu(nqqbaAnzr)
+  raq
+  nqqba.ObahfEbyyFubj() -- pngpu ebyy-ba-ybnq
+raq
 
-function core:OnEnable()
-  self:RegisterBucketEvent("UPDATE_INSTANCE_INFO", 2, function() core:Refresh(nil) end)
-  self:RegisterBucketEvent("LOOT_CLOSED", 1, function() core:QuestRefresh(nil) end)
-  self:RegisterBucketEvent("LFG_UPDATE_RANDOM_INFO", 1, function() addon:UpdateInstanceData(); addon:UpdateToonData() end)
-  self:RegisterBucketEvent("RAID_INSTANCE_WELCOME", 1, RequestRaidInfo)
-  self:RegisterEvent("CHAT_MSG_SYSTEM", "CheckSystemMessage")
-  self:RegisterEvent("CHAT_MSG_CURRENCY", "CheckSystemMessage")
-  self:RegisterEvent("CHAT_MSG_LOOT", "CheckSystemMessage")
-  self:RegisterBucketEvent("CURRENCY_DISPLAY_UPDATE", 0.25, function() addon:UpdateCurrency() end)
-  self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
-  self:RegisterBucketEvent("TRADE_SKILL_LIST_UPDATE", 1)
-  self:RegisterBucketEvent("PLAYER_ENTERING_WORLD", 1, RequestRaidInfo)
-  self:RegisterBucketEvent("LFG_LOCK_INFO_RECEIVED", 1, RequestRaidInfo)
-  self:RegisterEvent("BONUS_ROLL_RESULT", "BonusRollResult")
-  self:RegisterEvent("PLAYER_LOGOUT", function() addon.logout = true ; addon:UpdateToonData() end) -- update currency spent
-  self:RegisterEvent("LFG_COMPLETION_REWARD", "RefreshLockInfo") -- for random daily dungeon tracking
-  self:RegisterEvent("BOSS_KILL")
-  self:RegisterEvent("ENCOUNTER_END", "EncounterEnd")
-  self:RegisterEvent("BAG_UPDATE", "RefreshMythicKeyInfo")
-  self:RegisterEvent("CHALLENGE_MODE_MAPS_UPDATE", "RefreshMythicKeyInfo")
-  self:RegisterEvent("PLAYER_ENTERING_WORLD", "RefreshDailyWorldQuestInfo")
-  self:RegisterEvent("ADDON_LOADED", "RefreshDailyWorldQuestInfo")
-  self:RegisterEvent("QUEST_LOG_UPDATE", "RefreshDailyWorldQuestInfo")
-  self:RegisterEvent("QUEST_WATCH_LIST_CHANGED", "RefreshDailyWorldQuestInfo")
-  self:RegisterEvent("CHAT_MSG_MONSTER_YELL")
-  self:RegisterEvent("TIME_PLAYED_MSG", function(_,total,level)
-    local t = thisToon and vars and vars.db and vars.db.Toons[thisToon]
-    if total > 0 and t then
-      t.PlayedTotal = total
-      t.PlayedLevel = level
-    end
-    addon.PlayedTime = time()
-    if addon.playedpending then
-      for c,_ in pairs(addon.playedreg) do
-        c:RegisterEvent("TIME_PLAYED_MSG") -- Restore default
-      end
-      addon.playedpending = false
-    end
-  end)
-  self:RegisterEvent("ADDON_LOADED")
-  core:ADDON_LOADED()
-  if not addon.resetDetect then
-    addon.resetDetect = CreateFrame("Button", "SavedInstancesResetDetectHiddenFrame", UIParent)
-    for _,e in pairs({
-      "RAID_INSTANCE_WELCOME",
-      "PLAYER_ENTERING_WORLD", "CHAT_MSG_SYSTEM", "CHAT_MSG_ADDON",
-      "ZONE_CHANGED_NEW_AREA",
-      "INSTANCE_BOOT_START", "INSTANCE_BOOT_STOP", "GROUP_ROSTER_UPDATE",
-    }) do
-      addon.resetDetect:RegisterEvent(e)
-    end
-  end
-  addon.resetDetect:SetScript("OnEvent", addon.HistoryEvent)
-  RegisterAddonMessagePrefix(addonName)
-  addon:HistoryEvent("PLAYER_ENTERING_WORLD") -- update after initial load
-  addon:specialQuests()
-  core:RefreshMythicKeyInfo()
-  core:updateRealmMap()
-  core:RefreshDailyWorldQuestInfo()
-end
+shapgvba pber:BaRanoyr()
+  frys:ErtvfgreOhpxrgRirag("HCQNGR_VAFGNAPR_VASB", 2, shapgvba() pber:Erserfu(avy) raq)
+  frys:ErtvfgreOhpxrgRirag("YBBG_PYBFRQ", 1, shapgvba() pber:DhrfgErserfu(avy) raq)
+  frys:ErtvfgreOhpxrgRirag("YST_HCQNGR_ENAQBZ_VASB", 1, shapgvba() nqqba:HcqngrVafgnaprQngn(); nqqba:HcqngrGbbaQngn() raq)
+  frys:ErtvfgreOhpxrgRirag("ENVQ_VAFGNAPR_JRYPBZR", 1, ErdhrfgEnvqVasb)
+  frys:ErtvfgreRirag("PUNG_ZFT_FLFGRZ", "PurpxFlfgrzZrffntr")
+  frys:ErtvfgreRirag("PUNG_ZFT_PHEERAPL", "PurpxFlfgrzZrffntr")
+  frys:ErtvfgreRirag("PUNG_ZFT_YBBG", "PurpxFlfgrzZrffntr")
+  frys:ErtvfgreOhpxrgRirag("PHEERAPL_QVFCYNL_HCQNGR", 0.25, shapgvba() nqqba:HcqngrPheerapl() raq)
+  frys:ErtvfgreRirag("HAVG_FCRYYPNFG_FHPPRRQRQ")
+  frys:ErtvfgreOhpxrgRirag("GENQR_FXVYY_YVFG_HCQNGR", 1)
+  frys:ErtvfgreOhpxrgRirag("CYNLRE_RAGREVAT_JBEYQ", 1, ErdhrfgEnvqVasb)
+  frys:ErtvfgreOhpxrgRirag("YST_YBPX_VASB_ERPRVIRQ", 1, ErdhrfgEnvqVasb)
+  frys:ErtvfgreRirag("OBAHF_EBYY_ERFHYG", "ObahfEbyyErfhyg")
+  frys:ErtvfgreRirag("CYNLRE_YBTBHG", shapgvba() nqqba.ybtbhg = gehr ; nqqba:HcqngrGbbaQngn() raq) -- hcqngr pheerapl fcrag
+  frys:ErtvfgreRirag("YST_PBZCYRGVBA_ERJNEQ", "ErserfuYbpxVasb") -- sbe enaqbz qnvyl qhatrba genpxvat
+  frys:ErtvfgreRirag("OBFF_XVYY")
+  frys:ErtvfgreRirag("RAPBHAGRE_RAQ", "RapbhagreRaq")
+  frys:ErtvfgreRirag("ONT_HCQNGR", "ErserfuZlguvpXrlVasb")
+  frys:ErtvfgreRirag("PUNYYRATR_ZBQR_ZNCF_HCQNGR", "ErserfuZlguvpXrlVasb")
+  frys:ErtvfgreRirag("CYNLRE_RAGREVAT_JBEYQ", "ErserfuQnvylJbeyqDhrfgVasb")
+  frys:ErtvfgreRirag("NQQBA_YBNQRQ", "ErserfuQnvylJbeyqDhrfgVasb")
+  frys:ErtvfgreRirag("DHRFG_YBT_HCQNGR", "ErserfuQnvylJbeyqDhrfgVasb")
+  frys:ErtvfgreRirag("DHRFG_JNGPU_YVFG_PUNATRQ", "ErserfuQnvylJbeyqDhrfgVasb")
+  frys:ErtvfgreRirag("PUNG_ZFT_ZBAFGRE_LRYY")
+  frys:ErtvfgreRirag("GVZR_CYNLRQ_ZFT", shapgvba(_,gbgny,yriry)
+    ybpny g = guvfGbba naq inef naq inef.qo naq inef.qo.Gbbaf[guvfGbba]
+    vs gbgny > 0 naq g gura
+      g.CynlrqGbgny = gbgny
+      g.CynlrqYriry = yriry
+    raq
+    nqqba.CynlrqGvzr = gvzr()
+    vs nqqba.cynlrqcraqvat gura
+      sbe p,_ va cnvef(nqqba.cynlrqert) qb
+        p:ErtvfgreRirag("GVZR_CYNLRQ_ZFT") -- Erfgber qrsnhyg
+      raq
+      nqqba.cynlrqcraqvat = snyfr
+    raq
+  raq)
+  frys:ErtvfgreRirag("NQQBA_YBNQRQ")
+  pber:NQQBA_YBNQRQ()
+  vs abg nqqba.erfrgQrgrpg gura
+    nqqba.erfrgQrgrpg = PerngrSenzr("Ohggba", "FnirqVafgnaprfErfrgQrgrpgUvqqraSenzr", HVCnerag)
+    sbe _,r va cnvef({
+      "ENVQ_VAFGNAPR_JRYPBZR",
+      "CYNLRE_RAGREVAT_JBEYQ", "PUNG_ZFT_FLFGRZ", "PUNG_ZFT_NQQBA",
+      "MBAR_PUNATRQ_ARJ_NERN",
+      "VAFGNAPR_OBBG_FGNEG", "VAFGNAPR_OBBG_FGBC", "TEBHC_EBFGRE_HCQNGR",
+    }) qb
+      nqqba.erfrgQrgrpg:ErtvfgreRirag(r)
+    raq
+  raq
+  nqqba.erfrgQrgrpg:FrgFpevcg("BaRirag", nqqba.UvfgbelRirag)
+  ErtvfgreNqqbaZrffntrCersvk(nqqbaAnzr)
+  nqqba:UvfgbelRirag("CYNLRE_RAGREVAT_JBEYQ") -- hcqngr nsgre vavgvny ybnq
+  nqqba:fcrpvnyDhrfgf()
+  pber:ErserfuZlguvpXrlVasb()
+  pber:hcqngrErnyzZnc()
+  pber:ErserfuQnvylJbeyqDhrfgVasb()
+raq
 
-function core:ADDON_LOADED()
-  if DBM and DBM.EndCombat and not addon.dbmhook then
-    addon.dbmhook = true
-    hooksecurefunc(DBM, "EndCombat", function(self, mod, wipe)
-      core:BossModEncounterEnd("DBM:EndCombat", mod and mod.combatInfo and mod.combatInfo.name)
-    end)
-  end
-  if BigWigsLoader and not addon.bigwigshook then
-    addon.bigwigshook = true
-    BigWigsLoader.RegisterMessage(self, "BigWigs_OnBossWin", function(self, event, mod)
-      core:BossModEncounterEnd("BigWigs_OnBossWin", mod and mod.displayName)
-    end)
-  end
-end
+shapgvba pber:NQQBA_YBNQRQ()
+  vs QOZ naq QOZ.RaqPbzong naq abg nqqba.qozubbx gura
+    nqqba.qozubbx = gehr
+    ubbxfrphershap(QOZ, "RaqPbzong", shapgvba(frys, zbq, jvcr)
+      pber:ObffZbqRapbhagreRaq("QOZ:RaqPbzong", zbq naq zbq.pbzongVasb naq zbq.pbzongVasb.anzr)
+    raq)
+  raq
+  vs OvtJvtfYbnqre naq abg nqqba.ovtjvtfubbx gura
+    nqqba.ovtjvtfubbx = gehr
+    OvtJvtfYbnqre.ErtvfgreZrffntr(frys, "OvtJvtf_BaObffJva", shapgvba(frys, rirag, zbq)
+      pber:ObffZbqRapbhagreRaq("OvtJvtf_BaObffJva", zbq naq zbq.qvfcynlAnzr)
+    raq)
+  raq
+raq
 
-function core:OnDisable()
-  self:UnregisterAllEvents()
-  addon.resetDetect:SetScript("OnEvent", nil)
-end
+shapgvba pber:BaQvfnoyr()
+  frys:HaertvfgreNyyRiragf()
+  nqqba.erfrgQrgrpg:FrgFpevcg("BaRirag", avy)
+raq
 
-function core:RequestLockInfo() -- request lock info from the server immediately
-  RequestRaidInfo()
-  RequestLFDPlayerLockInfo()
-end
+shapgvba pber:ErdhrfgYbpxVasb() -- erdhrfg ybpx vasb sebz gur freire vzzrqvngryl
+  ErdhrfgEnvqVasb()
+  ErdhrfgYSQCynlreYbpxVasb()
+raq
 
-function core:RefreshLockInfo() -- throttled lock update with retry
-  local now = GetTime()
-  if now > (core.lastrefreshlock or 0) + 1 then
-    core.lastrefreshlock = now
-    core:RequestLockInfo()
-  end
-  if now > (core.lastrefreshlocksched or 0) + 120 then
-    -- make sure we update any lockout info (sometimes there's server-side delay)
-    core.lastrefreshlockshed = now
-    core:ScheduleTimer("RequestLockInfo",5)
-    core:ScheduleTimer("RequestLockInfo",30)
-    core:ScheduleTimer("RequestLockInfo",60)
-    core:ScheduleTimer("RequestLockInfo",90)
-    core:ScheduleTimer("RequestLockInfo",120)
-  end
-end
+shapgvba pber:ErserfuYbpxVasb() -- guebggyrq ybpx hcqngr jvgu ergel
+  ybpny abj = TrgGvzr()
+  vs abj > (pber.ynfgerserfuybpx be 0) + 1 gura
+    pber.ynfgerserfuybpx = abj
+    pber:ErdhrfgYbpxVasb()
+  raq
+  vs abj > (pber.ynfgerserfuybpxfpurq be 0) + 120 gura
+    -- znxr fher jr hcqngr nal ybpxbhg vasb (fbzrgvzrf gurer'f freire-fvqr qrynl)
+    pber.ynfgerserfuybpxfurq = abj
+    pber:FpurqhyrGvzre("ErdhrfgYbpxVasb",5)
+    pber:FpurqhyrGvzre("ErdhrfgYbpxVasb",30)
+    pber:FpurqhyrGvzre("ErdhrfgYbpxVasb",60)
+    pber:FpurqhyrGvzre("ErdhrfgYbpxVasb",90)
+    pber:FpurqhyrGvzre("ErdhrfgYbpxVasb",120)
+  raq
+raq
 
-local currency_msg = CURRENCY_GAINED:gsub(":.*$","")
-function core:CheckSystemMessage(event, msg)
-  local inst, t = IsInInstance()
-  -- note: currency is already updated in TooltipShow,
-  -- here we just hook JP/VP currency messages to capture lockout changes
-  if inst and (t == "party" or t == "raid") and -- dont update on bg honor
-    (msg:find(INSTANCE_SAVED) or -- first boss kill
-    msg:find(currency_msg)) -- subsequent boss kills (unless capped or over level)
-  then
-    core:RefreshLockInfo()
-  end
-end
+ybpny pheerapl_zft = PHEERAPL_TNVARQ:tfho(":.*$","")
+shapgvba pber:PurpxFlfgrzZrffntr(rirag, zft)
+  ybpny vafg, g = VfVaVafgnapr()
+  -- abgr: pheerapl vf nyernql hcqngrq va GbbygvcFubj,
+  -- urer jr whfg ubbx WC/IC pheerapl zrffntrf gb pncgher ybpxbhg punatrf
+  vs vafg naq (g == "cnegl" be g == "envq") naq -- qbag hcqngr ba ot ubabe
+    (zft:svaq(VAFGNAPR_FNIRQ) be -- svefg obff xvyy
+    zft:svaq(pheerapl_zft)) -- fhofrdhrag obff xvyyf (hayrff pnccrq be bire yriry)
+  gura
+    pber:ErserfuYbpxVasb()
+  raq
+raq
 
-function core:updateRealmMap()
-  local realm = GetRealmName():gsub("%s+","")
-  local lmap = GetAutoCompleteRealms()
-  local rmap = vars.db.RealmMap or {}
-  vars.db.RealmMap = rmap
-  if lmap and next(lmap) then -- connected realms detected
-    table.sort(lmap)
-    local mapid = rmap[realm] -- find existing map
-    if not mapid then
-      for _,r in ipairs(lmap) do
-        mapid = mapid or rmap[r]
-      end
-    end
-    if mapid then -- check for possible expansion
-      local oldmap = rmap[mapid]
-      if oldmap and #lmap > #oldmap then
-        rmap[mapid] = lmap
-      end
-    else -- new map
-      mapid = #rmap + 1
-      rmap[mapid] = lmap
-    end
-    for _,r in ipairs(rmap[mapid]) do -- maintain inverse mapping
-      rmap[r] = mapid
-    end
-  end
-end
+shapgvba pber:hcqngrErnyzZnc()
+  ybpny ernyz = TrgErnyzAnzr():tfho("%f+","")
+  ybpny yznc = TrgNhgbPbzcyrgrErnyzf()
+  ybpny eznc = inef.qo.ErnyzZnc be {}
+  inef.qo.ErnyzZnc = eznc
+  vs yznc naq arkg(yznc) gura -- pbaarpgrq ernyzf qrgrpgrq
+    gnoyr.fbeg(yznc)
+    ybpny zncvq = eznc[ernyz] -- svaq rkvfgvat znc
+    vs abg zncvq gura
+      sbe _,e va vcnvef(yznc) qb
+        zncvq = zncvq be eznc[e]
+      raq
+    raq
+    vs zncvq gura -- purpx sbe cbffvoyr rkcnafvba
+      ybpny byqznc = eznc[zncvq]
+      vs byqznc naq #yznc > #byqznc gura
+        eznc[zncvq] = yznc
+      raq
+    ryfr -- arj znc
+      zncvq = #eznc + 1
+      eznc[zncvq] = yznc
+    raq
+    sbe _,e va vcnvef(eznc[zncvq]) qb -- znvagnva vairefr znccvat
+      eznc[e] = zncvq
+    raq
+  raq
+raq
 
-function core:RefreshMythicKeyInfo()
-  local t = vars.db.Toons[thisToon]
-  local _
-  t.MythicKey = {}
-  for bagID = 0, 4 do
-    for invID = 1, GetContainerNumSlots(bagID) do
-      local itemID = GetContainerItemID(bagID, invID)
-      if itemID and itemID == 138019 then
-        local keyLink = GetContainerItemLink(bagID, invID)
-        local KeyInfo = {strsplit(':', keyLink)}
-        local mapID = tonumber(KeyInfo[2])
-        local mapLevel = tonumber(KeyInfo[3])
-        local color
-        if KeyInfo[4] == "0" then
-          _,_,_,color = GetItemQualityColor(0)
-        elseif mapLevel >= 10 then
-          _,_,_,color = GetItemQualityColor(4)
-        elseif mapLevel >= 7 then
-          _,_,_,color = GetItemQualityColor(3)
-        elseif mapLevel >= 4 then
-          _,_,_,color = GetItemQualityColor(2)
-        else
-          _,_,_,color = GetItemQualityColor(1)
-        end
-        if vars.db.Tooltip.DebugMode then
-          DEFAULT_CHAT_FRAME:AddMessage(tostring(KeyInfo[1]))
-          DEFAULT_CHAT_FRAME:AddMessage(tostring(KeyInfo[2]))
-          DEFAULT_CHAT_FRAME:AddMessage(tostring(KeyInfo[3]))
-          DEFAULT_CHAT_FRAME:AddMessage(tostring(KeyInfo[4]))
-          DEFAULT_CHAT_FRAME:AddMessage(tostring(KeyInfo[5]))
-          DEFAULT_CHAT_FRAME:AddMessage(tostring(KeyInfo[6]))
-          DEFAULT_CHAT_FRAME:AddMessage(tostring(KeyInfo[7]))
-          DEFAULT_CHAT_FRAME:AddMessage(tostring(KeyInfo[8]))
-          DEFAULT_CHAT_FRAME:AddMessage(tostring(KeyInfo[9]))
-          DEFAULT_CHAT_FRAME:AddMessage(tostring(KeyInfo[10]))
-          DEFAULT_CHAT_FRAME:AddMessage(tostring(KeyInfo[11]))
-          DEFAULT_CHAT_FRAME:AddMessage(tostring(KeyInfo[12]))
-          DEFAULT_CHAT_FRAME:AddMessage(tostring(KeyInfo[13]))
-          DEFAULT_CHAT_FRAME:AddMessage(tostring(KeyInfo[14]))
-          DEFAULT_CHAT_FRAME:AddMessage(tostring(KeyInfo[15]))
-          DEFAULT_CHAT_FRAME:AddMessage(tostring(KeyInfo[16]))
-          DEFAULT_CHAT_FRAME:AddMessage(tostring(KeyInfo[17]))
-          DEFAULT_CHAT_FRAME:AddMessage(tostring(KeyInfo[18]))
-          DEFAULT_CHAT_FRAME:AddMessage(tostring(KeyInfo[19]))
-          DEFAULT_CHAT_FRAME:AddMessage(tostring(KeyInfo[20]))
-        end
-        t.MythicKey.abbrev = KeystoneAbbrev[mapID]
-        t.MythicKey.name = C_ChallengeMode.GetMapInfo(mapID)
-        t.MythicKey.color = color
-        t.MythicKey.level = mapLevel
-        t.MythicKey.ResetTime = addon:GetNextWeeklyResetTime()
-        t.MythicKey.link = keyLink
-      end
-    end
-  end
-  local MythicMaps = { }
-  C_ChallengeMode.RequestMapInfo()
-  MythicMaps = C_ChallengeMode.GetMapTable()
-  local bestlevel = 0
-  for i = 1, #MythicMaps do
-    local _, _, level = C_ChallengeMode.GetMapPlayerStats(MythicMaps[i]);
-    if level then
-      if level > bestlevel then
-        bestlevel = level
-      end
-    end
-  end
-  if t.MythicKeyBest and (t.MythicKeyBest.ResetTime or 0) < time() then -- dont know weekly reset function will run early or not
-    if t.MythicKeyBest.level and t.MythicKeyBest.level > 0 then
-      t.MythicKeyBest.LastWeekLevel = t.MythicKeyBest.level
-  end
-  end
-  t.MythicKeyBest = t.MythicKeyBest or { }
-  t.MythicKeyBest.ResetTime = addon:GetNextWeeklyResetTime()
-  t.MythicKeyBest.level = bestlevel
-  t.MythicKeyBest.WeeklyReward = C_ChallengeMode.IsWeeklyRewardAvailable()
-end
+shapgvba pber:ErserfuZlguvpXrlVasb()
+  ybpny g = inef.qo.Gbbaf[guvfGbba]
+  ybpny _
+  g.ZlguvpXrl = {}
+  sbe ontVQ = 0, 4 qb
+    sbe vaiVQ = 1, TrgPbagnvareAhzFybgf(ontVQ) qb
+      ybpny vgrzVQ = TrgPbagnvareVgrzVQ(ontVQ, vaiVQ)
+      vs vgrzVQ naq vgrzVQ == 138019 gura
+        ybpny xrlYvax = TrgPbagnvareVgrzYvax(ontVQ, vaiVQ)
+        ybpny XrlVasb = {fgefcyvg(':', xrlYvax)}
+        ybpny zncVQ = gbahzore(XrlVasb[2])
+        ybpny zncYriry = gbahzore(XrlVasb[3])
+        ybpny pbybe
+        vs XrlVasb[4] == "0" gura
+          _,_,_,pbybe = TrgVgrzDhnyvglPbybe(0)
+        ryfrvs zncYriry >= 10 gura
+          _,_,_,pbybe = TrgVgrzDhnyvglPbybe(4)
+        ryfrvs zncYriry >= 7 gura
+          _,_,_,pbybe = TrgVgrzDhnyvglPbybe(3)
+        ryfrvs zncYriry >= 4 gura
+          _,_,_,pbybe = TrgVgrzDhnyvglPbybe(2)
+        ryfr
+          _,_,_,pbybe = TrgVgrzDhnyvglPbybe(1)
+        raq
+        vs inef.qo.Gbbygvc.QrohtZbqr gura
+          QRSNHYG_PUNG_SENZR:NqqZrffntr(gbfgevat(XrlVasb[1]))
+          QRSNHYG_PUNG_SENZR:NqqZrffntr(gbfgevat(XrlVasb[2]))
+          QRSNHYG_PUNG_SENZR:NqqZrffntr(gbfgevat(XrlVasb[3]))
+          QRSNHYG_PUNG_SENZR:NqqZrffntr(gbfgevat(XrlVasb[4]))
+          QRSNHYG_PUNG_SENZR:NqqZrffntr(gbfgevat(XrlVasb[5]))
+          QRSNHYG_PUNG_SENZR:NqqZrffntr(gbfgevat(XrlVasb[6]))
+          QRSNHYG_PUNG_SENZR:NqqZrffntr(gbfgevat(XrlVasb[7]))
+          QRSNHYG_PUNG_SENZR:NqqZrffntr(gbfgevat(XrlVasb[8]))
+          QRSNHYG_PUNG_SENZR:NqqZrffntr(gbfgevat(XrlVasb[9]))
+          QRSNHYG_PUNG_SENZR:NqqZrffntr(gbfgevat(XrlVasb[10]))
+          QRSNHYG_PUNG_SENZR:NqqZrffntr(gbfgevat(XrlVasb[11]))
+          QRSNHYG_PUNG_SENZR:NqqZrffntr(gbfgevat(XrlVasb[12]))
+          QRSNHYG_PUNG_SENZR:NqqZrffntr(gbfgevat(XrlVasb[13]))
+          QRSNHYG_PUNG_SENZR:NqqZrffntr(gbfgevat(XrlVasb[14]))
+          QRSNHYG_PUNG_SENZR:NqqZrffntr(gbfgevat(XrlVasb[15]))
+          QRSNHYG_PUNG_SENZR:NqqZrffntr(gbfgevat(XrlVasb[16]))
+          QRSNHYG_PUNG_SENZR:NqqZrffntr(gbfgevat(XrlVasb[17]))
+          QRSNHYG_PUNG_SENZR:NqqZrffntr(gbfgevat(XrlVasb[18]))
+          QRSNHYG_PUNG_SENZR:NqqZrffntr(gbfgevat(XrlVasb[19]))
+          QRSNHYG_PUNG_SENZR:NqqZrffntr(gbfgevat(XrlVasb[20]))
+        raq
+        g.ZlguvpXrl.nooeri = XrlfgbarNooeri[zncVQ]
+        g.ZlguvpXrl.anzr = P_PunyyratrZbqr.TrgZncVasb(zncVQ)
+        g.ZlguvpXrl.pbybe = pbybe
+        g.ZlguvpXrl.yriry = zncYriry
+        g.ZlguvpXrl.ErfrgGvzr = nqqba:TrgArkgJrrxylErfrgGvzr()
+        g.ZlguvpXrl.yvax = xrlYvax
+      raq
+    raq
+  raq
+  ybpny ZlguvpZncf = { }
+  P_PunyyratrZbqr.ErdhrfgZncVasb()
+  ZlguvpZncf = P_PunyyratrZbqr.TrgZncGnoyr()
+  ybpny orfgyriry = 0
+  sbe v = 1, #ZlguvpZncf qb
+    ybpny _, _, yriry = P_PunyyratrZbqr.TrgZncCynlreFgngf(ZlguvpZncf[v]);
+    vs yriry gura
+      vs yriry > orfgyriry gura
+        orfgyriry = yriry
+      raq
+    raq
+  raq
+  vs g.ZlguvpXrlOrfg naq (g.ZlguvpXrlOrfg.ErfrgGvzr be 0) < gvzr() gura -- qbag xabj jrrxyl erfrg shapgvba jvyy eha rneyl be abg
+    vs g.ZlguvpXrlOrfg.yriry naq g.ZlguvpXrlOrfg.yriry > 0 gura
+      g.ZlguvpXrlOrfg.YnfgJrrxYriry = g.ZlguvpXrlOrfg.yriry
+  raq
+  raq
+  g.ZlguvpXrlOrfg = g.ZlguvpXrlOrfg be { }
+  g.ZlguvpXrlOrfg.ErfrgGvzr = nqqba:TrgArkgJrrxylErfrgGvzr()
+  g.ZlguvpXrlOrfg.yriry = orfgyriry
+  g.ZlguvpXrlOrfg.JrrxylErjneq = P_PunyyratrZbqr.VfJrrxylErjneqNinvynoyr()
+raq
 
-function core:RefreshDailyWorldQuestInfo()
-  local t = vars.db.Toons[thisToon]
-  t.DailyWorldQuest = {}
-  local BountyQuest = GetQuestBountyInfoForMapID(1014)
-  for BountyIndex, BountyInfo in ipairs(BountyQuest) do
-    local title = GetQuestLogTitle(GetQuestLogIndexByID(BountyInfo.questID))
-    local timeleft = C_TaskQuest.GetQuestTimeLeftMinutes(BountyInfo.questID)
-    local _, _, isFinish, questDone, questNeed = GetQuestObjectiveInfo(BountyInfo.questID, 1, false)
-    if timeleft then
-      if timeleft > 2880 then
-        if t.DailyWorldQuest.days2 then else t.DailyWorldQuest.days2 = {} end
-        t.DailyWorldQuest.days2.name = title
-        t.DailyWorldQuest.days2.dayleft = 2
-        t.DailyWorldQuest.days2.questneed = questNeed
-        t.DailyWorldQuest.days2.questdone = questDone
-        t.DailyWorldQuest.days2.isfinish = isFinish
-        t.DailyWorldQuest.days2.iscompleted = IsQuestFlaggedCompleted(BountyInfo.questID)
-      elseif timeleft > 1440 then
-        if t.DailyWorldQuest.days1 then else t.DailyWorldQuest.days1 = {} end
-        t.DailyWorldQuest.days1.name = title
-        t.DailyWorldQuest.days1.dayleft = 1
-        t.DailyWorldQuest.days1.questneed = questNeed
-        t.DailyWorldQuest.days1.questdone = questDone
-        t.DailyWorldQuest.days1.isfinish = isFinish
-        t.DailyWorldQuest.days1.iscompleted = IsQuestFlaggedCompleted(BountyInfo.questID)
-      else
-        if t.DailyWorldQuest.days0 then else t.DailyWorldQuest.days0 = {} end
-        t.DailyWorldQuest.days0.name = title
-        t.DailyWorldQuest.days0.dayleft = 0
-        t.DailyWorldQuest.days0.questneed = questNeed
-        t.DailyWorldQuest.days0.questdone = questDone
-        t.DailyWorldQuest.days0.isfinish = isFinish
-        t.DailyWorldQuest.days0.iscompleted = IsQuestFlaggedCompleted(BountyInfo.questID)
-      end
-    end
-  end
-  if IsQuestFlaggedCompleted(43341) then
-    if t.DailyWorldQuest.days0 == nil then
-      t.DailyWorldQuest.days0 = {}
-      t.DailyWorldQuest.days0.dayleft = 0
-      t.DailyWorldQuest.days0.iscompleted = true
-      t.DailyWorldQuest.days0.name = L["Emissary Missing"]
-    end
-    if t.DailyWorldQuest.days1 == nil then
-      t.DailyWorldQuest.days1 = {}
-      t.DailyWorldQuest.days1.dayleft = 1
-      t.DailyWorldQuest.days1.iscompleted = true
-      t.DailyWorldQuest.days1.name = L["Emissary Missing"]
-    end
-    if t.DailyWorldQuest.days2 == nil then
-      t.DailyWorldQuest.days2 = {}
-      t.DailyWorldQuest.days2.dayleft = 2
-      t.DailyWorldQuest.days2.iscompleted = true
-      t.DailyWorldQuest.days2.name = L["Emissary Missing"]
-    end
-  end
-end
+shapgvba pber:ErserfuQnvylJbeyqDhrfgVasb()
+  ybpny g = inef.qo.Gbbaf[guvfGbba]
+  g.QnvylJbeyqDhrfg = {}
+  ybpny ObhaglDhrfg = TrgDhrfgObhaglVasbSbeZncVQ(1014)
+  sbe ObhaglVaqrk, ObhaglVasb va vcnvef(ObhaglDhrfg) qb
+    ybpny gvgyr = TrgDhrfgYbtGvgyr(TrgDhrfgYbtVaqrkOlVQ(ObhaglVasb.dhrfgVQ))
+    ybpny gvzryrsg = P_GnfxDhrfg.TrgDhrfgGvzrYrsgZvahgrf(ObhaglVasb.dhrfgVQ)
+    ybpny _, _, vfSvavfu, dhrfgQbar, dhrfgArrq = TrgDhrfgBowrpgvirVasb(ObhaglVasb.dhrfgVQ, 1, snyfr)
+    vs gvzryrsg gura
+      vs gvzryrsg > 2880 gura
+        vs g.QnvylJbeyqDhrfg.qnlf2 gura ryfr g.QnvylJbeyqDhrfg.qnlf2 = {} raq
+        g.QnvylJbeyqDhrfg.qnlf2.anzr = gvgyr
+        g.QnvylJbeyqDhrfg.qnlf2.qnlyrsg = 2
+        g.QnvylJbeyqDhrfg.qnlf2.dhrfgarrq = dhrfgArrq
+        g.QnvylJbeyqDhrfg.qnlf2.dhrfgqbar = dhrfgQbar
+        g.QnvylJbeyqDhrfg.qnlf2.vfsvavfu = vfSvavfu
+        g.QnvylJbeyqDhrfg.qnlf2.vfpbzcyrgrq = VfDhrfgSynttrqPbzcyrgrq(ObhaglVasb.dhrfgVQ)
+      ryfrvs gvzryrsg > 1440 gura
+        vs g.QnvylJbeyqDhrfg.qnlf1 gura ryfr g.QnvylJbeyqDhrfg.qnlf1 = {} raq
+        g.QnvylJbeyqDhrfg.qnlf1.anzr = gvgyr
+        g.QnvylJbeyqDhrfg.qnlf1.qnlyrsg = 1
+        g.QnvylJbeyqDhrfg.qnlf1.dhrfgarrq = dhrfgArrq
+        g.QnvylJbeyqDhrfg.qnlf1.dhrfgqbar = dhrfgQbar
+        g.QnvylJbeyqDhrfg.qnlf1.vfsvavfu = vfSvavfu
+        g.QnvylJbeyqDhrfg.qnlf1.vfpbzcyrgrq = VfDhrfgSynttrqPbzcyrgrq(ObhaglVasb.dhrfgVQ)
+      ryfr
+        vs g.QnvylJbeyqDhrfg.qnlf0 gura ryfr g.QnvylJbeyqDhrfg.qnlf0 = {} raq
+        g.QnvylJbeyqDhrfg.qnlf0.anzr = gvgyr
+        g.QnvylJbeyqDhrfg.qnlf0.qnlyrsg = 0
+        g.QnvylJbeyqDhrfg.qnlf0.dhrfgarrq = dhrfgArrq
+        g.QnvylJbeyqDhrfg.qnlf0.dhrfgqbar = dhrfgQbar
+        g.QnvylJbeyqDhrfg.qnlf0.vfsvavfu = vfSvavfu
+        g.QnvylJbeyqDhrfg.qnlf0.vfpbzcyrgrq = VfDhrfgSynttrqPbzcyrgrq(ObhaglVasb.dhrfgVQ)
+      raq
+    raq
+  raq
+  vs VfDhrfgSynttrqPbzcyrgrq(43341) gura
+    vs g.QnvylJbeyqDhrfg.qnlf0 == avy gura
+      g.QnvylJbeyqDhrfg.qnlf0 = {}
+      g.QnvylJbeyqDhrfg.qnlf0.qnlyrsg = 0
+      g.QnvylJbeyqDhrfg.qnlf0.vfpbzcyrgrq = gehr
+      g.QnvylJbeyqDhrfg.qnlf0.anzr = Y["Rzvffnel Zvffvat"]
+    raq
+    vs g.QnvylJbeyqDhrfg.qnlf1 == avy gura
+      g.QnvylJbeyqDhrfg.qnlf1 = {}
+      g.QnvylJbeyqDhrfg.qnlf1.qnlyrsg = 1
+      g.QnvylJbeyqDhrfg.qnlf1.vfpbzcyrgrq = gehr
+      g.QnvylJbeyqDhrfg.qnlf1.anzr = Y["Rzvffnel Zvffvat"]
+    raq
+    vs g.QnvylJbeyqDhrfg.qnlf2 == avy gura
+      g.QnvylJbeyqDhrfg.qnlf2 = {}
+      g.QnvylJbeyqDhrfg.qnlf2.qnlyrsg = 2
+      g.QnvylJbeyqDhrfg.qnlf2.vfpbzcyrgrq = gehr
+      g.QnvylJbeyqDhrfg.qnlf2.anzr = Y["Rzvffnel Zvffvat"]
+    raq
+  raq
+raq
 
-function core:getRealmGroup(realm)
-  -- returns realm-group-id, { realm1, realm2, ...} for connected realm, or nil,nil for unconnected
-  realm = realm:gsub("%s+","")
-  local rmap = vars.db.RealmMap
-  local gid = rmap and rmap[realm]
-  return gid, gid and rmap[gid]
-end
+shapgvba pber:trgErnyzTebhc(ernyz)
+  -- ergheaf ernyz-tebhc-vq, { ernyz1, ernyz2, ...} sbe pbaarpgrq ernyz, be avy,avy sbe hapbaarpgrq
+  ernyz = ernyz:tfho("%f+","")
+  ybpny eznc = inef.qo.ErnyzZnc
+  ybpny tvq = eznc naq eznc[ernyz]
+  erghea tvq, tvq naq eznc[tvq]
+raq
 
-function core:CHAT_MSG_MONSTER_YELL(event, msg, bossname)
-  -- cheapest possible outdoor boss detection for players lacking a proper boss mod
-  -- should work for sha and nalak, oon and gal report a related mob
-  local t = vars.db.Toons[thisToon]
-  local now = time()
-  if bossname and t then
-    bossname = tostring(bossname) -- for safety
-    local diff = select(4,GetInstanceInfo())
-    if diff and #diff > 0 then bossname = bossname .. ": ".. diff end
-    t.lastbossyell = bossname
-    t.lastbossyelltime = now
-    --debug("CHAT_MSG_MONSTER_YELL: "..tostring(bossname));
-  end
-end
+shapgvba pber:PUNG_ZFT_ZBAFGRE_LRYY(rirag, zft, obffanzr)
+  -- purncrfg cbffvoyr bhgqbbe obff qrgrpgvba sbe cynlref ynpxvat n cebcre obff zbq
+  -- fubhyq jbex sbe fun naq anynx, bba naq tny ercbeg n eryngrq zbo
+  ybpny g = inef.qo.Gbbaf[guvfGbba]
+  ybpny abj = gvzr()
+  vs obffanzr naq g gura
+    obffanzr = gbfgevat(obffanzr) -- sbe fnsrgl
+    ybpny qvss = fryrpg(4,TrgVafgnaprVasb())
+    vs qvss naq #qvss > 0 gura obffanzr = obffanzr .. ": ".. qvss raq
+    g.ynfgobfflryy = obffanzr
+    g.ynfgobfflryygvzr = abj
+    --qroht("PUNG_ZFT_ZBAFGRE_LRYY: "..gbfgevat(obffanzr));
+  raq
+raq
 
-function core:BossModEncounterEnd(modname, bossname)
-  local t = vars.db.Toons[thisToon]
-  local now = time()
-  if bossname and t and now > (t.lastbosstime or 0) + 2*60 then
-    -- boss mods can often detect completion before ENCOUNTER_END
-    -- also some world bosses never send ENCOUNTER_END
-    -- enough timeout to prevent overwriting, but short enough to prevent cross-boss contamination
-    bossname = tostring(bossname) -- for safety
-    local diff = select(4,GetInstanceInfo())
-    if diff and #diff > 0 then bossname = bossname .. ": ".. diff end
-    t.lastboss = bossname
-    t.lastbosstime = now
-  end
-  debug("%s refresh: %s",(modname or "BossMod"),tostring(bossname));
-  core:RefreshLockInfo()
-end
+shapgvba pber:ObffZbqRapbhagreRaq(zbqanzr, obffanzr)
+  ybpny g = inef.qo.Gbbaf[guvfGbba]
+  ybpny abj = gvzr()
+  vs obffanzr naq g naq abj > (g.ynfgobffgvzr be 0) + 2*60 gura
+    -- obff zbqf pna bsgra qrgrpg pbzcyrgvba orsber RAPBHAGRE_RAQ
+    -- nyfb fbzr jbeyq obffrf arire fraq RAPBHAGRE_RAQ
+    -- rabhtu gvzrbhg gb cerirag birejevgvat, ohg fubeg rabhtu gb cerirag pebff-obff pbagnzvangvba
+    obffanzr = gbfgevat(obffanzr) -- sbe fnsrgl
+    ybpny qvss = fryrpg(4,TrgVafgnaprVasb())
+    vs qvss naq #qvss > 0 gura obffanzr = obffanzr .. ": ".. qvss raq
+    g.ynfgobff = obffanzr
+    g.ynfgobffgvzr = abj
+  raq
+  qroht("%f erserfu: %f",(zbqanzr be "ObffZbq"),gbfgevat(obffanzr));
+  pber:ErserfuYbpxVasb()
+raq
 
-function core:EncounterEnd(event, encounterID, encounterName, difficultyID, raidSize, endStatus)
-  debug("EncounterEnd:%s:%s:%s:%s:%s",tostring(encounterID),tostring(encounterName),tostring(difficultyID),tostring(raidSize),tostring(endStatus))
-  if endStatus ~= 1 then return end -- wipe
-  core:RefreshLockInfo()
-  local t = vars.db.Toons[thisToon]
-  if not t then return end
-  local name = encounterName
-  if difficultyID and difficultyID > 0 then
-    local diff = GetDifficultyInfo(difficultyID)
-    if diff and #diff > 0 then
-      name = name ..": "..diff
-    end
-  end
-  t.lastboss = name
-  t.lastbosstime = time()
-end
+shapgvba pber:RapbhagreRaq(rirag, rapbhagreVQ, rapbhagreAnzr, qvssvphyglVQ, envqFvmr, raqFgnghf)
+  qroht("RapbhagreRaq:%f:%f:%f:%f:%f",gbfgevat(rapbhagreVQ),gbfgevat(rapbhagreAnzr),gbfgevat(qvssvphyglVQ),gbfgevat(envqFvmr),gbfgevat(raqFgnghf))
+  vs raqFgnghf ~= 1 gura erghea raq -- jvcr
+  pber:ErserfuYbpxVasb()
+  ybpny g = inef.qo.Gbbaf[guvfGbba]
+  vs abg g gura erghea raq
+  ybpny anzr = rapbhagreAnzr
+  vs qvssvphyglVQ naq qvssvphyglVQ > 0 gura
+    ybpny qvss = TrgQvssvphyglVasb(qvssvphyglVQ)
+    vs qvss naq #qvss > 0 gura
+      anzr = anzr ..": "..qvss
+    raq
+  raq
+  g.ynfgobff = anzr
+  g.ynfgobffgvzr = gvzr()
+raq
 
-function core:BOSS_KILL(event, encounterID, encounterName, ...)
-  debug("BOSS_KILL:%s:%s",tostring(encounterID),tostring(encounterName)) -- ..":"..strjoin(":",...))
-  local name = encounterName
-  if name and type(name) == "string" then
-    name = name:gsub(",.*$","") -- remove extraneous trailing boss titles
-    name = strtrim(name)
-    core:BossModEncounterEnd("BOSS_KILL", name)
-  end
-end
+shapgvba pber:OBFF_XVYY(rirag, rapbhagreVQ, rapbhagreAnzr, ...)
+  qroht("OBFF_XVYY:%f:%f",gbfgevat(rapbhagreVQ),gbfgevat(rapbhagreAnzr)) -- ..":"..fgewbva(":",...))
+  ybpny anzr = rapbhagreAnzr
+  vs anzr naq glcr(anzr) == "fgevat" gura
+    anzr = anzr:tfho(",.*$","") -- erzbir rkgenarbhf genvyvat obff gvgyrf
+    anzr = fgegevz(anzr)
+    pber:ObffZbqRapbhagreRaq("OBFF_XVYY", anzr)
+  raq
+raq
 
-function addon:InGroup()
-  if IsInRaid() then return "RAID"
-  elseif GetNumGroupMembers() > 0 then return "PARTY"
-  else return nil end
-end
+shapgvba nqqba:VaTebhc()
+  vs VfVaEnvq() gura erghea "ENVQ"
+  ryfrvs TrgAhzTebhcZrzoref() > 0 gura erghea "CNEGL"
+  ryfr erghea avy raq
+raq
 
-local function doExplicitReset(instancemsg, failed)
-  if HasLFGRestrictions() or IsInInstance() or
-    (addon:InGroup() and not UnitIsGroupLeader("player")) then return end
-  if not failed then
-    addon:HistoryUpdate(true)
-  end
+ybpny shapgvba qbRkcyvpvgErfrg(vafgnaprzft, snvyrq)
+  vs UnfYSTErfgevpgvbaf() be VfVaVafgnapr() be
+    (nqqba:VaTebhc() naq abg HavgVfTebhcYrnqre("cynlre")) gura erghea raq
+  vs abg snvyrq gura
+    nqqba:UvfgbelHcqngr(gehr)
+  raq
 
-  local reportchan = addon:InGroup()
-  if reportchan then
-    if not failed then
-      SendAddonMessage(addonName, "GENERATION_ADVANCE", reportchan)
-    end
-    if vars.db.Tooltip.ReportResets then
-      local msg = instancemsg or RESET_INSTANCES
-      msg = msg:gsub("\1241.+;.+;","") -- ticket 76, remove |1;; escapes on koKR
-      SendChatMessage("<"..addonName.."> "..msg, reportchan)
-    end
-  end
-end
-hooksecurefunc("ResetInstances", doExplicitReset)
+  ybpny ercbegpuna = nqqba:VaTebhc()
+  vs ercbegpuna gura
+    vs abg snvyrq gura
+      FraqNqqbaZrffntr(nqqbaAnzr, "TRARENGVBA_NQINAPR", ercbegpuna)
+    raq
+    vs inef.qo.Gbbygvc.ErcbegErfrgf gura
+      ybpny zft = vafgnaprzft be ERFRG_VAFGNAPRF
+      zft = zft:tfho("\1241.+;.+;","") -- gvpxrg 76, erzbir |1;; rfpncrf ba xbXE
+      FraqPungZrffntr("<"..nqqbaAnzr.."> "..zft, ercbegpuna)
+    raq
+  raq
+raq
+ubbxfrphershap("ErfrgVafgnaprf", qbRkcyvpvgErfrg)
 
-local resetmsg = INSTANCE_RESET_SUCCESS:gsub("%%s",".+")
-local resetfails = { INSTANCE_RESET_FAILED, INSTANCE_RESET_FAILED_OFFLINE, INSTANCE_RESET_FAILED_ZONING }
-for k,v in pairs(resetfails) do
-  resetfails[k] = v:gsub("%%s",".+")
-end
-local raiddiffmsg = ERR_RAID_DIFFICULTY_CHANGED_S:gsub("%%s",".+")
-local dungdiffmsg = ERR_DUNGEON_DIFFICULTY_CHANGED_S:gsub("%%s",".+")
-local delaytime = 3 -- seconds to wait on zone change for settings to stabilize
-function addon.HistoryEvent(f, evt, ...)
-  --debug("HistoryEvent: "..evt, ...)
-  if evt == "CHAT_MSG_ADDON" then
-    local prefix, message, channel, sender = ...
-    if prefix ~= addonName then return end
-    if message:match("^GENERATION_ADVANCE$") and not UnitIsUnit(sender,"player") then
-      addon:HistoryUpdate(true)
-    end
-  elseif evt == "CHAT_MSG_SYSTEM" then
-    local msg = ...
-    if msg:match("^"..resetmsg.."$") then -- I performed expicit reset
-      doExplicitReset(msg)
-    elseif msg:match("^"..INSTANCE_SAVED.."$") then -- just got saved
-      core:ScheduleTimer("HistoryUpdate", delaytime+1)
-    elseif (msg:match("^"..raiddiffmsg.."$") or msg:match("^"..dungdiffmsg.."$")) and
-      not addon:histZoneKey() then -- ignore difficulty messages when creating a party while inside an instance
-      addon:HistoryUpdate(true)
-    elseif msg:match(TRANSFER_ABORT_TOO_MANY_INSTANCES) then
-      addon:HistoryUpdate(false,true)
-    else
-      for _,m in pairs(resetfails) do
-        if msg:match("^"..m.."$") then
-          doExplicitReset(msg, true) -- send failure chat message
-        end
-      end
-    end
-  elseif evt == "INSTANCE_BOOT_START" then -- left group inside instance, resets on boot
-    addon:HistoryUpdate(true)
-  elseif evt == "INSTANCE_BOOT_STOP" and addon:InGroup() then -- invited back
-    addon.delayedReset = false
-  elseif evt == "GROUP_ROSTER_UPDATE" and
-    addon.histInGroup and not addon:InGroup() and -- ignore failed invites when solo
-    not addon:histZoneKey() then -- left group outside instance, resets now
-    addon:HistoryUpdate(true)
-  elseif evt == "PLAYER_ENTERING_WORLD" or evt == "ZONE_CHANGED_NEW_AREA" or evt == "RAID_INSTANCE_WELCOME" then
-    -- delay updates while settings stabilize
-    local waittime = delaytime + math.max(0,10 - GetFramerate())
-    addon.delayUpdate = time() + waittime
-    core:ScheduleTimer("HistoryUpdate", waittime+1)
-  end
-end
+ybpny erfrgzft = VAFGNAPR_ERFRG_FHPPRFF:tfho("%%f",".+")
+ybpny erfrgsnvyf = { VAFGNAPR_ERFRG_SNVYRQ, VAFGNAPR_ERFRG_SNVYRQ_BSSYVAR, VAFGNAPR_ERFRG_SNVYRQ_MBAVAT }
+sbe x,i va cnvef(erfrgsnvyf) qb
+  erfrgsnvyf[x] = i:tfho("%%f",".+")
+raq
+ybpny envqqvsszft = REE_ENVQ_QVSSVPHYGL_PUNATRQ_F:tfho("%%f",".+")
+ybpny qhatqvsszft = REE_QHATRBA_QVSSVPHYGL_PUNATRQ_F:tfho("%%f",".+")
+ybpny qrynlgvzr = 3 -- frpbaqf gb jnvg ba mbar punatr sbe frggvatf gb fgnovyvmr
+shapgvba nqqba.UvfgbelRirag(s, rig, ...)
+  --qroht("UvfgbelRirag: "..rig, ...)
+  vs rig == "PUNG_ZFT_NQQBA" gura
+    ybpny cersvk, zrffntr, punaary, fraqre = ...
+    vs cersvk ~= nqqbaAnzr gura erghea raq
+    vs zrffntr:zngpu("^TRARENGVBA_NQINAPR$") naq abg HavgVfHavg(fraqre,"cynlre") gura
+      nqqba:UvfgbelHcqngr(gehr)
+    raq
+  ryfrvs rig == "PUNG_ZFT_FLFGRZ" gura
+    ybpny zft = ...
+    vs zft:zngpu("^"..erfrgzft.."$") gura -- V cresbezrq rkcvpvg erfrg
+      qbRkcyvpvgErfrg(zft)
+    ryfrvs zft:zngpu("^"..VAFGNAPR_FNIRQ.."$") gura -- whfg tbg fnirq
+      pber:FpurqhyrGvzre("UvfgbelHcqngr", qrynlgvzr+1)
+    ryfrvs (zft:zngpu("^"..envqqvsszft.."$") be zft:zngpu("^"..qhatqvsszft.."$")) naq
+      abg nqqba:uvfgMbarXrl() gura -- vtaber qvssvphygl zrffntrf jura perngvat n cnegl juvyr vafvqr na vafgnapr
+      nqqba:UvfgbelHcqngr(gehr)
+    ryfrvs zft:zngpu(GENAFSRE_NOBEG_GBB_ZNAL_VAFGNAPRF) gura
+      nqqba:UvfgbelHcqngr(snyfr,gehr)
+    ryfr
+      sbe _,z va cnvef(erfrgsnvyf) qb
+        vs zft:zngpu("^"..z.."$") gura
+          qbRkcyvpvgErfrg(zft, gehr) -- fraq snvyher pung zrffntr
+        raq
+      raq
+    raq
+  ryfrvs rig == "VAFGNAPR_OBBG_FGNEG" gura -- yrsg tebhc vafvqr vafgnapr, erfrgf ba obbg
+    nqqba:UvfgbelHcqngr(gehr)
+  ryfrvs rig == "VAFGNAPR_OBBG_FGBC" naq nqqba:VaTebhc() gura -- vaivgrq onpx
+    nqqba.qrynlrqErfrg = snyfr
+  ryfrvs rig == "TEBHC_EBFGRE_HCQNGR" naq
+    nqqba.uvfgVaTebhc naq abg nqqba:VaTebhc() naq -- vtaber snvyrq vaivgrf jura fbyb
+    abg nqqba:uvfgMbarXrl() gura -- yrsg tebhc bhgfvqr vafgnapr, erfrgf abj
+    nqqba:UvfgbelHcqngr(gehr)
+  ryfrvs rig == "CYNLRE_RAGREVAT_JBEYQ" be rig == "MBAR_PUNATRQ_ARJ_NERN" be rig == "ENVQ_VAFGNAPR_JRYPBZR" gura
+    -- qrynl hcqngrf juvyr frggvatf fgnovyvmr
+    ybpny jnvggvzr = qrynlgvzr + zngu.znk(0,10 - TrgSenzrengr())
+    nqqba.qrynlHcqngr = gvzr() + jnvggvzr
+    pber:FpurqhyrGvzre("UvfgbelHcqngr", jnvggvzr+1)
+  raq
+raq
 
 
-addon.histReapTime = 60*60 -- 1 hour
-addon.histLimit = 10 -- instances per hour
-function addon:histZoneKey()
-  local instname, insttype, diff, diffname, maxPlayers, playerDifficulty, isDynamicInstance = GetInstanceInfo()
-  if insttype == nil or insttype == "none" or insttype == "arena" or insttype == "pvp" then -- pvp doesnt count
-    return nil
-  end
-  if IsInLFGDungeon() or IsInScenarioGroup() then -- LFG instances don't count
-    return nil
-  end
-  if C_Garrison.IsOnGarrisonMap() then -- Garrisons don't count
-    return nil
-  end
-  -- check if we're locked (using FindInstance so we don't complain about unsaved unknown instances)
-  local truename = addon:FindInstance(instname, insttype == "raid")
-  local locked = false
-  local inst = truename and vars.db.Instances[truename]
-  inst = inst and inst[thisToon]
-  for d=1,maxdiff do
-    if inst and inst[d] and inst[d].Locked then
-      locked = true
-    end
-  end
-  if diff == 1 and maxPlayers == 5 then -- never locked to 5-man regs
-    locked = false
-  end
-  local toonstr = thisToon
-  if not db.Tooltip.ShowServer then
-    toonstr = strsplit(" - ", toonstr)
-  end
-  local desc = toonstr .. ": " .. instname
-  if diffname and #diffname > 0 then
-    desc = desc .. " - " .. diffname
-  end
-  local key = thisToon..":"..instname..":"..insttype..":"..diff
-  if not locked then
-    key = key..":"..vars.db.histGeneration
-  end
-  return key, desc, locked
-end
+nqqba.uvfgErncGvzr = 60*60 -- 1 ubhe
+nqqba.uvfgYvzvg = 10 -- vafgnaprf cre ubhe
+shapgvba nqqba:uvfgMbarXrl()
+  ybpny vafganzr, vafgglcr, qvss, qvssanzr, znkCynlref, cynlreQvssvphygl, vfQlanzvpVafgnapr = TrgVafgnaprVasb()
+  vs vafgglcr == avy be vafgglcr == "abar" be vafgglcr == "neran" be vafgglcr == "cic" gura -- cic qbrfag pbhag
+    erghea avy
+  raq
+  vs VfVaYSTQhatrba() be VfVaFpranevbTebhc() gura -- YST vafgnaprf qba'g pbhag
+    erghea avy
+  raq
+  vs P_Tneevfba.VfBaTneevfbaZnc() gura -- Tneevfbaf qba'g pbhag
+    erghea avy
+  raq
+  -- purpx vs jr'er ybpxrq (hfvat SvaqVafgnapr fb jr qba'g pbzcynva nobhg hafnirq haxabja vafgnaprf)
+  ybpny gehranzr = nqqba:SvaqVafgnapr(vafganzr, vafgglcr == "envq")
+  ybpny ybpxrq = snyfr
+  ybpny vafg = gehranzr naq inef.qo.Vafgnaprf[gehranzr]
+  vafg = vafg naq vafg[guvfGbba]
+  sbe q=1,znkqvss qb
+    vs vafg naq vafg[q] naq vafg[q].Ybpxrq gura
+      ybpxrq = gehr
+    raq
+  raq
+  vs qvss == 1 naq znkCynlref == 5 gura -- arire ybpxrq gb 5-zna ertf
+    ybpxrq = snyfr
+  raq
+  ybpny gbbafge = guvfGbba
+  vs abg qo.Gbbygvc.FubjFreire gura
+    gbbafge = fgefcyvg(" - ", gbbafge)
+  raq
+  ybpny qrfp = gbbafge .. ": " .. vafganzr
+  vs qvssanzr naq #qvssanzr > 0 gura
+    qrfp = qrfp .. " - " .. qvssanzr
+  raq
+  ybpny xrl = guvfGbba..":"..vafganzr..":"..vafgglcr..":"..qvss
+  vs abg ybpxrq gura
+    xrl = xrl..":"..inef.qo.uvfgTrarengvba
+  raq
+  erghea xrl, qrfp, ybpxrq
+raq
 
-function addon:HistoryUpdate(forcereset, forcemesg)
-  vars.db.histGeneration = vars.db.histGeneration or 1
-  if forcereset and addon:histZoneKey() then -- delay reset until we zone out
-    debug("HistoryUpdate reset delayed")
-    addon.delayedReset = true
-  end
-  if (forcereset or addon.delayedReset) and not addon:histZoneKey() then
-    debug("HistoryUpdate generation advance")
-    vars.db.histGeneration = (vars.db.histGeneration + 1) % 100000
-    addon.delayedReset = false
-  end
-  local now = time()
-  if addon.delayUpdate and now < addon.delayUpdate then
-    debug("HistoryUpdate delayed")
-    return
-  end
-  local zoningin = false
-  local newzone, newdesc, locked = addon:histZoneKey()
-  -- touch zone we left
-  if addon.histLastZone then
-    local lz = vars.db.History[addon.histLastZone]
-    if lz then
-      lz.last = now
-    end
-  elseif newzone then
-    zoningin = true
-  end
-  addon.histLastZone = newzone
-  addon.histInGroup = addon:InGroup()
-  -- touch/create new zone
-  if newzone then
-    local nz = vars.db.History[newzone]
-    if not nz then
-      nz = { create = now, desc = newdesc }
-      vars.db.History[newzone] = nz
-      if locked then -- creating a locked instance, delete unlocked version
-        vars.db.History[newzone..":"..vars.db.histGeneration] = nil
-      end
-    end
-    nz.last = now
-  end
-  -- reap old zones
-  local livecnt = 0
-  local oldestkey, oldesttime
-  for zk, zi in pairs(vars.db.History) do
-    if now > zi.last + addon.histReapTime or
-      zi.last > (now + 3600) then -- temporary bug fix
-      debug("Reaping %s",zi.desc)
-      vars.db.History[zk] = nil
-    else
-      livecnt = livecnt + 1
-      if not oldesttime or zi.last < oldesttime then
-        oldestkey = zk
-        oldesttime = zi.last
-      end
-    end
-  end
-  local oldestrem = oldesttime and (oldesttime+addon.histReapTime-now)
-  local oldestremt = (oldestrem and SecondsToTime(oldestrem,false,false,1)) or "n/a"
-  local oldestremtm = (oldestrem and SecondsToTime(math.floor((oldestrem+59)/60)*60,false,false,1)) or "n/a"
-  if addon.db.dbg then
-    local msg = livecnt.." live instances, oldest ("..(oldestkey or "none")..") expires in "..oldestremt..". Current Zone="..(newzone or "nil")
-    if msg ~= addon.lasthistdbg then
-      addon.lasthistdbg = msg
-      debug(msg)
-    end
-    --debug(vars.db.History)
-  end
-  -- display update
+shapgvba nqqba:UvfgbelHcqngr(sbeprerfrg, sbeprzrft)
+  inef.qo.uvfgTrarengvba = inef.qo.uvfgTrarengvba be 1
+  vs sbeprerfrg naq nqqba:uvfgMbarXrl() gura -- qrynl erfrg hagvy jr mbar bhg
+    qroht("UvfgbelHcqngr erfrg qrynlrq")
+    nqqba.qrynlrqErfrg = gehr
+  raq
+  vs (sbeprerfrg be nqqba.qrynlrqErfrg) naq abg nqqba:uvfgMbarXrl() gura
+    qroht("UvfgbelHcqngr trarengvba nqinapr")
+    inef.qo.uvfgTrarengvba = (inef.qo.uvfgTrarengvba + 1) % 100000
+    nqqba.qrynlrqErfrg = snyfr
+  raq
+  ybpny abj = gvzr()
+  vs nqqba.qrynlHcqngr naq abj < nqqba.qrynlHcqngr gura
+    qroht("UvfgbelHcqngr qrynlrq")
+    erghea
+  raq
+  ybpny mbavatva = snyfr
+  ybpny arjmbar, arjqrfp, ybpxrq = nqqba:uvfgMbarXrl()
+  -- gbhpu mbar jr yrsg
+  vs nqqba.uvfgYnfgMbar gura
+    ybpny ym = inef.qo.Uvfgbel[nqqba.uvfgYnfgMbar]
+    vs ym gura
+      ym.ynfg = abj
+    raq
+  ryfrvs arjmbar gura
+    mbavatva = gehr
+  raq
+  nqqba.uvfgYnfgMbar = arjmbar
+  nqqba.uvfgVaTebhc = nqqba:VaTebhc()
+  -- gbhpu/perngr arj mbar
+  vs arjmbar gura
+    ybpny am = inef.qo.Uvfgbel[arjmbar]
+    vs abg am gura
+      am = { perngr = abj, qrfp = arjqrfp }
+      inef.qo.Uvfgbel[arjmbar] = am
+      vs ybpxrq gura -- perngvat n ybpxrq vafgnapr, qryrgr haybpxrq irefvba
+        inef.qo.Uvfgbel[arjmbar..":"..inef.qo.uvfgTrarengvba] = avy
+      raq
+    raq
+    am.ynfg = abj
+  raq
+  -- ernc byq mbarf
+  ybpny yvirpag = 0
+  ybpny byqrfgxrl, byqrfggvzr
+  sbe mx, mv va cnvef(inef.qo.Uvfgbel) qb
+    vs abj > mv.ynfg + nqqba.uvfgErncGvzr be
+      mv.ynfg > (abj + 3600) gura -- grzcbenel oht svk
+      qroht("Erncvat %f",mv.qrfp)
+      inef.qo.Uvfgbel[mx] = avy
+    ryfr
+      yvirpag = yvirpag + 1
+      vs abg byqrfggvzr be mv.ynfg < byqrfggvzr gura
+        byqrfgxrl = mx
+        byqrfggvzr = mv.ynfg
+      raq
+    raq
+  raq
+  ybpny byqrfgerz = byqrfggvzr naq (byqrfggvzr+nqqba.uvfgErncGvzr-abj)
+  ybpny byqrfgerzg = (byqrfgerz naq FrpbaqfGbGvzr(byqrfgerz,snyfr,snyfr,1)) be "a/n"
+  ybpny byqrfgerzgz = (byqrfgerz naq FrpbaqfGbGvzr(zngu.sybbe((byqrfgerz+59)/60)*60,snyfr,snyfr,1)) be "a/n"
+  vs nqqba.qo.qot gura
+    ybpny zft = yvirpag.." yvir vafgnaprf, byqrfg ("..(byqrfgxrl be "abar")..") rkcverf va "..byqrfgerzg..". Pheerag Mbar="..(arjmbar be "avy")
+    vs zft ~= nqqba.ynfguvfgqot gura
+      nqqba.ynfguvfgqot = zft
+      qroht(zft)
+    raq
+    --qroht(inef.qo.Uvfgbel)
+  raq
+  -- qvfcynl hcqngr
 
-  if forcemesg or (vars.db.Tooltip.LimitWarn and zoningin and livecnt >= addon.histLimit-1) then
-    chatMsg(L["Warning: You've entered about %i instances recently and are approaching the %i instance per hour limit for your account. More instances should be available in %s."],livecnt, addon.histLimit, oldestremt)
-  end
-  addon.histLiveCount = livecnt
-  addon.histOldest = oldestremt
-  if db.Tooltip.HistoryText and livecnt > 0 then
-    vars.dataobject.text = "("..livecnt.."/"..(oldestremt or "?")..")"
-    addon.histTextthrottle = math.min(oldestrem+1, addon.histTextthrottle or 15)
-    addon.resetDetect:SetScript("OnUpdate", addon.histTextUpdate)
-  else
-    vars.dataobject.text = addonAbbrev
-    addon.resetDetect:SetScript("OnUpdate", nil)
-  end
-end
-function core:HistoryUpdate(...) return addon:HistoryUpdate(...) end
-function addon.histTextUpdate(self, elap)
-  addon.histTextthrottle = addon.histTextthrottle - elap
-  if addon.histTextthrottle > 0 then return end
-  addon.histTextthrottle = 15
-  addon:HistoryUpdate()
-end
+  vs sbeprzrft be (inef.qo.Gbbygvc.YvzvgJnea naq mbavatva naq yvirpag >= nqqba.uvfgYvzvg-1) gura
+    pungZft(Y["Jneavat: Lbh'ir ragrerq nobhg %v vafgnaprf erpragyl naq ner nccebnpuvat gur %v vafgnapr cre ubhe yvzvg sbe lbhe nppbhag. Zber vafgnaprf fubhyq or ninvynoyr va %f."],yvirpag, nqqba.uvfgYvzvg, byqrfgerzg)
+  raq
+  nqqba.uvfgYvirPbhag = yvirpag
+  nqqba.uvfgByqrfg = byqrfgerzg
+  vs qo.Gbbygvc.UvfgbelGrkg naq yvirpag > 0 gura
+    inef.qngnbowrpg.grkg = "("..yvirpag.."/"..(byqrfgerzg be "?")..")"
+    nqqba.uvfgGrkgguebggyr = zngu.zva(byqrfgerz+1, nqqba.uvfgGrkgguebggyr be 15)
+    nqqba.erfrgQrgrpg:FrgFpevcg("BaHcqngr", nqqba.uvfgGrkgHcqngr)
+  ryfr
+    inef.qngnbowrpg.grkg = nqqbaNooeri
+    nqqba.erfrgQrgrpg:FrgFpevcg("BaHcqngr", avy)
+  raq
+raq
+shapgvba pber:UvfgbelHcqngr(...) erghea nqqba:UvfgbelHcqngr(...) raq
+shapgvba nqqba.uvfgGrkgHcqngr(frys, rync)
+  nqqba.uvfgGrkgguebggyr = nqqba.uvfgGrkgguebggyr - rync
+  vs nqqba.uvfgGrkgguebggyr > 0 gura erghea raq
+  nqqba.uvfgGrkgguebggyr = 15
+  nqqba:UvfgbelHcqngr()
+raq
 
-local function localarr(name) -- save on memory churn by reusing arrays in updates
-  name = "localarr#"..name
-  core[name] = core[name] or {}
-  return wipe(core[name])
-end
+ybpny shapgvba ybpnynee(anzr) -- fnir ba zrzbel puhea ol erhfvat neenlf va hcqngrf
+  anzr = "ybpnynee#"..anzr
+  pber[anzr] = pber[anzr] be {}
+  erghea jvcr(pber[anzr])
+raq
 
-function core:memcheck(context)
-  UpdateAddOnMemoryUsage()
-  local newval = GetAddOnMemoryUsage("SavedInstances")
-  core.memusage = core.memusage or 0
-  if newval ~= core.memusage then
-    debug("%.3f KB in %s",(newval - core.memusage),context)
-    core.memusage = newval
-  end
-end
+shapgvba pber:zrzpurpx(pbagrkg)
+  HcqngrNqqBaZrzbelHfntr()
+  ybpny arjiny = TrgNqqBaZrzbelHfntr("FnirqVafgnaprf")
+  pber.zrzhfntr = pber.zrzhfntr be 0
+  vs arjiny ~= pber.zrzhfntr gura
+    qroht("%.3s XO va %f",(arjiny - pber.zrzhfntr),pbagrkg)
+    pber.zrzhfntr = arjiny
+  raq
+raq
 
--- Lightweight refresh of just quest flag information
--- all may be nil if not instantiataed
-function core:QuestRefresh(recoverdaily, questcomplete, nextreset, weeklyreset)
-  local tiq = vars.db.Toons[thisToon]
-  tiq = tiq and tiq.Quests
-  if not tiq then return end
-  nextreset = nextreset or addon:GetNextDailyResetTime()
-  weeklyreset = weeklyreset or addon:GetNextWeeklyResetTime()
-  if not nextreset or not weeklyreset then return end
+-- Yvtugjrvtug erserfu bs whfg dhrfg synt vasbezngvba
+-- nyy znl or avy vs abg vafgnagvngnrq
+shapgvba pber:DhrfgErserfu(erpbireqnvyl, dhrfgpbzcyrgr, arkgerfrg, jrrxylerfrg)
+  ybpny gvd = inef.qo.Gbbaf[guvfGbba]
+  gvd = gvd naq gvd.Dhrfgf
+  vs abg gvd gura erghea raq
+  arkgerfrg = arkgerfrg be nqqba:TrgArkgQnvylErfrgGvzr()
+  jrrxylerfrg = jrrxylerfrg be nqqba:TrgArkgJrrxylErfrgGvzr()
+  vs abg arkgerfrg be abg jrrxylerfrg gura erghea raq
 
-  for _, qinfo in pairs(addon:specialQuests()) do
-    local qid = qinfo.quest
-    if IsQuestFlaggedCompleted(qid) or (questcomplete and questcomplete[qid]) then
-      local q = tiq[qid] or {}
-      tiq[qid] = q
-      q.Title = qinfo.name
-      q.Zone = qinfo.zone
-      if qinfo.daily then
-        q.Expires = nextreset
-        q.isDaily = true
-      else
-        q.Expires = weeklyreset
-        q.isDaily = nil
-      end
-    end
-  end
+  sbe _, dvasb va cnvef(nqqba:fcrpvnyDhrfgf()) qb
+    ybpny dvq = dvasb.dhrfg
+    vs VfDhrfgSynttrqPbzcyrgrq(dvq) be (dhrfgpbzcyrgr naq dhrfgpbzcyrgr[dvq]) gura
+      ybpny d = gvd[dvq] be {}
+      gvd[dvq] = d
+      d.Gvgyr = dvasb.anzr
+      d.Mbar = dvasb.mbar
+      vs dvasb.qnvyl gura
+        d.Rkcverf = arkgerfrg
+        d.vfQnvyl = gehr
+      ryfr
+        d.Rkcverf = jrrxylerfrg
+        d.vfQnvyl = avy
+      raq
+    raq
+  raq
 
-  local now = time()
-  db.QuestDB.Weekly.expires = weeklyreset
-  db.QuestDB.AccountWeekly.expires = weeklyreset
-  db.QuestDB.Darkmoon.expires = addon:GetNextDarkmoonResetTime()
-  for scope, list in pairs(db.QuestDB) do
-    local questlist = tiq
-    if scope:find("Account") then
-      questlist = db.Quests
-    end
-    if recoverdaily or (scope ~= "Daily") then
-      for qid, mapid in pairs(list) do
-        if tonumber(qid) and (IsQuestFlaggedCompleted(qid) or
-          (questcomplete and questcomplete[qid])) and not questlist[qid] and -- recovering a lost quest
-          (list.expires == nil or list.expires > now) then -- don't repop darkmoon quests from last faire
-          local title, link = addon:QuestInfo(qid)
-          if title then
-            local found
-            for _,info in pairs(questlist) do
-              if title == info.Title then -- avoid faction duplicates, since both flags are set
-                found = true
-                break
-              end
-            end
-            if not found then
-              debug("Recovering lost quest: "..title.." ("..scope..")")
-              questlist[qid] = { ["Title"] = title, ["Link"] = link,
-                ["isDaily"] = (scope:find("Daily") and true) or nil,
-                ["Expires"] = list.expires,
-                ["Zone"] = GetMapNameByID(mapid) }
-            end
-          end
-        end
-      end
-    end
-  end
-  addon:QuestCount(thisToon)
-end
+  ybpny abj = gvzr()
+  qo.DhrfgQO.Jrrxyl.rkcverf = jrrxylerfrg
+  qo.DhrfgQO.NppbhagJrrxyl.rkcverf = jrrxylerfrg
+  qo.DhrfgQO.Qnexzbba.rkcverf = nqqba:TrgArkgQnexzbbaErfrgGvzr()
+  sbe fpbcr, yvfg va cnvef(qo.DhrfgQO) qb
+    ybpny dhrfgyvfg = gvd
+    vs fpbcr:svaq("Nppbhag") gura
+      dhrfgyvfg = qo.Dhrfgf
+    raq
+    vs erpbireqnvyl be (fpbcr ~= "Qnvyl") gura
+      sbe dvq, zncvq va cnvef(yvfg) qb
+        vs gbahzore(dvq) naq (VfDhrfgSynttrqPbzcyrgrq(dvq) be
+          (dhrfgpbzcyrgr naq dhrfgpbzcyrgr[dvq])) naq abg dhrfgyvfg[dvq] naq -- erpbirevat n ybfg dhrfg
+          (yvfg.rkcverf == avy be yvfg.rkcverf > abj) gura -- qba'g ercbc qnexzbba dhrfgf sebz ynfg snver
+          ybpny gvgyr, yvax = nqqba:DhrfgVasb(dvq)
+          vs gvgyr gura
+            ybpny sbhaq
+            sbe _,vasb va cnvef(dhrfgyvfg) qb
+              vs gvgyr == vasb.Gvgyr gura -- nibvq snpgvba qhcyvpngrf, fvapr obgu syntf ner frg
+                sbhaq = gehr
+                oernx
+              raq
+            raq
+            vs abg sbhaq gura
+              qroht("Erpbirevat ybfg dhrfg: "..gvgyr.." ("..fpbcr..")")
+              dhrfgyvfg[dvq] = { ["Gvgyr"] = gvgyr, ["Yvax"] = yvax,
+                ["vfQnvyl"] = (fpbcr:svaq("Qnvyl") naq gehr) be avy,
+                ["Rkcverf"] = yvfg.rkcverf,
+                ["Mbar"] = TrgZncAnzrOlVQ(zncvq) }
+            raq
+          raq
+        raq
+      raq
+    raq
+  raq
+  nqqba:DhrfgPbhag(guvfGbba)
+raq
 
-function core:Refresh(recoverdaily)
-  -- update entire database from the current character's perspective
-  addon:UpdateInstanceData()
-  if not addon.instancesUpdated then addon.RefreshPending = true; return end -- wait for UpdateInstanceData to succeed
-  local nextreset = addon:GetNextDailyResetTime()
-  if not nextreset or ((nextreset - time()) > (24*3600 - 5*60)) then  -- allow 5 minutes for quest DB to update after daily rollover
-    debug("Skipping core:Refresh() near daily reset")
-    addon:UpdateToonData()
-    return
-  end
-  local temp = localarr("RefreshTemp")
-  for name, instance in pairs(vars.db.Instances) do -- clear current toons lockouts before refresh
-    local id = instance.LFDID
-    if instance[thisToon]
-    -- disabled for ticket 178/195:
-    --and not (id and addon.LFRInstances[id] and select(2,GetLFGDungeonNumEncounters(id)) == 0) -- ticket 103
-    then
-      temp[name] = instance[thisToon] -- use a temp to reduce memory churn
-      for diff,info in pairs(temp[name]) do
-        wipe(info)
-      end
-      instance[thisToon] = nil
-    end
-  end
-  local numsaved = GetNumSavedInstances()
-  if numsaved > 0 then
-    for i = 1, numsaved do
-      local name, id, expires, diff, locked, extended, mostsig, raid, players, diffname = GetSavedInstanceInfo(i)
-      local truename, instance = addon:LookupInstance(nil, name, raid)
-      if expires and expires > 0 then
-        expires = expires + time()
-      else
-        expires = 0
-      end
-      instance.Raid = instance.Raid or raid
-      instance[thisToon] = instance[thisToon] or temp[truename] or { }
-      local info = instance[thisToon][diff] or {}
-      wipe(info)
-      info.ID = id
-      info.Expires = expires
-      info.Link = GetSavedInstanceChatLink(i)
-      info.Locked = locked
-      info.Extended = extended
-      instance[thisToon][diff] = info
-    end
-  end
+shapgvba pber:Erserfu(erpbireqnvyl)
+  -- hcqngr ragver qngnonfr sebz gur pheerag punenpgre'f crefcrpgvir
+  nqqba:HcqngrVafgnaprQngn()
+  vs abg nqqba.vafgnaprfHcqngrq gura nqqba.ErserfuCraqvat = gehr; erghea raq -- jnvg sbe HcqngrVafgnaprQngn gb fhpprrq
+  ybpny arkgerfrg = nqqba:TrgArkgQnvylErfrgGvzr()
+  vs abg arkgerfrg be ((arkgerfrg - gvzr()) > (24*3600 - 5*60)) gura  -- nyybj 5 zvahgrf sbe dhrfg QO gb hcqngr nsgre qnvyl ebyybire
+    qroht("Fxvccvat pber:Erserfu() arne qnvyl erfrg")
+    nqqba:HcqngrGbbaQngn()
+    erghea
+  raq
+  ybpny grzc = ybpnynee("ErserfuGrzc")
+  sbe anzr, vafgnapr va cnvef(inef.qo.Vafgnaprf) qb -- pyrne pheerag gbbaf ybpxbhgf orsber erserfu
+    ybpny vq = vafgnapr.YSQVQ
+    vs vafgnapr[guvfGbba]
+    -- qvfnoyrq sbe gvpxrg 178/195:
+    --naq abg (vq naq nqqba.YSEVafgnaprf[vq] naq fryrpg(2,TrgYSTQhatrbaAhzRapbhagref(vq)) == 0) -- gvpxrg 103
+    gura
+      grzc[anzr] = vafgnapr[guvfGbba] -- hfr n grzc gb erqhpr zrzbel puhea
+      sbe qvss,vasb va cnvef(grzc[anzr]) qb
+        jvcr(vasb)
+      raq
+      vafgnapr[guvfGbba] = avy
+    raq
+  raq
+  ybpny ahzfnirq = TrgAhzFnirqVafgnaprf()
+  vs ahzfnirq > 0 gura
+    sbe v = 1, ahzfnirq qb
+      ybpny anzr, vq, rkcverf, qvss, ybpxrq, rkgraqrq, zbfgfvt, envq, cynlref, qvssanzr = TrgFnirqVafgnaprVasb(v)
+      ybpny gehranzr, vafgnapr = nqqba:YbbxhcVafgnapr(avy, anzr, envq)
+      vs rkcverf naq rkcverf > 0 gura
+        rkcverf = rkcverf + gvzr()
+      ryfr
+        rkcverf = 0
+      raq
+      vafgnapr.Envq = vafgnapr.Envq be envq
+      vafgnapr[guvfGbba] = vafgnapr[guvfGbba] be grzc[gehranzr] be { }
+      ybpny vasb = vafgnapr[guvfGbba][qvss] be {}
+      jvcr(vasb)
+      vasb.VQ = vq
+      vasb.Rkcverf = rkcverf
+      vasb.Yvax = TrgFnirqVafgnaprPungYvax(v)
+      vasb.Ybpxrq = ybpxrq
+      vasb.Rkgraqrq = rkgraqrq
+      vafgnapr[guvfGbba][qvss] = vasb
+    raq
+  raq
 
-  local weeklyreset = addon:GetNextWeeklyResetTime()
-  for id,_ in pairs(addon.LFRInstances) do
-    local numEncounters, numCompleted = GetLFGDungeonNumEncounters(id);
-    if ( numCompleted and numCompleted > 0 and weeklyreset ) then
-      local truename, instance = addon:LookupInstance(id, nil, true)
-      instance[thisToon] = instance[thisToon] or temp[truename] or { }
-      local info = instance[thisToon][2] or {}
-      instance[thisToon][2] = info
-      if not (info.Expires and info.Expires < (time() + 300)) then -- ticket 109: don't refresh expiration close to reset
-        wipe(info)
-        info.Expires = weeklyreset
-      end
-      info.ID = -1*numEncounters
-      for i=1, numEncounters do
-        local bossName, texture, isKilled = GetLFGDungeonEncounterInfo(id, i);
-        info[i] = isKilled
-      end
-    end
-  end
+  ybpny jrrxylerfrg = nqqba:TrgArkgJrrxylErfrgGvzr()
+  sbe vq,_ va cnvef(nqqba.YSEVafgnaprf) qb
+    ybpny ahzRapbhagref, ahzPbzcyrgrq = TrgYSTQhatrbaAhzRapbhagref(vq);
+    vs ( ahzPbzcyrgrq naq ahzPbzcyrgrq > 0 naq jrrxylerfrg ) gura
+      ybpny gehranzr, vafgnapr = nqqba:YbbxhcVafgnapr(vq, avy, gehr)
+      vafgnapr[guvfGbba] = vafgnapr[guvfGbba] be grzc[gehranzr] be { }
+      ybpny vasb = vafgnapr[guvfGbba][2] be {}
+      vafgnapr[guvfGbba][2] = vasb
+      vs abg (vasb.Rkcverf naq vasb.Rkcverf < (gvzr() + 300)) gura -- gvpxrg 109: qba'g erserfu rkcvengvba pybfr gb erfrg
+        jvcr(vasb)
+        vasb.Rkcverf = jrrxylerfrg
+      raq
+      vasb.VQ = -1*ahzRapbhagref
+      sbe v=1, ahzRapbhagref qb
+        ybpny obffAnzr, grkgher, vfXvyyrq = TrgYSTQhatrbaRapbhagreVasb(vq, v);
+        vasb[v] = vfXvyyrq
+      raq
+    raq
+  raq
 
-  local questcomplete = GetQuestsCompleted(localarr("QuestCompleteTemp"))
-  local wbsave = localarr("wbsave")
-  if GetNumSavedWorldBosses and GetSavedWorldBossInfo then -- 5.4
-    for i=1,GetNumSavedWorldBosses() do
-      local name, id, reset = GetSavedWorldBossInfo(i)
-      wbsave[name] = true
-  end
-  end
-  for _,einfo in pairs(addon.WorldBosses) do
-    if weeklyreset and (
-      (einfo.quest and IsQuestFlaggedCompleted(einfo.quest)) or
-      (questcomplete and einfo.quest and questcomplete[einfo.quest]) or
-      wbsave[einfo.savename or einfo.name]
-      ) then
-      local truename = einfo.name
-      local instance = vars.db.Instances[truename]
-      instance[thisToon] = instance[thisToon] or temp[truename] or { }
-      local info = instance[thisToon][2] or {}
-      wipe(info)
-      instance[thisToon][2] = info
-      info.Expires = weeklyreset
-      info.ID = -1
-      info[1] = true
-    end
-  end
+  ybpny dhrfgpbzcyrgr = TrgDhrfgfPbzcyrgrq(ybpnynee("DhrfgPbzcyrgrGrzc"))
+  ybpny jofnir = ybpnynee("jofnir")
+  vs TrgAhzFnirqJbeyqObffrf naq TrgFnirqJbeyqObffVasb gura -- 5.4
+    sbe v=1,TrgAhzFnirqJbeyqObffrf() qb
+      ybpny anzr, vq, erfrg = TrgFnirqJbeyqObffVasb(v)
+      jofnir[anzr] = gehr
+  raq
+  raq
+  sbe _,rvasb va cnvef(nqqba.JbeyqObffrf) qb
+    vs jrrxylerfrg naq (
+      (rvasb.dhrfg naq VfDhrfgSynttrqPbzcyrgrq(rvasb.dhrfg)) be
+      (dhrfgpbzcyrgr naq rvasb.dhrfg naq dhrfgpbzcyrgr[rvasb.dhrfg]) be
+      jofnir[rvasb.fniranzr be rvasb.anzr]
+      ) gura
+      ybpny gehranzr = rvasb.anzr
+      ybpny vafgnapr = inef.qo.Vafgnaprf[gehranzr]
+      vafgnapr[guvfGbba] = vafgnapr[guvfGbba] be grzc[gehranzr] be { }
+      ybpny vasb = vafgnapr[guvfGbba][2] be {}
+      jvcr(vasb)
+      vafgnapr[guvfGbba][2] = vasb
+      vasb.Rkcverf = jrrxylerfrg
+      vasb.VQ = -1
+      vasb[1] = gehr
+    raq
+  raq
 
-  core:QuestRefresh(recoverdaily, questcomplete, nextreset, weeklyreset)
+  pber:DhrfgErserfu(erpbireqnvyl, dhrfgpbzcyrgr, arkgerfrg, jrrxylerfrg)
 
-  local icnt, dcnt = 0,0
-  for name, _ in pairs(temp) do
-    if vars.db.Instances[name][thisToon] then
-      for diff,info in pairs(vars.db.Instances[name][thisToon]) do
-        if not info.ID then
-          vars.db.Instances[name][thisToon][diff] = nil
-          dcnt = dcnt + 1
-        end
-      end
-    else
-      icnt = icnt + 1
-    end
-  end
-  --debug("Refresh temp reaped "..icnt.." instances and "..dcnt.." diffs")
-  wipe(temp)
-  addon:UpdateToonData()
-end
+  ybpny vpag, qpag = 0,0
+  sbe anzr, _ va cnvef(grzc) qb
+    vs inef.qo.Vafgnaprf[anzr][guvfGbba] gura
+      sbe qvss,vasb va cnvef(inef.qo.Vafgnaprf[anzr][guvfGbba]) qb
+        vs abg vasb.VQ gura
+          inef.qo.Vafgnaprf[anzr][guvfGbba][qvss] = avy
+          qpag = qpag + 1
+        raq
+      raq
+    ryfr
+      vpag = vpag + 1
+    raq
+  raq
+  --qroht("Erserfu grzc erncrq "..vpag.." vafgnaprf naq "..qpag.." qvssf")
+  jvcr(grzc)
+  nqqba:HcqngrGbbaQngn()
+raq
 
-local function UpdateTooltip(self,elap)
-  if not tooltip or not tooltip:IsShown() then return end
-  if addon.firstupdate then
-    -- ticket 155: fix QTip backdrop which somehow gets corrupted sometimes, no idea why
-    tooltip:SetBackdrop(GameTooltip:GetBackdrop())
-    tooltip:SetBackdropColor(GameTooltip:GetBackdropColor());
-    tooltip:SetBackdropBorderColor(GameTooltip:GetBackdropBorderColor())
-    addon:SkinFrame(tooltip, "SavedInstancesTooltip")
-    addon.firstupdate = false
-  end
-  addon.updatetooltip_throttle = (addon.updatetooltip_throttle or 10) + elap
-  if addon.updatetooltip_throttle < 0.5 then return end
-  addon.updatetooltip_throttle = 0
-  if tooltip.anchorframe then
-    core:ShowTooltip(tooltip.anchorframe)
-  end
-end
+ybpny shapgvba HcqngrGbbygvc(frys,rync)
+  vs abg gbbygvc be abg gbbygvc:VfFubja() gura erghea raq
+  vs nqqba.svefghcqngr gura
+    -- gvpxrg 155: svk DGvc onpxqebc juvpu fbzrubj trgf pbeehcgrq fbzrgvzrf, ab vqrn jul
+    gbbygvc:FrgOnpxqebc(TnzrGbbygvc:TrgOnpxqebc())
+    gbbygvc:FrgOnpxqebcPbybe(TnzrGbbygvc:TrgOnpxqebcPbybe());
+    gbbygvc:FrgOnpxqebcObeqrePbybe(TnzrGbbygvc:TrgOnpxqebcObeqrePbybe())
+    nqqba:FxvaSenzr(gbbygvc, "FnirqVafgnaprfGbbygvc")
+    nqqba.svefghcqngr = snyfr
+  raq
+  nqqba.hcqngrgbbygvc_guebggyr = (nqqba.hcqngrgbbygvc_guebggyr be 10) + rync
+  vs nqqba.hcqngrgbbygvc_guebggyr < 0.5 gura erghea raq
+  nqqba.hcqngrgbbygvc_guebggyr = 0
+  vs gbbygvc.napubesenzr gura
+    pber:FubjGbbygvc(gbbygvc.napubesenzr)
+  raq
+raq
 
--- sorted traversal function for character table
-local cpairs
-do
-  local cnext_list = {}
-  local cnext_pos
-  local cnext_ekey
-  local function cnext(t,i)
-    local e = cnext_list[cnext_pos]
-    if not e then
-      return nil
-    else
-      cnext_pos = cnext_pos + 1
-      local n = e[cnext_ekey]
-      return n, t[n]
-    end
-  end
+-- fbegrq genirefny shapgvba sbe punenpgre gnoyr
+ybpny pcnvef
+qb
+  ybpny parkg_yvfg = {}
+  ybpny parkg_cbf
+  ybpny parkg_rxrl
+  ybpny shapgvba parkg(g,v)
+    ybpny r = parkg_yvfg[parkg_cbf]
+    vs abg r gura
+      erghea avy
+    ryfr
+      parkg_cbf = parkg_cbf + 1
+      ybpny a = r[parkg_rxrl]
+      erghea a, g[a]
+    raq
+  raq
 
-  local function cpairs_sort(a,b)
-    -- generic multi-key sort
-    for k,av in ipairs(a) do
-      local bv = b[k]
-      if av ~= bv then
-        return av < bv
-      end
-    end
-    return false -- required for sort stability when a==a
-  end
+  ybpny shapgvba pcnvef_fbeg(n,o)
+    -- trarevp zhygv-xrl fbeg
+    sbe x,ni va vcnvef(n) qb
+      ybpny oi = o[x]
+      vs ni ~= oi gura
+        erghea ni < oi
+      raq
+    raq
+    erghea snyfr -- erdhverq sbe fbeg fgnovyvgl jura n==n
+  raq
 
-  cpairs = function(t, usecache)
-    local settings = db.Tooltip
-    local realmgroup_key
-    local realmgroup_min
-    if not usecache then
-      local thisrealm = GetRealmName()
-      if settings.ConnectedRealms ~= "ignore" then
-        local group = core:getRealmGroup(thisrealm)
-        thisrealm = group or thisrealm
-      end
-      wipe(cnext_list)
-      cnext_pos = 1
-      for n,_ in pairs(t) do
-        local t = vars.db.Toons[n]
-        local tn, tr = n:match('^(.*) [-] (.*)$')
-        if t and
-          (t.Show ~= "never" or (n == thisToon and settings.SelfAlways))  and
-          (not settings.ServerOnly
-          or thisrealm == tr
-          or thisrealm == core:getRealmGroup(tr))
-        then
-          local e = {}
-          cnext_ekey = 1
+  pcnvef = shapgvba(g, hfrpnpur)
+    ybpny frggvatf = qo.Gbbygvc
+    ybpny ernyztebhc_xrl
+    ybpny ernyztebhc_zva
+    vs abg hfrpnpur gura
+      ybpny guvfernyz = TrgErnyzAnzr()
+      vs frggvatf.PbaarpgrqErnyzf ~= "vtaber" gura
+        ybpny tebhc = pber:trgErnyzTebhc(guvfernyz)
+        guvfernyz = tebhc be guvfernyz
+      raq
+      jvcr(parkg_yvfg)
+      parkg_cbf = 1
+      sbe a,_ va cnvef(g) qb
+        ybpny g = inef.qo.Gbbaf[a]
+        ybpny ga, ge = a:zngpu('^(.*) [-] (.*)$')
+        vs g naq
+          (g.Fubj ~= "arire" be (a == guvfGbba naq frggvatf.FrysNyjnlf))  naq
+          (abg frggvatf.FreireBayl
+          be guvfernyz == ge
+          be guvfernyz == pber:trgErnyzTebhc(ge))
+        gura
+          ybpny r = {}
+          parkg_rxrl = 1
 
-          if settings.SelfFirst then
-            if n == thisToon then
-              e[cnext_ekey] = 1
-            else
-              e[cnext_ekey] = 2
-            end
-            cnext_ekey = cnext_ekey + 1
-          end
+          vs frggvatf.FrysSvefg gura
+            vs a == guvfGbba gura
+              r[parkg_rxrl] = 1
+            ryfr
+              r[parkg_rxrl] = 2
+            raq
+            parkg_rxrl = parkg_rxrl + 1
+          raq
 
-          if settings.ServerSort then
-            if settings.ConnectedRealms == "ignore" then
-              e[cnext_ekey] = tr
-              cnext_ekey = cnext_ekey + 1
-            else
-              local rgroup = core:getRealmGroup(tr)
-              if rgroup then -- connected realm
-                realmgroup_min = realmgroup_min or {}
-                if not realmgroup_min[rgroup] or tr < realmgroup_min[rgroup] then
-                  realmgroup_min[rgroup] = tr -- lowest active realm in group
-                end
-              else
-                rgroup = tr
-              end
-              realmgroup_key = cnext_ekey
-              e[cnext_ekey] = rgroup
-              cnext_ekey = cnext_ekey + 1
+          vs frggvatf.FreireFbeg gura
+            vs frggvatf.PbaarpgrqErnyzf == "vtaber" gura
+              r[parkg_rxrl] = ge
+              parkg_rxrl = parkg_rxrl + 1
+            ryfr
+              ybpny etebhc = pber:trgErnyzTebhc(ge)
+              vs etebhc gura -- pbaarpgrq ernyz
+                ernyztebhc_zva = ernyztebhc_zva be {}
+                vs abg ernyztebhc_zva[etebhc] be ge < ernyztebhc_zva[etebhc] gura
+                  ernyztebhc_zva[etebhc] = ge -- ybjrfg npgvir ernyz va tebhc
+                raq
+              ryfr
+                etebhc = ge
+              raq
+              ernyztebhc_xrl = parkg_rxrl
+              r[parkg_rxrl] = etebhc
+              parkg_rxrl = parkg_rxrl + 1
 
-              if settings.ConnectedRealms == "group" then
-                e[cnext_ekey] = tr
-                cnext_ekey = cnext_ekey + 1
-              end
-            end
-          end
+              vs frggvatf.PbaarpgrqErnyzf == "tebhc" gura
+                r[parkg_rxrl] = ge
+                parkg_rxrl = parkg_rxrl + 1
+              raq
+            raq
+          raq
 
-          e[cnext_ekey] = t.Order
-          cnext_ekey = cnext_ekey + 1
+          r[parkg_rxrl] = g.Beqre
+          parkg_rxrl = parkg_rxrl + 1
 
-          e[cnext_ekey] = n
-          cnext_list[cnext_pos] = e
-          cnext_pos = cnext_pos + 1
-        end
-      end
-      if realmgroup_key then -- second pass, convert group id to min name
-        for _,e in ipairs(cnext_list) do
-          local id = e[realmgroup_key]
-          if type(id) == "number" then
-            e[realmgroup_key] = realmgroup_min[id]
-          end
-      end
-      end
-      table.sort(cnext_list, cpairs_sort)
-      --debug(cnext_list)
-    end
-    cnext_pos = 1
-    return cnext, t, nil
-  end
-end
+          r[parkg_rxrl] = a
+          parkg_yvfg[parkg_cbf] = r
+          parkg_cbf = parkg_cbf + 1
+        raq
+      raq
+      vs ernyztebhc_xrl gura -- frpbaq cnff, pbaireg tebhc vq gb zva anzr
+        sbe _,r va vcnvef(parkg_yvfg) qb
+          ybpny vq = r[ernyztebhc_xrl]
+          vs glcr(vq) == "ahzore" gura
+            r[ernyztebhc_xrl] = ernyztebhc_zva[vq]
+          raq
+      raq
+      raq
+      gnoyr.fbeg(parkg_yvfg, pcnvef_fbeg)
+      --qroht(parkg_yvfg)
+    raq
+    parkg_cbf = 1
+    erghea parkg, g, avy
+  raq
+raq
 
-function addon:IsDetached()
-  return addon.detachframe and addon.detachframe:IsShown()
-end
-function addon:HideDetached()
-  addon.detachframe:Hide()
-end
-function addon:ToggleDetached()
-  if addon:IsDetached() then
-    addon:HideDetached()
-  else
-    addon:ShowDetached()
-  end
-end
+shapgvba nqqba:VfQrgnpurq()
+  erghea nqqba.qrgnpusenzr naq nqqba.qrgnpusenzr:VfFubja()
+raq
+shapgvba nqqba:UvqrQrgnpurq()
+  nqqba.qrgnpusenzr:Uvqr()
+raq
+shapgvba nqqba:GbttyrQrgnpurq()
+  vs nqqba:VfQrgnpurq() gura
+    nqqba:UvqrQrgnpurq()
+  ryfr
+    nqqba:FubjQrgnpurq()
+  raq
+raq
 
-function addon:ShowDetached()
-  if not addon.detachframe then
-    local f = CreateFrame("Frame","SavedInstancesDetachHeader",UIParent,"BasicFrameTemplate")
-    f:SetMovable(true)
-    f:SetFrameStrata("TOOLTIP")
-    f:SetFrameLevel(100) -- prevent weird interlacings with other tooltips
-    f:SetClampedToScreen(true)
-    f:EnableMouse(true)
-    f:SetUserPlaced(true)
-    f:SetAlpha(0.5)
-    if vars.db.Tooltip.posx and vars.db.Tooltip.posy then
-      f:SetPoint("TOPLEFT",vars.db.Tooltip.posx,-vars.db.Tooltip.posy)
-    else
-      f:SetPoint("CENTER")
-    end
-    f:SetScript("OnMouseDown", function() f:StartMoving() end)
-    f:SetScript("OnMouseUp", function() f:StopMovingOrSizing()
-      vars.db.Tooltip.posx = f:GetLeft()
-      vars.db.Tooltip.posy = UIParent:GetTop() - (f:GetTop()*f:GetScale())
-    end)
-    f:SetScript("OnHide", function() if tooltip then QTip:Release(tooltip); tooltip = nil end  end )
-    f:SetScript("OnUpdate", function(self)
-      if not tooltip then f:Hide(); return end
-      local w,h = tooltip:GetSize()
-      self:SetSize(w*tooltip:GetScale(),(h+20)*tooltip:GetScale())
-    end)
-    f:SetScript("OnKeyDown", function(self,key)
-      if key == "ESCAPE" then
-        f:SetPropagateKeyboardInput(false)
-        f:Hide();
-      end
-    end)
-    f:EnableKeyboard(true)
-    addon.detachframe = f
-  end
-  local f = addon.detachframe
-  f:Show()
-  addon:SkinFrame(f,f:GetName())
-  f:SetPropagateKeyboardInput(true)
-  if tooltip then tooltip:Hide() end
-  core:ShowTooltip(f)
-end
-
------------------------------------------------------------------------------------------------
--- tooltip event handlers
-
-local function OpenLFD(self, instanceid, button)
-  if LFDParentFrame and LFDParentFrame:IsVisible() and LFDQueueFrame.type ~= instanceid then
-  -- changing entries
-  else
-    ToggleLFDParentFrame()
-  end
-  if LFDParentFrame and LFDParentFrame:IsVisible() and LFDQueueFrame_SetType then
-    LFDQueueFrame_SetType(instanceid)
-  end
-end
-
-local function OpenLFR(self, instanceid, button)
-  if RaidFinderFrame and RaidFinderFrame:IsVisible() and RaidFinderQueueFrame.raid ~= instanceid then
-  -- changing entries
-  else
-    PVEFrame_ToggleFrame("GroupFinderFrame", RaidFinderFrame)
-  end
-  if RaidFinderFrame and RaidFinderFrame:IsVisible() and RaidFinderQueueFrame_SetRaid then
-    RaidFinderQueueFrame_SetRaid(instanceid)
-  end
-end
-
-local function OpenLFS(self, instanceid, button)
-  if ScenarioFinderFrame and ScenarioFinderFrame:IsVisible() and ScenarioQueueFrame.type ~= instanceid then
-  -- changing entries
-  else
-    PVEFrame_ToggleFrame("GroupFinderFrame", ScenarioFinderFrame)
-  end
-  if ScenarioFinderFrame and ScenarioFinderFrame:IsVisible() and ScenarioQueueFrame_SetType then
-    ScenarioQueueFrame_SetType(instanceid)
-  end
-end
-
-local function OpenCurrency(self, _, button)
-  ToggleCharacter("TokenFrame")
-end
-
-local function ChatLink(self, link, button)
-  if not link then return end
-  if ChatEdit_GetActiveWindow() then
-    ChatEdit_InsertLink(link)
-  else
-    ChatFrame_OpenChat(link, DEFAULT_CHAT_FRAME)
-  end
-end
-
-local function CloseTooltips()
-  GameTooltip:Hide()
-  if indicatortip then
-    indicatortip:Hide()
-  end
-end
-
-local function DoNothing() end
+shapgvba nqqba:FubjQrgnpurq()
+  vs abg nqqba.qrgnpusenzr gura
+    ybpny s = PerngrSenzr("Senzr","FnirqVafgnaprfQrgnpuUrnqre",HVCnerag,"OnfvpSenzrGrzcyngr")
+    s:FrgZbinoyr(gehr)
+    s:FrgSenzrFgengn("GBBYGVC")
+    s:FrgSenzrYriry(100) -- cerirag jrveq vagreynpvatf jvgu bgure gbbygvcf
+    s:FrgPynzcrqGbFperra(gehr)
+    s:RanoyrZbhfr(gehr)
+    s:FrgHfreCynprq(gehr)
+    s:FrgNycun(0.5)
+    vs inef.qo.Gbbygvc.cbfk naq inef.qo.Gbbygvc.cbfl gura
+      s:FrgCbvag("GBCYRSG",inef.qo.Gbbygvc.cbfk,-inef.qo.Gbbygvc.cbfl)
+    ryfr
+      s:FrgCbvag("PRAGRE")
+    raq
+    s:FrgFpevcg("BaZbhfrQbja", shapgvba() s:FgnegZbivat() raq)
+    s:FrgFpevcg("BaZbhfrHc", shapgvba() s:FgbcZbivatBeFvmvat()
+      inef.qo.Gbbygvc.cbfk = s:TrgYrsg()
+      inef.qo.Gbbygvc.cbfl = HVCnerag:TrgGbc() - (s:TrgGbc()*s:TrgFpnyr())
+    raq)
+    s:FrgFpevcg("BaUvqr", shapgvba() vs gbbygvc gura DGvc:Eryrnfr(gbbygvc); gbbygvc = avy raq  raq )
+    s:FrgFpevcg("BaHcqngr", shapgvba(frys)
+      vs abg gbbygvc gura s:Uvqr(); erghea raq
+      ybpny j,u = gbbygvc:TrgFvmr()
+      frys:FrgFvmr(j*gbbygvc:TrgFpnyr(),(u+20)*gbbygvc:TrgFpnyr())
+    raq)
+    s:FrgFpevcg("BaXrlQbja", shapgvba(frys,xrl)
+      vs xrl == "RFPNCR" gura
+        s:FrgCebcntngrXrlobneqVachg(snyfr)
+        s:Uvqr();
+      raq
+    raq)
+    s:RanoyrXrlobneq(gehr)
+    nqqba.qrgnpusenzr = s
+  raq
+  ybpny s = nqqba.qrgnpusenzr
+  s:Fubj()
+  nqqba:FxvaSenzr(s,s:TrgAnzr())
+  s:FrgCebcntngrXrlobneqVachg(gehr)
+  vs gbbygvc gura gbbygvc:Uvqr() raq
+  pber:FubjGbbygvc(s)
+raq
 
 -----------------------------------------------------------------------------------------------
+-- gbbygvc rirag unaqyref
 
-local function ShowAll()
-  return (IsAltKeyDown() and true) or false
-end
+ybpny shapgvba BcraYSQ(frys, vafgnaprvq, ohggba)
+  vs YSQCneragSenzr naq YSQCneragSenzr:VfIvfvoyr() naq YSQDhrhrSenzr.glcr ~= vafgnaprvq gura
+  -- punatvat ragevrf
+  ryfr
+    GbttyrYSQCneragSenzr()
+  raq
+  vs YSQCneragSenzr naq YSQCneragSenzr:VfIvfvoyr() naq YSQDhrhrSenzr_FrgGlcr gura
+    YSQDhrhrSenzr_FrgGlcr(vafgnaprvq)
+  raq
+raq
 
-local columnCache = { [true] = {}, [false] = {} }
-local function addColumns(columns, toon, tooltip)
-  for c = 1, maxcol do
-    columns[toon..c] = columns[toon..c] or tooltip:AddColumn("CENTER")
-  end
-  columnCache[ShowAll()][toon] = true
-end
-addon.scaleCache = {}
+ybpny shapgvba BcraYSE(frys, vafgnaprvq, ohggba)
+  vs EnvqSvaqreSenzr naq EnvqSvaqreSenzr:VfIvfvoyr() naq EnvqSvaqreDhrhrSenzr.envq ~= vafgnaprvq gura
+  -- punatvat ragevrf
+  ryfr
+    CIRSenzr_GbttyrSenzr("TebhcSvaqreSenzr", EnvqSvaqreSenzr)
+  raq
+  vs EnvqSvaqreSenzr naq EnvqSvaqreSenzr:VfIvfvoyr() naq EnvqSvaqreDhrhrSenzr_FrgEnvq gura
+    EnvqSvaqreDhrhrSenzr_FrgEnvq(vafgnaprvq)
+  raq
+raq
 
-function core:HeaderFont()
-  if not addon.headerfont then
-    local temp = QTip:Acquire("SavedInstancesHeaderTooltip", 1, "LEFT")
-    addon.headerfont = CreateFont("SavedInstancedTooltipHeaderFont")
-    local hFont = temp:GetHeaderFont()
-    local hFontPath, hFontSize,_ hFontPath, hFontSize, _ = hFont:GetFont()
-    addon.headerfont:SetFont(hFontPath, hFontSize, "OUTLINE")
-    QTip:Release(temp)
-  end
-  return addon.headerfont
-end
+ybpny shapgvba BcraYSF(frys, vafgnaprvq, ohggba)
+  vs FpranevbSvaqreSenzr naq FpranevbSvaqreSenzr:VfIvfvoyr() naq FpranevbDhrhrSenzr.glcr ~= vafgnaprvq gura
+  -- punatvat ragevrf
+  ryfr
+    CIRSenzr_GbttyrSenzr("TebhcSvaqreSenzr", FpranevbSvaqreSenzr)
+  raq
+  vs FpranevbSvaqreSenzr naq FpranevbSvaqreSenzr:VfIvfvoyr() naq FpranevbDhrhrSenzr_FrgGlcr gura
+    FpranevbDhrhrSenzr_FrgGlcr(vafgnaprvq)
+  raq
+raq
 
-function core:ShowTooltip(anchorframe)
-  local showall = ShowAll()
-  if tooltip and tooltip:IsShown() and
-    core.showall == showall and
-    core.scale == (addon.scaleCache[showall] or vars.db.Tooltip.Scale)
-  then
-    return -- skip update
-  end
-  local starttime = debugprofilestop()
-  core.showall = showall
-  local showexpired = showall or vars.db.Tooltip.ShowExpired
-  if tooltip then QTip:Release(tooltip) end
-  tooltip = QTip:Acquire("SavedInstancesTooltip", 1, "LEFT")
-  tooltip:SetCellMarginH(0)
-  tooltip.anchorframe = anchorframe
-  tooltip:SetScript("OnUpdate", UpdateTooltip)
-  addon.firstupdate = true
-  tooltip:Clear()
-  core.scale = addon.scaleCache[showall] or vars.db.Tooltip.Scale
-  tooltip:SetScale(core.scale)
-  tooltip:SetHeaderFont(core:HeaderFont())
-  addon:HistoryUpdate()
-  local headText
-  if addon.histLiveCount and addon.histLiveCount > 0 then
-    headText = string.format("%s%s (%d/%s)%s",GOLDFONT,addonName,addon.histLiveCount,(addon.histOldest or "?"),FONTEND)
-  else
-    headText = string.format("%s%s%s",GOLDFONT,addonName,FONTEND)
-  end
-  local headLine = tooltip:AddHeader(headText)
-  tooltip:SetCellScript(headLine, 1, "OnEnter", ShowAccountSummary )
-  tooltip:SetCellScript(headLine, 1, "OnLeave", CloseTooltips)
-  addon:UpdateToonData()
-  local columns = localarr("columns")
-  for toon,_ in cpairs(columnCache[showall]) do
-    addColumns(columns, toon, tooltip)
-    columnCache[showall][toon] = false
-  end
-  -- allocating columns for characters
-  for toon, t in cpairs(vars.db.Toons) do
-    if vars.db.Toons[toon].Show == "always" or
-      (toon == thisToon and vars.db.Tooltip.SelfAlways) then
-      addColumns(columns, toon, tooltip)
-    end
-  end
-  -- determining how many instances will be displayed per category
-  local categoryshown = localarr("categoryshown") -- remember if each category will be shown
-  local instancesaved = localarr("instancesaved") -- remember if each instance has been saved or not (boolean)
-  local wbcons = vars.db.Tooltip.CombineWorldBosses
-  local worldbosses = wbcons and localarr("worldbosses")
-  local wbalways = false
-  local lfrcons = vars.db.Tooltip.CombineLFR
-  local lfrbox = lfrcons and localarr("lfrbox")
-  local lfrmap = lfrcons and localarr("lfrmap")
-  for _, category in ipairs(addon:OrderedCategories()) do
-    for _, instance in ipairs(addon:OrderedInstances(category)) do
-      local inst = vars.db.Instances[instance]
-      if inst.Show == "always" then
-        categoryshown[category] = true
-      end
-      if inst.Show ~= "never" then
-        if wbcons and inst.WorldBoss and inst.Expansion <= GetExpansionLevel() then
-          if vars.db.Tooltip.ReverseInstances then
-            table.insert(worldbosses, instance)
-          else
-            table.insert(worldbosses, 1, instance)
-          end
-          wbalways = wbalways or (inst.Show == "always")
-        end
-        local lfrinfo = lfrcons and inst.LFDID and addon.LFRInstances[inst.LFDID]
-        local lfrboxid
-        if lfrinfo then
-          lfrboxid = lfrinfo.parent
-          lfrmap[inst.LFDID] = instance
-          if inst.Show == "always" then
-            lfrbox[lfrboxid] = true
-          end
-        end
-        for toon, t in cpairs(vars.db.Toons, true) do
-          for diff = 1, maxdiff do
-            if inst[toon] and inst[toon][diff] then
-              if (inst[toon][diff].Expires > 0) then
-                if lfrinfo then
-                  lfrbox[lfrboxid] = true
-                  instancesaved[lfrboxid] = true
-                elseif wbcons and inst.WorldBoss then
-                  instancesaved[L["World Bosses"]] = true
-                else
-                  instancesaved[instance] = true
-                end
-                categoryshown[category] = true
-              elseif showall then
-                categoryshown[category] = true
-              end
-            end
-          end
-        end
-      end
-    end
-  end
-  local categories = 0
-  -- determining how many categories have instances that will be shown
-  if vars.db.Tooltip.ShowCategories then
-    for category, _ in pairs(categoryshown) do
-      categories = categories + 1
-    end
-  end
-  -- allocating tooltip space for instances, categories, and space between categories
-  local categoryrow = localarr("categoryrow") -- remember where each category heading goes
-  local instancerow = localarr("instancerow") -- remember where each instance goes
-  local blankrow = localarr("blankrow") -- track blank lines
-  local firstcategory = true -- use this to skip spacing before the first category
-  local function addsep()
-    local line = tooltip:AddSeparator(6,0,0,0,0)
-    blankrow[line] = true
-    return line
-  end
-  for _, category in ipairs(addon:OrderedCategories()) do
-    if categoryshown[category] then
-      if not firstcategory and vars.db.Tooltip.CategorySpaces then
-        addsep()
-      end
-      if (categories > 1 or vars.db.Tooltip.ShowSoloCategory) and categoryshown[category] then
-        local line = tooltip:AddLine()
-        categoryrow[category] = line
-        blankrow[line] = true
-      end
-      for _, instance in ipairs(addon:OrderedInstances(category)) do
-        local inst = vars.db.Instances[instance]
-        if not (wbcons and inst.WorldBoss) and
-          not (lfrcons and addon.LFRInstances[inst.LFDID]) then
-          if inst.Show == "always" then
-            instancerow[instance] = instancerow[instance] or tooltip:AddLine()
-          end
-          if inst.Show ~= "never" then
-            for toon, t in cpairs(vars.db.Toons, true) do
-              for diff = 1, maxdiff do
-                if inst[toon] and inst[toon][diff] and (inst[toon][diff].Expires > 0 or showexpired) then
-                  instancerow[instance] = instancerow[instance] or tooltip:AddLine()
-                  addColumns(columns, toon, tooltip)
-                end
-              end
-            end
-          end
-        end
-        if lfrcons and inst.LFDID then
-          -- check if this parent instance has corresponding lfrboxes, and create them
-          if lfrbox[inst.LFDID] then
-            lfrbox[L["LFR"]..": "..instance] = tooltip:AddLine()
-          end
-          lfrbox[inst.LFDID] = nil
-        end
-      end
-      firstcategory = false
-    end
-  end
-  -- now printing instance data
-  for instance, row in pairs(instancerow) do
-    local inst = vars.db.Instances[instance]
-    tooltip:SetCell(row, 1, (instancesaved[instance] and GOLDFONT or GRAYFONT) .. instance .. FONTEND)
-    if addon.LFRInstances[inst.LFDID] then
-      tooltip:SetLineScript(row, "OnMouseDown", OpenLFR, inst.LFDID)
-    end
-    for toon, t in cpairs(vars.db.Toons, true) do
-      if inst[toon] then
-        local showcol = localarr("showcol")
-        local showcnt = 0
-        for diff = 1, maxdiff do
-          if inst[toon][diff] and (inst[toon][diff].Expires > 0 or showexpired) then
-            showcnt = showcnt + 1
-            showcol[diff] = true
-          end
-        end
-        local base = 1
-        local span = maxcol
-        if showcnt > 1 then
-          span = 1
-        end
-        if showcnt > maxcol then
-          bugReport("Column overflow! showcnt="..showcnt)
-        end
-        for diff = 1, maxdiff do
-          if showcol[diff] then
-            local col = columns[toon..base]
-            tooltip:SetCell(row, col,
-              DifficultyString(instance, diff, toon, inst[toon][diff].Expires == 0), span)
-            tooltip:SetCellScript(row, col, "OnEnter", ShowIndicatorTooltip, {instance, toon, diff})
-            tooltip:SetCellScript(row, col, "OnLeave", CloseTooltips)
-            if addon.LFRInstances[inst.LFDID] then
-              tooltip:SetCellScript(row, col, "OnMouseDown", OpenLFR, inst.LFDID)
-            else
-              local link = inst[toon][diff].Link
-              if link then
-                tooltip:SetCellScript(row, col, "OnMouseDown", ChatLink, link)
-              end
-            end
-            base = base + 1
-          elseif columns[toon..diff] and showcnt > 1 then
-            tooltip:SetCell(row, columns[toon..diff], "")
-          end
-        end
-      end
-    end
-  end
+ybpny shapgvba BcraPheerapl(frys, _, ohggba)
+  GbttyrPunenpgre("GbxraSenzr")
+raq
 
-  -- combined LFRs
-  if lfrcons then
-    for boxname, line in pairs(lfrbox) do
-      if type(boxname) == "number" then
-        bugReport("Unrecognized LFR instance parent id= "..boxname)
-        lfrbox[boxname] = nil
-      end
-    end
-    for boxname, line in pairs(lfrbox) do
-      local boxtype, pinstance = boxname:match("^([^:]+): (.+)$")
-      local pinst = vars.db.Instances[pinstance]
-      local boxid = pinst.LFDID
-      local firstid
-      local total = 0
-      for lfdid, lfrinfo in pairs(addon.LFRInstances) do
-        if lfrinfo.parent == pinst.LFDID and lfrmap[lfdid] then
-          firstid = math.min(lfdid, firstid or lfdid)
-          total = total + lfrinfo.total
-          lfrmap[boxname..":"..lfrinfo.base] = lfrmap[lfdid]
-        end
-      end
-      tooltip:SetCell(line, 1, (instancesaved[boxid] and GOLDFONT or GRAYFONT) .. boxname .. FONTEND)
-      tooltip:SetLineScript(line, "OnMouseDown", OpenLFR, firstid)
-      for toon, t in cpairs(vars.db.Toons, true) do
-        local saved = 0
-        local diff = 2
-        for key, instance in pairs(lfrmap) do
-          if string.match(key,boxname..":%d+$") then
-            saved = saved + addon:instanceBosses(instance, toon, diff)
-          end
-        end
-        if saved > 0 then
-          addColumns(columns, toon, tooltip)
-          local col = columns[toon..1]
-          tooltip:SetCell(line, col, DifficultyString(pinstance, diff, toon, false, saved, total),4)
-          tooltip:SetCellScript(line, col, "OnEnter", ShowLFRTooltip, {boxname, toon, lfrmap})
-          tooltip:SetCellScript(line, col, "OnLeave", CloseTooltips)
-        end
-      end
-    end
-  end
+ybpny shapgvba PungYvax(frys, yvax, ohggba)
+  vs abg yvax gura erghea raq
+  vs PungRqvg_TrgNpgvirJvaqbj() gura
+    PungRqvg_VafregYvax(yvax)
+  ryfr
+    PungSenzr_BcraPung(yvax, QRSNHYG_PUNG_SENZR)
+  raq
+raq
 
-  -- combined world bosses
-  if wbcons and next(worldbosses) and (wbalways or instancesaved[L["World Bosses"]]) then
-    if not firstcategory and vars.db.Tooltip.CategorySpaces then
-      addsep()
-    end
-    local line = tooltip:AddLine((instancesaved[L["World Bosses"]] and YELLOWFONT or GRAYFONT) .. L["World Bosses"] .. FONTEND)
-    for toon, t in cpairs(vars.db.Toons, true) do
-      local saved = 0
-      local diff = 2
-      for _, instance in ipairs(worldbosses) do
-        local inst = vars.db.Instances[instance]
-        if inst[toon] and inst[toon][diff] and inst[toon][diff].Expires > 0 then
-          saved = saved + 1
-        end
-      end
-      if saved > 0 then
-        addColumns(columns, toon, tooltip)
-        local col = columns[toon..1]
-        tooltip:SetCell(line, col, DifficultyString(worldbosses[1], diff, toon, false, saved, #worldbosses),4)
-        tooltip:SetCellScript(line, col, "OnEnter", ShowWorldBossTooltip, {worldbosses, toon, saved})
-        tooltip:SetCellScript(line, col, "OnLeave", CloseTooltips)
-      end
-    end
-  end
+ybpny shapgvba PybfrGbbygvcf()
+  TnzrGbbygvc:Uvqr()
+  vs vaqvpngbegvc gura
+    vaqvpngbegvc:Uvqr()
+  raq
+raq
 
-  local holidayinst = localarr("holidayinst")
-  local firstlfd = true
-  for instance, info in pairs(vars.db.Instances) do
-    if showall or
-      (info.Holiday and vars.db.Tooltip.ShowHoliday) or
-      (info.Random and vars.db.Tooltip.ShowRandom) then
-      for toon, t in cpairs(vars.db.Toons, true) do
-        local d = info[toon] and info[toon][1]
-        if d then
-          addColumns(columns, toon, tooltip)
-          local row = holidayinst[instance]
-          if not row then
-            if not firstcategory and vars.db.Tooltip.CategorySpaces and firstlfd then
-              addsep()
-              firstlfd = false
-            end
-            row = tooltip:AddLine(YELLOWFONT .. abbreviate(instance) .. FONTEND)
-            holidayinst[instance] = row
-          end
-          local tstr = SecondsToTime(d.Expires - time(), false, false, 1)
-          tooltip:SetCell(row, columns[toon..1], ClassColorise(t.Class,tstr), "CENTER",maxcol)
-          if info.Scenario then
-            tooltip:SetLineScript(row, "OnMouseDown", OpenLFS, info.LFDID)
-          else
-            tooltip:SetLineScript(row, "OnMouseDown", OpenLFD, info.LFDID)
-          end
-        end
-      end
-    end
-  end
+ybpny shapgvba QbAbguvat() raq
 
-  -- random dungeon
-  if vars.db.Tooltip.TrackLFG or showall then
-    local cd1,cd2 = false,false
-    for toon, t in cpairs(vars.db.Toons, true) do
-      cd2 = cd2 or t.LFG2
-      cd1 = cd1 or (t.LFG1 and (not t.LFG2 or showall))
-      if t.LFG1 or t.LFG2 then
-        addColumns(columns, toon, tooltip)
-      end
-    end
-    local randomLine
-    if cd1 or cd2 then
-      if not firstcategory and vars.db.Tooltip.CategorySpaces and firstlfd then
-        addsep()
-        firstlfd = false
-      end
-      local cooldown = ITEM_COOLDOWN_TOTAL:gsub("%%s",""):gsub("%p","")
-      cd1 = cd1 and tooltip:AddLine(YELLOWFONT .. LFG_TYPE_RANDOM_DUNGEON..cooldown .. FONTEND)
-      cd2 = cd2 and tooltip:AddLine(YELLOWFONT .. GetSpellInfo(71041) .. FONTEND)
-    end
-    for toon, t in cpairs(vars.db.Toons, true) do
-      local d1 = (t.LFG1 and t.LFG1 - time()) or -1
-      local d2 = (t.LFG2 and t.LFG2 - time()) or -1
-      if d1 > 0 and (d2 < 0 or showall) then
-        local col = columns[toon..1]
-        local tstr = SecondsToTime(d1, false, false, 1)
-        tooltip:SetCell(cd1, col, ClassColorise(t.Class,tstr), "CENTER",maxcol)
-        tooltip:SetCellScript(cd1, col, "OnEnter", ShowSpellIDTooltip, {toon,-1,tstr})
-        tooltip:SetCellScript(cd1, col, "OnLeave", CloseTooltips)
-      end
-      if d2 > 0 then
-        local col = columns[toon..1]
-        local tstr = SecondsToTime(d2, false, false, 1)
-        tooltip:SetCell(cd2, col, ClassColorise(t.Class,tstr), "CENTER",maxcol)
-        tooltip:SetCellScript(cd2, col, "OnEnter", ShowSpellIDTooltip, {toon,71041,tstr})
-        tooltip:SetCellScript(cd2, col, "OnLeave", CloseTooltips)
-      end
-    end
-  end
-  if vars.db.Tooltip.TrackDeserter or showall then
-    local show = false
-    for toon, t in cpairs(vars.db.Toons, true) do
-      if t.pvpdesert then
-        show = true
-        addColumns(columns, toon, tooltip)
-      end
-    end
-    if show then
-      if not firstcategory and vars.db.Tooltip.CategorySpaces and firstlfd then
-        addsep()
-        firstlfd = false
-      end
-      show = tooltip:AddLine(YELLOWFONT .. DESERTER .. FONTEND)
-    end
-    for toon, t in cpairs(vars.db.Toons, true) do
-      if t.pvpdesert and time() < t.pvpdesert then
-        local col = columns[toon..1]
-        local tstr = SecondsToTime(t.pvpdesert - time(), false, false, 1)
-        tooltip:SetCell(show, col, ClassColorise(t.Class,tstr), "CENTER",maxcol)
-        tooltip:SetCellScript(show, col, "OnEnter", ShowSpellIDTooltip, {toon,26013,tstr})
-        tooltip:SetCellScript(show, col, "OnLeave", CloseTooltips)
-      end
-    end
-  end
+-----------------------------------------------------------------------------------------------
 
-  do
-    local showd, showw
-    for toon, t in cpairs(vars.db.Toons, true) do
-      local dc, wc = addon:QuestCount(toon)
-      if dc > 0 and (vars.db.Tooltip.TrackDailyQuests or showall) then
-        showd = true
-        addColumns(columns, toon, tooltip)
-      end
-      if wc > 0 and (vars.db.Tooltip.TrackWeeklyQuests or showall) then
-        showw = true
-        addColumns(columns, toon, tooltip)
-      end
-    end
-    local adc, awc = addon:QuestCount(nil)
-    if adc > 0 and (vars.db.Tooltip.TrackDailyQuests or showall) then showd = true end
-    if awc > 0 and (vars.db.Tooltip.TrackWeeklyQuests or showall) then showw = true end
-    if not firstcategory and vars.db.Tooltip.CategorySpaces and (showd or showw) then
-      addsep()
-    end
-    if showd then
-      showd = tooltip:AddLine(YELLOWFONT .. L["Daily Quests"] .. (adc > 0 and " ("..adc..")" or "") .. FONTEND)
-      if adc > 0 then
-        tooltip:SetCellScript(showd, 1, "OnEnter", ShowQuestTooltip, {nil,adc,true})
-        tooltip:SetCellScript(showd, 1, "OnLeave", CloseTooltips)
-      end
-    end
-    if showw then
-      showw = tooltip:AddLine(YELLOWFONT .. L["Weekly Quests"] .. (awc > 0 and " ("..awc..")" or "") .. FONTEND)
-      if awc > 0 then
-        tooltip:SetCellScript(showw, 1, "OnEnter", ShowQuestTooltip, {nil,awc,false})
-        tooltip:SetCellScript(showw, 1, "OnLeave", CloseTooltips)
-      end
-    end
-    for toon, t in cpairs(vars.db.Toons, true) do
-      local dc, wc = addon:QuestCount(toon)
-      local col = columns[toon..1]
-      if showd and col and dc > 0 then
-        tooltip:SetCell(showd, col, ClassColorise(t.Class,dc), "CENTER",maxcol)
-        tooltip:SetCellScript(showd, col, "OnEnter", ShowQuestTooltip, {toon,dc,true})
-        tooltip:SetCellScript(showd, col, "OnLeave", CloseTooltips)
-      end
-      if showw and col and wc > 0 then
-        tooltip:SetCell(showw, col, ClassColorise(t.Class,wc), "CENTER",maxcol)
-        tooltip:SetCellScript(showw, col, "OnEnter", ShowQuestTooltip, {toon,wc,false})
-        tooltip:SetCellScript(showw, col, "OnLeave", CloseTooltips)
-      end
-    end
-  end
+ybpny shapgvba FubjNyy()
+  erghea (VfNygXrlQbja() naq gehr) be snyfr
+raq
 
-  if vars.db.Tooltip.TrackSkills or showall then
-    local show = false
-    for toon, t in cpairs(vars.db.Toons, true) do
-      if t.Skills and next(t.Skills) then
-        show = true
-        addColumns(columns, toon, tooltip)
-      end
-    end
-    if show then
-      if not firstcategory and vars.db.Tooltip.CategorySpaces then
-        addsep()
-      end
-      show = tooltip:AddLine(YELLOWFONT .. L["Trade Skill Cooldowns"] .. FONTEND)
-    end
-    for toon, t in cpairs(vars.db.Toons, true) do
-      local cnt = 0
-      if t.Skills then
-        for _ in pairs(t.Skills) do cnt = cnt + 1 end
-      end
-      if cnt > 0 then
-        local col = columns[toon..1]
-        tooltip:SetCell(show, col, ClassColorise(t.Class,cnt), "CENTER",maxcol)
-        tooltip:SetCellScript(show, col, "OnEnter", ShowSkillTooltip, {toon, cnt})
-        tooltip:SetCellScript(show, col, "OnLeave", CloseTooltips)
-      end
-    end
-  end
+ybpny pbyhzaPnpur = { [gehr] = {}, [snyfr] = {} }
+ybpny shapgvba nqqPbyhzaf(pbyhzaf, gbba, gbbygvc)
+  sbe p = 1, znkpby qb
+    pbyhzaf[gbba..p] = pbyhzaf[gbba..p] be gbbygvc:NqqPbyhza("PRAGRE")
+  raq
+  pbyhzaPnpur[FubjNyy()][gbba] = gehr
+raq
+nqqba.fpnyrPnpur = {}
 
-  if vars.db.Tooltip.MythicKey or showall then
-    local show = false
-    for toon, t in cpairs(vars.db.Toons, true) do
-      if t.MythicKey then
-        if t.MythicKey.name then
-          show = true
-          addColumns(columns, toon, tooltip)
-        end
-      end
-    end
-    if show then
-      if not firstcategory and vars.db.Tooltip.CategorySpaces then
-        addsep()
-      end
-      show = tooltip:AddLine(YELLOWFONT .. L["Mythic Keystone"] .. FONTEND)
-    end
-    for toon, t in cpairs(vars.db.Toons, true) do
-      if t.MythicKey then
-        if t.MythicKey.name then
-          local col = columns[toon..1]
-          if vars.db.Tooltip.AbbreviateKeystone then
-            if t.MythicKey.abbrev then
-              tooltip:SetCell(show, col, "|c"..t.MythicKey.color..t.MythicKey.abbrev.." ("..t.MythicKey.level..")"..FONTEND, "CENTER",maxcol)
-            else
-              local kabbrev = KeystonetoAbbrev[t.MythicKey.name]
-              tooltip:SetCell(show, col, "|c"..t.MythicKey.color..kabbrev.." ("..t.MythicKey.level..")"..FONTEND, "CENTER",maxcol)
-            end
-          else
-          tooltip:SetCell(show, col, "|c"..t.MythicKey.color..t.MythicKey.name.." ("..t.MythicKey.level..")"..FONTEND, "CENTER",maxcol)
-          end
-          tooltip:SetCellScript(show, col, "OnMouseDown", ChatLink, t.MythicKey.link)
-        end
-      end
-    end
-  end
+shapgvba pber:UrnqreSbag()
+  vs abg nqqba.urnqresbag gura
+    ybpny grzc = DGvc:Npdhver("FnirqVafgnaprfUrnqreGbbygvc", 1, "YRSG")
+    nqqba.urnqresbag = PerngrSbag("FnirqVafgnaprqGbbygvcUrnqreSbag")
+    ybpny uSbag = grzc:TrgUrnqreSbag()
+    ybpny uSbagCngu, uSbagFvmr,_ uSbagCngu, uSbagFvmr, _ = uSbag:TrgSbag()
+    nqqba.urnqresbag:FrgSbag(uSbagCngu, uSbagFvmr, "BHGYVAR")
+    DGvc:Eryrnfr(grzc)
+  raq
+  erghea nqqba.urnqresbag
+raq
 
-  if vars.db.Tooltip.MythicKeyBest or showall then
-    local show = false
-    for toon, t in cpairs(vars.db.Toons, true) do
-      if t.MythicKeyBest then
-        if t.MythicKeyBest.level and t.MythicKeyBest.level > 0 then
-          show = true
-          addColumns(columns, toon, tooltip)
-        end
-        if t.MythicKeyBest.WeeklyReward then
-          show = true
-          addColumns(columns, toon, tooltip)
-        end
-      end
-    end
-    if show then
-      if not firstcategory and vars.db.Tooltip.CategorySpaces then
-        addsep()
-      end
-      show = tooltip:AddLine(YELLOWFONT .. L["Mythic Key Best"] .. FONTEND)
-    end
-    for toon, t in cpairs(vars.db.Toons, true) do
-      if t.MythicKeyBest then
-        local keydesc = ""
-        if t.MythicKeyBest.level and t.MythicKeyBest.level > 0 then
-          keydesc = t.MythicKeyBest.level
-        end
-        if t.MythicKeyBest.WeeklyReward then
-          if keydesc == "" then
-            keydesc = "0"
-          end
-          local lastlevel = ""
-          if t.MythicKeyBest.LastWeekLevel and t.MythicKeyBest.LastWeekLevel > 0 then
-            lastlevel = t.MythicKeyBest.LastWeekLevel
-          end
-          keydesc = keydesc .."(".. lastlevel ..L["Last Week Reward Usable"].. ")"
-        end
-        if keydesc ~= "" then
-          local col = columns[toon..1]
-          tooltip:SetCell(show, col, keydesc , "CENTER",maxcol)
-        end
-      end
-    end
-  end
+shapgvba pber:FubjGbbygvc(napubesenzr)
+  ybpny fubjnyy = FubjNyy()
+  vs gbbygvc naq gbbygvc:VfFubja() naq
+    pber.fubjnyy == fubjnyy naq
+    pber.fpnyr == (nqqba.fpnyrPnpur[fubjnyy] be inef.qo.Gbbygvc.Fpnyr)
+  gura
+    erghea -- fxvc hcqngr
+  raq
+  ybpny fgneggvzr = qrohtcebsvyrfgbc()
+  pber.fubjnyy = fubjnyy
+  ybpny fubjrkcverq = fubjnyy be inef.qo.Gbbygvc.FubjRkcverq
+  vs gbbygvc gura DGvc:Eryrnfr(gbbygvc) raq
+  gbbygvc = DGvc:Npdhver("FnirqVafgnaprfGbbygvc", 1, "YRSG")
+  gbbygvc:FrgPryyZnetvaU(0)
+  gbbygvc.napubesenzr = napubesenzr
+  gbbygvc:FrgFpevcg("BaHcqngr", HcqngrGbbygvc)
+  nqqba.svefghcqngr = gehr
+  gbbygvc:Pyrne()
+  pber.fpnyr = nqqba.fpnyrPnpur[fubjnyy] be inef.qo.Gbbygvc.Fpnyr
+  gbbygvc:FrgFpnyr(pber.fpnyr)
+  gbbygvc:FrgUrnqreSbag(pber:UrnqreSbag())
+  nqqba:UvfgbelHcqngr()
+  ybpny urnqGrkg
+  vs nqqba.uvfgYvirPbhag naq nqqba.uvfgYvirPbhag > 0 gura
+    urnqGrkg = fgevat.sbezng("%f%f (%q/%f)%f",TBYQSBAG,nqqbaAnzr,nqqba.uvfgYvirPbhag,(nqqba.uvfgByqrfg be "?"),SBAGRAQ)
+  ryfr
+    urnqGrkg = fgevat.sbezng("%f%f%f",TBYQSBAG,nqqbaAnzr,SBAGRAQ)
+  raq
+  ybpny urnqYvar = gbbygvc:NqqUrnqre(urnqGrkg)
+  gbbygvc:FrgPryyFpevcg(urnqYvar, 1, "BaRagre", FubjNppbhagFhzznel )
+  gbbygvc:FrgPryyFpevcg(urnqYvar, 1, "BaYrnir", PybfrGbbygvcf)
+  nqqba:HcqngrGbbaQngn()
+  ybpny pbyhzaf = ybpnynee("pbyhzaf")
+  sbe gbba,_ va pcnvef(pbyhzaPnpur[fubjnyy]) qb
+    nqqPbyhzaf(pbyhzaf, gbba, gbbygvc)
+    pbyhzaPnpur[fubjnyy][gbba] = snyfr
+  raq
+  -- nyybpngvat pbyhzaf sbe punenpgref
+  sbe gbba, g va pcnvef(inef.qo.Gbbaf) qb
+    vs inef.qo.Gbbaf[gbba].Fubj == "nyjnlf" be
+      (gbba == guvfGbba naq inef.qo.Gbbygvc.FrysNyjnlf) gura
+      nqqPbyhzaf(pbyhzaf, gbba, gbbygvc)
+    raq
+  raq
+  -- qrgrezvavat ubj znal vafgnaprf jvyy or qvfcynlrq cre pngrtbel
+  ybpny pngrtbelfubja = ybpnynee("pngrtbelfubja") -- erzrzore vs rnpu pngrtbel jvyy or fubja
+  ybpny vafgnaprfnirq = ybpnynee("vafgnaprfnirq") -- erzrzore vs rnpu vafgnapr unf orra fnirq be abg (obbyrna)
+  ybpny jopbaf = inef.qo.Gbbygvc.PbzovarJbeyqObffrf
+  ybpny jbeyqobffrf = jopbaf naq ybpnynee("jbeyqobffrf")
+  ybpny jonyjnlf = snyfr
+  ybpny ysepbaf = inef.qo.Gbbygvc.PbzovarYSE
+  ybpny yseobk = ysepbaf naq ybpnynee("yseobk")
+  ybpny yseznc = ysepbaf naq ybpnynee("yseznc")
+  sbe _, pngrtbel va vcnvef(nqqba:BeqrerqPngrtbevrf()) qb
+    sbe _, vafgnapr va vcnvef(nqqba:BeqrerqVafgnaprf(pngrtbel)) qb
+      ybpny vafg = inef.qo.Vafgnaprf[vafgnapr]
+      vs vafg.Fubj == "nyjnlf" gura
+        pngrtbelfubja[pngrtbel] = gehr
+      raq
+      vs vafg.Fubj ~= "arire" gura
+        vs jopbaf naq vafg.JbeyqObff naq vafg.Rkcnafvba <= TrgRkcnafvbaYriry() gura
+          vs inef.qo.Gbbygvc.ErirefrVafgnaprf gura
+            gnoyr.vafreg(jbeyqobffrf, vafgnapr)
+          ryfr
+            gnoyr.vafreg(jbeyqobffrf, 1, vafgnapr)
+          raq
+          jonyjnlf = jonyjnlf be (vafg.Fubj == "nyjnlf")
+        raq
+        ybpny ysevasb = ysepbaf naq vafg.YSQVQ naq nqqba.YSEVafgnaprf[vafg.YSQVQ]
+        ybpny yseobkvq
+        vs ysevasb gura
+          yseobkvq = ysevasb.cnerag
+          yseznc[vafg.YSQVQ] = vafgnapr
+          vs vafg.Fubj == "nyjnlf" gura
+            yseobk[yseobkvq] = gehr
+          raq
+        raq
+        sbe gbba, g va pcnvef(inef.qo.Gbbaf, gehr) qb
+          sbe qvss = 1, znkqvss qb
+            vs vafg[gbba] naq vafg[gbba][qvss] gura
+              vs (vafg[gbba][qvss].Rkcverf > 0) gura
+                vs ysevasb gura
+                  yseobk[yseobkvq] = gehr
+                  vafgnaprfnirq[yseobkvq] = gehr
+                ryfrvs jopbaf naq vafg.JbeyqObff gura
+                  vafgnaprfnirq[Y["Jbeyq Obffrf"]] = gehr
+                ryfr
+                  vafgnaprfnirq[vafgnapr] = gehr
+                raq
+                pngrtbelfubja[pngrtbel] = gehr
+              ryfrvs fubjnyy gura
+                pngrtbelfubja[pngrtbel] = gehr
+              raq
+            raq
+          raq
+        raq
+      raq
+    raq
+  raq
+  ybpny pngrtbevrf = 0
+  -- qrgrezvavat ubj znal pngrtbevrf unir vafgnaprf gung jvyy or fubja
+  vs inef.qo.Gbbygvc.FubjPngrtbevrf gura
+    sbe pngrtbel, _ va cnvef(pngrtbelfubja) qb
+      pngrtbevrf = pngrtbevrf + 1
+    raq
+  raq
+  -- nyybpngvat gbbygvc fcnpr sbe vafgnaprf, pngrtbevrf, naq fcnpr orgjrra pngrtbevrf
+  ybpny pngrtbelebj = ybpnynee("pngrtbelebj") -- erzrzore jurer rnpu pngrtbel urnqvat tbrf
+  ybpny vafgnaprebj = ybpnynee("vafgnaprebj") -- erzrzore jurer rnpu vafgnapr tbrf
+  ybpny oynaxebj = ybpnynee("oynaxebj") -- genpx oynax yvarf
+  ybpny svefgpngrtbel = gehr -- hfr guvf gb fxvc fcnpvat orsber gur svefg pngrtbel
+  ybpny shapgvba nqqfrc()
+    ybpny yvar = gbbygvc:NqqFrcnengbe(6,0,0,0,0)
+    oynaxebj[yvar] = gehr
+    erghea yvar
+  raq
+  sbe _, pngrtbel va vcnvef(nqqba:BeqrerqPngrtbevrf()) qb
+    vs pngrtbelfubja[pngrtbel] gura
+      vs abg svefgpngrtbel naq inef.qo.Gbbygvc.PngrtbelFcnprf gura
+        nqqfrc()
+      raq
+      vs (pngrtbevrf > 1 be inef.qo.Gbbygvc.FubjFbybPngrtbel) naq pngrtbelfubja[pngrtbel] gura
+        ybpny yvar = gbbygvc:NqqYvar()
+        pngrtbelebj[pngrtbel] = yvar
+        oynaxebj[yvar] = gehr
+      raq
+      sbe _, vafgnapr va vcnvef(nqqba:BeqrerqVafgnaprf(pngrtbel)) qb
+        ybpny vafg = inef.qo.Vafgnaprf[vafgnapr]
+        vs abg (jopbaf naq vafg.JbeyqObff) naq
+          abg (ysepbaf naq nqqba.YSEVafgnaprf[vafg.YSQVQ]) gura
+          vs vafg.Fubj == "nyjnlf" gura
+            vafgnaprebj[vafgnapr] = vafgnaprebj[vafgnapr] be gbbygvc:NqqYvar()
+          raq
+          vs vafg.Fubj ~= "arire" gura
+            sbe gbba, g va pcnvef(inef.qo.Gbbaf, gehr) qb
+              sbe qvss = 1, znkqvss qb
+                vs vafg[gbba] naq vafg[gbba][qvss] naq (vafg[gbba][qvss].Rkcverf > 0 be fubjrkcverq) gura
+                  vafgnaprebj[vafgnapr] = vafgnaprebj[vafgnapr] be gbbygvc:NqqYvar()
+                  nqqPbyhzaf(pbyhzaf, gbba, gbbygvc)
+                raq
+              raq
+            raq
+          raq
+        raq
+        vs ysepbaf naq vafg.YSQVQ gura
+          -- purpx vs guvf cnerag vafgnapr unf pbeerfcbaqvat yseobkrf, naq perngr gurz
+          vs yseobk[vafg.YSQVQ] gura
+            yseobk[Y["YSE"]..": "..vafgnapr] = gbbygvc:NqqYvar()
+          raq
+          yseobk[vafg.YSQVQ] = avy
+        raq
+      raq
+      svefgpngrtbel = snyfr
+    raq
+  raq
+  -- abj cevagvat vafgnapr qngn
+  sbe vafgnapr, ebj va cnvef(vafgnaprebj) qb
+    ybpny vafg = inef.qo.Vafgnaprf[vafgnapr]
+    gbbygvc:FrgPryy(ebj, 1, (vafgnaprfnirq[vafgnapr] naq TBYQSBAG be TENLSBAG) .. vafgnapr .. SBAGRAQ)
+    vs nqqba.YSEVafgnaprf[vafg.YSQVQ] gura
+      gbbygvc:FrgYvarFpevcg(ebj, "BaZbhfrQbja", BcraYSE, vafg.YSQVQ)
+    raq
+    sbe gbba, g va pcnvef(inef.qo.Gbbaf, gehr) qb
+      vs vafg[gbba] gura
+        ybpny fubjpby = ybpnynee("fubjpby")
+        ybpny fubjpag = 0
+        sbe qvss = 1, znkqvss qb
+          vs vafg[gbba][qvss] naq (vafg[gbba][qvss].Rkcverf > 0 be fubjrkcverq) gura
+            fubjpag = fubjpag + 1
+            fubjpby[qvss] = gehr
+          raq
+        raq
+        ybpny onfr = 1
+        ybpny fcna = znkpby
+        vs fubjpag > 1 gura
+          fcna = 1
+        raq
+        vs fubjpag > znkpby gura
+          ohtErcbeg("Pbyhza biresybj! fubjpag="..fubjpag)
+        raq
+        sbe qvss = 1, znkqvss qb
+          vs fubjpby[qvss] gura
+            ybpny pby = pbyhzaf[gbba..onfr]
+            gbbygvc:FrgPryy(ebj, pby,
+              QvssvphyglFgevat(vafgnapr, qvss, gbba, vafg[gbba][qvss].Rkcverf == 0), fcna)
+            gbbygvc:FrgPryyFpevcg(ebj, pby, "BaRagre", FubjVaqvpngbeGbbygvc, {vafgnapr, gbba, qvss})
+            gbbygvc:FrgPryyFpevcg(ebj, pby, "BaYrnir", PybfrGbbygvcf)
+            vs nqqba.YSEVafgnaprf[vafg.YSQVQ] gura
+              gbbygvc:FrgPryyFpevcg(ebj, pby, "BaZbhfrQbja", BcraYSE, vafg.YSQVQ)
+            ryfr
+              ybpny yvax = vafg[gbba][qvss].Yvax
+              vs yvax gura
+                gbbygvc:FrgPryyFpevcg(ebj, pby, "BaZbhfrQbja", PungYvax, yvax)
+              raq
+            raq
+            onfr = onfr + 1
+          ryfrvs pbyhzaf[gbba..qvss] naq fubjpag > 1 gura
+            gbbygvc:FrgPryy(ebj, pbyhzaf[gbba..qvss], "")
+          raq
+        raq
+      raq
+    raq
+  raq
 
-  if vars.db.Tooltip.DailyWorldQuest or showall then
-    local show = {}
-    for toon, t in cpairs(vars.db.Toons, true) do
-      if t.DailyWorldQuest then
-        for day,DailyInfo in pairs(t.DailyWorldQuest) do
-          if DailyInfo.name then
-            if(not show[DailyInfo.dayleft] or show[DailyInfo.dayleft] == L["Emissary Missing"]) then
-              show[DailyInfo.dayleft] = DailyInfo.name
-            end
-            addColumns(columns, toon, tooltip)
-          end
-        end
-      end
-    end
-    for dayleft = 0 , 2 do
-      if show[dayleft] then
-        local showday = show[dayleft]
-        if not firstcategory and vars.db.Tooltip.CategorySpaces then
-          addsep()
-        end
-        show[dayleft] = tooltip:AddLine(YELLOWFONT .. showday .. " (+" .. dayleft .. " " .. L["Day"] .. ")" .. FONTEND)
-      end
-    end
-    for toon, t in cpairs(vars.db.Toons, true) do
-      if t.DailyWorldQuest then
-        for day,DailyInfo in pairs(t.DailyWorldQuest) do
-          if show[DailyInfo.dayleft] then
-            local col = columns[toon..1]
-            if DailyInfo.iscompleted == true then
-              tooltip:SetCell(show[DailyInfo.dayleft], col, "\124T"..READY_CHECK_READY_TEXTURE..":0|t", "CENTER", maxcol)
-            elseif DailyInfo.isfinish == true then
-              tooltip:SetCell(show[DailyInfo.dayleft], col, "\124T"..READY_CHECK_WAITING_TEXTURE..":0|t", "CENTER", maxcol)
-            else
-              tooltip:SetCell(show[DailyInfo.dayleft], col, DailyInfo.questdone .. "/" .. DailyInfo.questneed , "CENTER",maxcol)
-            end
-          end
-        end
-      end
-    end
-  end
+  -- pbzovarq YSEf
+  vs ysepbaf gura
+    sbe obkanzr, yvar va cnvef(yseobk) qb
+      vs glcr(obkanzr) == "ahzore" gura
+        ohtErcbeg("Haerpbtavmrq YSE vafgnapr cnerag vq= "..obkanzr)
+        yseobk[obkanzr] = avy
+      raq
+    raq
+    sbe obkanzr, yvar va cnvef(yseobk) qb
+      ybpny obkglcr, cvafgnapr = obkanzr:zngpu("^([^:]+): (.+)$")
+      ybpny cvafg = inef.qo.Vafgnaprf[cvafgnapr]
+      ybpny obkvq = cvafg.YSQVQ
+      ybpny svefgvq
+      ybpny gbgny = 0
+      sbe ysqvq, ysevasb va cnvef(nqqba.YSEVafgnaprf) qb
+        vs ysevasb.cnerag == cvafg.YSQVQ naq yseznc[ysqvq] gura
+          svefgvq = zngu.zva(ysqvq, svefgvq be ysqvq)
+          gbgny = gbgny + ysevasb.gbgny
+          yseznc[obkanzr..":"..ysevasb.onfr] = yseznc[ysqvq]
+        raq
+      raq
+      gbbygvc:FrgPryy(yvar, 1, (vafgnaprfnirq[obkvq] naq TBYQSBAG be TENLSBAG) .. obkanzr .. SBAGRAQ)
+      gbbygvc:FrgYvarFpevcg(yvar, "BaZbhfrQbja", BcraYSE, svefgvq)
+      sbe gbba, g va pcnvef(inef.qo.Gbbaf, gehr) qb
+        ybpny fnirq = 0
+        ybpny qvss = 2
+        sbe xrl, vafgnapr va cnvef(yseznc) qb
+          vs fgevat.zngpu(xrl,obkanzr..":%q+$") gura
+            fnirq = fnirq + nqqba:vafgnaprObffrf(vafgnapr, gbba, qvss)
+          raq
+        raq
+        vs fnirq > 0 gura
+          nqqPbyhzaf(pbyhzaf, gbba, gbbygvc)
+          ybpny pby = pbyhzaf[gbba..1]
+          gbbygvc:FrgPryy(yvar, pby, QvssvphyglFgevat(cvafgnapr, qvss, gbba, snyfr, fnirq, gbgny),4)
+          gbbygvc:FrgPryyFpevcg(yvar, pby, "BaRagre", FubjYSEGbbygvc, {obkanzr, gbba, yseznc})
+          gbbygvc:FrgPryyFpevcg(yvar, pby, "BaYrnir", PybfrGbbygvcf)
+        raq
+      raq
+    raq
+  raq
 
-  if vars.db.Tooltip.TrackFarm or showall then
-    local toonfarm = localarr("toonfarm")
-    local show
-    for toon, t in cpairs(vars.db.Toons, true) do
-      if (t.FarmPlanted or 0) > 0 or (t.FarmHarvested or 0) > 0 or
-        (t.FarmCropReady and next(t.FarmCropReady)) then
-        toonfarm[toon] = (t.FarmHarvested or 0).."/"..(t.FarmPlanted or 0)
-        show = true
-        addColumns(columns, toon, tooltip)
-      end
-    end
-    if show then
-      if not firstcategory and vars.db.Tooltip.CategorySpaces then
-        addsep()
-      end
-      show = tooltip:AddLine(YELLOWFONT .. L["Farm Crops"] .. FONTEND)
-    end
-    for toon, t in cpairs(vars.db.Toons, true) do
-      if toonfarm[toon] then
-        local col = columns[toon..1]
-        tooltip:SetCell(show, col, ClassColorise(t.Class,toonfarm[toon]), "CENTER",maxcol)
-        tooltip:SetCellScript(show, col, "OnEnter", ShowFarmTooltip, toon)
-        tooltip:SetCellScript(show, col, "OnLeave", CloseTooltips)
-      end
-    end
-  end
+  -- pbzovarq jbeyq obffrf
+  vs jopbaf naq arkg(jbeyqobffrf) naq (jonyjnlf be vafgnaprfnirq[Y["Jbeyq Obffrf"]]) gura
+    vs abg svefgpngrtbel naq inef.qo.Gbbygvc.PngrtbelFcnprf gura
+      nqqfrc()
+    raq
+    ybpny yvar = gbbygvc:NqqYvar((vafgnaprfnirq[Y["Jbeyq Obffrf"]] naq LRYYBJSBAG be TENLSBAG) .. Y["Jbeyq Obffrf"] .. SBAGRAQ)
+    sbe gbba, g va pcnvef(inef.qo.Gbbaf, gehr) qb
+      ybpny fnirq = 0
+      ybpny qvss = 2
+      sbe _, vafgnapr va vcnvef(jbeyqobffrf) qb
+        ybpny vafg = inef.qo.Vafgnaprf[vafgnapr]
+        vs vafg[gbba] naq vafg[gbba][qvss] naq vafg[gbba][qvss].Rkcverf > 0 gura
+          fnirq = fnirq + 1
+        raq
+      raq
+      vs fnirq > 0 gura
+        nqqPbyhzaf(pbyhzaf, gbba, gbbygvc)
+        ybpny pby = pbyhzaf[gbba..1]
+        gbbygvc:FrgPryy(yvar, pby, QvssvphyglFgevat(jbeyqobffrf[1], qvss, gbba, snyfr, fnirq, #jbeyqobffrf),4)
+        gbbygvc:FrgPryyFpevcg(yvar, pby, "BaRagre", FubjJbeyqObffGbbygvc, {jbeyqobffrf, gbba, fnirq})
+        gbbygvc:FrgPryyFpevcg(yvar, pby, "BaYrnir", PybfrGbbygvcf)
+      raq
+    raq
+  raq
 
-  if vars.db.Tooltip.TrackBonus or showall then
-    local show
-    local toonbonus = localarr("toonbonus")
-    for toon, t in cpairs(vars.db.Toons, true) do
-      if t.BonusRoll and t.BonusRoll[1] then
-        local gold = 0
-        for _,roll in ipairs(t.BonusRoll) do
-          if roll.money then
-            gold = gold + 1
-          else
-            break
-          end
-        end
-        toonbonus[toon] = gold
-        show = true
-        addColumns(columns, toon, tooltip)
-      end
-    end
-    if show then
-      if not firstcategory and vars.db.Tooltip.CategorySpaces then
-        addsep()
-      end
-      show = tooltip:AddLine(YELLOWFONT .. L["Roll Bonus"] .. FONTEND)
-    end
-    for toon, t in cpairs(vars.db.Toons, true) do
-      if toonbonus[toon] then
-        local col = columns[toon..1]
-        local str = toonbonus[toon]
-        if str > 0 then str = "+"..str end
-        tooltip:SetCell(show, col, ClassColorise(t.Class,str), "CENTER",maxcol)
-        tooltip:SetCellScript(show, col, "OnEnter", ShowBonusTooltip, toon)
-        tooltip:SetCellScript(show, col, "OnLeave", CloseTooltips)
-      end
-    end
-  end
+  ybpny ubyvqnlvafg = ybpnynee("ubyvqnlvafg")
+  ybpny svefgysq = gehr
+  sbe vafgnapr, vasb va cnvef(inef.qo.Vafgnaprf) qb
+    vs fubjnyy be
+      (vasb.Ubyvqnl naq inef.qo.Gbbygvc.FubjUbyvqnl) be
+      (vasb.Enaqbz naq inef.qo.Gbbygvc.FubjEnaqbz) gura
+      sbe gbba, g va pcnvef(inef.qo.Gbbaf, gehr) qb
+        ybpny q = vasb[gbba] naq vasb[gbba][1]
+        vs q gura
+          nqqPbyhzaf(pbyhzaf, gbba, gbbygvc)
+          ybpny ebj = ubyvqnlvafg[vafgnapr]
+          vs abg ebj gura
+            vs abg svefgpngrtbel naq inef.qo.Gbbygvc.PngrtbelFcnprf naq svefgysq gura
+              nqqfrc()
+              svefgysq = snyfr
+            raq
+            ebj = gbbygvc:NqqYvar(LRYYBJSBAG .. nooerivngr(vafgnapr) .. SBAGRAQ)
+            ubyvqnlvafg[vafgnapr] = ebj
+          raq
+          ybpny gfge = FrpbaqfGbGvzr(q.Rkcverf - gvzr(), snyfr, snyfr, 1)
+          gbbygvc:FrgPryy(ebj, pbyhzaf[gbba..1], PynffPbybevfr(g.Pynff,gfge), "PRAGRE",znkpby)
+          vs vasb.Fpranevb gura
+            gbbygvc:FrgYvarFpevcg(ebj, "BaZbhfrQbja", BcraYSF, vasb.YSQVQ)
+          ryfr
+            gbbygvc:FrgYvarFpevcg(ebj, "BaZbhfrQbja", BcraYSQ, vasb.YSQVQ)
+          raq
+        raq
+      raq
+    raq
+  raq
 
-  local firstcurrency = true
-  for _,idx in ipairs(currency) do
-    local setting = vars.db.Tooltip["Currency"..idx]
-    if setting or showall then
-      local show
-      for toon, t in cpairs(vars.db.Toons, true) do
-        -- ci.name, ci.amount, ci.earnedThisWeek, ci.weeklyMax, ci.totalMax
-        local ci = t.currency and t.currency[idx]
-        local gotsome
-        if ci then
-          gotsome = ((ci.earnedThisWeek or 0) > 0 and (ci.weeklyMax or 0) > 0) or
-            ((ci.amount or 0) > 0 and showall)
-          -- or ((ci.amount or 0) > 0 and ci.weeklyMax == 0 and t.Level == maxlvl)
-        end
-        if ci and gotsome then
-          addColumns(columns, toon, tooltip)
-        end
-        if ci and (gotsome or (ci.amount or 0) > 0) and columns[toon..1] then
-          local name,_,tex = GetCurrencyInfo(idx)
-          show = string.format(" \124T%s:0\124t%s",tex,name)
-        end
-      end
-      local currLine
-      if show then
-        if not firstcategory and vars.db.Tooltip.CategorySpaces and firstcurrency then
-          addsep()
-          firstcurrency = false
-        end
-        currLine = tooltip:AddLine(YELLOWFONT .. show .. FONTEND)
-        tooltip:SetLineScript(currLine, "OnMouseDown", OpenCurrency)
-        tooltip:SetCellScript(currLine, 1, "OnEnter", ShowCurrencySummary, idx)
-        tooltip:SetCellScript(currLine, 1, "OnLeave", CloseTooltips)
-        tooltip:SetCellScript(currLine, 1, "OnMouseDown", OpenCurrency)
+  -- enaqbz qhatrba
+  vs inef.qo.Gbbygvc.GenpxYST be fubjnyy gura
+    ybpny pq1,pq2 = snyfr,snyfr
+    sbe gbba, g va pcnvef(inef.qo.Gbbaf, gehr) qb
+      pq2 = pq2 be g.YST2
+      pq1 = pq1 be (g.YST1 naq (abg g.YST2 be fubjnyy))
+      vs g.YST1 be g.YST2 gura
+        nqqPbyhzaf(pbyhzaf, gbba, gbbygvc)
+      raq
+    raq
+    ybpny enaqbzYvar
+    vs pq1 be pq2 gura
+      vs abg svefgpngrtbel naq inef.qo.Gbbygvc.PngrtbelFcnprf naq svefgysq gura
+        nqqfrc()
+        svefgysq = snyfr
+      raq
+      ybpny pbbyqbja = VGRZ_PBBYQBJA_GBGNY:tfho("%%f",""):tfho("%c","")
+      pq1 = pq1 naq gbbygvc:NqqYvar(LRYYBJSBAG .. YST_GLCR_ENAQBZ_QHATRBA..pbbyqbja .. SBAGRAQ)
+      pq2 = pq2 naq gbbygvc:NqqYvar(LRYYBJSBAG .. TrgFcryyVasb(71041) .. SBAGRAQ)
+    raq
+    sbe gbba, g va pcnvef(inef.qo.Gbbaf, gehr) qb
+      ybpny q1 = (g.YST1 naq g.YST1 - gvzr()) be -1
+      ybpny q2 = (g.YST2 naq g.YST2 - gvzr()) be -1
+      vs q1 > 0 naq (q2 < 0 be fubjnyy) gura
+        ybpny pby = pbyhzaf[gbba..1]
+        ybpny gfge = FrpbaqfGbGvzr(q1, snyfr, snyfr, 1)
+        gbbygvc:FrgPryy(pq1, pby, PynffPbybevfr(g.Pynff,gfge), "PRAGRE",znkpby)
+        gbbygvc:FrgPryyFpevcg(pq1, pby, "BaRagre", FubjFcryyVQGbbygvc, {gbba,-1,gfge})
+        gbbygvc:FrgPryyFpevcg(pq1, pby, "BaYrnir", PybfrGbbygvcf)
+      raq
+      vs q2 > 0 gura
+        ybpny pby = pbyhzaf[gbba..1]
+        ybpny gfge = FrpbaqfGbGvzr(q2, snyfr, snyfr, 1)
+        gbbygvc:FrgPryy(pq2, pby, PynffPbybevfr(g.Pynff,gfge), "PRAGRE",znkpby)
+        gbbygvc:FrgPryyFpevcg(pq2, pby, "BaRagre", FubjFcryyVQGbbygvc, {gbba,71041,gfge})
+        gbbygvc:FrgPryyFpevcg(pq2, pby, "BaYrnir", PybfrGbbygvcf)
+      raq
+    raq
+  raq
+  vs inef.qo.Gbbygvc.GenpxQrfregre be fubjnyy gura
+    ybpny fubj = snyfr
+    sbe gbba, g va pcnvef(inef.qo.Gbbaf, gehr) qb
+      vs g.cicqrfreg gura
+        fubj = gehr
+        nqqPbyhzaf(pbyhzaf, gbba, gbbygvc)
+      raq
+    raq
+    vs fubj gura
+      vs abg svefgpngrtbel naq inef.qo.Gbbygvc.PngrtbelFcnprf naq svefgysq gura
+        nqqfrc()
+        svefgysq = snyfr
+      raq
+      fubj = gbbygvc:NqqYvar(LRYYBJSBAG .. QRFREGRE .. SBAGRAQ)
+    raq
+    sbe gbba, g va pcnvef(inef.qo.Gbbaf, gehr) qb
+      vs g.cicqrfreg naq gvzr() < g.cicqrfreg gura
+        ybpny pby = pbyhzaf[gbba..1]
+        ybpny gfge = FrpbaqfGbGvzr(g.cicqrfreg - gvzr(), snyfr, snyfr, 1)
+        gbbygvc:FrgPryy(fubj, pby, PynffPbybevfr(g.Pynff,gfge), "PRAGRE",znkpby)
+        gbbygvc:FrgPryyFpevcg(fubj, pby, "BaRagre", FubjFcryyVQGbbygvc, {gbba,26013,gfge})
+        gbbygvc:FrgPryyFpevcg(fubj, pby, "BaYrnir", PybfrGbbygvcf)
+      raq
+    raq
+  raq
 
-        for toon, t in cpairs(vars.db.Toons, true) do
-          local ci = t.currency and t.currency[idx]
-          local col = columns[toon..1]
-          if ci and col then
-            local earned, weeklymax, totalmax = "","",""
-            if vars.db.Tooltip.CurrencyMax then
-              if (ci.weeklyMax or 0) > 0 then
-                weeklymax = "/"..addon:formatNumber(ci.weeklyMax)
-              end
-              if (ci.totalMax or 0) > 0 then
-                totalmax = "/"..addon:formatNumber(ci.totalMax)
-              end
-            end
-            if vars.db.Tooltip.CurrencyEarned or showall then
-              earned = CurrencyColor(ci.amount,ci.totalMax)..totalmax
-            end
-            local str
-            if (ci.amount or 0) > 0 or (ci.earnedThisWeek or 0) > 0 then
-              if (ci.weeklyMax or 0) > 0 then
-                str = earned.." ("..CurrencyColor(ci.earnedThisWeek,ci.weeklyMax)..weeklymax..")"
-              elseif (ci.amount or 0) > 0 then
-                str = CurrencyColor(ci.amount,ci.totalMax)..totalmax
-              end
-            end
-            if str then
-              if not vars.db.Tooltip.CurrencyValueColor then
-                str = ClassColorise(t.Class,str)
-              end
-              tooltip:SetCell(currLine, col, str, "CENTER",maxcol)
-              tooltip:SetCellScript(currLine, col, "OnEnter", ShowCurrencyTooltip, {toon, idx, ci})
-              tooltip:SetCellScript(currLine, col, "OnLeave", CloseTooltips)
-              tooltip:SetCellScript(currLine, col, "OnMouseDown", OpenCurrency)
-            end
-          end
-        end
-      end
-    end
-  end
+  qb
+    ybpny fubjq, fubjj
+    sbe gbba, g va pcnvef(inef.qo.Gbbaf, gehr) qb
+      ybpny qp, jp = nqqba:DhrfgPbhag(gbba)
+      vs qp > 0 naq (inef.qo.Gbbygvc.GenpxQnvylDhrfgf be fubjnyy) gura
+        fubjq = gehr
+        nqqPbyhzaf(pbyhzaf, gbba, gbbygvc)
+      raq
+      vs jp > 0 naq (inef.qo.Gbbygvc.GenpxJrrxylDhrfgf be fubjnyy) gura
+        fubjj = gehr
+        nqqPbyhzaf(pbyhzaf, gbba, gbbygvc)
+      raq
+    raq
+    ybpny nqp, njp = nqqba:DhrfgPbhag(avy)
+    vs nqp > 0 naq (inef.qo.Gbbygvc.GenpxQnvylDhrfgf be fubjnyy) gura fubjq = gehr raq
+    vs njp > 0 naq (inef.qo.Gbbygvc.GenpxJrrxylDhrfgf be fubjnyy) gura fubjj = gehr raq
+    vs abg svefgpngrtbel naq inef.qo.Gbbygvc.PngrtbelFcnprf naq (fubjq be fubjj) gura
+      nqqfrc()
+    raq
+    vs fubjq gura
+      fubjq = gbbygvc:NqqYvar(LRYYBJSBAG .. Y["Qnvyl Dhrfgf"] .. (nqp > 0 naq " ("..nqp..")" be "") .. SBAGRAQ)
+      vs nqp > 0 gura
+        gbbygvc:FrgPryyFpevcg(fubjq, 1, "BaRagre", FubjDhrfgGbbygvc, {avy,nqp,gehr})
+        gbbygvc:FrgPryyFpevcg(fubjq, 1, "BaYrnir", PybfrGbbygvcf)
+      raq
+    raq
+    vs fubjj gura
+      fubjj = gbbygvc:NqqYvar(LRYYBJSBAG .. Y["Jrrxyl Dhrfgf"] .. (njp > 0 naq " ("..njp..")" be "") .. SBAGRAQ)
+      vs njp > 0 gura
+        gbbygvc:FrgPryyFpevcg(fubjj, 1, "BaRagre", FubjDhrfgGbbygvc, {avy,njp,snyfr})
+        gbbygvc:FrgPryyFpevcg(fubjj, 1, "BaYrnir", PybfrGbbygvcf)
+      raq
+    raq
+    sbe gbba, g va pcnvef(inef.qo.Gbbaf, gehr) qb
+      ybpny qp, jp = nqqba:DhrfgPbhag(gbba)
+      ybpny pby = pbyhzaf[gbba..1]
+      vs fubjq naq pby naq qp > 0 gura
+        gbbygvc:FrgPryy(fubjq, pby, PynffPbybevfr(g.Pynff,qp), "PRAGRE",znkpby)
+        gbbygvc:FrgPryyFpevcg(fubjq, pby, "BaRagre", FubjDhrfgGbbygvc, {gbba,qp,gehr})
+        gbbygvc:FrgPryyFpevcg(fubjq, pby, "BaYrnir", PybfrGbbygvcf)
+      raq
+      vs fubjj naq pby naq jp > 0 gura
+        gbbygvc:FrgPryy(fubjj, pby, PynffPbybevfr(g.Pynff,jp), "PRAGRE",znkpby)
+        gbbygvc:FrgPryyFpevcg(fubjj, pby, "BaRagre", FubjDhrfgGbbygvc, {gbba,jp,snyfr})
+        gbbygvc:FrgPryyFpevcg(fubjj, pby, "BaYrnir", PybfrGbbygvcf)
+      raq
+    raq
+  raq
 
-  -- toon names
-  for toondiff, col in pairs(columns) do
-    local toon = strsub(toondiff, 1, #toondiff-1)
-    local diff = strsub(toondiff, #toondiff, #toondiff)
-    if diff == "1" then
-      local toonname, toonserver = toon:match('^(.*) [-] (.*)$')
-      local toonstr = toonname
-      if db.Tooltip.ShowServer then
-        toonstr = toonstr .. "\n" .. toonserver
-      end
-      tooltip:SetCell(headLine, col, ClassColorise(vars.db.Toons[toon].Class, toonstr),
-        tooltip:GetHeaderFont(), "CENTER", maxcol)
-      tooltip:SetCellScript(headLine, col, "OnEnter", ShowToonTooltip, toon)
-      tooltip:SetCellScript(headLine, col, "OnLeave", CloseTooltips)
-    end
-  end
-  -- we now know enough to put in the category names where necessary
-  if vars.db.Tooltip.ShowCategories then
-    for category, row in pairs(categoryrow) do
-      if (categories > 1 or vars.db.Tooltip.ShowSoloCategory) and categoryshown[category] then
-        tooltip:SetCell(row, 1, YELLOWFONT .. vars.Categories[category] .. FONTEND, "LEFT", tooltip:GetColumnCount())
-      end
-    end
-  end
+  vs inef.qo.Gbbygvc.GenpxFxvyyf be fubjnyy gura
+    ybpny fubj = snyfr
+    sbe gbba, g va pcnvef(inef.qo.Gbbaf, gehr) qb
+      vs g.Fxvyyf naq arkg(g.Fxvyyf) gura
+        fubj = gehr
+        nqqPbyhzaf(pbyhzaf, gbba, gbbygvc)
+      raq
+    raq
+    vs fubj gura
+      vs abg svefgpngrtbel naq inef.qo.Gbbygvc.PngrtbelFcnprf gura
+        nqqfrc()
+      raq
+      fubj = gbbygvc:NqqYvar(LRYYBJSBAG .. Y["Genqr Fxvyy Pbbyqbjaf"] .. SBAGRAQ)
+    raq
+    sbe gbba, g va pcnvef(inef.qo.Gbbaf, gehr) qb
+      ybpny pag = 0
+      vs g.Fxvyyf gura
+        sbe _ va cnvef(g.Fxvyyf) qb pag = pag + 1 raq
+      raq
+      vs pag > 0 gura
+        ybpny pby = pbyhzaf[gbba..1]
+        gbbygvc:FrgPryy(fubj, pby, PynffPbybevfr(g.Pynff,pag), "PRAGRE",znkpby)
+        gbbygvc:FrgPryyFpevcg(fubj, pby, "BaRagre", FubjFxvyyGbbygvc, {gbba, pag})
+        gbbygvc:FrgPryyFpevcg(fubj, pby, "BaYrnir", PybfrGbbygvcf)
+      raq
+    raq
+  raq
 
-  local hi = true
-  for i=2,tooltip:GetLineCount() do -- row highlighting
-    tooltip:SetLineScript(i, "OnEnter", DoNothing)
-    tooltip:SetLineScript(i, "OnLeave", DoNothing)
+  vs inef.qo.Gbbygvc.ZlguvpXrl be fubjnyy gura
+    ybpny fubj = snyfr
+    sbe gbba, g va pcnvef(inef.qo.Gbbaf, gehr) qb
+      vs g.ZlguvpXrl gura
+        vs g.ZlguvpXrl.anzr gura
+          fubj = gehr
+          nqqPbyhzaf(pbyhzaf, gbba, gbbygvc)
+        raq
+      raq
+    raq
+    vs fubj gura
+      vs abg svefgpngrtbel naq inef.qo.Gbbygvc.PngrtbelFcnprf gura
+        nqqfrc()
+      raq
+      fubj = gbbygvc:NqqYvar(LRYYBJSBAG .. Y["Zlguvp Xrlfgbar"] .. SBAGRAQ)
+    raq
+    sbe gbba, g va pcnvef(inef.qo.Gbbaf, gehr) qb
+      vs g.ZlguvpXrl gura
+        vs g.ZlguvpXrl.anzr gura
+          ybpny pby = pbyhzaf[gbba..1]
+          vs inef.qo.Gbbygvc.NooerivngrXrlfgbar gura
+            vs g.ZlguvpXrl.nooeri gura
+              gbbygvc:FrgPryy(fubj, pby, "|p"..g.ZlguvpXrl.pbybe..g.ZlguvpXrl.nooeri.." ("..g.ZlguvpXrl.yriry..")"..SBAGRAQ, "PRAGRE",znkpby)
+            ryfr
+              ybpny xnooeri = XrlfgbargbNooeri[g.ZlguvpXrl.anzr]
+              gbbygvc:FrgPryy(fubj, pby, "|p"..g.ZlguvpXrl.pbybe..xnooeri.." ("..g.ZlguvpXrl.yriry..")"..SBAGRAQ, "PRAGRE",znkpby)
+            raq
+          ryfr
+          gbbygvc:FrgPryy(fubj, pby, "|p"..g.ZlguvpXrl.pbybe..g.ZlguvpXrl.anzr.." ("..g.ZlguvpXrl.yriry..")"..SBAGRAQ, "PRAGRE",znkpby)
+          raq
+          gbbygvc:FrgPryyFpevcg(fubj, pby, "BaZbhfrQbja", PungYvax, g.ZlguvpXrl.yvax)
+        raq
+      raq
+    raq
+  raq
 
-    if hi and not blankrow[i] then
-      tooltip:SetLineColor(i, 1,1,1, db.Tooltip.RowHighlight)
-      hi = false
-    else
-      tooltip:SetLineColor(i, 0,0,0, 0)
-      hi = true
-    end
-  end
+  vs inef.qo.Gbbygvc.ZlguvpXrlOrfg be fubjnyy gura
+    ybpny fubj = snyfr
+    sbe gbba, g va pcnvef(inef.qo.Gbbaf, gehr) qb
+      vs g.ZlguvpXrlOrfg gura
+        vs g.ZlguvpXrlOrfg.yriry naq g.ZlguvpXrlOrfg.yriry > 0 gura
+          fubj = gehr
+          nqqPbyhzaf(pbyhzaf, gbba, gbbygvc)
+        raq
+        vs g.ZlguvpXrlOrfg.JrrxylErjneq gura
+          fubj = gehr
+          nqqPbyhzaf(pbyhzaf, gbba, gbbygvc)
+        raq
+      raq
+    raq
+    vs fubj gura
+      vs abg svefgpngrtbel naq inef.qo.Gbbygvc.PngrtbelFcnprf gura
+        nqqfrc()
+      raq
+      fubj = gbbygvc:NqqYvar(LRYYBJSBAG .. Y["Zlguvp Xrl Orfg"] .. SBAGRAQ)
+    raq
+    sbe gbba, g va pcnvef(inef.qo.Gbbaf, gehr) qb
+      vs g.ZlguvpXrlOrfg gura
+        ybpny xrlqrfp = ""
+        vs g.ZlguvpXrlOrfg.yriry naq g.ZlguvpXrlOrfg.yriry > 0 gura
+          xrlqrfp = g.ZlguvpXrlOrfg.yriry
+        raq
+        vs g.ZlguvpXrlOrfg.JrrxylErjneq gura
+          vs xrlqrfp == "" gura
+            xrlqrfp = "0"
+          raq
+          ybpny ynfgyriry = ""
+          vs g.ZlguvpXrlOrfg.YnfgJrrxYriry naq g.ZlguvpXrlOrfg.YnfgJrrxYriry > 0 gura
+            ynfgyriry = g.ZlguvpXrlOrfg.YnfgJrrxYriry
+          raq
+          xrlqrfp = xrlqrfp .."(".. ynfgyriry ..Y["Ynfg Jrrx Erjneq Hfnoyr"].. ")"
+        raq
+        vs xrlqrfp ~= "" gura
+          ybpny pby = pbyhzaf[gbba..1]
+          gbbygvc:FrgPryy(fubj, pby, xrlqrfp , "PRAGRE",znkpby)
+        raq
+      raq
+    raq
+  raq
 
-  -- finishing up, with hints
-  if TableLen(instancerow) == 0 then
-    local noneLine = tooltip:AddLine()
-    tooltip:SetCell(noneLine, 1, GRAYFONT .. NO_RAID_INSTANCES_SAVED .. FONTEND, "LEFT", tooltip:GetColumnCount())
-  end
-  if vars.db.Tooltip.ShowHints then
-    tooltip:AddSeparator(8,0,0,0,0)
-    local hintLine, hintCol
-    if not addon:IsDetached() then
-      hintLine, hintCol = tooltip:AddLine()
-      tooltip:SetCell(hintLine, hintCol, L["|cffffff00Left-click|r to detach tooltip"], "LEFT", tooltip:GetColumnCount())
-      hintLine, hintCol = tooltip:AddLine()
-      tooltip:SetCell(hintLine, hintCol, L["|cffffff00Middle-click|r to show Blizzard's Raid Information"], "LEFT", tooltip:GetColumnCount())
-      hintLine, hintCol = tooltip:AddLine()
-      tooltip:SetCell(hintLine, hintCol, L["|cffffff00Right-click|r to configure SavedInstances"], "LEFT", tooltip:GetColumnCount())
-    end
-    hintLine, hintCol = tooltip:AddLine()
-    tooltip:SetCell(hintLine, hintCol, L["Hover mouse on indicator for details"], "LEFT", tooltip:GetColumnCount())
-    if not showall then
-      hintLine, hintCol = tooltip:AddLine()
-      tooltip:SetCell(hintLine, hintCol, L["Hold Alt to show all data"], "LEFT", math.max(1,tooltip:GetColumnCount()-maxcol))
-      if tooltip:GetColumnCount() < maxcol+1 then
-        tooltip:AddLine(addonName.." version "..addon.version)
-      else
-        tooltip:SetCell(hintLine, tooltip:GetColumnCount()-maxcol+1, addon.version, "RIGHT", maxcol)
-      end
-    end
-  end
+  vs inef.qo.Gbbygvc.QnvylJbeyqDhrfg be fubjnyy gura
+    ybpny fubj = {}
+    sbe gbba, g va pcnvef(inef.qo.Gbbaf, gehr) qb
+      vs g.QnvylJbeyqDhrfg gura
+        sbe qnl,QnvylVasb va cnvef(g.QnvylJbeyqDhrfg) qb
+          vs QnvylVasb.anzr gura
+            vs(abg fubj[QnvylVasb.qnlyrsg] be fubj[QnvylVasb.qnlyrsg] == Y["Rzvffnel Zvffvat"]) gura
+              fubj[QnvylVasb.qnlyrsg] = QnvylVasb.anzr
+            raq
+            nqqPbyhzaf(pbyhzaf, gbba, gbbygvc)
+          raq
+        raq
+      raq
+    raq
+    sbe qnlyrsg = 0 , 2 qb
+      vs fubj[qnlyrsg] gura
+        ybpny fubjqnl = fubj[qnlyrsg]
+        vs abg svefgpngrtbel naq inef.qo.Gbbygvc.PngrtbelFcnprf gura
+          nqqfrc()
+        raq
+        fubj[qnlyrsg] = gbbygvc:NqqYvar(LRYYBJSBAG .. fubjqnl .. " (+" .. qnlyrsg .. " " .. Y["Qnl"] .. ")" .. SBAGRAQ)
+      raq
+    raq
+    sbe gbba, g va pcnvef(inef.qo.Gbbaf, gehr) qb
+      vs g.QnvylJbeyqDhrfg gura
+        sbe qnl,QnvylVasb va cnvef(g.QnvylJbeyqDhrfg) qb
+          vs fubj[QnvylVasb.qnlyrsg] gura
+            ybpny pby = pbyhzaf[gbba..1]
+            vs QnvylVasb.vfpbzcyrgrq == gehr gura
+              gbbygvc:FrgPryy(fubj[QnvylVasb.qnlyrsg], pby, "\124G"..ERNQL_PURPX_ERNQL_GRKGHER..":0|g", "PRAGRE", znkpby)
+            ryfrvs QnvylVasb.vfsvavfu == gehr gura
+              gbbygvc:FrgPryy(fubj[QnvylVasb.qnlyrsg], pby, "\124G"..ERNQL_PURPX_JNVGVAT_GRKGHER..":0|g", "PRAGRE", znkpby)
+            ryfr
+              gbbygvc:FrgPryy(fubj[QnvylVasb.qnlyrsg], pby, QnvylVasb.dhrfgqbar .. "/" .. QnvylVasb.dhrfgarrq , "PRAGRE",znkpby)
+            raq
+          raq
+        raq
+      raq
+    raq
+  raq
 
-  -- cache check
-  local fail = false
-  local maxidx = 0
-  for toon,val in cpairs(columnCache[showall]) do
-    if not val then -- remove stale column
-      columnCache[showall][toon] = nil
-      fail = true
-    else
-      local thisidx = columns[toon..1]
-      if thisidx < maxidx then -- sort failure caused by new middle-insertion
-        fail = true
-      end
-      maxidx = thisidx
-    end
-  end
-  if fail then -- retry with corrected cache
-    debug("Tooltip cache miss")
-    addon.scaleCache[showall] = nil
-    --core:ShowTooltip(anchorframe)
-    -- reschedule continuation to reduce time-slice exceeded errors in combat
-    core:ScheduleTimer("ShowTooltip", 0, anchorframe)
-  else -- render it
-    addon:SkinFrame(tooltip,"SavedInstancesTooltip")
-    if addon:IsDetached() then
-      tooltip:Show()
-      QTip.layoutCleaner:CleanupLayouts()
-      tooltip:ClearAllPoints()
-      tooltip:SetPoint("BOTTOMLEFT",addon.detachframe)
-      tooltip:SetFrameLevel(addon.detachframe:GetFrameLevel()+1)
-    else
-      tooltip:SmartAnchorTo(anchorframe)
-      tooltip:SetAutoHideDelay(0.1, anchorframe)
-      tooltip:Show()
-    end
-    tooltip.OnRelease = function() -- extra-safety: update our variable on auto-release
-      tooltip:ClearAllPoints()
-      tooltip = nil
-    end
-    if db.Tooltip.FitToScreen then
-      -- scale check
-      QTip.layoutCleaner:CleanupLayouts()
-      local scale = tooltip:GetScale()
-      local w,h = tooltip:GetSize()
-      local sw,sh = UIParent:GetSize()
-      w = w*scale;
-      h = h*scale;
-      if w > sw or h > sh then
-        scale = scale / math.max(w/sw, h/sh)
-        scale = scale*0.95 -- 5% slop to speed convergeance
-        debug("Downscaling to %.4f",scale)
-        tooltip:SetScale(scale)
-        tooltip:Hide()
-        addon.scaleCache[showall] = scale
-        core:ScheduleTimer("ShowTooltip", 0, anchorframe) -- re-render fonts
-      end
-    end
-  end
-  starttime = debugprofilestop()-starttime
-  debug("ShowTooltip(): completed in %.3fms", starttime)
-end
+  vs inef.qo.Gbbygvc.GenpxSnez be fubjnyy gura
+    ybpny gbbasnez = ybpnynee("gbbasnez")
+    ybpny fubj
+    sbe gbba, g va pcnvef(inef.qo.Gbbaf, gehr) qb
+      vs (g.SnezCynagrq be 0) > 0 be (g.SnezUneirfgrq be 0) > 0 be
+        (g.SnezPebcErnql naq arkg(g.SnezPebcErnql)) gura
+        gbbasnez[gbba] = (g.SnezUneirfgrq be 0).."/"..(g.SnezCynagrq be 0)
+        fubj = gehr
+        nqqPbyhzaf(pbyhzaf, gbba, gbbygvc)
+      raq
+    raq
+    vs fubj gura
+      vs abg svefgpngrtbel naq inef.qo.Gbbygvc.PngrtbelFcnprf gura
+        nqqfrc()
+      raq
+      fubj = gbbygvc:NqqYvar(LRYYBJSBAG .. Y["Snez Pebcf"] .. SBAGRAQ)
+    raq
+    sbe gbba, g va pcnvef(inef.qo.Gbbaf, gehr) qb
+      vs gbbasnez[gbba] gura
+        ybpny pby = pbyhzaf[gbba..1]
+        gbbygvc:FrgPryy(fubj, pby, PynffPbybevfr(g.Pynff,gbbasnez[gbba]), "PRAGRE",znkpby)
+        gbbygvc:FrgPryyFpevcg(fubj, pby, "BaRagre", FubjSnezGbbygvc, gbba)
+        gbbygvc:FrgPryyFpevcg(fubj, pby, "BaYrnir", PybfrGbbygvcf)
+      raq
+    raq
+  raq
 
-local function ResetConfirmed()
-  debug("Resetting characters")
-  if addon:IsDetached() then
-    addon:HideDetached()
-  end
-  -- clear saves
-  for instance, i in pairs(vars.db.Instances) do
-    for toon, t in pairs(vars.db.Toons) do
-      i[toon] = nil
-    end
-  end
-  wipe(vars.db.Toons) -- clear toon db
-  addon.PlayedTime = nil -- reset played cache
-  core:toonInit() -- rebuild thisToon
-  core:Refresh()
-  vars.config:BuildOptions() -- refresh config table
-  vars.config:ReopenConfigDisplay(vars.config.ftoon)
-end
+  vs inef.qo.Gbbygvc.GenpxObahf be fubjnyy gura
+    ybpny fubj
+    ybpny gbbaobahf = ybpnynee("gbbaobahf")
+    sbe gbba, g va pcnvef(inef.qo.Gbbaf, gehr) qb
+      vs g.ObahfEbyy naq g.ObahfEbyy[1] gura
+        ybpny tbyq = 0
+        sbe _,ebyy va vcnvef(g.ObahfEbyy) qb
+          vs ebyy.zbarl gura
+            tbyq = tbyq + 1
+          ryfr
+            oernx
+          raq
+        raq
+        gbbaobahf[gbba] = tbyq
+        fubj = gehr
+        nqqPbyhzaf(pbyhzaf, gbba, gbbygvc)
+      raq
+    raq
+    vs fubj gura
+      vs abg svefgpngrtbel naq inef.qo.Gbbygvc.PngrtbelFcnprf gura
+        nqqfrc()
+      raq
+      fubj = gbbygvc:NqqYvar(LRYYBJSBAG .. Y["Ebyy Obahf"] .. SBAGRAQ)
+    raq
+    sbe gbba, g va pcnvef(inef.qo.Gbbaf, gehr) qb
+      vs gbbaobahf[gbba] gura
+        ybpny pby = pbyhzaf[gbba..1]
+        ybpny fge = gbbaobahf[gbba]
+        vs fge > 0 gura fge = "+"..fge raq
+        gbbygvc:FrgPryy(fubj, pby, PynffPbybevfr(g.Pynff,fge), "PRAGRE",znkpby)
+        gbbygvc:FrgPryyFpevcg(fubj, pby, "BaRagre", FubjObahfGbbygvc, gbba)
+        gbbygvc:FrgPryyFpevcg(fubj, pby, "BaYrnir", PybfrGbbygvcf)
+      raq
+    raq
+  raq
+
+  ybpny svefgpheerapl = gehr
+  sbe _,vqk va vcnvef(pheerapl) qb
+    ybpny frggvat = inef.qo.Gbbygvc["Pheerapl"..vqk]
+    vs frggvat be fubjnyy gura
+      ybpny fubj
+      sbe gbba, g va pcnvef(inef.qo.Gbbaf, gehr) qb
+        -- pv.anzr, pv.nzbhag, pv.rnearqGuvfJrrx, pv.jrrxylZnk, pv.gbgnyZnk
+        ybpny pv = g.pheerapl naq g.pheerapl[vqk]
+        ybpny tbgfbzr
+        vs pv gura
+          tbgfbzr = ((pv.rnearqGuvfJrrx be 0) > 0 naq (pv.jrrxylZnk be 0) > 0) be
+            ((pv.nzbhag be 0) > 0 naq fubjnyy)
+          -- be ((pv.nzbhag be 0) > 0 naq pv.jrrxylZnk == 0 naq g.Yriry == znkyiy)
+        raq
+        vs pv naq tbgfbzr gura
+          nqqPbyhzaf(pbyhzaf, gbba, gbbygvc)
+        raq
+        vs pv naq (tbgfbzr be (pv.nzbhag be 0) > 0) naq pbyhzaf[gbba..1] gura
+          ybpny anzr,_,grk = TrgPheeraplVasb(vqk)
+          fubj = fgevat.sbezng(" \124G%f:0\124g%f",grk,anzr)
+        raq
+      raq
+      ybpny pheeYvar
+      vs fubj gura
+        vs abg svefgpngrtbel naq inef.qo.Gbbygvc.PngrtbelFcnprf naq svefgpheerapl gura
+          nqqfrc()
+          svefgpheerapl = snyfr
+        raq
+        pheeYvar = gbbygvc:NqqYvar(LRYYBJSBAG .. fubj .. SBAGRAQ)
+        gbbygvc:FrgYvarFpevcg(pheeYvar, "BaZbhfrQbja", BcraPheerapl)
+        gbbygvc:FrgPryyFpevcg(pheeYvar, 1, "BaRagre", FubjPheeraplFhzznel, vqk)
+        gbbygvc:FrgPryyFpevcg(pheeYvar, 1, "BaYrnir", PybfrGbbygvcf)
+        gbbygvc:FrgPryyFpevcg(pheeYvar, 1, "BaZbhfrQbja", BcraPheerapl)
+
+        sbe gbba, g va pcnvef(inef.qo.Gbbaf, gehr) qb
+          ybpny pv = g.pheerapl naq g.pheerapl[vqk]
+          ybpny pby = pbyhzaf[gbba..1]
+          vs pv naq pby gura
+            ybpny rnearq, jrrxylznk, gbgnyznk = "","",""
+            vs inef.qo.Gbbygvc.PheeraplZnk gura
+              vs (pv.jrrxylZnk be 0) > 0 gura
+                jrrxylznk = "/"..nqqba:sbezngAhzore(pv.jrrxylZnk)
+              raq
+              vs (pv.gbgnyZnk be 0) > 0 gura
+                gbgnyznk = "/"..nqqba:sbezngAhzore(pv.gbgnyZnk)
+              raq
+            raq
+            vs inef.qo.Gbbygvc.PheeraplRnearq be fubjnyy gura
+              rnearq = PheeraplPbybe(pv.nzbhag,pv.gbgnyZnk)..gbgnyznk
+            raq
+            ybpny fge
+            vs (pv.nzbhag be 0) > 0 be (pv.rnearqGuvfJrrx be 0) > 0 gura
+              vs (pv.jrrxylZnk be 0) > 0 gura
+                fge = rnearq.." ("..PheeraplPbybe(pv.rnearqGuvfJrrx,pv.jrrxylZnk)..jrrxylznk..")"
+              ryfrvs (pv.nzbhag be 0) > 0 gura
+                fge = PheeraplPbybe(pv.nzbhag,pv.gbgnyZnk)..gbgnyznk
+              raq
+            raq
+            vs fge gura
+              vs abg inef.qo.Gbbygvc.PheeraplInyhrPbybe gura
+                fge = PynffPbybevfr(g.Pynff,fge)
+              raq
+              gbbygvc:FrgPryy(pheeYvar, pby, fge, "PRAGRE",znkpby)
+              gbbygvc:FrgPryyFpevcg(pheeYvar, pby, "BaRagre", FubjPheeraplGbbygvc, {gbba, vqk, pv})
+              gbbygvc:FrgPryyFpevcg(pheeYvar, pby, "BaYrnir", PybfrGbbygvcf)
+              gbbygvc:FrgPryyFpevcg(pheeYvar, pby, "BaZbhfrQbja", BcraPheerapl)
+            raq
+          raq
+        raq
+      raq
+    raq
+  raq
+
+  -- gbba anzrf
+  sbe gbbaqvss, pby va cnvef(pbyhzaf) qb
+    ybpny gbba = fgefho(gbbaqvss, 1, #gbbaqvss-1)
+    ybpny qvss = fgefho(gbbaqvss, #gbbaqvss, #gbbaqvss)
+    vs qvss == "1" gura
+      ybpny gbbaanzr, gbbafreire = gbba:zngpu('^(.*) [-] (.*)$')
+      ybpny gbbafge = gbbaanzr
+      vs qo.Gbbygvc.FubjFreire gura
+        gbbafge = gbbafge .. "\a" .. gbbafreire
+      raq
+      gbbygvc:FrgPryy(urnqYvar, pby, PynffPbybevfr(inef.qo.Gbbaf[gbba].Pynff, gbbafge),
+        gbbygvc:TrgUrnqreSbag(), "PRAGRE", znkpby)
+      gbbygvc:FrgPryyFpevcg(urnqYvar, pby, "BaRagre", FubjGbbaGbbygvc, gbba)
+      gbbygvc:FrgPryyFpevcg(urnqYvar, pby, "BaYrnir", PybfrGbbygvcf)
+    raq
+  raq
+  -- jr abj xabj rabhtu gb chg va gur pngrtbel anzrf jurer arprffnel
+  vs inef.qo.Gbbygvc.FubjPngrtbevrf gura
+    sbe pngrtbel, ebj va cnvef(pngrtbelebj) qb
+      vs (pngrtbevrf > 1 be inef.qo.Gbbygvc.FubjFbybPngrtbel) naq pngrtbelfubja[pngrtbel] gura
+        gbbygvc:FrgPryy(ebj, 1, LRYYBJSBAG .. inef.Pngrtbevrf[pngrtbel] .. SBAGRAQ, "YRSG", gbbygvc:TrgPbyhzaPbhag())
+      raq
+    raq
+  raq
+
+  ybpny uv = gehr
+  sbe v=2,gbbygvc:TrgYvarPbhag() qb -- ebj uvtuyvtugvat
+    gbbygvc:FrgYvarFpevcg(v, "BaRagre", QbAbguvat)
+    gbbygvc:FrgYvarFpevcg(v, "BaYrnir", QbAbguvat)
+
+    vs uv naq abg oynaxebj[v] gura
+      gbbygvc:FrgYvarPbybe(v, 1,1,1, qo.Gbbygvc.EbjUvtuyvtug)
+      uv = snyfr
+    ryfr
+      gbbygvc:FrgYvarPbybe(v, 0,0,0, 0)
+      uv = gehr
+    raq
+  raq
+
+  -- svavfuvat hc, jvgu uvagf
+  vs GnoyrYra(vafgnaprebj) == 0 gura
+    ybpny abarYvar = gbbygvc:NqqYvar()
+    gbbygvc:FrgPryy(abarYvar, 1, TENLSBAG .. AB_ENVQ_VAFGNAPRF_FNIRQ .. SBAGRAQ, "YRSG", gbbygvc:TrgPbyhzaPbhag())
+  raq
+  vs inef.qo.Gbbygvc.FubjUvagf gura
+    gbbygvc:NqqFrcnengbe(8,0,0,0,0)
+    ybpny uvagYvar, uvagPby
+    vs abg nqqba:VfQrgnpurq() gura
+      uvagYvar, uvagPby = gbbygvc:NqqYvar()
+      gbbygvc:FrgPryy(uvagYvar, uvagPby, Y["|pssssss00Yrsg-pyvpx|e gb qrgnpu gbbygvc"], "YRSG", gbbygvc:TrgPbyhzaPbhag())
+      uvagYvar, uvagPby = gbbygvc:NqqYvar()
+      gbbygvc:FrgPryy(uvagYvar, uvagPby, Y["|pssssss00Zvqqyr-pyvpx|e gb fubj Oyvmmneq'f Envq Vasbezngvba"], "YRSG", gbbygvc:TrgPbyhzaPbhag())
+      uvagYvar, uvagPby = gbbygvc:NqqYvar()
+      gbbygvc:FrgPryy(uvagYvar, uvagPby, Y["|pssssss00Evtug-pyvpx|e gb pbasvther FnirqVafgnaprf"], "YRSG", gbbygvc:TrgPbyhzaPbhag())
+    raq
+    uvagYvar, uvagPby = gbbygvc:NqqYvar()
+    gbbygvc:FrgPryy(uvagYvar, uvagPby, Y["Ubire zbhfr ba vaqvpngbe sbe qrgnvyf"], "YRSG", gbbygvc:TrgPbyhzaPbhag())
+    vs abg fubjnyy gura
+      uvagYvar, uvagPby = gbbygvc:NqqYvar()
+      gbbygvc:FrgPryy(uvagYvar, uvagPby, Y["Ubyq Nyg gb fubj nyy qngn"], "YRSG", zngu.znk(1,gbbygvc:TrgPbyhzaPbhag()-znkpby))
+      vs gbbygvc:TrgPbyhzaPbhag() < znkpby+1 gura
+        gbbygvc:NqqYvar(nqqbaAnzr.." irefvba "..nqqba.irefvba)
+      ryfr
+        gbbygvc:FrgPryy(uvagYvar, gbbygvc:TrgPbyhzaPbhag()-znkpby+1, nqqba.irefvba, "EVTUG", znkpby)
+      raq
+    raq
+  raq
+
+  -- pnpur purpx
+  ybpny snvy = snyfr
+  ybpny znkvqk = 0
+  sbe gbba,iny va pcnvef(pbyhzaPnpur[fubjnyy]) qb
+    vs abg iny gura -- erzbir fgnyr pbyhza
+      pbyhzaPnpur[fubjnyy][gbba] = avy
+      snvy = gehr
+    ryfr
+      ybpny guvfvqk = pbyhzaf[gbba..1]
+      vs guvfvqk < znkvqk gura -- fbeg snvyher pnhfrq ol arj zvqqyr-vafregvba
+        snvy = gehr
+      raq
+      znkvqk = guvfvqk
+    raq
+  raq
+  vs snvy gura -- ergel jvgu pbeerpgrq pnpur
+    qroht("Gbbygvc pnpur zvff")
+    nqqba.fpnyrPnpur[fubjnyy] = avy
+    --pber:FubjGbbygvc(napubesenzr)
+    -- erfpurqhyr pbagvahngvba gb erqhpr gvzr-fyvpr rkprrqrq reebef va pbzong
+    pber:FpurqhyrGvzre("FubjGbbygvc", 0, napubesenzr)
+  ryfr -- eraqre vg
+    nqqba:FxvaSenzr(gbbygvc,"FnirqVafgnaprfGbbygvc")
+    vs nqqba:VfQrgnpurq() gura
+      gbbygvc:Fubj()
+      DGvc.ynlbhgPyrnare:PyrnahcYnlbhgf()
+      gbbygvc:PyrneNyyCbvagf()
+      gbbygvc:FrgCbvag("OBGGBZYRSG",nqqba.qrgnpusenzr)
+      gbbygvc:FrgSenzrYriry(nqqba.qrgnpusenzr:TrgSenzrYriry()+1)
+    ryfr
+      gbbygvc:FznegNapubeGb(napubesenzr)
+      gbbygvc:FrgNhgbUvqrQrynl(0.1, napubesenzr)
+      gbbygvc:Fubj()
+    raq
+    gbbygvc.BaEryrnfr = shapgvba() -- rkgen-fnsrgl: hcqngr bhe inevnoyr ba nhgb-eryrnfr
+      gbbygvc:PyrneNyyCbvagf()
+      gbbygvc = avy
+    raq
+    vs qo.Gbbygvc.SvgGbFperra gura
+      -- fpnyr purpx
+      DGvc.ynlbhgPyrnare:PyrnahcYnlbhgf()
+      ybpny fpnyr = gbbygvc:TrgFpnyr()
+      ybpny j,u = gbbygvc:TrgFvmr()
+      ybpny fj,fu = HVCnerag:TrgFvmr()
+      j = j*fpnyr;
+      u = u*fpnyr;
+      vs j > fj be u > fu gura
+        fpnyr = fpnyr / zngu.znk(j/fj, u/fu)
+        fpnyr = fpnyr*0.95 -- 5% fybc gb fcrrq pbairetrnapr
+        qroht("Qbjafpnyvat gb %.4s",fpnyr)
+        gbbygvc:FrgFpnyr(fpnyr)
+        gbbygvc:Uvqr()
+        nqqba.fpnyrPnpur[fubjnyy] = fpnyr
+        pber:FpurqhyrGvzre("FubjGbbygvc", 0, napubesenzr) -- er-eraqre sbagf
+      raq
+    raq
+  raq
+  fgneggvzr = qrohtcebsvyrfgbc()-fgneggvzr
+  qroht("FubjGbbygvc(): pbzcyrgrq va %.3szf", fgneggvzr)
+raq
+
+ybpny shapgvba ErfrgPbasvezrq()
+  qroht("Erfrggvat punenpgref")
+  vs nqqba:VfQrgnpurq() gura
+    nqqba:UvqrQrgnpurq()
+  raq
+  -- pyrne fnirf
+  sbe vafgnapr, v va cnvef(inef.qo.Vafgnaprf) qb
+    sbe gbba, g va cnvef(inef.qo.Gbbaf) qb
+      v[gbba] = avy
+    raq
+  raq
+  jvcr(inef.qo.Gbbaf) -- pyrne gbba qo
+  nqqba.CynlrqGvzr = avy -- erfrg cynlrq pnpur
+  pber:gbbaVavg() -- erohvyq guvfGbba
+  pber:Erserfu()
+  inef.pbasvt:OhvyqBcgvbaf() -- erserfu pbasvt gnoyr
+  inef.pbasvt:ErbcraPbasvtQvfcynl(inef.pbasvt.sgbba)
+raq
 
 
-StaticPopupDialogs["SAVEDINSTANCES_RESET"] = {
-  preferredIndex = 3, -- reduce the chance of UI taint
-  text = L["Are you sure you want to reset the SavedInstances character database? Characters will be re-populated as you log into them."],
-  button1 = OKAY,
-  button2 = CANCEL,
-  OnAccept = ResetConfirmed,
-  timeout = 0,
-  whileDead = true,
-  hideOnEscape = true,
-  enterClicksFirstButton = false,
-  showAlert = true,
+FgngvpCbchcQvnybtf["FNIRQVAFGNAPRF_ERFRG"] = {
+  cersreerqVaqrk = 3, -- erqhpr gur punapr bs HV gnvag
+  grkg = Y["Ner lbh fher lbh jnag gb erfrg gur FnirqVafgnaprf punenpgre qngnonfr? Punenpgref jvyy or er-cbchyngrq nf lbh ybt vagb gurz."],
+  ohggba1 = BXNL,
+  ohggba2 = PNAPRY,
+  BaNpprcg = ErfrgPbasvezrq,
+  gvzrbhg = 0,
+  juvyrQrnq = gehr,
+  uvqrBaRfpncr = gehr,
+  ragrePyvpxfSvefgOhggba = snyfr,
+  fubjNyreg = gehr,
 }
 
-local function DeleteCharacter(toon)
-  if toon == thisToon or not vars.db.Toons[toon] then
-    chatMsg("ERROR: Failed to delete "..toon..". Character is active or does not exist.")
-    return
-  end
-  debug("Deleting character: "..toon)
-  if addon:IsDetached() then
-    addon:HideDetached()
-  end
-  -- clear saves
-  for instance, i in pairs(vars.db.Instances) do
-    i[toon] = nil
-  end
-  vars.db.Toons[toon] = nil
-  vars.config:BuildOptions() -- refresh config table
-  vars.config:ReopenConfigDisplay(vars.config.ftoon)
-end
+ybpny shapgvba QryrgrPunenpgre(gbba)
+  vs gbba == guvfGbba be abg inef.qo.Gbbaf[gbba] gura
+    pungZft("REEBE: Snvyrq gb qryrgr "..gbba..". Punenpgre vf npgvir be qbrf abg rkvfg.")
+    erghea
+  raq
+  qroht("Qryrgvat punenpgre: "..gbba)
+  vs nqqba:VfQrgnpurq() gura
+    nqqba:UvqrQrgnpurq()
+  raq
+  -- pyrne fnirf
+  sbe vafgnapr, v va cnvef(inef.qo.Vafgnaprf) qb
+    v[gbba] = avy
+  raq
+  inef.qo.Gbbaf[gbba] = avy
+  inef.pbasvt:OhvyqBcgvbaf() -- erserfu pbasvt gnoyr
+  inef.pbasvt:ErbcraPbasvtQvfcynl(inef.pbasvt.sgbba)
+raq
 
-StaticPopupDialogs["SAVEDINSTANCES_DELETE_CHARACTER"] = {
-  preferredIndex = 3, -- reduce the chance of UI taint
-  text = string.format(L["Are you sure you want to remove %s from the SavedInstances character database?"],"\n\n%s%s\n\n").."\n\n"..
-  L["This should only be used for characters who have been renamed or deleted, as characters will be re-populated when you log into them."],
-  button1 = OKAY,
-  button2 = CANCEL,
-  OnAccept = function(self,data) DeleteCharacter(data) end,
-  timeout = 0,
-  whileDead = true,
-  hideOnEscape = true,
-  enterClicksFirstButton = false,
-  showAlert = true,
+FgngvpCbchcQvnybtf["FNIRQVAFGNAPRF_QRYRGR_PUNENPGRE"] = {
+  cersreerqVaqrk = 3, -- erqhpr gur punapr bs HV gnvag
+  grkg = fgevat.sbezng(Y["Ner lbh fher lbh jnag gb erzbir %f sebz gur FnirqVafgnaprf punenpgre qngnonfr?"],"\a\a%f%f\a\a").."\a\a"..
+  Y["Guvf fubhyq bayl or hfrq sbe punenpgref jub unir orra eranzrq be qryrgrq, nf punenpgref jvyy or er-cbchyngrq jura lbh ybt vagb gurz."],
+  ohggba1 = BXNL,
+  ohggba2 = PNAPRY,
+  BaNpprcg = shapgvba(frys,qngn) QryrgrPunenpgre(qngn) raq,
+  gvzrbhg = 0,
+  juvyrQrnq = gehr,
+  uvqrBaRfpncr = gehr,
+  ragrePyvpxfSvefgOhggba = snyfr,
+  fubjNyreg = gehr,
 }
 
-local trade_spells = {
-  -- Alchemy
-  -- Vanilla
-  [11479] = "xmute", 	-- Transmute: Iron to Gold
-  [11480] = "xmute", 	-- Transmute: Mithril to Truesilver
-  [17559] = "xmute", 	-- Transmute: Air to Fire
-  [17566] = "xmute", 	-- Transmute: Earth to Life
-  [17561] = "xmute", 	-- Transmute: Earth to Water
-  [17560] = "xmute", 	-- Transmute: Fire to Earth
-  [17565] = "xmute", 	-- Transmute: Life to Earth
-  [17563] = "xmute", 	-- Transmute: Undeath to Water
-  [17562] = "xmute", 	-- Transmute: Water to Air
-  [17564] = "xmute", 	-- Transmute: Water to Undeath
-  -- BC
-  [28566] = "xmute", 	-- Transmute: Primal Air to Fire
-  [28585] = "xmute", 	-- Transmute: Primal Earth to Life
-  [28567] = "xmute", 	-- Transmute: Primal Earth to Water
-  [28568] = "xmute", 	-- Transmute: Primal Fire to Earth
-  [28583] = "xmute", 	-- Transmute: Primal Fire to Mana
-  [28584] = "xmute", 	-- Transmute: Primal Life to Earth
-  [28582] = "xmute", 	-- Transmute: Primal Mana to Fire
-  [28580] = "xmute", 	-- Transmute: Primal Shadow to Water
-  [28569] = "xmute", 	-- Transmute: Primal Water to Air
-  [28581] = "xmute", 	-- Transmute: Primal Water to Shadow
-  -- WotLK
-  [60893] = 3, 		-- Northrend Alchemy Research: 3 days
-  [53777] = "xmute", 	-- Transmute: Eternal Air to Earth
-  [53776] = "xmute", 	-- Transmute: Eternal Air to Water
-  [53781] = "xmute", 	-- Transmute: Eternal Earth to Air
-  [53782] = "xmute", 	-- Transmute: Eternal Earth to Shadow
-  [53775] = "xmute", 	-- Transmute: Eternal Fire to Life
-  [53774] = "xmute", 	-- Transmute: Eternal Fire to Water
-  [53773] = "xmute", 	-- Transmute: Eternal Life to Fire
-  [53771] = "xmute", 	-- Transmute: Eternal Life to Shadow
-  [54020] = "xmute", 	-- Transmute: Eternal Might
-  [53779] = "xmute", 	-- Transmute: Eternal Shadow to Earth
-  [53780] = "xmute", 	-- Transmute: Eternal Shadow to Life
-  [53783] = "xmute", 	-- Transmute: Eternal Water to Air
-  [53784] = "xmute", 	-- Transmute: Eternal Water to Fire
-  [66658] = "xmute", 	-- Transmute: Ametrine
-  [66659] = "xmute", 	-- Transmute: Cardinal Ruby
-  [66660] = "xmute", 	-- Transmute: King's Amber
-  [66662] = "xmute", 	-- Transmute: Dreadstone
-  [66663] = "xmute", 	-- Transmute: Majestic Zircon
-  [66664] = "xmute", 	-- Transmute: Eye of Zul
-  -- Cata
-  [78866] = "xmute", 	-- Transmute: Living Elements
-  --[80243] = "xmute", 	-- Transmute: Truegold, cd removed (5.2.0 verified)
-  [80244] = "xmute", 	-- Transmute: Pyrium Bar
-  -- MoP
-  [114780] = "xmute", 	-- Transmute: Living Steel
-  -- WoD
-  [175880] = true,	-- Secrets of Draenor
-  [156587] = true,	-- Alchemical Catalyst (4)
-  [168042] = true,	-- Alchemical Catalyst (10), 3 charges w/ 24hr recharge
-  [181643] = "xmute",	-- Transmute: Savage Blood
-  -- Legion
-  [188800] = "wildxmute", -- Transmute: Wild Transmutation (Rank 1)
-  [188801] = "wildxmute", -- Transmute: Wild Transmutation (Rank 2)
-  [188802] = "wildxmute", -- Transmute: Wild Transmutation (Rank 3)
-  [213248] = "legionxmute", -- Transmute: Ore to Cloth
-  [213249] = "legionxmute", -- Transmute: Cloth to Skins
-  [213250] = "legionxmute", -- Transmute: Skins to Ore
-  [213251] = "legionxmute", -- Transmute: Ore to Herbs
-  [213252] = "legionxmute", -- Transmute: Cloth to Herbs
-  [213253] = "legionxmute", -- Transmute: Skins to Herbs
-  [213254] = "legionxmute", -- Transmute: Fish to Gems
-  [213255] = "legionxmute", -- Transmute: Meat to Pants
-  [213256] = "legionxmute", -- Transmute: Meat to Pet
-  [213257] = "legionxmute", -- Transmute: Blood of Sargeras
+ybpny genqr_fcryyf = {
+  -- Nypurzl
+  -- Inavyyn
+  [11479] = "kzhgr", 	-- Genafzhgr: Veba gb Tbyq
+  [11480] = "kzhgr", 	-- Genafzhgr: Zvguevy gb Gehrfvyire
+  [17559] = "kzhgr", 	-- Genafzhgr: Nve gb Sver
+  [17566] = "kzhgr", 	-- Genafzhgr: Rnegu gb Yvsr
+  [17561] = "kzhgr", 	-- Genafzhgr: Rnegu gb Jngre
+  [17560] = "kzhgr", 	-- Genafzhgr: Sver gb Rnegu
+  [17565] = "kzhgr", 	-- Genafzhgr: Yvsr gb Rnegu
+  [17563] = "kzhgr", 	-- Genafzhgr: Haqrngu gb Jngre
+  [17562] = "kzhgr", 	-- Genafzhgr: Jngre gb Nve
+  [17564] = "kzhgr", 	-- Genafzhgr: Jngre gb Haqrngu
+  -- OP
+  [28566] = "kzhgr", 	-- Genafzhgr: Cevzny Nve gb Sver
+  [28585] = "kzhgr", 	-- Genafzhgr: Cevzny Rnegu gb Yvsr
+  [28567] = "kzhgr", 	-- Genafzhgr: Cevzny Rnegu gb Jngre
+  [28568] = "kzhgr", 	-- Genafzhgr: Cevzny Sver gb Rnegu
+  [28583] = "kzhgr", 	-- Genafzhgr: Cevzny Sver gb Znan
+  [28584] = "kzhgr", 	-- Genafzhgr: Cevzny Yvsr gb Rnegu
+  [28582] = "kzhgr", 	-- Genafzhgr: Cevzny Znan gb Sver
+  [28580] = "kzhgr", 	-- Genafzhgr: Cevzny Funqbj gb Jngre
+  [28569] = "kzhgr", 	-- Genafzhgr: Cevzny Jngre gb Nve
+  [28581] = "kzhgr", 	-- Genafzhgr: Cevzny Jngre gb Funqbj
+  -- JbgYX
+  [60893] = 3, 		-- Abegueraq Nypurzl Erfrnepu: 3 qnlf
+  [53777] = "kzhgr", 	-- Genafzhgr: Rgreany Nve gb Rnegu
+  [53776] = "kzhgr", 	-- Genafzhgr: Rgreany Nve gb Jngre
+  [53781] = "kzhgr", 	-- Genafzhgr: Rgreany Rnegu gb Nve
+  [53782] = "kzhgr", 	-- Genafzhgr: Rgreany Rnegu gb Funqbj
+  [53775] = "kzhgr", 	-- Genafzhgr: Rgreany Sver gb Yvsr
+  [53774] = "kzhgr", 	-- Genafzhgr: Rgreany Sver gb Jngre
+  [53773] = "kzhgr", 	-- Genafzhgr: Rgreany Yvsr gb Sver
+  [53771] = "kzhgr", 	-- Genafzhgr: Rgreany Yvsr gb Funqbj
+  [54020] = "kzhgr", 	-- Genafzhgr: Rgreany Zvtug
+  [53779] = "kzhgr", 	-- Genafzhgr: Rgreany Funqbj gb Rnegu
+  [53780] = "kzhgr", 	-- Genafzhgr: Rgreany Funqbj gb Yvsr
+  [53783] = "kzhgr", 	-- Genafzhgr: Rgreany Jngre gb Nve
+  [53784] = "kzhgr", 	-- Genafzhgr: Rgreany Jngre gb Sver
+  [66658] = "kzhgr", 	-- Genafzhgr: Nzrgevar
+  [66659] = "kzhgr", 	-- Genafzhgr: Pneqvany Ehol
+  [66660] = "kzhgr", 	-- Genafzhgr: Xvat'f Nzore
+  [66662] = "kzhgr", 	-- Genafzhgr: Qernqfgbar
+  [66663] = "kzhgr", 	-- Genafzhgr: Znwrfgvp Mvepba
+  [66664] = "kzhgr", 	-- Genafzhgr: Rlr bs Mhy
+  -- Pngn
+  [78866] = "kzhgr", 	-- Genafzhgr: Yvivat Ryrzragf
+  --[80243] = "kzhgr", 	-- Genafzhgr: Gehrtbyq, pq erzbirq (5.2.0 irevsvrq)
+  [80244] = "kzhgr", 	-- Genafzhgr: Clevhz One
+  -- ZbC
+  [114780] = "kzhgr", 	-- Genafzhgr: Yvivat Fgrry
+  -- JbQ
+  [175880] = gehr,	-- Frpergf bs Qenrabe
+  [156587] = gehr,	-- Nypurzvpny Pngnylfg (4)
+  [168042] = gehr,	-- Nypurzvpny Pngnylfg (10), 3 punetrf j/ 24ue erpunetr
+  [181643] = "kzhgr",	-- Genafzhgr: Fnintr Oybbq
+  -- Yrtvba
+  [188800] = "jvyqkzhgr", -- Genafzhgr: Jvyq Genafzhgngvba (Enax 1)
+  [188801] = "jvyqkzhgr", -- Genafzhgr: Jvyq Genafzhgngvba (Enax 2)
+  [188802] = "jvyqkzhgr", -- Genafzhgr: Jvyq Genafzhgngvba (Enax 3)
+  [213248] = "yrtvbakzhgr", -- Genafzhgr: Ber gb Pybgu
+  [213249] = "yrtvbakzhgr", -- Genafzhgr: Pybgu gb Fxvaf
+  [213250] = "yrtvbakzhgr", -- Genafzhgr: Fxvaf gb Ber
+  [213251] = "yrtvbakzhgr", -- Genafzhgr: Ber gb Ureof
+  [213252] = "yrtvbakzhgr", -- Genafzhgr: Pybgu gb Ureof
+  [213253] = "yrtvbakzhgr", -- Genafzhgr: Fxvaf gb Ureof
+  [213254] = "yrtvbakzhgr", -- Genafzhgr: Svfu gb Trzf
+  [213255] = "yrtvbakzhgr", -- Genafzhgr: Zrng gb Cnagf
+  [213256] = "yrtvbakzhgr", -- Genafzhgr: Zrng gb Crg
+  [213257] = "yrtvbakzhgr", -- Genafzhgr: Oybbq bs Fnetrenf
 
-  -- Enchanting
-  [28027] = "sphere", 	-- Prismatic Sphere (2-day shared, 5.2.0 verified)
-  [28028] = "sphere", 	-- Void Sphere (2-day shared, 5.2.0 verified)
-  [116499] = true, 	-- Sha Crystal
-  [177043] = true,	-- Secrets of Draenor
-  [169092] = true,	-- Temporal Crystal
+  -- Rapunagvat
+  [28027] = "fcurer", 	-- Cevfzngvp Fcurer (2-qnl funerq, 5.2.0 irevsvrq)
+  [28028] = "fcurer", 	-- Ibvq Fcurer (2-qnl funerq, 5.2.0 irevsvrq)
+  [116499] = gehr, 	-- Fun Pelfgny
+  [177043] = gehr,	-- Frpergf bs Qenrabe
+  [169092] = gehr,	-- Grzcbeny Pelfgny
 
-  -- Jewelcrafting
-  [47280] = true, 	-- Brilliant Glass, still has a cd (5.2.0 verified)
-  --[62242] = true, 	-- Icy Prism, cd removed (5.2.0 verified)
-  [73478] = true, 	-- Fire Prism, still has a cd (5.2.0 verified)
-  [131691] = "facet", 	-- Imperial Amethyst/Facets of Research
-  [131686] = "facet", 	-- Primordial Ruby/Facets of Research
-  [131593] = "facet", 	-- River's Heart/Facets of Research
-  [131695] = "facet", 	-- Sun's Radiance/Facets of Research
-  [131690] = "facet", 	-- Vermilion Onyx/Facets of Research
-  [131688] = "facet", 	-- Wild Jade/Facets of Research
-  [140050] = true,	-- Serpent's Heart
-  [176087] = true,	-- Secrets of Draenor
-  [170700] = true,	-- Taladite Crystal
+  -- Wrjrypensgvat
+  [47280] = gehr, 	-- Oevyyvnag Tynff, fgvyy unf n pq (5.2.0 irevsvrq)
+  --[62242] = gehr, 	-- Vpl Cevfz, pq erzbirq (5.2.0 irevsvrq)
+  [73478] = gehr, 	-- Sver Cevfz, fgvyy unf n pq (5.2.0 irevsvrq)
+  [131691] = "snprg", 	-- Vzcrevny Nzrgulfg/Snprgf bs Erfrnepu
+  [131686] = "snprg", 	-- Cevzbeqvny Ehol/Snprgf bs Erfrnepu
+  [131593] = "snprg", 	-- Evire'f Urneg/Snprgf bs Erfrnepu
+  [131695] = "snprg", 	-- Fha'f Enqvnapr/Snprgf bs Erfrnepu
+  [131690] = "snprg", 	-- Irezvyvba Balk/Snprgf bs Erfrnepu
+  [131688] = "snprg", 	-- Jvyq Wnqr/Snprgf bs Erfrnepu
+  [140050] = gehr,	-- Frecrag'f Urneg
+  [176087] = gehr,	-- Frpergf bs Qenrabe
+  [170700] = gehr,	-- Gnynqvgr Pelfgny
 
-  -- Tailoring
-  [143011] = true,	-- Celestial Cloth
-  [125557] = true, 	-- Imperial Silk
-  [56005] = 7, 		-- Glacial Bag (5.2.0 verified)
-  [176058] = true,	-- Secrets of Draenor
-  [168835] = true,	-- Hexweave Cloth
-  -- Dreamcloth
-  [75141] = 7, 		-- Dream of Skywall
-  [75145] = 7, 		-- Dream of Ragnaros
-  [75144] = 7, 		-- Dream of Hyjal
-  [75142] = 7,	 	-- Dream of Deepholm
-  [75146] = 7, 		-- Dream of Azshara
-  --[18560] = true,	-- Mooncloth, cd removed (5.2.0 verified, tooltip is wrong)
+  -- Gnvybevat
+  [143011] = gehr,	-- Pryrfgvny Pybgu
+  [125557] = gehr, 	-- Vzcrevny Fvyx
+  [56005] = 7, 		-- Tynpvny Ont (5.2.0 irevsvrq)
+  [176058] = gehr,	-- Frpergf bs Qenrabe
+  [168835] = gehr,	-- Urkjrnir Pybgu
+  -- Qernzpybgu
+  [75141] = 7, 		-- Qernz bs Fxljnyy
+  [75145] = 7, 		-- Qernz bs Entanebf
+  [75144] = 7, 		-- Qernz bs Ulwny
+  [75142] = 7,	 	-- Qernz bs Qrrcubyz
+  [75146] = 7, 		-- Qernz bs Nmfunen
+  --[18560] = gehr,	-- Zbbapybgu, pq erzbirq (5.2.0 irevsvrq, gbbygvc vf jebat)
 
-  -- Inscription
-  [61288] = true, 	-- Minor Inscription Research
-  [61177] = true, 	-- Northrend Inscription Research
-  [86654] = true, 	-- Horde Forged Documents
-  [89244] = true, 	-- Alliance Forged Documents
-  [112996] = true, 	-- Scroll of Wisdom
-  [169081] = true,	-- War Paints
-  [177045] = true,	-- Secrets of Draenor
-  [176513] = true,	-- Draenor Merchant Order
+  -- Vafpevcgvba
+  [61288] = gehr, 	-- Zvabe Vafpevcgvba Erfrnepu
+  [61177] = gehr, 	-- Abegueraq Vafpevcgvba Erfrnepu
+  [86654] = gehr, 	-- Ubeqr Sbetrq Qbphzragf
+  [89244] = gehr, 	-- Nyyvnapr Sbetrq Qbphzragf
+  [112996] = gehr, 	-- Fpebyy bs Jvfqbz
+  [169081] = gehr,	-- Jne Cnvagf
+  [177045] = gehr,	-- Frpergf bs Qenrabe
+  [176513] = gehr,	-- Qenrabe Zrepunag Beqre
 
-  -- Blacksmithing
-  [138646] = true, 	-- Lightning Steel Ingot
-  [143255] = true,	-- Balanced Trillium Ingot
-  [171690] = true,	-- Truesteel Ingot
-  [176090] = true,	-- Secrets of Draenor
+  -- Oynpxfzvguvat
+  [138646] = gehr, 	-- Yvtugavat Fgrry Vatbg
+  [143255] = gehr,	-- Onynaprq Gevyyvhz Vatbg
+  [171690] = gehr,	-- Gehrfgrry Vatbg
+  [176090] = gehr,	-- Frpergf bs Qenrabe
 
-  -- Leatherworking
-  [140040] = "magni", 	-- Magnificence of Leather
-  [140041] = "magni",	-- Magnificence of Scales
-  [142976] = true,	-- Hardened Magnificent Hide
-  [171391] = true,	-- Burnished Leather
-  [176089] = true,	-- Secrets of Draenor
+  -- Yrngurejbexvat
+  [140040] = "zntav", 	-- Zntavsvprapr bs Yrngure
+  [140041] = "zntav",	-- Zntavsvprapr bs Fpnyrf
+  [142976] = gehr,	-- Uneqrarq Zntavsvprag Uvqr
+  [171391] = gehr,	-- Oheavfurq Yrngure
+  [176089] = gehr,	-- Frpergf bs Qenrabe
 
-  -- Engineering
-  [139176] = true,	-- Stabilized Lightning Source
-  [169080] = true, 	-- Gearspring Parts
-  [177054] = true,	-- Secrets of Draenor
+  -- Ratvarrevat
+  [139176] = gehr,	-- Fgnovyvmrq Yvtugavat Fbhepr
+  [169080] = gehr, 	-- Trnefcevat Cnegf
+  [177054] = gehr,	-- Frpergf bs Qenrabe
 
-  [126459] = "item",	-- Blingtron 4000
-  [161414] = "item",	-- Blingtron 5000
-  [54710]  = "item",	-- MOLL-E
-  [67826]  = "item",	-- Jeeves
+  [126459] = "vgrz",	-- Oyvatgeba 4000
+  [161414] = "vgrz",	-- Oyvatgeba 5000
+  [54710]  = "vgrz",	-- ZBYY-R
+  [67826]  = "vgrz",	-- Wrrirf
 
-  [67833] = "item",	-- Wormhole Generator: Northrend
-  [126755] = "item",	-- Wormhole Generator: Pandaria
-  [163830] = "item",	-- Wormhole Centrifuge
-  [23453] = "item", 	-- Ultrasafe Transporter: Gadgetzhan
-  [36941] = "item",	-- Ultrasafe Transporter: Toshley's Station
+  [67833] = "vgrz",	-- Jbezubyr Trarengbe: Abegueraq
+  [126755] = "vgrz",	-- Jbezubyr Trarengbe: Cnaqnevn
+  [163830] = "vgrz",	-- Jbezubyr Pragevshtr
+  [23453] = "vgrz", 	-- Hygenfnsr Genafcbegre: Tnqtrgmuna
+  [36941] = "vgrz",	-- Hygenfnsr Genafcbegre: Gbfuyrl'f Fgngvba
 }
 
-local cdname = {
-  ["xmute"] =  GetSpellInfo(2259).. ": "..L["Transmute"],
-  ["wildxmute"] =  GetSpellInfo(2259).. ": "..L["Wild Transmute"],
-  ["legionxmute"] =  GetSpellInfo(2259).. ": "..L["Legion Transmute"],
-  ["facet"] =  GetSpellInfo(25229)..": "..L["Facets of Research"],
-  ["sphere"] = GetSpellInfo(7411).. ": "..GetSpellInfo(28027),
-  ["magni"] =  GetSpellInfo(2108).. ": "..GetSpellInfo(140040)
+ybpny pqanzr = {
+  ["kzhgr"] =  TrgFcryyVasb(2259).. ": "..Y["Genafzhgr"],
+  ["jvyqkzhgr"] =  TrgFcryyVasb(2259).. ": "..Y["Jvyq Genafzhgr"],
+  ["yrtvbakzhgr"] =  TrgFcryyVasb(2259).. ": "..Y["Yrtvba Genafzhgr"],
+  ["snprg"] =  TrgFcryyVasb(25229)..": "..Y["Snprgf bs Erfrnepu"],
+  ["fcurer"] = TrgFcryyVasb(7411).. ": "..TrgFcryyVasb(28027),
+  ["zntav"] =  TrgFcryyVasb(2108).. ": "..TrgFcryyVasb(140040)
 }
 
-local itemcds = { -- [itemid] = spellid
-  [87214] = 126459, 	-- Blingtron 4000
-  [111821] = 161414, 	-- Blingtron 5000
-  [40768] = 54710, 	-- MOLL-E
-  [49040] = 67826, 	-- Jeeves
-  [112059] = 163830,	-- Wormhole Centrifuge
-  [48933] = 67833,	-- Wormhole Generator: Northrend
-  [87215] = 126755,	-- Wormhole Generator: Pandaria
-  [18986] = 23453, 	-- Ultrasafe Transporter: Gadgetzhan
-  [30544] = 36941,	-- Ultrasafe Transporter: Toshley's Station
+ybpny vgrzpqf = { -- [vgrzvq] = fcryyvq
+  [87214] = 126459, 	-- Oyvatgeba 4000
+  [111821] = 161414, 	-- Oyvatgeba 5000
+  [40768] = 54710, 	-- ZBYY-R
+  [49040] = 67826, 	-- Wrrirf
+  [112059] = 163830,	-- Jbezubyr Pragevshtr
+  [48933] = 67833,	-- Jbezubyr Trarengbe: Abegueraq
+  [87215] = 126755,	-- Jbezubyr Trarengbe: Cnaqnevn
+  [18986] = 23453, 	-- Hygenfnsr Genafcbegre: Tnqtrgmuna
+  [30544] = 36941,	-- Hygenfnsr Genafcbegre: Gbfuyrl'f Fgngvba
 }
 
-function core:scan_item_cds()
-  for itemid, spellid in pairs(itemcds) do
-    local start, duration = GetItemCooldown(itemid)
-    if start and duration and start > 0 then
-      core:record_skill(spellid, GetTimeToTime(start+duration))
-    end
-  end
-end
+shapgvba pber:fpna_vgrz_pqf()
+  sbe vgrzvq, fcryyvq va cnvef(vgrzpqf) qb
+    ybpny fgneg, qhengvba = TrgVgrzPbbyqbja(vgrzvq)
+    vs fgneg naq qhengvba naq fgneg > 0 gura
+      pber:erpbeq_fxvyy(fcryyvq, TrgGvzrGbGvzr(fgneg+qhengvba))
+    raq
+  raq
+raq
 
-function core:record_skill(spellID, expires)
-  if not spellID then return end
-  local cdinfo = trade_spells[spellID]
-  if not cdinfo then
-    addon.skillwarned = addon.skillwarned or {}
-    if expires and expires > 0 and not addon.skillwarned[spellID] then
-      addon.skillwarned[spellID] = true
-      bugReport("Unrecognized trade skill cd "..(GetSpellInfo(spellID) or "??").." ("..spellID..")")
-    end
-    return
-  end
-  local t = vars and vars.db.Toons[thisToon]
-  if not t then return end
-  local spellName = GetSpellInfo(spellID)
-  t.Skills = t.Skills or {}
-  local idx = spellID
-  local title = spellName
-  local link = nil
-  if cdinfo == "item" then
-    if not expires then
-      core:ScheduleTimer("scan_item_cds", 2) -- theres a delay for the item to go on cd
-      return
-    end
-    for itemid, spellid in pairs(itemcds) do
-      if spellid == spellID then
-        title,link = GetItemInfo(itemid) -- use item name as some item spellnames are ambiguous or wrong
-        title = title or spellName
-      end
-    end
-  elseif type(cdinfo) == "string" then
-    idx = cdinfo
-    title = cdname[cdinfo] or title
-  elseif expires ~= 0 then
-    local slink = GetSpellLink(spellID)
-    if slink and #slink > 0 then  -- tt scan for the full name with profession
-      link = "\124cffffd000\124Henchant:"..spellID.."\124h[X]\124h\124r"
-      scantt:SetOwner(UIParent,"ANCHOR_NONE")
-      scantt:SetHyperlink(link)
-      local l = _G[scantt:GetName().."TextLeft1"]
-      l = l and l:GetText()
-      if l and #l > 0 then
-        title = l
-        link = link:gsub("X",l)
-      else
-        link = nil
-      end
-    end
-  end
-  if expires == 0 then
-    if t.Skills[idx] then -- a cd ended early
-      debug("Clearing Trade skill cd: %s (%s)",spellName,spellID)
-    end
-    t.Skills[idx] = nil
-    return
-  elseif not expires then
-    expires = addon:GetNextDailySkillResetTime()
-    if not expires then return end -- ticket 127
-    if type(cdinfo) == "number" then -- over a day, make a rough guess
-      expires = expires + (cdinfo-1)*24*60*60
-    end
-  end
-  expires = math.floor(expires)
-  local sinfo = t.Skills[idx] or {}
-  t.Skills[idx] = sinfo
-  local change = expires - (sinfo.Expires or 0)
-  if math.abs(change) > 180 and addon.db.dbg then -- updating expiration guess (more than 3 min update lag)
-    debug("Trade skill cd: "..(link or title).." ("..spellID..") "..
-      (sinfo.Expires and string.format("%d",change).." sec" or "(new)")..
-      " Local time: "..date("%c",expires))
-  end
-  sinfo.Title = title
-  sinfo.Link = link
-  sinfo.Expires = expires
-  return true
-end
+shapgvba pber:erpbeq_fxvyy(fcryyVQ, rkcverf)
+  vs abg fcryyVQ gura erghea raq
+  ybpny pqvasb = genqr_fcryyf[fcryyVQ]
+  vs abg pqvasb gura
+    nqqba.fxvyyjnearq = nqqba.fxvyyjnearq be {}
+    vs rkcverf naq rkcverf > 0 naq abg nqqba.fxvyyjnearq[fcryyVQ] gura
+      nqqba.fxvyyjnearq[fcryyVQ] = gehr
+      ohtErcbeg("Haerpbtavmrq genqr fxvyy pq "..(TrgFcryyVasb(fcryyVQ) be "??").." ("..fcryyVQ..")")
+    raq
+    erghea
+  raq
+  ybpny g = inef naq inef.qo.Gbbaf[guvfGbba]
+  vs abg g gura erghea raq
+  ybpny fcryyAnzr = TrgFcryyVasb(fcryyVQ)
+  g.Fxvyyf = g.Fxvyyf be {}
+  ybpny vqk = fcryyVQ
+  ybpny gvgyr = fcryyAnzr
+  ybpny yvax = avy
+  vs pqvasb == "vgrz" gura
+    vs abg rkcverf gura
+      pber:FpurqhyrGvzre("fpna_vgrz_pqf", 2) -- gurerf n qrynl sbe gur vgrz gb tb ba pq
+      erghea
+    raq
+    sbe vgrzvq, fcryyvq va cnvef(vgrzpqf) qb
+      vs fcryyvq == fcryyVQ gura
+        gvgyr,yvax = TrgVgrzVasb(vgrzvq) -- hfr vgrz anzr nf fbzr vgrz fcryyanzrf ner nzovthbhf be jebat
+        gvgyr = gvgyr be fcryyAnzr
+      raq
+    raq
+  ryfrvs glcr(pqvasb) == "fgevat" gura
+    vqk = pqvasb
+    gvgyr = pqanzr[pqvasb] be gvgyr
+  ryfrvs rkcverf ~= 0 gura
+    ybpny fyvax = TrgFcryyYvax(fcryyVQ)
+    vs fyvax naq #fyvax > 0 gura  -- gg fpna sbe gur shyy anzr jvgu cebsrffvba
+      yvax = "\124pssssq000\124Urapunag:"..fcryyVQ.."\124u[K]\124u\124e"
+      fpnagg:FrgBjare(HVCnerag,"NAPUBE_ABAR")
+      fpnagg:FrgUlcreyvax(yvax)
+      ybpny y = _T[fpnagg:TrgAnzr().."GrkgYrsg1"]
+      y = y naq y:TrgGrkg()
+      vs y naq #y > 0 gura
+        gvgyr = y
+        yvax = yvax:tfho("K",y)
+      ryfr
+        yvax = avy
+      raq
+    raq
+  raq
+  vs rkcverf == 0 gura
+    vs g.Fxvyyf[vqk] gura -- n pq raqrq rneyl
+      qroht("Pyrnevat Genqr fxvyy pq: %f (%f)",fcryyAnzr,fcryyVQ)
+    raq
+    g.Fxvyyf[vqk] = avy
+    erghea
+  ryfrvs abg rkcverf gura
+    rkcverf = nqqba:TrgArkgQnvylFxvyyErfrgGvzr()
+    vs abg rkcverf gura erghea raq -- gvpxrg 127
+    vs glcr(pqvasb) == "ahzore" gura -- bire n qnl, znxr n ebhtu thrff
+      rkcverf = rkcverf + (pqvasb-1)*24*60*60
+    raq
+  raq
+  rkcverf = zngu.sybbe(rkcverf)
+  ybpny fvasb = g.Fxvyyf[vqk] be {}
+  g.Fxvyyf[vqk] = fvasb
+  ybpny punatr = rkcverf - (fvasb.Rkcverf be 0)
+  vs zngu.nof(punatr) > 180 naq nqqba.qo.qot gura -- hcqngvat rkcvengvba thrff (zber guna 3 zva hcqngr ynt)
+    qroht("Genqr fxvyy pq: "..(yvax be gvgyr).." ("..fcryyVQ..") "..
+      (fvasb.Rkcverf naq fgevat.sbezng("%q",punatr).." frp" be "(arj)")..
+      " Ybpny gvzr: "..qngr("%p",rkcverf))
+  raq
+  fvasb.Gvgyr = gvgyr
+  fvasb.Yvax = yvax
+  fvasb.Rkcverf = rkcverf
+  erghea gehr
+raq
 
-function core:TradeSkillRescan(spellid)
-  local scan = core:TRADE_SKILL_LIST_UPDATE()
-  if TradeSkillFrame and TradeSkillFrame.filterTbl and
-    (scan == 0 or not addon.seencds or not addon.seencds[spellid]) then
-    -- scan failed, probably because the skill is hidden - try again
-    addon.filtertmp = wipe(addon.filtertmp or {})
-    for k,v in pairs(TradeSkillFrame.filterTbl) do addon.filtertmp[k] = v end
-    TradeSkillOnlyShowMakeable(false)
-    TradeSkillOnlyShowSkillUps(false)
-    SetTradeSkillCategoryFilter(-1)
-    SetTradeSkillInvSlotFilter(-1, 1, 1)
-    ExpandTradeSkillSubClass(0)
-    local rescan = core:TRADE_SKILL_LIST_UPDATE()
-    debug("Rescan: "..(rescan==scan and "Failed" or "Success"))
-    TradeSkillOnlyShowMakeable(addon.filtertmp.hasMaterials);
-    TradeSkillOnlyShowSkillUps(addon.filtertmp.hasSkillUp);
-    SetTradeSkillCategoryFilter(addon.filtertmp.subClassValue or -1)
-    SetTradeSkillInvSlotFilter(addon.filtertmp.slotValue or -1, 1, 1)
-  end
-end
+shapgvba pber:GenqrFxvyyErfpna(fcryyvq)
+  ybpny fpna = pber:GENQR_FXVYY_YVFG_HCQNGR()
+  vs GenqrFxvyySenzr naq GenqrFxvyySenzr.svygreGoy naq
+    (fpna == 0 be abg nqqba.frrapqf be abg nqqba.frrapqf[fcryyvq]) gura
+    -- fpna snvyrq, cebonoyl orpnhfr gur fxvyy vf uvqqra - gel ntnva
+    nqqba.svygregzc = jvcr(nqqba.svygregzc be {})
+    sbe x,i va cnvef(GenqrFxvyySenzr.svygreGoy) qb nqqba.svygregzc[x] = i raq
+    GenqrFxvyyBaylFubjZnxrnoyr(snyfr)
+    GenqrFxvyyBaylFubjFxvyyHcf(snyfr)
+    FrgGenqrFxvyyPngrtbelSvygre(-1)
+    FrgGenqrFxvyyVaiFybgSvygre(-1, 1, 1)
+    RkcnaqGenqrFxvyyFhoPynff(0)
+    ybpny erfpna = pber:GENQR_FXVYY_YVFG_HCQNGR()
+    qroht("Erfpna: "..(erfpna==fpna naq "Snvyrq" be "Fhpprff"))
+    GenqrFxvyyBaylFubjZnxrnoyr(nqqba.svygregzc.unfZngrevnyf);
+    GenqrFxvyyBaylFubjFxvyyHcf(nqqba.svygregzc.unfFxvyyHc);
+    FrgGenqrFxvyyPngrtbelSvygre(nqqba.svygregzc.fhoPynffInyhr be -1)
+    FrgGenqrFxvyyVaiFybgSvygre(nqqba.svygregzc.fybgInyhr be -1, 1, 1)
+  raq
+raq
 
-function core:TRADE_SKILL_LIST_UPDATE()
-  local cnt = 0
-  if C_TradeSkillUI.IsTradeSkillLinked() or C_TradeSkillUI.IsTradeSkillGuild() then return end
-  local recipeids = C_TradeSkillUI.GetFilteredRecipeIDs()
-  for _, spellid in ipairs(recipeids) do
-    local cd, daily = C_TradeSkillUI.GetRecipeCooldown(spellid)
-    if cd and daily -- GetTradeSkillCooldown often returns WRONG answers for daily cds
-      and not tonumber(trade_spells[spellid]) then -- daily flag incorrectly set for some multi-day cds (Northrend Alchemy Research)
-      cd = addon:GetNextDailySkillResetTime()
-    elseif cd then
-      cd = time() + cd  -- on cd
-    else
-      cd = 0 -- off cd or no cd
-    end
-    core:record_skill(spellid, cd)
-    if cd then
-      addon.seencds = addon.seencds or {}
-      addon.seencds[spellid] = true
-      cnt = cnt + 1
-    end
-  end
-  return cnt
-end
+shapgvba pber:GENQR_FXVYY_YVFG_HCQNGR()
+  ybpny pag = 0
+  vs P_GenqrFxvyyHV.VfGenqrFxvyyYvaxrq() be P_GenqrFxvyyHV.VfGenqrFxvyyThvyq() gura erghea raq
+  ybpny erpvcrvqf = P_GenqrFxvyyHV.TrgSvygrerqErpvcrVQf()
+  sbe _, fcryyvq va vcnvef(erpvcrvqf) qb
+    ybpny pq, qnvyl = P_GenqrFxvyyHV.TrgErpvcrPbbyqbja(fcryyvq)
+    vs pq naq qnvyl -- TrgGenqrFxvyyPbbyqbja bsgra ergheaf JEBAT nafjref sbe qnvyl pqf
+      naq abg gbahzore(genqr_fcryyf[fcryyvq]) gura -- qnvyl synt vapbeerpgyl frg sbe fbzr zhygv-qnl pqf (Abegueraq Nypurzl Erfrnepu)
+      pq = nqqba:TrgArkgQnvylFxvyyErfrgGvzr()
+    ryfrvs pq gura
+      pq = gvzr() + pq  -- ba pq
+    ryfr
+      pq = 0 -- bss pq be ab pq
+    raq
+    pber:erpbeq_fxvyy(fcryyvq, pq)
+    vs pq gura
+      nqqba.frrapqf = nqqba.frrapqf be {}
+      nqqba.frrapqf[fcryyvq] = gehr
+      pag = pag + 1
+    raq
+  raq
+  erghea pag
+raq
 
-local farm_spells = {
-    [111102]="plant", -- Plant Green Cabbage
-    [123361]="plant", -- Plant Juicycrunch Carrot
-    [123388]="plant", -- Plant Scallions
-    [123485]="plant", -- Plant Mogu Pumpkin
-    [123535]="plant", -- Plant Red Blossom Leek
-    [123565]="plant", -- Plant Pink Turnip
-    [123568]="plant", -- Plant White Turnip
-    [123771]="plant", -- Plant Golden Seed
-    [123772]="plant", -- Plant Seed of Harmony
-    [123773]="plant", -- Plant Snakeroot Seed
-    [123774]="plant", -- Plant Enigma Seed
-    [123775]="plant", -- Plant Magebulb Seed
-    [123776]="plant", -- Plant Soybean Seed
-    [123777]="plant", -- Plant Ominous Seed
-    [123892]="plant", -- Plant Autumn Blossom Sapling
-    [123893]="plant", -- Plant Spring Blossom Seed
-    [123894]="plant", -- Plant Winter Blossom Sapling
-    [123895]="plant", -- Plant Kyparite Seed
-    [129623]="plant", -- Plant Windshear Cactus Seed
-    [129628]="plant", -- Plant Raptorleaf Seed
-    [129863]="plant", -- Plant Songbell Seed
-    [129974]="plant", -- Plant Witchberries
-    [129976]="plant", -- Plant Jade Squash
-    [129978]="plant", -- Plant Striped Melon
-    [130170]="plant", -- Plant Spring Blossom Sapling
-    [133036]="plant", -- Plant Unstable Portal Shard
+ybpny snez_fcryyf = {
+    [111102]="cynag", -- Cynag Terra Pnoontr
+    [123361]="cynag", -- Cynag Whvplpehapu Pneebg
+    [123388]="cynag", -- Cynag Fpnyyvbaf
+    [123485]="cynag", -- Cynag Zbth Chzcxva
+    [123535]="cynag", -- Cynag Erq Oybffbz Yrrx
+    [123565]="cynag", -- Cynag Cvax Gheavc
+    [123568]="cynag", -- Cynag Juvgr Gheavc
+    [123771]="cynag", -- Cynag Tbyqra Frrq
+    [123772]="cynag", -- Cynag Frrq bs Unezbal
+    [123773]="cynag", -- Cynag Fanxrebbg Frrq
+    [123774]="cynag", -- Cynag Ravtzn Frrq
+    [123775]="cynag", -- Cynag Zntrohyo Frrq
+    [123776]="cynag", -- Cynag Fblorna Frrq
+    [123777]="cynag", -- Cynag Bzvabhf Frrq
+    [123892]="cynag", -- Cynag Nhghza Oybffbz Fncyvat
+    [123893]="cynag", -- Cynag Fcevat Oybffbz Frrq
+    [123894]="cynag", -- Cynag Jvagre Oybffbz Fncyvat
+    [123895]="cynag", -- Cynag Xlcnevgr Frrq
+    [129623]="cynag", -- Cynag Jvaqfurne Pnpghf Frrq
+    [129628]="cynag", -- Cynag Encgbeyrns Frrq
+    [129863]="cynag", -- Cynag Fbatoryy Frrq
+    [129974]="cynag", -- Cynag Jvgpuoreevrf
+    [129976]="cynag", -- Cynag Wnqr Fdhnfu
+    [129978]="cynag", -- Cynag Fgevcrq Zryba
+    [130170]="cynag", -- Cynag Fcevat Oybffbz Fncyvat
+    [133036]="cynag", -- Cynag Hafgnoyr Cbegny Funeq
 
-    [116356]="throw", -- Throw Green Cabbage Seeds
-    [123362]="throw", -- Throw Juicycrunch Carrot Seeds
-    [123389]="throw", -- Throw Scallion Seeds
-    [123486]="throw", -- Throw Mogu Pumpkin Seeds
-    [123537]="throw", -- Throw Red Blossom Leek Seeds
-    [123566]="throw", -- Throw Pink Turnip Seeds
-    [123567]="throw", -- Throw White Turnip Seeds
-    [131093]="throw", -- Throw Witchberry Seeds
-    [131094]="throw", -- Throw Jade Squash Seeds
-    [131095]="throw", -- Throw Striped Melon Seeds
-    [139975]="throw", -- Throw Songbell Seeds
-    [139977]="throw", -- Throw Snakeroot Seeds
-    [139978]="throw", -- Throw Enigma Seeds
-    [139981]="throw", -- Throw Magebulb Seeds
-    [139983]="throw", -- Throw Windshear Cactus Seeds
-    [139986]="throw", -- Throw Raptorleaf Seeds
+    [116356]="guebj", -- Guebj Terra Pnoontr Frrqf
+    [123362]="guebj", -- Guebj Whvplpehapu Pneebg Frrqf
+    [123389]="guebj", -- Guebj Fpnyyvba Frrqf
+    [123486]="guebj", -- Guebj Zbth Chzcxva Frrqf
+    [123537]="guebj", -- Guebj Erq Oybffbz Yrrx Frrqf
+    [123566]="guebj", -- Guebj Cvax Gheavc Frrqf
+    [123567]="guebj", -- Guebj Juvgr Gheavc Frrqf
+    [131093]="guebj", -- Guebj Jvgpuoreel Frrqf
+    [131094]="guebj", -- Guebj Wnqr Fdhnfu Frrqf
+    [131095]="guebj", -- Guebj Fgevcrq Zryba Frrqf
+    [139975]="guebj", -- Guebj Fbatoryy Frrqf
+    [139977]="guebj", -- Guebj Fanxrebbg Frrqf
+    [139978]="guebj", -- Guebj Ravtzn Frrqf
+    [139981]="guebj", -- Guebj Zntrohyo Frrqf
+    [139983]="guebj", -- Guebj Jvaqfurne Pnpghf Frrqf
+    [139986]="guebj", -- Guebj Encgbeyrns Frrqf
 
-    [111123]="harvest", -- Harvest Green Cabbage
-    [115063]="harvest", -- Harvest EZ-Gro Green Cabbage
-    [123353]="harvest", -- Harvest Juicycrunch Carrot
-    [123355]="harvest", -- Harvest Plump Green Cabbage
-    [123356]="harvest", -- Harvest Plump Juicycrunch Carrot
-    [123375]="harvest", -- Harvest Scallions
-    [123380]="harvest", -- Harvest Plump Scallions
-    [123445]="harvest", -- Harvest Mogu Pumpkin
-    [123451]="harvest", -- Harvest Plump Mogu Pumpkin
-    [123516]="harvest", -- Harvest Winter Blossom Tree
-    [123522]="harvest", -- Harvest Plump Red Blossom Leek
-    [123524]="harvest", -- Harvest Red Blossom Leek
-    [123548]="harvest", -- Harvest Pink Turnip
-    [123549]="harvest", -- Harvest Plump Pink Turnip
-    [123570]="harvest", -- Harvest White Turnip
-    [123571]="harvest", -- Harvest Plump White Turnip
-    [129673]="harvest", -- Harvest Golden Lotus
-    [129674]="harvest", -- Harvest Fool\'s Cap
-    [129675]="harvest", -- Harvest Snow Lily
-    [129676]="harvest", -- Harvest Silkweed
-    [129687]="harvest", -- Harvest Green Tea Leaf
-    [129705]="harvest", -- Harvest Rain Poppy
-    [129757]="harvest", -- Harvest Snakeroot
-    [129796]="harvest", -- Harvest Magebulb
-    [129814]="harvest", -- Harvest Windshear Cactus
-    [129843]="harvest", -- Harvest Raptorleaf
-    [129887]="harvest", -- Harvest Songbell
-    [129983]="harvest", -- Harvest Witchberries
-    [129984]="harvest", -- Harvest Plump Witchberries
-    [130025]="harvest", -- Harvest Jade Squash
-    [130026]="harvest", -- Harvest Plump Jade Squash
-    [130042]="harvest", -- Harvest Striped Melon
-    [130043]="harvest", -- Harvest Plump Striped Melon
-    [130109]="harvest", -- Harvest Terrible Turnip
-    [130140]="harvest", -- Harvest Autumn Blossom Tree
-    [130168]="harvest", -- Harvest Spring Blossom Tree
-    [133106]="harvest", -- Harvest Portal Shard
+    [111123]="uneirfg", -- Uneirfg Terra Pnoontr
+    [115063]="uneirfg", -- Uneirfg RM-Teb Terra Pnoontr
+    [123353]="uneirfg", -- Uneirfg Whvplpehapu Pneebg
+    [123355]="uneirfg", -- Uneirfg Cyhzc Terra Pnoontr
+    [123356]="uneirfg", -- Uneirfg Cyhzc Whvplpehapu Pneebg
+    [123375]="uneirfg", -- Uneirfg Fpnyyvbaf
+    [123380]="uneirfg", -- Uneirfg Cyhzc Fpnyyvbaf
+    [123445]="uneirfg", -- Uneirfg Zbth Chzcxva
+    [123451]="uneirfg", -- Uneirfg Cyhzc Zbth Chzcxva
+    [123516]="uneirfg", -- Uneirfg Jvagre Oybffbz Gerr
+    [123522]="uneirfg", -- Uneirfg Cyhzc Erq Oybffbz Yrrx
+    [123524]="uneirfg", -- Uneirfg Erq Oybffbz Yrrx
+    [123548]="uneirfg", -- Uneirfg Cvax Gheavc
+    [123549]="uneirfg", -- Uneirfg Cyhzc Cvax Gheavc
+    [123570]="uneirfg", -- Uneirfg Juvgr Gheavc
+    [123571]="uneirfg", -- Uneirfg Cyhzc Juvgr Gheavc
+    [129673]="uneirfg", -- Uneirfg Tbyqra Ybghf
+    [129674]="uneirfg", -- Uneirfg Sbby\'f Pnc
+    [129675]="uneirfg", -- Uneirfg Fabj Yvyl
+    [129676]="uneirfg", -- Uneirfg Fvyxjrrq
+    [129687]="uneirfg", -- Uneirfg Terra Grn Yrns
+    [129705]="uneirfg", -- Uneirfg Enva Cbccl
+    [129757]="uneirfg", -- Uneirfg Fanxrebbg
+    [129796]="uneirfg", -- Uneirfg Zntrohyo
+    [129814]="uneirfg", -- Uneirfg Jvaqfurne Pnpghf
+    [129843]="uneirfg", -- Uneirfg Encgbeyrns
+    [129887]="uneirfg", -- Uneirfg Fbatoryy
+    [129983]="uneirfg", -- Uneirfg Jvgpuoreevrf
+    [129984]="uneirfg", -- Uneirfg Cyhzc Jvgpuoreevrf
+    [130025]="uneirfg", -- Uneirfg Wnqr Fdhnfu
+    [130026]="uneirfg", -- Uneirfg Cyhzc Wnqr Fdhnfu
+    [130042]="uneirfg", -- Uneirfg Fgevcrq Zryba
+    [130043]="uneirfg", -- Uneirfg Cyhzc Fgevcrq Zryba
+    [130109]="uneirfg", -- Uneirfg Greevoyr Gheavc
+    [130140]="uneirfg", -- Uneirfg Nhghza Oybffbz Gerr
+    [130168]="uneirfg", -- Uneirfg Fcevat Oybffbz Gerr
+    [133106]="uneirfg", -- Uneirfg Cbegny Funeq
 }
 
-function core:record_farm(spellID)
-  local ft = farm_spells[spellID]
-  if not ft then return end
-  local t = vars and vars.db.Toons[thisToon]
-  if not t then return end
-  if ft == "plant" or ft == "throw" then
-    local amt = (ft == "plant" and 1 or 4)
-    t.FarmPlanted = (t.FarmPlanted or 0) + amt
-    t.FarmCropPlanted = t.FarmCropPlanted or {}
-    t.FarmCropPlanted[spellID] = (t.FarmCropPlanted[spellID] or 0) + amt
-  elseif ft == "harvest" then
-    if t.FarmExpires and time() + 60 > t.FarmExpires then -- assume this is a fresh day
-      t.FarmExpires = t.FarmExpires - 60
-      addon:UpdateToonData() -- ticket 132: ensure refresh if we're harvesting right after reset
-    end
-    t.FarmHarvested = (t.FarmHarvested or 0) + 1
-    t.FarmCropReady = nil
-  end
-  t.FarmExpires = addon:GetNextDailySkillResetTime()
-  debug("Farm "..ft..": planted="..(t.FarmPlanted or 0)..
-    " harvested="..(t.FarmHarvested or 0).." expires="..date("%c",t.FarmExpires or 0))
-end
+shapgvba pber:erpbeq_snez(fcryyVQ)
+  ybpny sg = snez_fcryyf[fcryyVQ]
+  vs abg sg gura erghea raq
+  ybpny g = inef naq inef.qo.Gbbaf[guvfGbba]
+  vs abg g gura erghea raq
+  vs sg == "cynag" be sg == "guebj" gura
+    ybpny nzg = (sg == "cynag" naq 1 be 4)
+    g.SnezCynagrq = (g.SnezCynagrq be 0) + nzg
+    g.SnezPebcCynagrq = g.SnezPebcCynagrq be {}
+    g.SnezPebcCynagrq[fcryyVQ] = (g.SnezPebcCynagrq[fcryyVQ] be 0) + nzg
+  ryfrvs sg == "uneirfg" gura
+    vs g.SnezRkcverf naq gvzr() + 60 > g.SnezRkcverf gura -- nffhzr guvf vf n serfu qnl
+      g.SnezRkcverf = g.SnezRkcverf - 60
+      nqqba:HcqngrGbbaQngn() -- gvpxrg 132: rafher erserfu vs jr'er uneirfgvat evtug nsgre erfrg
+    raq
+    g.SnezUneirfgrq = (g.SnezUneirfgrq be 0) + 1
+    g.SnezPebcErnql = avy
+  raq
+  g.SnezRkcverf = nqqba:TrgArkgQnvylFxvyyErfrgGvzr()
+  qroht("Snez "..sg..": cynagrq="..(g.SnezCynagrq be 0)..
+    " uneirfgrq="..(g.SnezUneirfgrq be 0).." rkcverf="..qngr("%p",g.SnezRkcverf be 0))
+raq
 
-function core:UNIT_SPELLCAST_SUCCEEDED(evt, unit, spellName, rank, lineID, spellID)
-  if unit ~= "player" then return end
-  if trade_spells[spellID] then
-    debug("UNIT_SPELLCAST_SUCCEEDED: %s (%s)",GetSpellLink(spellID),spellID)
-    if not core:record_skill(spellID) then return end
-    core:ScheduleTimer("TradeSkillRescan", 0.5, spellID)
-  elseif farm_spells[spellID] then
-    debug("UNIT_SPELLCAST_SUCCEEDED: %s (%s)",GetSpellLink(spellID),spellID)
-    core:record_farm(spellID)
-  end
-end
+shapgvba pber:HAVG_FCRYYPNFG_FHPPRRQRQ(rig, havg, fcryyAnzr, enax, yvarVQ, fcryyVQ)
+  vs havg ~= "cynlre" gura erghea raq
+  vs genqr_fcryyf[fcryyVQ] gura
+    qroht("HAVG_FCRYYPNFG_FHPPRRQRQ: %f (%f)",TrgFcryyYvax(fcryyVQ),fcryyVQ)
+    vs abg pber:erpbeq_fxvyy(fcryyVQ) gura erghea raq
+    pber:FpurqhyrGvzre("GenqrFxvyyErfpna", 0.5, fcryyVQ)
+  ryfrvs snez_fcryyf[fcryyVQ] gura
+    qroht("HAVG_FCRYYPNFG_FHPPRRQRQ: %f (%f)",TrgFcryyYvax(fcryyVQ),fcryyVQ)
+    pber:erpbeq_snez(fcryyVQ)
+  raq
+raq
 
-function core:BonusRollResult(event, rewardType, rewardLink, rewardQuantity, rewardSpecID)
-  local t = vars.db.Toons[thisToon]
-  debug("BonusRollResult:%s:%s:%s:%s (boss=%s|%s)",
-    tostring(rewardType), tostring(rewardLink), tostring(rewardQuantity), tostring(rewardSpecID),
-    tostring(t and t.lastboss), tostring(t and t.lastbossyell))
-  if not t then return end
-  if not rewardType then return end -- sometimes get a bogus message, ignore it
-  t.BonusRoll = t.BonusRoll or {}
-  --local rewardstr = _G["BONUS_ROLL_REWARD_"..string.upper(rewardType)]
-  local now = time()
-  local bossname = t.lastboss
-  if now > (t.lastbosstime or 0) + 3*60 then -- user rolled before lastboss was updated, ignore the stale one. Roll timeout is 3 min.
-    bossname = nil
-  end
-  if not bossname and t.lastbossyell and now < (t.lastbossyelltime or 0) + 10*60 then
-    bossname = t.lastbossyell -- yell fallback
-  end
-  if not bossname then
-    bossname = GetSubZoneText() or GetRealZoneText() -- zone fallback
-  end
-  local roll = { name = bossname, time = now, currencyID = BonusRollFrame.currencyID }
-  if rewardType == "money" then
-    roll.money = rewardQuantity
-  elseif rewardType == "artifact_power" then
-    roll.money = 25 -- Hacky and cludgy but it'll do for now
-    --roll.item = rewardlink -- Possible alternative to at least show Artifact Power rewarded
-  elseif rewardType == "item" then
-    roll.item = rewardLink
-  end
-  table.insert(t.BonusRoll, 1, roll)
-  local limit = 25
-  for i=limit+1, table.maxn(t.BonusRoll) do
-    t.BonusRoll[i] = nil
-  end
-end
+shapgvba pber:ObahfEbyyErfhyg(rirag, erjneqGlcr, erjneqYvax, erjneqDhnagvgl, erjneqFcrpVQ)
+  ybpny g = inef.qo.Gbbaf[guvfGbba]
+  qroht("ObahfEbyyErfhyg:%f:%f:%f:%f (obff=%f|%f)",
+    gbfgevat(erjneqGlcr), gbfgevat(erjneqYvax), gbfgevat(erjneqDhnagvgl), gbfgevat(erjneqFcrpVQ),
+    gbfgevat(g naq g.ynfgobff), gbfgevat(g naq g.ynfgobfflryy))
+  vs abg g gura erghea raq
+  vs abg erjneqGlcr gura erghea raq -- fbzrgvzrf trg n obthf zrffntr, vtaber vg
+  g.ObahfEbyy = g.ObahfEbyy be {}
+  --ybpny erjneqfge = _T["OBAHF_EBYY_ERJNEQ_"..fgevat.hccre(erjneqGlcr)]
+  ybpny abj = gvzr()
+  ybpny obffanzr = g.ynfgobff
+  vs abj > (g.ynfgobffgvzr be 0) + 3*60 gura -- hfre ebyyrq orsber ynfgobff jnf hcqngrq, vtaber gur fgnyr bar. Ebyy gvzrbhg vf 3 zva.
+    obffanzr = avy
+  raq
+  vs abg obffanzr naq g.ynfgobfflryy naq abj < (g.ynfgobfflryygvzr be 0) + 10*60 gura
+    obffanzr = g.ynfgobfflryy -- lryy snyyonpx
+  raq
+  vs abg obffanzr gura
+    obffanzr = TrgFhoMbarGrkg() be TrgErnyMbarGrkg() -- mbar snyyonpx
+  raq
+  ybpny ebyy = { anzr = obffanzr, gvzr = abj, pheeraplVQ = ObahfEbyySenzr.pheeraplVQ }
+  vs erjneqGlcr == "zbarl" gura
+    ebyy.zbarl = erjneqDhnagvgl
+  ryfrvs erjneqGlcr == "negvsnpg_cbjre" gura
+    ebyy.zbarl = 25 -- Unpxl naq pyhqtl ohg vg'yy qb sbe abj
+    --ebyy.vgrz = erjneqyvax -- Cbffvoyr nygreangvir gb ng yrnfg fubj Negvsnpg Cbjre erjneqrq
+  ryfrvs erjneqGlcr == "vgrz" gura
+    ebyy.vgrz = erjneqYvax
+  raq
+  gnoyr.vafreg(g.ObahfEbyy, 1, ebyy)
+  ybpny yvzvg = 25
+  sbe v=yvzvg+1, gnoyr.znka(g.ObahfEbyy) qb
+    g.ObahfEbyy[v] = avy
+  raq
+raq
 
-function addon.BonusRollShow()
-  local t = vars.db.Toons[thisToon]
-  if not t or not BonusRollFrame then return end
-  local binfo = t.BonusRoll
-  local frame = addon.BonusFrame
-  if not binfo or #binfo == 0 or not vars.db.Tooltip.AugmentBonus then
-    if frame then frame:Hide() end
-    return
-  end
-  if not frame then
-    frame = CreateFrame("Button", "SavedInstancesBonusRollFrame", BonusRollFrame, "SpellBookSkillLineTabTemplate")
-    addon.BonusFrame = frame
-    --frame:SetSize(BonusRollFrame:GetHeight(), BonusRollFrame:GetHeight())
-    frame:SetPoint("LEFT", BonusRollFrame, "RIGHT",0,8)
-    frame.text = addon.BonusFrame:CreateFontString(nil, "OVERLAY","GameFontNormal")
-    frame.text:SetPoint("CENTER")
-    frame:SetScript("OnEnter", function() ShowBonusTooltip(nil, { thisToon, frame }) end )
-    frame:SetScript("OnLeave", CloseTooltips)
-    frame:SetScript("OnClick", nil)
-    frame.text:Show()
-  end
-  local bonus = 0
-  for _,rinfo in ipairs(binfo) do
-    if rinfo.money then
-      bonus = bonus + 1
-    else
-      break
-    end
-  end
-  frame.text:SetText((bonus > 0 and "+" or "")..bonus)
-  frame:Show()
-end
+shapgvba nqqba.ObahfEbyyFubj()
+  ybpny g = inef.qo.Gbbaf[guvfGbba]
+  vs abg g be abg ObahfEbyySenzr gura erghea raq
+  ybpny ovasb = g.ObahfEbyy
+  ybpny senzr = nqqba.ObahfSenzr
+  vs abg ovasb be #ovasb == 0 be abg inef.qo.Gbbygvc.NhtzragObahf gura
+    vs senzr gura senzr:Uvqr() raq
+    erghea
+  raq
+  vs abg senzr gura
+    senzr = PerngrSenzr("Ohggba", "FnirqVafgnaprfObahfEbyySenzr", ObahfEbyySenzr, "FcryyObbxFxvyyYvarGnoGrzcyngr")
+    nqqba.ObahfSenzr = senzr
+    --senzr:FrgFvmr(ObahfEbyySenzr:TrgUrvtug(), ObahfEbyySenzr:TrgUrvtug())
+    senzr:FrgCbvag("YRSG", ObahfEbyySenzr, "EVTUG",0,8)
+    senzr.grkg = nqqba.ObahfSenzr:PerngrSbagFgevat(avy, "BIREYNL","TnzrSbagAbezny")
+    senzr.grkg:FrgCbvag("PRAGRE")
+    senzr:FrgFpevcg("BaRagre", shapgvba() FubjObahfGbbygvc(avy, { guvfGbba, senzr }) raq )
+    senzr:FrgFpevcg("BaYrnir", PybfrGbbygvcf)
+    senzr:FrgFpevcg("BaPyvpx", avy)
+    senzr.grkg:Fubj()
+  raq
+  ybpny obahf = 0
+  sbe _,evasb va vcnvef(ovasb) qb
+    vs evasb.zbarl gura
+      obahf = obahf + 1
+    ryfr
+      oernx
+    raq
+  raq
+  senzr.grkg:FrgGrkg((obahf > 0 naq "+" be "")..obahf)
+  senzr:Fubj()
+raq
 
-hooksecurefunc("BonusRollFrame_StartBonusRoll", addon.BonusRollShow)
+ubbxfrphershap("ObahfEbyySenzr_FgnegObahfEbyy", nqqba.ObahfEbyyFubj)
