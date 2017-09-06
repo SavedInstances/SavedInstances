@@ -208,7 +208,7 @@ addon.WorldBosses = {
   [725] = { quest=32098, expansion=4, level=90 }, -- Galleon
   [814] = { quest=32518, expansion=4, level=90 }, -- Nalak
   [826] = { quest=32519, expansion=4, level=90 }, -- Oondasta
-  [857] = { quest=33117,   expansion=4, level=90, name=L["The Four Celestials"]  }, -- Chi-Ji
+  [857] = { quest=33117, expansion=4, level=90, name=L["The Four Celestials"]  }, -- Chi-Ji
   --[858] = { quest=nil, expansion=4, level=90 }, -- Yu'lon
   --[859] = { quest=nil, expansion=4, level=90 }, -- Niuzao
   --[860] = { quest=nil, expansion=4, level=90 }, -- Xuen
@@ -330,16 +330,16 @@ local QuestExceptions = {
   [37819] = "Regular", -- Darkmoon Faire races referral
 
   -- order hall quests that old addon versions misidentified as weekly (fixed in r548/7.0.8)
-  [44226] = "Regular", -- order hall: DH
-  [44235] = "Regular", -- order hall: Druid
-  [44236] = "Regular", -- order hall: Druid?
-  [44212] = "Regular", -- order hall: Hunter
-  [44208] = "Regular", -- order hall: Mage
-  [44238] = "Regular", -- order hall: Monk
-  [44219] = "Regular", -- order hall: Paladin
-  [44230] = "Regular", -- order hall: Priest
-  [44204] = "Regular", -- order hall: Rogue
-  [44205] = "Regular", -- order hall: Shaman
+  [44226] = "Regular", -- Order Hall: DH
+  [44235] = "Regular", -- Order Hall: Druid
+  [44236] = "Regular", -- Order Hall: Druid?
+  [44212] = "Regular", -- Order Hall: Hunter
+  [44208] = "Regular", -- Order Hall: Mage
+  [44238] = "Regular", -- Order Hall: Monk
+  [44219] = "Regular", -- Order Hall: Paladin
+  [44230] = "Regular", -- Order Hall: Priest
+  [44204] = "Regular", -- Order Hall: Rogue
+  [44205] = "Regular", -- Order Hall: Shaman
 
   [31752] = "AccountDaily", -- Blingtron
   [34774] = "AccountDaily", -- Blingtron 5000
@@ -465,7 +465,7 @@ function addon:timedebug()
   chatMsg("CalendarGetDate: %s %s/%s/%s server",CalendarGetDate())
   chatMsg("GetQuestResetTime: %s",SecondsToTime(GetQuestResetTime()))
   chatMsg(date("Daily reset: %a %c local (based on GetQuestResetTime)",time()+GetQuestResetTime()))
-  chatMsg("Local to Server offset: %d hours",SavedInstances:GetServerOffset())
+  chatMsg("Local to server offset: %d hours",SavedInstances:GetServerOffset())
   local t = SavedInstances:GetNextDailyResetTime()
   chatMsg("Next daily reset: %s local, %s server",date("%a %c",t), date("%a %c",t+3600*SavedInstances:GetServerOffset()))
   t = SavedInstances:GetNextWeeklyResetTime()
@@ -473,7 +473,7 @@ function addon:timedebug()
   t = SavedInstances:GetNextDailySkillResetTime()
   chatMsg("Next skill reset: %s local, %s server",date("%a %c",t), date("%a %c",t+3600*SavedInstances:GetServerOffset()))
   t = SavedInstances:GetNextDarkmoonResetTime()
-  chatMsg("Next darkmoon reset: %s local, %s server",date("%a %c",t), date("%a %c",t+3600*SavedInstances:GetServerOffset()))
+  chatMsg("Next Darkmoon reset: %s local, %s server",date("%a %c",t), date("%a %c",t+3600*SavedInstances:GetServerOffset()))
 end
 
 local function questTableToString(t)
@@ -544,7 +544,7 @@ local function abbreviate(iname)
   return iname
 end
 
-function addon:formatNumber(num,ismoney)
+function addon:formatNumber(num, ismoney)
   num = tonumber(num)
   if not num then return "" end
   local post = ""
@@ -4675,7 +4675,6 @@ local trade_spells = {
   [66664] = "xmute", 	-- Transmute: Eye of Zul
   -- Cata
   [78866] = "xmute", 	-- Transmute: Living Elements
-  --[80243] = "xmute", 	-- Transmute: Truegold, cd removed (5.2.0 verified)
   [80244] = "xmute", 	-- Transmute: Pyrium Bar
   -- MoP
   [114780] = "xmute", 	-- Transmute: Living Steel
@@ -4709,7 +4708,6 @@ local trade_spells = {
 
   -- Jewelcrafting
   [47280] = true, 	-- Brilliant Glass, still has a cd (5.2.0 verified)
-  --[62242] = true, 	-- Icy Prism, cd removed (5.2.0 verified)
   [73478] = true, 	-- Fire Prism, still has a cd (5.2.0 verified)
   [131691] = "facet", 	-- Imperial Amethyst/Facets of Research
   [131686] = "facet", 	-- Primordial Ruby/Facets of Research
@@ -4733,7 +4731,6 @@ local trade_spells = {
   [75144] = 7, 		-- Dream of Hyjal
   [75142] = 7,	 	-- Dream of Deepholm
   [75146] = 7, 		-- Dream of Azshara
-  --[18560] = true,	-- Mooncloth, cd removed (5.2.0 verified, tooltip is wrong)
 
   -- Inscription
   [61288] = true, 	-- Minor Inscription Research
@@ -4878,6 +4875,7 @@ function core:record_skill(spellID, expires)
   sinfo.Title = title
   sinfo.Link = link
   sinfo.Expires = expires
+
   return true
 end
 
@@ -4923,6 +4921,7 @@ function core:TRADE_SKILL_LIST_UPDATE()
       cnt = cnt + 1
     end
   end
+
   return cnt
 end
 
