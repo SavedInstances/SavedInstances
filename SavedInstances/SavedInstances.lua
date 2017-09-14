@@ -62,6 +62,7 @@ local KeystoneAbbrev = {
   [227] = L["L Kara"],
   [233] = L["CoEN"],
   [234] = L["U Kara"],
+  [235] = L["SotT"],
 }
 
 local KeystonetoAbbrev = {
@@ -77,6 +78,7 @@ local KeystonetoAbbrev = {
   ["Return to Karazhan: Lower"] = L["L Kara"],
   ["Cathedral of Eternal Night"] = L["CoEN"],
   ["Return to Karazhan: Upper"] = L["U Kara"],
+  ["Seat of the Triumvirate"] = L["SotT"],
 }
 
 vars.Categories = { }
@@ -4234,7 +4236,7 @@ function core:ShowTooltip(anchorframe)
             if t.MythicKey.abbrev then
               tooltip:SetCell(show, col, "|c"..t.MythicKey.color..t.MythicKey.abbrev.." ("..t.MythicKey.level..")"..FONTEND, "CENTER",maxcol)
             else
-              local kabbrev = KeystonetoAbbrev[t.MythicKey.name]
+              local kabbrev = KeystonetoAbbrev[t.MythicKey.name] or t.MythicKey.name
               tooltip:SetCell(show, col, "|c"..t.MythicKey.color..kabbrev.." ("..t.MythicKey.level..")"..FONTEND, "CENTER",maxcol)
             end
           else
