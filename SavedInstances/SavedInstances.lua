@@ -4841,10 +4841,8 @@ local cdname = {
 local itemcds = { -- [itemid] = spellid
   [87214] = 126459, 	-- Blingtron 4000
   [111821] = 161414, 	-- Blingtron 5000
-  [132530] = 200146,	-- Reaves: Bling (Blingtron 6000)
   [40768] = 54710, 	-- MOLL-E
-  [49040] = 67826,	-- Jeeves
-  [132525] = 200087,	-- Reaves: Repair
+  [49040] = 67826, 	-- Jeeves
   [112059] = 163830,	-- Wormhole Centrifuge
   [48933] = 67833,	-- Wormhole Generator: Northrend
   [87215] = 126755,	-- Wormhole Generator: Pandaria
