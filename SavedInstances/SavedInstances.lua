@@ -62,7 +62,7 @@ local KeystoneAbbrev = {
   [227] = L["L Kara"],
   [233] = L["CoEN"],
   [234] = L["U Kara"],
-  [235] = L["SotT"],
+  [239] = L["SotT"],
 }
 
 local KeystonetoAbbrev = {
