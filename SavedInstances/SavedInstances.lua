@@ -4256,63 +4256,49 @@ function core:ShowTooltip(anchorframe)
     end
   end
 
-	if vars.db.Tooltip.MythicKeyBest or showall then
-		local show = false
-		for toon, t in cpairs(vars.db.Toons, true) do
-			if t.MythicKeyBest then
-				if t.MythicKeyBest.level and t.MythicKeyBest.level > 0 then
-					show = true
-					addColumns(columns, toon, tooltip)
-				end
-				if t.MythicKeyBest.WeeklyReward then
-					show = true
-					addColumns(columns, toon, tooltip)
-				end
-			end
-		end
-    	if show then
-			if not firstcategory and vars.db.Tooltip.CategorySpaces then
-				addsep()
-			end
-			show = tooltip:AddLine(YELLOWFONT .. L["Current Mythic+"] .. FONTEND)
-		end
-		for toon, t in cpairs(vars.db.Toons, true) do
-			if t.MythicKeyBest then
-				local keydesc = ""
-				if t.MythicKeyBest.level and t.MythicKeyBest.level > 0 then
-					keydesc = t.MythicKeyBest.level
-				end
-				if t.MythicKeyBest.WeeklyReward then
-					if keydesc == "" then
-						keydesc = "0"
-					end
-				end
-				if keydesc ~= "" then
-					local col = columns[toon..1]
-					tooltip:SetCell(show, col, keydesc , "CENTER",maxcol)
-				end
-			end
-		end
-		
-		if show then
-			if not firstcategory and vars.db.Tooltip.CategorySpaces then
-				addsep()
-			end
-			show = tooltip:AddLine(YELLOWFONT .. L["Last Week Mythic+"] .. FONTEND)
-		end
-		for toon, t in cpairs(vars.db.Toons, true) do
-			if t.MythicKeyBest then
-				local lastlevel = ""
-				if t.MythicKeyBest.LastWeekLevel and t.MythicKeyBest.LastWeekLevel > 0 then
-					lastlevel = t.MythicKeyBest.LastWeekLevel
-				end
-				if lastlevel ~= "" then
-					local col = columns[toon..1]
-					tooltip:SetCell(show, col, lastlevel, "CENTER",maxcol)
-				end
-			end
-		end
-	end
+  if vars.db.Tooltip.MythicKeyBest or showall then
+    local show = false
+    for toon, t in cpairs(vars.db.Toons, true) do
+      if t.MythicKeyBest then
+        if t.MythicKeyBest.level and t.MythicKeyBest.level > 0 then
+          show = true
+          addColumns(columns, toon, tooltip)
+        end
+        if t.MythicKeyBest.WeeklyReward then
+          show = true
+          addColumns(columns, toon, tooltip)
+        end
+      end
+    end
+    if show then
+      if not firstcategory and vars.db.Tooltip.CategorySpaces then
+        addsep()
+      end
+      show = tooltip:AddLine(YELLOWFONT .. L["Mythic Key Best"] .. FONTEND)
+    end
+    for toon, t in cpairs(vars.db.Toons, true) do
+      if t.MythicKeyBest then
+        local keydesc = ""
+        if t.MythicKeyBest.level and t.MythicKeyBest.level > 0 then
+          keydesc = t.MythicKeyBest.level
+        end
+        if t.MythicKeyBest.WeeklyReward then
+          if keydesc == "" then
+            keydesc = "0"
+          end
+          local lastlevel = ""
+          if t.MythicKeyBest.LastWeekLevel and t.MythicKeyBest.LastWeekLevel > 0 then
+            lastlevel = t.MythicKeyBest.LastWeekLevel
+          end
+          keydesc = keydesc .."(".. lastlevel ..L["Last Week Reward Usable"].. ")"
+        end
+        if keydesc ~= "" then
+          local col = columns[toon..1]
+          tooltip:SetCell(show, col, keydesc , "CENTER",maxcol)
+        end
+      end
+    end
+  end
 
   if vars.db.Tooltip.DailyWorldQuest or showall then
     local show = {}
