@@ -247,10 +247,10 @@ addon.WorldBosses = {
   -- Argus Greater Invasions
   [2010] = { quest=49169, name=EJ_GetEncounterInfo(2010), expansion=6, level=110}, -- Matron Folnuna
   [2011] = { quest=49167, name=EJ_GetEncounterInfo(2011), expansion=6, level=110}, -- Mistress Alluradel
-  [2012] = { quest=49168, name=EJ_GetEncounterInfo(2012), expansion=6, level=110}, -- Inquisitor Meto
+  [2012] = { quest=49166, name=EJ_GetEncounterInfo(2012), expansion=6, level=110}, -- Inquisitor Meto
   [2013] = { quest=49165, name=EJ_GetEncounterInfo(2013), expansion=6, level=110}, -- Occularus
   [2014] = { quest=49171, name=EJ_GetEncounterInfo(2014), expansion=6, level=110}, -- Sotanathor
-  [2015] = { quest=49166, name=EJ_GetEncounterInfo(2015), expansion=6, level=110}, -- Pit Lord Vilemus
+  [2015] = { quest=49168, name=EJ_GetEncounterInfo(2015), expansion=6, level=110}, -- Pit Lord Vilemus
 
   -- bosses with no EJ entry (eid is a placeholder)
   [9001] = { quest=38276, name=GARRISON_LOCATION_TOOLTIP.." "..BOSS, expansion=5, level=100 },
