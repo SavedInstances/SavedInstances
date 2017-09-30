@@ -4292,7 +4292,6 @@ function core:ShowTooltip(anchorframe)
       if show[dayleft] then
         local showday = show[dayleft]
 			show[dayleft] = tooltip:AddLine(GOLDFONT .. showday .. " (+" .. dayleft .. " " .. L["Day"] .. ")" .. FONTEND)
-		--tooltip:AddLine(YELLOWFONT .. L["Mythic Key Best"] .. FONTEND)
       end
     end
     for toon, t in cpairs(vars.db.Toons, true) do
