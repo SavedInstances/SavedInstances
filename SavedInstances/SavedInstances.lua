@@ -4281,13 +4281,18 @@ function core:ShowTooltip(anchorframe)
         end
       end
     end
+	
+	if not firstcategory and vars.db.Tooltip.CategorySpaces then
+          addsep()
+	end
+	if vars.db.Tooltip.ShowCategories then
+		tooltip:AddLine(YELLOWFONT .. L["Emissary Quests"] .. FONTEND)
+	end
     for dayleft = 0 , 2 do
       if show[dayleft] then
         local showday = show[dayleft]
-        if not firstcategory and vars.db.Tooltip.CategorySpaces then
-          addsep()
-        end
-        show[dayleft] = tooltip:AddLine(YELLOWFONT .. showday .. " (+" .. dayleft .. " " .. L["Day"] .. ")" .. FONTEND)
+			show[dayleft] = tooltip:AddLine(GOLDFONT .. showday .. " (+" .. dayleft .. " " .. L["Day"] .. ")" .. FONTEND)
+		--tooltip:AddLine(YELLOWFONT .. L["Mythic Key Best"] .. FONTEND)
       end
     end
     for toon, t in cpairs(vars.db.Toons, true) do
