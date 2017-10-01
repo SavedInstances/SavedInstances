@@ -28,7 +28,7 @@ if locale == "frFR" then
     La["|cffffff00Left-click|r to detach tooltip"] = "|cffffff00Clic-gauche|r pour détacher l'infobulle."
     La["|cffffff00Middle-click|r to show Blizzard's Raid Information"] = "|cffffff00Clic-milieu|r pour afficher les Infos Raid de Blizzard."
     La["|cffffff00Right-click|r to configure SavedInstances"] = "|cffffff00Clic-droit|r pour configurer SavedInstances."
-  	La["Abbreviate keystones"] = "Noms de donjons abrégés"
+    La["Abbreviate keystones"] = "Noms de donjons abrégés"
     La["Abbreviate Mythic keystone dungeon names"] = "Abréger les noms des donjons de clés mythiques"
     La["Account"] = "Compte"
     La["Account Summary"] = "Résumé du compte"
