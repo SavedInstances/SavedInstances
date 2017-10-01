@@ -173,7 +173,7 @@ if locale == "frFR" then
     La["World Boss"] = "Boss extérieur"
     La["World Bosses"] = "Boss extérieurs"
     La["You can combine icons and text in a single indicator if you wish. Simply choose an icon, and insert the word ICON into the text field. Anywhere the word ICON is found, the icon you chose will be substituted in."] = "Si vous le souhaitez, vous pouvez combiner les icônes et le texte en un seul indicateur. Il vous suffit de choisir une icône et d'insérer le mot ICON dans la zone de texte. Partout où le mot ICON sera trouvé, l'icône que vous avez choisi sera mise à la place."
-	  La["EoA"] = "Œil d'Azshara"
+    La["EoA"] = "Œil d'Azshara"
     La["DHT"] = "Fourré sombrecoeur"
     La["BRH"] = "Bastion du Freux"
     La["HoV"] = "Salles des valeureux"
