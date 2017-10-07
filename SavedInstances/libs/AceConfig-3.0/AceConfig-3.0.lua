@@ -3,7 +3,7 @@
 -- as well as associate it with a slash command.
 -- @class file
 -- @name AceConfig-3.0
--- @release $Id: AceConfig-3.0.lua 969 2010-10-07 02:11:48Z shefki $
+-- @release $Id: AceConfig-3.0.lua 1161 2017-08-12 14:30:16Z funkydude $
 
 --[[
 AceConfig-3.0
@@ -12,13 +12,14 @@ Very light wrapper library that combines all the AceConfig subcomponents into on
 
 ]]
 
-local MAJOR, MINOR = "AceConfig-3.0", 2
+local cfgreg = LibStub("AceConfigRegistry-3.0")
+local cfgcmd = LibStub("AceConfigCmd-3.0")
+
+local MAJOR, MINOR = "AceConfig-3.0", 3
 local AceConfig = LibStub:NewLibrary(MAJOR, MINOR)
 
 if not AceConfig then return end
 
-local cfgreg = LibStub("AceConfigRegistry-3.0")
-local cfgcmd = LibStub("AceConfigCmd-3.0")
 --TODO: local cfgdlg = LibStub("AceConfigDialog-3.0", true)
 --TODO: local cfgdrp = LibStub("AceConfigDropdown-3.0", true)
 

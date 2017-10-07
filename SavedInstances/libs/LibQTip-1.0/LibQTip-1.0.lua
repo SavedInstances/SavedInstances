@@ -158,9 +158,9 @@ local frameHeap = lib.frameHeap
 local function AcquireFrame(parent)
 	local frame = tremove(frameHeap) or CreateFrame("Frame")
 	frame:SetParent(parent)
-	--@debug@
+	--[===[@debug@
 	usedFrames = usedFrames + 1
-	--@end-debug@
+	--@end-debug@]===]
 	return frame
 end
 
@@ -171,9 +171,9 @@ local function ReleaseFrame(frame)
 	frame:SetBackdrop(nil)
 	ClearFrameScripts(frame)
 	tinsert(frameHeap, frame)
-	--@debug@
+	--[===[@debug@
 	usedFrames = usedFrames - 1
-	--@end-debug@
+	--@end-debug@]===]
 end
 
 ------------------------------------------------------------------------------
@@ -342,9 +342,9 @@ function AcquireTooltip()
 		tooltip.scrollChild = scrollChild
 		setmetatable(tooltip, tipMetatable)
 	end
-	--@debug@
+	--[===[@debug@
 	usedTooltips = usedTooltips + 1
-	--@end-debug@
+	--@end-debug@]===]
 	return tooltip
 end
 
@@ -403,9 +403,9 @@ function ReleaseTooltip(tooltip)
 	highlightTexture:SetTexture(DEFAULT_HIGHLIGHT_TEXTURE_PATH)
 	highlightTexture:SetTexCoord(0, 1, 0, 1)
 
-	--@debug@
+	--[===[@debug@
 	usedTooltips = usedTooltips - 1
-	--@end-debug@
+	--@end-debug@]===]
 end
 
 ------------------------------------------------------------------------------
@@ -454,9 +454,9 @@ local tableHeap = lib.tableHeap
 -- Returns a table
 function AcquireTable()
 	local tbl = tremove(tableHeap) or {}
-	--@debug@
+	--[===[@debug@
 	usedTables = usedTables + 1
-	--@end-debug@
+	--@end-debug@]===]
 	return tbl
 end
 
@@ -464,9 +464,9 @@ end
 function ReleaseTable(table)
 	wipe(table)
 	tinsert(tableHeap, table)
-	--@debug@
+	--[===[@debug@
 	usedTables = usedTables - 1
-	--@end-debug@
+	--@end-debug@]===]
 end
 
 ------------------------------------------------------------------------------
