@@ -1,7 +1,7 @@
 local addonName, vars = ...
 local core = vars.core
 SavedInstances = vars
-local L = vars.L
+local L = LibStub("AceLocale-3.0"):GetLocale("SavedInstances", true)
 vars.config = core:NewModule("Config")
 local module = vars.config
 
