@@ -4,7 +4,7 @@ local addon = vars
 local addonAbbrev = "SI"
 vars.core = LibStub("AceAddon-3.0"):NewAddon(addonName, "AceEvent-3.0", "AceTimer-3.0", "AceBucket-3.0")
 local core = vars.core
-local L = vars.L
+local L = LibStub("AceLocale-3.0"):GetLocale("SavedInstances", true)
 vars.LDB = LibStub("LibDataBroker-1.1", true)
 vars.icon = vars.LDB and LibStub("LibDBIcon-1.0", true)
 

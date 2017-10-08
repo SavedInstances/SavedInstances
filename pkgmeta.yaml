@@ -1,0 +1,30 @@
+package-as: SavedInstances
+enable-nolib-creation: yes
+
+externals:
+    libs/CallbackHandler-1.0: 
+        url: https://repos.wowace.com/wow/ace3/trunk/CallbackHandler-1.0
+    libs/AceAddon-3.0:
+        url: https://repos.wowace.com/wow/ace3/trunk/AceAddon-3.0
+    libs/AceConsole-3.0:
+        url: https://repos.wowace.com/wow/ace3/trunk/AceConsole-3.0
+    libs/AceEvent-3.0:
+        url: https://repos.wowace.com/wow/ace3/trunk/AceEvent-3.0
+    libs/AceGUI-3.0:
+        url: https://repos.wowace.com/wow/ace3/trunk/AceGUI-3.0
+    libs/AceLocale-3.0:
+        url: https://repos.wowace.com/wow/ace3/trunk/AceLocale-3.0
+    libs/AceTimer-3.0:
+        url: https://repos.wowace.com/wow/ace3/trunk/AceTimer-3.0
+	libs/AceBucket-3.0:
+		url: https://repos.wowace.com/wow/ace3/trunk/AceBucket-3.0
+	libs/LibDBIcon-1.0:
+		url: https://repos.wowace.com/wow/libdbicon-1-0/trunk/LibDBIcon-1.0
+	libs/LibQTip-1.0:
+		url: https://repos.wowace.com/wow/libqtip-1-0/trunk
+    libs/LibStub:
+        url: https://repos.wowace.com/wow/libstub/trunk
+        
+manual-changelog: CHANGELOG.txt
+license-output: LICENSE.txt
+
