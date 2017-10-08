@@ -1,0 +1,36 @@
+## Interface: 70300
+## Title: SavedInstances
+## Notes: Tracks Raid, Instance, World Boss lockouts for all your characters, daily/weekly quests, currencies, trade cooldowns, and more!
+## Author: @project-author@
+## Version: @project-version@
+## X-ReleaseDate: @project-date-iso@
+## X-License: All Rights Reserved
+## X-Category: Raid
+## OptionalDeps: Ace3, CallbackHandler-1.0, LibDataBroker-1.1, LibDBIcon-1.0, LibQTip-1.0
+## SavedVariables: SavedInstancesDB
+## LoadManagers: AddonLoader
+## X-LoadOn-Always: delayed
+
+#@no-lib-strip@
+libs\LibStub\LibStub.lua
+libs\CallbackHandler-1.0\CallbackHandler-1.0.xml
+libs\AceAddon-3.0\AceAddon-3.0.xml
+libs\AceEvent-3.0\AceEvent-3.0.xml
+libs\AceTimer-3.0\AceTimer-3.0.xml
+libs\AceBucket-3.0\AceBucket-3.0.xml
+libs\AceGUI-3.0\AceGUI-3.0.xml
+libs\AceConfig-3.0\AceConfig-3.0.xml
+libs\AceConsole-3.0\AceConsole-3.0.xml
+libs\LibQTip-1.0\lib.xml
+#@end-no-lib-strip@
+
+libs\LibDataBroker-1.1\LibDataBroker-1.1.lua
+
+#@no-lib-strip@
+libs\LibDBIcon-1.0\LibDBIcon-1.0.lua
+#@end-no-lib-strip@
+
+locale.xml
+
+SavedInstances.lua
+config.lua
