@@ -243,7 +243,7 @@ addon.WorldBosses = {
   [1884] = { quest=46948, expansion=6, level=110 }, -- Malificus
   [1885] = { quest=46945, expansion=6, level=110 }, -- Si'vash
   [1956] = { quest=47061, expansion=6, level=110 }, -- Apocron
-  
+
   -- Argus Greater Invasions
   [2010] = { quest=49169, name=EJ_GetEncounterInfo(2010), expansion=6, level=110}, -- Matron Folnuna
   [2011] = { quest=49167, name=EJ_GetEncounterInfo(2011), expansion=6, level=110}, -- Mistress Alluradel

@@ -66,7 +66,7 @@ if locale == "frFR" then
     La["Display instances in order of recommended level from lowest to highest"] = "Affiche les instances dans l'ordre du niveau recommandé le plus bas au plus élevé."
     La["Display instances with space inserted between categories"] = "Affiche les instances avec un espace entre les catégories."
     La["Dump time debugging information"] = "Enregistrer les informations de débogage des timings"
-  	La["Dump quest debugging information"] = "Enregistrer les informations de débogage des quêtes"
+    La["Dump quest debugging information"] = "Enregistrer les informations de débogage des quêtes"
     La["Emissary Missing"] = "Émissaire manquant"
     La["Expansion"] = "Extension"
     La["Expired Lockout - Can be extended"] = "Verrouillage expiré - Peut être étendu"

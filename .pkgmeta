@@ -22,3 +22,6 @@ ignore:
 license-output: LICENSE.txt
 
 enable-nolib-creation: yes
+
+move-folders:
+    SavedInstances/SavedInstances: SavedInstances
