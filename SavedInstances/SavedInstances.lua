@@ -226,7 +226,7 @@ addon.WorldBosses = {
   [1291] = { remove=true }, -- Drov cleanup
 
   [1262] = { quest=37464, expansion=5, level=100 }, -- Rukhmar
-  [1452] = { quest=94015, expansion=5, level=100 }, -- Kazzak
+  [1452] = { quest=39380, expansion=5, level=100 }, -- Kazzak
 
   [1749] = { quest=42270, expansion=6, level=110 }, -- Nithogg
   [1756] = { quest=42269, expansion=6, level=110, name=EJ_GetEncounterInfo(1756) }, -- The Soultakers
@@ -248,7 +248,7 @@ addon.WorldBosses = {
   [2010] = { quest=49169, name=EJ_GetEncounterInfo(2010), expansion=6, level=110}, -- Matron Folnuna
   [2011] = { quest=49167, name=EJ_GetEncounterInfo(2011), expansion=6, level=110}, -- Mistress Alluradel
   [2012] = { quest=49166, name=EJ_GetEncounterInfo(2012), expansion=6, level=110}, -- Inquisitor Meto
-  [2013] = { quest=49165, name=EJ_GetEncounterInfo(2013), expansion=6, level=110}, -- Occularus
+  [2013] = { quest=49170, name=EJ_GetEncounterInfo(2013), expansion=6, level=110}, -- Occularus
   [2014] = { quest=49171, name=EJ_GetEncounterInfo(2014), expansion=6, level=110}, -- Sotanathor
   [2015] = { quest=49168, name=EJ_GetEncounterInfo(2015), expansion=6, level=110}, -- Pit Lord Vilemus
 
