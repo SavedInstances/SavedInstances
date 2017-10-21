@@ -4281,7 +4281,7 @@ function core:ShowTooltip(anchorframe)
         end
       end
     end
-	
+
 	if not firstcategory and vars.db.Tooltip.CategorySpaces then
           addsep()
 	end

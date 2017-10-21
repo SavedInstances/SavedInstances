@@ -14,10 +14,8 @@ externals:
     SavedInstances/libs/LibStub: https://repos.wowace.com/wow/libstub/trunk
 
 ignore:
-    - .pkgmeta
-    - .project
-    - .hg*
-    - .DS_Store
+    - README.md
+    - babelfish.lua
 
 license-output: LICENSE.txt
 
