@@ -455,7 +455,7 @@ local function bugReport(msg)
   addon.bugreport[msg] = now
   chatMsg(msg)
   if now < (addon.bugreport["url"] or 0)+5 then return end
-  chatMsg("Please report this bug at: https://github.com/eTzmNcbkrng/SavedInstances/issues")
+  chatMsg("Please report this bug at: https://github.com/SavedInstances/SavedInstances/issues")
   addon.bugreport["url"] = now
 end
 
