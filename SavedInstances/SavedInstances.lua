@@ -133,6 +133,7 @@ local currency = {
   1342, -- Legionfall War Supplies
   1501, -- Writhing Essence
   1508, -- Veiled Argunite
+  1533, -- Wakening Essence
 }
 addon.currency = currency
 
