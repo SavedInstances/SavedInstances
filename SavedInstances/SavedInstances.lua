@@ -138,9 +138,11 @@ local currency = {
 addon.currency = currency
 
 addon.LFRInstances = {
-  -- index is the id found in LFGDungeons.dbc
+  -- index is the id found in LFGDungeons.dbc or using the command below.
+  -- /script local id,name; for i=1,GetNumRFDungeons() do id,name = GetRFDungeonInfo(i);print(i..". "..name.." ("..id..")");end
   -- total is boss count, base is boss offset,
-  -- parent is instance name to use, GetLFGDungeonInfo()
+  -- parent is instance name to use, GetLFGDungeonInfo() or using the command below.
+  -- /run for i, v in ipairs(GetLFRChoiceOrder()) do print(i, v, GetLFGDungeonInfo(v)) end
   -- altid is for alternate LFRID for higher level toons
 
   [416] = { total=4, base=1,  parent=448, altid=843 }, -- DS1: The Siege of Wyrmrest Temple
@@ -190,10 +192,10 @@ addon.LFRInstances = {
   [1496] = { total=2, base=7, parent=1527, altid=nil, remap={ 1, 2 } }, -- ToS3: Chamber of the Avatar (7/25/17)
   [1497] = { total=1, base=9, parent=1527, altid=nil, remap={ 1 } }, -- ToS4: Deceiver's Fall (8/8/17)
 
-  [1610] = { total=3, base=1, parent=1610, altid=nil, remap={ 1, 2, 3 } }, -- Antorus: Light's Breach
-  [1611] = { total=3, base=4, parent=1610, altid=nil, remap={ 1, 2, 3 } }, -- Antorus: Forbidden Descent
-  [1612] = { total=3, base=7, parent=1610, altid=nil, remap={ 1, 2, 3 } }, -- Antorus: Hope's End
-  [1613] = { total=2, base=10, parent=1610, altid=nil, remap={ 1, 2 } }, -- Antorus: Seat of the Pantheon
+  [1610] = { total=3, base=1, parent=1642, altid=nil, remap={ 1, 2, 3 } }, -- Antorus: Light's Breach
+  [1611] = { total=3, base=4, parent=1642, altid=nil, remap={ 1, 2, 3 } }, -- Antorus: Forbidden Descent
+  [1612] = { total=3, base=7, parent=1642, altid=nil, remap={ 1, 2, 3 } }, -- Antorus: Hope's End
+  [1613] = { total=2, base=10, parent=1642, altid=nil, remap={ 1, 2 } }, -- Antorus: Seat of the Pantheon
 }
 
 local tmp = {}
