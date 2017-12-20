@@ -4256,7 +4256,7 @@ function core:ShowTooltip(anchorframe)
           if t.MythicKeyBest.LastWeekLevel and t.MythicKeyBest.LastWeekLevel > 0 then
             lastlevel = t.MythicKeyBest.LastWeekLevel
           end
-          keydesc = keydesc .."(".. lastlevel ..L["Last Week Reward Usable"].. ")"
+          keydesc = keydesc .."(".. lastlevel ..L[" Chest Available"].. ")"
         end
         if keydesc ~= "" then
           local col = columns[toon..1]
