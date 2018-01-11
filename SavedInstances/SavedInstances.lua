@@ -2626,12 +2626,14 @@ function core:toonInit()
 end
 
 function core:OnInitialize()
-  local versionString = GetAddOnMetadata(addonName, "Version")
+  local versionString = GetAddOnMetadata(addonName, "version")
+  --@debug@
   if versionString == "@project-version@" then
-    SavedInstances.version = "Dev"
-  else
-    SavedInstances.version = versionString
+    versionString = "Dev"
   end
+  --@end-debug@
+  SavedInstances.version = versionString
+
   SavedInstancesDB = SavedInstancesDB or vars.defaultDB
   -- begin backwards compatibility
   if not SavedInstancesDB.DBVersion or SavedInstancesDB.DBVersion < 10 then
