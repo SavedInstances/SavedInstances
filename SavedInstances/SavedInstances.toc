@@ -21,6 +21,7 @@ libs\AceBucket-3.0\AceBucket-3.0.xml
 libs\AceGUI-3.0\AceGUI-3.0.xml
 libs\AceConfig-3.0\AceConfig-3.0.xml
 libs\AceConsole-3.0\AceConsole-3.0.xml
+libs\AceLocale-3.0\AceLocale-3.0.xml
 libs\LibQTip-1.0\lib.xml
 #@end-no-lib-strip@
 
@@ -30,7 +31,7 @@ libs\LibDataBroker-1.1\LibDataBroker-1.1.lua
 libs\LibDBIcon-1.0\LibDBIcon-1.0.lua
 #@end-no-lib-strip@
 
-locale.lua
+locale.xml
 
 SavedInstances.lua
 config.lua

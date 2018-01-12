@@ -4,7 +4,7 @@ local addon = vars
 local addonAbbrev = "SI"
 vars.core = LibStub("AceAddon-3.0"):NewAddon(addonName, "AceEvent-3.0", "AceTimer-3.0", "AceBucket-3.0")
 local core = vars.core
-local L = vars.L
+local L = LibStub("AceLocale-3.0"):GetLocale("SavedInstances", true)
 vars.LDB = LibStub("LibDataBroker-1.1", true)
 vars.icon = vars.LDB and LibStub("LibDBIcon-1.0", true)
 
@@ -246,7 +246,7 @@ addon.WorldBosses = {
   [1884] = { quest=46948, expansion=6, level=110 }, -- Malificus
   [1885] = { quest=46945, expansion=6, level=110 }, -- Si'vash
   [1956] = { quest=47061, expansion=6, level=110 }, -- Apocron
-
+  
   -- Argus Greater Invasions
   [2010] = { quest=49169, name=EJ_GetEncounterInfo(2010), expansion=6, level=110}, -- Matron Folnuna
   [2011] = { quest=49167, name=EJ_GetEncounterInfo(2011), expansion=6, level=110}, -- Mistress Alluradel
