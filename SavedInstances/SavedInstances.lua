@@ -384,6 +384,11 @@ local QuestExceptions = {
   -- Pet Battle Dungeons
   [46292] = "Weekly", -- Pet Battle Challenge Dungeon Deadmines
   [45539] = "Weekly", -- Pet Battle Challenge Dungeon Wailing Caverns
+
+  -- Argus
+  [48910] = "Weekly", -- Supplying Krokuun
+  [48911] = "Weekly", -- Void Inoculation
+  [48912] = "Weekly", -- Supplying the Antoran Campaign
 }
 
 local WoDSealQuests = {
