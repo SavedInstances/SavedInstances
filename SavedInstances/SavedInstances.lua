@@ -2943,6 +2943,7 @@ function core:RefreshMythicKeyInfo()
   end
   local MythicMaps = { }
   C_ChallengeMode.RequestMapInfo()
+  C_ChallengeMode.RequestRewards()
   MythicMaps = C_ChallengeMode.GetMapTable()
   local bestlevel = 0
   for i = 1, #MythicMaps do
