@@ -1507,6 +1507,7 @@ function addon:UpdateInstanceData()
   local renames = 0
   local merges = 0
   local conflicts = 0
+  local purges = 0
   for instname, inst in pairs(vars.db.Instances) do
     local truename
     if inst.WorldBoss then
@@ -1549,6 +1550,21 @@ function addon:UpdateInstanceData()
         renames = renames + 1
       end
     end
+	
+	-- Eliminate duplicate LFR entries from the database (only affects those that were saved previously), to account for Blizzard's lockout changes in 7.3 (see https://github.com/SavedInstances/SavedInstances/issues/89)
+	for key, info in pairs(inst) do -- Check for potential LFR lockout entries
+ 
+	if key:find(" - ") then -- is a character key
+			for difficulty, entry in pairs(info) do -- Check difficulty for LFR
+				if difficulty == 7 or difficulty == 17 then -- Difficulties 7 and 17 are for (legacy) LFR modes -> Kill them... with fire!
+					debug("Purge LFR lockout entry for " .. truename .. ":" .. instname .. ":" .. key)
+					purges = purges + 1
+					vars.db.Instances[instname][key][difficulty] = nil
+				end
+			end
+		  end
+	end
+	
   end
   -- addon.lfdid_to_name = lfdid_to_name
   -- addon.wbid_to_name = wbid_to_name
@@ -1556,8 +1572,7 @@ function addon:UpdateInstanceData()
   vars.config:BuildOptions() -- refresh config table
 
   starttime = debugprofilestop()-starttime
-  debug("UpdateInstanceData(): completed in %.3f ms : %d added, %d renames, %d merges, %d conflicts.",
-    starttime, added, renames, merges, conflicts)
+  debug("UpdateInstanceData(): completed in %.3f ms : %d added, %d renames, %d merges, %d conflicts, %d purges.", starttime, added, renames, merges, conflicts, purges)
   if addon.RefreshPending then
     addon.RefreshPending = nil
     core:Refresh()
