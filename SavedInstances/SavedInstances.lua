@@ -3410,22 +3410,24 @@ function core:Refresh(recoverdaily)
     for i = 1, numsaved do
       local name, id, expires, diff, locked, extended, mostsig, raid, players, diffname = GetSavedInstanceInfo(i)
       local truename, instance = addon:LookupInstance(nil, name, raid)
-      if expires and expires > 0 then
-        expires = expires + time()
-      else
-        expires = 0
+      if diff ~= 7 and diff ~= 17 then -- Skip (legacy) LFR entries for this character to prevent writing them to the saved variables (from which they'd be purged after the next reload anyway)
+        if expires and expires > 0 then
+          expires = expires + time()
+        else
+          expires = 0
+        end
+        instance.Raid = instance.Raid or raid
+        instance[thisToon] = instance[thisToon] or temp[truename] or { }
+        local info = instance[thisToon][diff] or {}
+        wipe(info)
+        info.ID = id
+        info.Expires = expires
+        info.Link = GetSavedInstanceChatLink(i)
+        info.Locked = locked
+        info.Extended = extended
+        instance[thisToon][diff] = info
       end
-      instance.Raid = instance.Raid or raid
-      instance[thisToon] = instance[thisToon] or temp[truename] or { }
-      local info = instance[thisToon][diff] or {}
-      wipe(info)
-      info.ID = id
-      info.Expires = expires
-      info.Link = GetSavedInstanceChatLink(i)
-      info.Locked = locked
-      info.Extended = extended
-      instance[thisToon][diff] = info
-    end
+	end
   end
 
   local weeklyreset = addon:GetNextWeeklyResetTime()
