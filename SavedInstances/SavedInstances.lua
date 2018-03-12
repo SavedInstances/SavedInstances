@@ -2886,7 +2886,10 @@ function core:updateRealmMap()
   end
 end
 
-function core:RefreshMythicKeyInfo()
+function core:RefreshMythicKeyInfo(event)
+
+  if (event ~= "CHALLENGE_MODE_MAPS_UPDATE") then C_ChallengeMode.RequestRewards() end -- This event is fired after the rewards data was requested, causing yet another refresh if not checked for
+
   local t = vars.db.Toons[thisToon]
   local _
   t.MythicKey = {}
@@ -2943,7 +2946,6 @@ function core:RefreshMythicKeyInfo()
   end
   local MythicMaps = { }
   C_ChallengeMode.RequestMapInfo()
-  C_ChallengeMode.RequestRewards()
   MythicMaps = C_ChallengeMode.GetMapTable()
   local bestlevel = 0
   for i = 1, #MythicMaps do
