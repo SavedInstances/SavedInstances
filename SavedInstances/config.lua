@@ -380,6 +380,11 @@ function module:BuildOptions()
             order = 33.6,
             name = L["Emissary quests"],
           },
+          TrackProfession = {
+            type = "toggle",
+            order = 33.7,
+            name = L["Trade Professions"],
+          },
           TrackSkills = {
             type = "toggle",
             order = 33.75,
