@@ -1789,6 +1789,9 @@ function addon:UpdateToonData()
             end
           end
           if ti.DailyWorldQuest then
+            if ti.DailyWorldQuest.days0 then
+              ti.DailyWorldQuest.days0 = nil
+            end
             if ti.DailyWorldQuest.days1 then
               ti.DailyWorldQuest.days0 = ti.DailyWorldQuest.days1
               ti.DailyWorldQuest.days0.dayleft = 0
