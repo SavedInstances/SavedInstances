@@ -615,6 +615,12 @@ vars.defaultDB = {
   -- PlayedTotal: integer
   -- Money: integer
   -- Zone: string
+  -- Prof1: string
+  -- Prof1Icon: integer
+  -- Prof1skillLevel: integer
+  -- Prof2: string
+  -- Prof2Icon: integer
+  -- Prof2skillLevel: integer
 
   -- currency: key: currencyID  value:
   -- amount: integer
@@ -748,6 +754,7 @@ vars.defaultDB = {
     TrackLFG = true,
     TrackDeserter = true,
     TrackSkills = true,
+    TrackProfession = true,
     TrackFarm = true,
     TrackBonus = false,
     TrackPlayed = true,
@@ -1782,6 +1789,9 @@ function addon:UpdateToonData()
             end
           end
           if ti.DailyWorldQuest then
+            if ti.DailyWorldQuest.days0 then
+              ti.DailyWorldQuest.days0 = nil
+            end
             if ti.DailyWorldQuest.days1 then
               ti.DailyWorldQuest.days0 = ti.DailyWorldQuest.days1
               ti.DailyWorldQuest.days0.dayleft = 0
@@ -1884,6 +1894,14 @@ function addon:UpdateToonData()
       t.Race = lrace.." ("..lfaction..")"
     else
       t.Race = lrace
+    end
+
+    local prof1, prof2 = GetProfessions()
+    if prof1 then
+      t.Prof1, t.Prof1Icon, t.Prof1skillLevel = GetProfessionInfo(prof1)
+    end
+    if prof2 then
+      t.Prof2, t.Prof2Icon, t.Prof2skillLevel = GetProfessionInfo(prof2)
     end
 
     t.LastSeen = time()
@@ -4210,6 +4228,34 @@ function core:ShowTooltip(anchorframe)
         tooltip:SetCellScript(show, col, "OnEnter", ShowSkillTooltip, {toon, cnt})
         tooltip:SetCellScript(show, col, "OnLeave", CloseTooltips)
       end
+    end
+  end
+
+  if vars.db.Tooltip.TrackProfession or showall then
+    local profs = { 
+      { "Prof1","Profession Skills 1","Prof1Icon","Prof1skillLevel" },
+      { "Prof2","Profession Skills 2","Prof2Icon","Prof2skillLevel" }
+    }
+    for _,fi in ipairs(profs) do
+      local show = false
+      for toon, t in cpairs(vars.db.Toons, true) do
+        if t[fi[1]] then
+          show = true
+          addColumns(columns, toon, tooltip)
+        end
+      end
+      if show then
+        if not firstcategory and vars.db.Tooltip.CategorySpaces then
+          addsep()
+        end
+        show = tooltip:AddLine(YELLOWFONT .. L[fi[2]] .. FONTEND)
+      end
+      for toon, t in cpairs(vars.db.Toons, true) do
+        if t[fi[1]] then
+          local col = columns[toon..1]
+          tooltip:SetCell(show, col, string.format("\124T%s:0\124t%s",tostring(t[fi[3]]),tostring(t[fi[4]])) , "CENTER",maxcol)
+        end
+      end    
     end
   end
 
