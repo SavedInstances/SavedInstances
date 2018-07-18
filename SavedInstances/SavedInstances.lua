@@ -2795,7 +2795,7 @@ function core:OnEnable()
     end
   end
   addon.resetDetect:SetScript("OnEvent", addon.HistoryEvent)
-  RegisterAddonMessagePrefix(addonName)
+  C_ChatInfo.RegisterAddonMessagePrefix(addonName)
   addon:HistoryEvent("PLAYER_ENTERING_WORLD") -- update after initial load
   addon:specialQuests()
   core:RefreshMythicKeyInfo()
