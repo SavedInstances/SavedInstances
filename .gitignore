@@ -1,2 +1,3 @@
 SavedInstances_Main.lua
-libs/
+SavedInstances/Libs/*
+!SavedInstances/Libs/LibDataBroker-1.1
