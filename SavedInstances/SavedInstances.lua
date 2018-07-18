@@ -2970,7 +2970,7 @@ function core:RefreshMythicKeyInfo(event)
   MythicMaps = C_ChallengeMode.GetMapTable()
   local bestlevel = 0
   for i = 1, #MythicMaps do
-    local _, _, level = C_MythicPlus.GetWeeklyBestForMap(MythicMaps[i]);
+    local _, level = C_MythicPlus.GetWeeklyBestForMap(MythicMaps[i]);
     if level then
       if level > bestlevel then
         bestlevel = level
