@@ -1019,8 +1019,8 @@ do
     local monthInfo = C_Calendar.GetMonthInfo();
     local firstweekday = monthInfo.firstWeekday
     local firstsunday = ((firstweekday == 1) and 1) or (9 - firstweekday)
-    dmf_end.year = year
-    dmf_end.month = month
+    dmf_end.year = monthInfo.year
+    dmf_end.month = monthInfo.month
     dmf_end.day = firstsunday + 7 -- 1 days of "slop"
     -- Unfortunately, DMF boundary ignores daylight savings, and the time of day varies across regions
     -- Report a reset well past end to make sure we don't drop quests early
