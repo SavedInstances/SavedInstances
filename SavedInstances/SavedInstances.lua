@@ -37,6 +37,25 @@ local INSTANCE_SAVED, TRANSFER_ABORT_TOO_MANY_INSTANCES, NO_RAID_INSTANCES_SAVED
 
 local ALREADY_LOOTED = ERR_LOOT_GONE:gsub("%(.*%)","")
 
+local UnitAura = UnitAura
+-- Unit Aura functions that return info about the first Aura matching the spellName or spellID given on the unit.
+local SI_GetUnitAura = function(unit, spell, filter)
+    for i = 1, 40 do
+        local name, _, _, _, _, _, _, _, _, spellId = UnitAura(unit, i, filter)
+        if not name then return end
+        if spell == spellId or spell == name then
+            return UnitAura(unit, i, filter)
+        end
+    end
+end
+local SI_GetUnitBuff = function(unit, spell, filter)
+    return SI_GetUnitAura(unit, spell, filter)
+end
+local SI_GetUnitDebuff = function(unit, spell, filter)
+    filter = filter and filter.."|HARMFUL" or "HARMFUL"
+    return SI_GetUnitAura(unit, spell, filter)
+end
+
 vars.Indicators = {
   ICON_STAR = ICON_LIST[1] .. "16:16:0:0|t",
   ICON_CIRCLE = ICON_LIST[2] .. "16:16:0:0|t",
@@ -1663,7 +1682,7 @@ function addon:updateSpellTip(spellid)
   vars.db.spelltip = vars.db.spelltip or {}
   vars.db.spelltip[spellid] = vars.db.spelltip[spellid] or {}
   for i=1,20 do
-    local id = select(11,UnitDebuff("player",i))
+    local id = select(11,SI_GetUnitDebuff("player",i))
     if id == spellid then slot = i end
   end
   if slot then
@@ -1751,12 +1770,12 @@ function addon:UpdateToonData()
     RequestTimePlayed()
   end
   t.LFG1 = GetTimeToTime(GetLFGRandomCooldownExpiration()) or t.LFG1
-  t.LFG2 = GetTimeToTime(select(7,UnitDebuff("player",GetSpellInfo(71041)))) or t.LFG2 -- GetLFGDeserterExpiration()
+  t.LFG2 = GetTimeToTime(select(7,SI_GetUnitDebuff("player",GetSpellInfo(71041)))) or t.LFG2 -- GetLFGDeserterExpiration()
   if t.LFG2 then addon:updateSpellTip(71041) end
   addon.pvpdesertids = addon.pvpdesertids or { 26013,   -- BG queue
     194958 } -- Ashran
   for _,id in ipairs(addon.pvpdesertids) do
-    t.pvpdesert = GetTimeToTime(select(7,UnitDebuff("player",GetSpellInfo(id)))) or t.pvpdesert
+    t.pvpdesert = GetTimeToTime(select(7,SI_GetUnitDebuff("player",GetSpellInfo(id)))) or t.pvpdesert
     if t.pvpdesert then addon:updateSpellTip(id) end
     end
     for toon, ti in pairs(vars.db.Toons) do
