@@ -353,7 +353,7 @@ function addon:specialQuests()
     end
 
     if not qinfo.zone and qinfo.zid then
-      qinfo.zone = GetMapNameByID(qinfo.zid)
+      qinfo.zone = C_Map.GetMapInfo(qinfo.zid)
     end
   end
 
