@@ -48,9 +48,11 @@ local SI_GetUnitAura = function(unit, spell, filter)
         end
     end
 end
+
 local SI_GetUnitBuff = function(unit, spell, filter)
     return SI_GetUnitAura(unit, spell, filter)
 end
+
 local SI_GetUnitDebuff = function(unit, spell, filter)
     filter = filter and filter.."|HARMFUL" or "HARMFUL"
     return SI_GetUnitAura(unit, spell, filter)
@@ -914,9 +916,9 @@ end
 -- convert local time -> server time: add this value
 -- convert server time -> local time: subtract this value
 function addon:GetServerOffset()
-  local serverDay = C_Calendar.GetDate() - 1 -- 1-based starts on Sun
+  local serverDate = C_Calendar.GetDate()
+  local serverDay, serverWeekday, serverMonth, serverMinute, serverHour, serverYear = serverDate.monthDay, serverDate.weekday, serverDate.month, serverDate.minute, serverDate.hour, serverDate.year
   local localDay = tonumber(date("%w")) -- 0-based starts on Sun
-  local serverHour, serverMinute = GetGameTime()
   local localHour, localMinute = tonumber(date("%H")), tonumber(date("%M"))
   if serverDay == (localDay + 1)%7 then -- server is a day ahead
     serverHour = serverHour + 24
