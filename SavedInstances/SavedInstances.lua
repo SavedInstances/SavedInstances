@@ -2045,7 +2045,7 @@ local function SI_GetQuestReward()
   local qinfo =  { ["Title"] = title, ["Link"] = link,
     ["isDaily"] = isDaily,
     ["Expires"] = expires,
-    ["Zone"] = GetMapNameByID(mapid) }
+    ["Zone"] = C_Map.GetMapInfo(mapid) }
   local scope = t
   if isAccount then
     scope = db
@@ -3395,7 +3395,7 @@ function core:QuestRefresh(recoverdaily, questcomplete, nextreset, weeklyreset)
               questlist[qid] = { ["Title"] = title, ["Link"] = link,
                 ["isDaily"] = (scope:find("Daily") and true) or nil,
                 ["Expires"] = list.expires,
-                ["Zone"] = GetMapNameByID(mapid) }
+                ["Zone"] = C_Map.GetMapInfo(mapid) }
             end
           end
         end
