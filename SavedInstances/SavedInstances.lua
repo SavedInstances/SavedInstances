@@ -2966,11 +2966,11 @@ function core:RefreshMythicKeyInfo(event)
     end
   end
   local MythicMaps = { }
-  C_ChallengeMode.RequestMapInfo()
+  C_MythicPlus.RequestMapInfo()
   MythicMaps = C_ChallengeMode.GetMapTable()
   local bestlevel = 0
   for i = 1, #MythicMaps do
-    local _, _, level = C_ChallengeMode.GetMapPlayerStats(MythicMaps[i]);
+    local _, _, level = C_MythicPlus.GetWeeklyBestForMap(MythicMaps[i]);
     if level then
       if level > bestlevel then
         bestlevel = level
@@ -2985,7 +2985,7 @@ function core:RefreshMythicKeyInfo(event)
   t.MythicKeyBest = t.MythicKeyBest or { }
   t.MythicKeyBest.ResetTime = addon:GetNextWeeklyResetTime()
   t.MythicKeyBest.level = bestlevel
-  t.MythicKeyBest.WeeklyReward = C_ChallengeMode.IsWeeklyRewardAvailable()
+  t.MythicKeyBest.WeeklyReward = C_MythicPlus.IsWeeklyRewardAvailable()
 end
 
 function core:RefreshDailyWorldQuestInfo()
