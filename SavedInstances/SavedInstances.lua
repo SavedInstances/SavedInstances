@@ -2936,7 +2936,7 @@ function core:RefreshMythicKeyInfo(event)
           DEFAULT_CHAT_FRAME:AddMessage(tostring(KeyInfo[20]))
         end
         t.MythicKey.abbrev = KeystoneAbbrev[mapID]
-        t.MythicKey.name = C_ChallengeMode.GetMapInfo(mapID)
+        t.MythicKey.name = C_ChallengeMode.GetMapUIInfo(mapID)
         t.MythicKey.color = color
         t.MythicKey.level = mapLevel
         t.MythicKey.ResetTime = addon:GetNextWeeklyResetTime()
