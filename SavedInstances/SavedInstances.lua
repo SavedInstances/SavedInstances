@@ -476,7 +476,7 @@ function addon:timedebug()
   chatMsg("time()=%s GetTime()=%s", time(), GetTime())
   chatMsg("Local time: %s local", date("%A %c"))
   chatMsg("GetGameTime: %s:%s server",GetGameTime())
-  chatMsg("CalendarGetDate: %s %s/%s/%s server",CalendarGetDate())
+  chatMsg("C_Calendar.GetDate: %s %s/%s/%s server",C_Calendar.GetDate())
   chatMsg("GetQuestResetTime: %s",SecondsToTime(GetQuestResetTime()))
   chatMsg(date("Daily reset: %a %c local (based on GetQuestResetTime)",time()+GetQuestResetTime()))
   chatMsg("Local to server offset: %d hours",SavedInstances:GetServerOffset())
@@ -895,7 +895,7 @@ end
 -- convert local time -> server time: add this value
 -- convert server time -> local time: subtract this value
 function addon:GetServerOffset()
-  local serverDay = CalendarGetDate() - 1 -- 1-based starts on Sun
+  local serverDay = C_Calendar.GetDate() - 1 -- 1-based starts on Sun
   local localDay = tonumber(date("%w")) -- 0-based starts on Sun
   local serverHour, serverMinute = GetGameTime()
   local localHour, localMinute = tonumber(date("%H")), tonumber(date("%M"))
@@ -995,7 +995,7 @@ do
   function addon:GetNextDarkmoonResetTime()
     -- Darkmoon faire runs from first Sunday of each month to following Saturday
     -- this function returns an approximate time after the end of the current month's faire
-    local weekday, month, day, year = CalendarGetDate() -- date in server timezone (Sun==1)
+    local weekday, month, day, year = C_Calendar.GetDate() -- date in server timezone (Sun==1)
     local firstweekday = select(4,CalendarGetAbsMonth(month, year)) -- (Sun == 1)
     local firstsunday = ((firstweekday == 1) and 1) or (9 - firstweekday)
     dmf_end.year = year
