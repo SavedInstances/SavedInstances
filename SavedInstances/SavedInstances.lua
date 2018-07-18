@@ -1550,10 +1550,10 @@ function addon:UpdateInstanceData()
         renames = renames + 1
       end
     end
-	
+
 	-- Eliminate duplicate LFR entries from the database (only affects those that were saved previously), to account for Blizzard's lockout changes in 7.3 (see https://github.com/SavedInstances/SavedInstances/issues/89)
 	for key, info in pairs(inst) do -- Check for potential LFR lockout entries
- 
+
 	if key:find(" - ") then -- is a character key
 			for difficulty, entry in pairs(info) do -- Check difficulty for LFR
 				if difficulty == 7 or difficulty == 17 then -- Difficulties 7 and 17 are for (legacy) LFR modes -> Kill them... with fire!
@@ -1564,7 +1564,7 @@ function addon:UpdateInstanceData()
 			end
 		  end
 	end
-	
+
   end
   -- addon.lfdid_to_name = lfdid_to_name
   -- addon.wbid_to_name = wbid_to_name
@@ -2888,7 +2888,7 @@ end
 
 function core:RefreshMythicKeyInfo(event)
 
-  if (event ~= "CHALLENGE_MODE_MAPS_UPDATE") then C_ChallengeMode.RequestRewards() end -- This event is fired after the rewards data was requested, causing yet another refresh if not checked for
+  if (event ~= "CHALLENGE_MODE_MAPS_UPDATE") then C_MythicPlus.RequestRewards() end -- This event is fired after the rewards data was requested, causing yet another refresh if not checked for
 
   local t = vars.db.Toons[thisToon]
   local _

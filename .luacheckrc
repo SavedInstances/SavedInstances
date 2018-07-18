@@ -333,7 +333,7 @@ globals = {
 	"C_ChallengeMode.RemoveKeystone",
 	"C_ChallengeMode.RequestLeaders",
 	"C_ChallengeMode.RequestMapInfo",
-	"C_ChallengeMode.RequestRewards",
+	"C_MythicPlus.RequestRewards",
 	"C_ChallengeMode.Reset",
 	"C_ChallengeMode.SetKeystoneTooltip",
 	"C_ChallengeMode.SlotKeystone",
