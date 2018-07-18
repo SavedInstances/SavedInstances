@@ -1016,8 +1016,8 @@ do
   function addon:GetNextDarkmoonResetTime()
     -- Darkmoon faire runs from first Sunday of each month to following Saturday
     -- this function returns an approximate time after the end of the current month's faire
-    local weekday, month, day, year = C_Calendar.GetDate() -- date in server timezone (Sun==1)
-    local firstweekday = select(4,CalendarGetAbsMonth(month, year)) -- (Sun == 1)
+    local monthInfo = C_Calendar.GetMonthInfo();
+    local firstweekday = monthInfo.firstWeekday
     local firstsunday = ((firstweekday == 1) and 1) or (9 - firstweekday)
     dmf_end.year = year
     dmf_end.month = month
