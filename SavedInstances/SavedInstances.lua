@@ -2918,8 +2918,8 @@ function core:RefreshMythicKeyInfo(event)
       if itemID and itemID == 138019 then
         local keyLink = GetContainerItemLink(bagID, invID)
         local KeyInfo = {strsplit(':', keyLink)}
-        local mapID = tonumber(KeyInfo[2])
-        local mapLevel = tonumber(KeyInfo[3])
+        local mapID = tonumber(KeyInfo[3])
+        local mapLevel = tonumber(KeyInfo[4])
         local color
         if KeyInfo[4] == "0" then
           _,_,_,color = GetItemQualityColor(0)
@@ -2955,7 +2955,7 @@ function core:RefreshMythicKeyInfo(event)
           DEFAULT_CHAT_FRAME:AddMessage(tostring(KeyInfo[20]))
         end
         t.MythicKey.abbrev = KeystoneAbbrev[mapID]
-        t.MythicKey.name = C_ChallengeMode.GetMapUIInfo(mapID)
+        t.MythicKey.link = C_ChallengeMode.GetMapUIInfo(mapID)
         t.MythicKey.color = color
         t.MythicKey.level = mapLevel
         t.MythicKey.ResetTime = addon:GetNextWeeklyResetTime()
@@ -4236,7 +4236,7 @@ function core:ShowTooltip(anchorframe)
     local show = false
     for toon, t in cpairs(vars.db.Toons, true) do
       if t.MythicKey then
-        if t.MythicKey.name then
+        if t.MythicKey.link then
           show = true
           addColumns(columns, toon, tooltip)
         end
@@ -4250,17 +4250,17 @@ function core:ShowTooltip(anchorframe)
     end
     for toon, t in cpairs(vars.db.Toons, true) do
       if t.MythicKey then
-        if t.MythicKey.name then
+        if t.MythicKey.link then
           local col = columns[toon..1]
           if vars.db.Tooltip.AbbreviateKeystone then
             if t.MythicKey.abbrev then
               tooltip:SetCell(show, col, "|c"..t.MythicKey.color..t.MythicKey.abbrev.." ("..t.MythicKey.level..")"..FONTEND, "CENTER",maxcol)
             else
-              local kabbrev = KeystonetoAbbrev[t.MythicKey.name] or t.MythicKey.name
+              local kabbrev = KeystonetoAbbrev[t.MythicKey.link] or t.MythicKey.link
               tooltip:SetCell(show, col, "|c"..t.MythicKey.color..kabbrev.." ("..t.MythicKey.level..")"..FONTEND, "CENTER",maxcol)
             end
           else
-          tooltip:SetCell(show, col, "|c"..t.MythicKey.color..t.MythicKey.name.." ("..t.MythicKey.level..")"..FONTEND, "CENTER",maxcol)
+          tooltip:SetCell(show, col, "|c"..t.MythicKey.color..t.MythicKey.link.." ("..t.MythicKey.level..")"..FONTEND, "CENTER",maxcol)
           end
           tooltip:SetCellScript(show, col, "OnMouseDown", ChatLink, t.MythicKey.link)
         end
