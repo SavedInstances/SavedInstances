@@ -2159,7 +2159,7 @@ local function ShowQuestTooltip(cell, arg, ...)
   table.sort(ql)
   for _,e in ipairs(ql) do
     local id = tonumber(e:match("# (%d+)"))
-    local qi = id and t.Quests[id]
+    local qi = t.Quests[id]
     local line = indicatortip:AddLine()
     local link = qi.Link
     if not link then -- sometimes missing the actual link due to races, fake it for display to prevent confusion
