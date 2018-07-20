@@ -2149,9 +2149,11 @@ local function ShowQuestTooltip(cell, arg, ...)
       SecondsToTime(reset - time()))
   end
   local ql = {}
+  local zonename
   for id,qi in pairs(t.Quests) do
     if (not isDaily) == (not qi.isDaily) then
-      table.insert(ql,(qi.Zone or "").." # "..id)
+      zonename = qi.Zone and qi.Zone.name or ""
+      table.insert(ql,zonename.." # "..id)
     end
   end
   table.sort(ql)
@@ -2163,11 +2165,15 @@ local function ShowQuestTooltip(cell, arg, ...)
     if not link then -- sometimes missing the actual link due to races, fake it for display to prevent confusion
       if qi.Title:find("("..LOOT..")") then
         link = qi.Title
-    else
-      link = "\124cffffff00["..(qi.Title or "???").."]\124r"
+      else
+        link = "\124cffffff00["..(qi.Title or "???").."]\124r"
+      end
     end
+    -- Exception: Some quests should not show zone name, such as Blingtron
+    if (id == 31752 or id == 34774 or id == 40753) then
+      zonename = ""
     end
-    indicatortip:SetCell(line,1,(qi.Zone or ""),"LEFT")
+    indicatortip:SetCell(line,1,zonename,"LEFT")
     indicatortip:SetCell(line,2,link,"RIGHT")
   end
   finishIndicator()
