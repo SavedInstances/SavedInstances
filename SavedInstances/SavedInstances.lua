@@ -1975,15 +1975,7 @@ function addon:QuestIsDarkmoonMonthly()
 end
 
 function addon:GetCurrentMapAreaID()
-  local oldmap = GetCurrentMapAreaID()
-  local oldlvl = GetCurrentMapDungeonLevel()
-  SetMapToCurrentZone()
-  local map = GetCurrentMapAreaID()
-  SetMapByID(oldmap)
-  if oldlvl and oldlvl > 0 then
-    SetDungeonMapLevel(oldlvl)
-  end
-  return map
+  return C_Map.GetBestMapForUnit("player")
 end
 
 local function SI_GetQuestReward()
