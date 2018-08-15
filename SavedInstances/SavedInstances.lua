@@ -155,6 +155,11 @@ local currency = {
   1501, -- Writhing Essence
   1508, -- Veiled Argunite
   1533, -- Wakening Essence
+  1565, -- Rich Azerite Fragment
+  1710, -- Seafarer's Dubloon
+  1580, -- Seal of Wartorn Fate
+  1560, -- War Resources
+  1587, -- War Supplies
 }
 addon.currency = currency
 
