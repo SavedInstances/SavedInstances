@@ -71,35 +71,29 @@ vars.Indicators = {
 }
 
 local KeystoneAbbrev = {
-  [197] = L["EoA"],
-  [198] = L["DHT"],
-  [199] = L["BRH"],
-  [200] = L["HoV"],
-  [206] = L["Nelt"],
-  [207] = L["VotW"],
-  [208] = L["MoS"],
-  [209] = L["Arc"],
-  [210] = L["CoS"],
-  [227] = L["L Kara"],
-  [233] = L["CoEN"],
-  [234] = L["U Kara"],
-  [239] = L["SotT"],
+  [244] = L["AD"],
+  [245] = L["Free"],
+  [246] = L["TD"],
+  [247] = L["MOTHER"],
+  [248] = L["WM"],
+  [249] = L["KR"],
+  [250] = L["ToS"],
+  [251] = L["Under"],
+  [252] = L["SotS"],
+  [353] = L["SoB"],
 }
 
 local KeystonetoAbbrev = {
-  ["Eye of Azshara"] = L["EoA"],
-  ["Darkheart Thicket"] = L["DHT"],
-  ["Black Rook Hold"] = L["BRH"],
-  ["Halls of Valor"] = L["HoV"],
-  ["Neltharion's Lair"] = L["Nelt"],
-  ["Vault of the Wardens"] = L["VotW"],
-  ["Maw of Souls"] = L["MoS"],
-  ["The Arcway"] = L["Arc"],
-  ["Court of Stars"] = L["CoS"],
-  ["Return to Karazhan: Lower"] = L["L Kara"],
-  ["Cathedral of Eternal Night"] = L["CoEN"],
-  ["Return to Karazhan: Upper"] = L["U Kara"],
-  ["Seat of the Triumvirate"] = L["SotT"],
+  ["Atal'Dazar"] = L["AD"],
+  ["Freehold"] = L["Free"],
+  ["Tol Dagor"] = L["TD"],
+  ["The MOTHERLODE!!"] = L["MOTHER"],
+  ["Waycrest Manor"] = L["WM"],
+  ["Kings' Rest"] = L["KR"],
+  ["Temple of Sethraliss"] = L["ToS"],
+  ["The Underrot"] = L["Under"],
+  ["Shrine of the Storm"] = L["SotS"],
+  ["Siege of Boralus"] = L["SoB"],
 }
 
 vars.Categories = { }
@@ -2920,7 +2914,7 @@ function core:RefreshMythicKeyInfo(event)
   for bagID = 0, 4 do
     for invID = 1, GetContainerNumSlots(bagID) do
       local itemID = GetContainerItemID(bagID, invID)
-      if itemID and itemID == 138019 then
+      if itemID and itemID == 158923 then
         local keyLink = GetContainerItemLink(bagID, invID)
         local KeyInfo = {strsplit(':', keyLink)}
         local mapID = tonumber(KeyInfo[3])
