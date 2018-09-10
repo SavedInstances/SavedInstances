@@ -275,6 +275,16 @@ addon.WorldBosses = {
   [2014] = { quest=49171, name=EJ_GetEncounterInfo(2014), expansion=6, level=110}, -- Sotanathor
   [2015] = { quest=49168, name=EJ_GetEncounterInfo(2015), expansion=6, level=110}, -- Pit Lord Vilemus
 
+  -- BFA World Bosses
+  [2139] = { quest=52181, expansion=7, level=120 }, -- T'Zane
+  [2141] = { quest=52169, expansion=7, level=120 }, -- Ji'arak
+  [2197] = { quest=52157, expansion=7, level=120 }, -- Hailstone Construct
+  [2199] = { quest=52163, expansion=7, level=120 }, -- Azurethos
+  [2198] = { quest=52166, expansion=7, level=120 }, -- Warbringer Yenajz
+  [2210] = { quest=52196, expansion=7, level=120 }, -- Dunegorger Kraulok
+  [2212] = { quest=52848, expansion=7, level=120 }, -- The Lion's Roar
+  [2213] = { quest=52847, expansion=7, level=120 }, -- Doom's Howl
+
   -- bosses with no EJ entry (eid is a placeholder)
   [9001] = { quest=38276, name=GARRISON_LOCATION_TOOLTIP.." "..BOSS, expansion=5, level=100 },
   [9002] = { quest=47461, name="Lord Kazzak", expansion=6, level=110},          -- Lord Kazzak (13th Anniversary)
