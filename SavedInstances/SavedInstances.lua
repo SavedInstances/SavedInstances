@@ -216,6 +216,10 @@ addon.LFRInstances = {
   [1611] = { total=3, base=4, parent=1642, altid=nil, remap={ 1, 2, 3 } }, -- Antorus: Forbidden Descent
   [1612] = { total=3, base=7, parent=1642, altid=nil, remap={ 1, 2, 3 } }, -- Antorus: Hope's End
   [1613] = { total=2, base=10, parent=1642, altid=nil, remap={ 1, 2 } }, -- Antorus: Seat of the Pantheon
+  
+  [1731] = { total=4, base=1, parent=1887, altid=nil, remap={ 1, 2, 3 } }, -- Uldir: Halls of Containment
+  [1732] = { total=2, base=5, parent=1887, altid=nil, remap={ 1, 2, 3 } }, -- Uldir: Crimson Descent
+  [1733] = { total=2, base=7, parent=1887, altid=nil, remap={ 1, 2 } },  -- Uldir: Heart of Corruption
 }
 
 local tmp = {}
@@ -1649,7 +1653,7 @@ function addon:UpdateInstance(id)
   if subtypeID == LFG_SUBTYPEID_SCENARIO and typeID ~= TYPEID_RANDOM_DUNGEON then -- ignore non-random scenarios
     return nil, nil, true
   end
-  if typeID == 2 and subtypeID == 0 and difficulty == 14 and maxPlayers == 0 then
+  if typeID == 2 and subtypeID == 0 and difficulty == 17 and maxPlayers == 0 then
     --print("ignoring "..id, GetLFGDungeonInfo(id))
     return nil, nil, true -- ignore bogus LFR entries
   end
@@ -1664,6 +1668,9 @@ function addon:UpdateInstance(id)
     end
     vars.db.Instances[L["Flex"]..": "..name] = nil -- clean old flex entries
     name = L["LFR"]..": "..name
+  end
+  if id == 1661 then -- ignore AI Test - Arathi Basin
+    return nil, nil, true
   end
   if id == 852 and expansionLevel == 5 then -- XXX: Molten Core hack
     return nil, nil, true -- ignore Molten Core holiday version, which has no save
