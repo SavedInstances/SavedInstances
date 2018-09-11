@@ -459,6 +459,19 @@ for k,v in pairs(LegionSealQuests) do
   QuestExceptions[k] = v
 end
 
+local BfASealQuests = {
+  [52834] = "Weekly", -- Gold
+  [52838] = "Weekly", -- Piles of Gold
+  [52835] = "Weekly", -- Marks of Honor
+  [52839] = "Weekly", -- Additional Marks of Honor
+  [52837] = "Weekly", -- War Resources
+  [52840] = "Weekly", -- Stashed War Resources
+}
+
+for k,v in pairs(BfASealQuests) do
+  QuestExceptions[k] = v
+end
+
 function addon:QuestInfo(questid)
   if not questid or questid == 0 then return nil end
   scantt:SetOwner(UIParent,"ANCHOR_NONE")
@@ -1955,6 +1968,15 @@ function addon:UpdateCurrency()
         ci.weeklyMax = 3 -- the max via quests
         ci.earnedThisWeek = 0
         for id in pairs(LegionSealQuests) do
+          if IsQuestFlaggedCompleted(id) then
+            ci.earnedThisWeek = ci.earnedThisWeek + 1
+          end
+        end
+      end
+      if idx == 1580 then -- Seal of Wartorn Fate returns zero for weekly quantities
+        ci.weeklyMax = 2 -- the max via quests
+        ci.earnedThisWeek = 0
+        for id in pairs(BfASealQuests) do
           if IsQuestFlaggedCompleted(id) then
             ci.earnedThisWeek = ci.earnedThisWeek + 1
           end
