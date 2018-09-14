@@ -131,6 +131,30 @@ local function IndicatorOptions()
   return args
 end
 
+local function add_item_to_table(item,name,tex,order)
+ tex = "\124T"..tex..":0\124t "
+ core.Options.args.Currency.args["Items"..item] = {
+    type = "toggle",
+    order = order,
+    name = tex..name,
+  }
+end
+
+local wait = {}
+local cache_writer = CreateFrame('Frame')
+cache_writer:RegisterEvent('GET_ITEM_INFO_RECEIVED')
+cache_writer:SetScript('OnEvent', function(self, event, ...)
+    if event == 'GET_ITEM_INFO_RECEIVED' then
+        -- the info is now downloaded and cached
+        local item = ...
+        if wait[item] then
+			local name,_, _,_,_,_,_,_,_,tex = GetItemInfo(item)
+            add_item_to_table(item,name,tex,wait[item])
+            wait[item] = nil
+        end
+    end
+end)
+
 -- options table below
 function module:BuildOptions()
   local valueslist = { ["always"] = GREEN_FONT_COLOR_CODE..L["Always show"]..FONTEND,
@@ -823,13 +847,12 @@ function module:BuildOptions()
   end
   local start = #SavedInstances.currency + 51
   for i, item in ipairs(SavedInstances.items) do
-    local name,_, _,_,_,_,_,_,_,tex = GetItemInfo(item)
-    tex = "\124T"..tex..":0\124t "
-    core.Options.args.Currency.args["Items"..item] = {
-      type = "toggle",
-      order = start+i,
-      name = tex..name,
-    }
+    local name,_, _,_,_,_,_,_,_,tex = GetItemInfo(item) --GetItemInfoInstant doesn't return item name
+    if name then
+      add_item_to_table(item,name,tex,start+i)
+    else
+      wait[item] = start+i
+    end
   end
 end
 
