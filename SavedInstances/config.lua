@@ -821,6 +821,16 @@ function module:BuildOptions()
       name = tex..name,
     }
   end
+  local start = #SavedInstances.currency + 51
+  for i, item in ipairs(SavedInstances.items) do
+    local name,_, _,_,_,_,_,_,_,tex = GetItemInfo(item)
+    tex = "\124T"..tex..":0\124t "
+    core.Options.args.Currency.args["Items"..item] = {
+      type = "toggle",
+      order = start+i,
+      name = tex..name,
+    }
+  end
 end
 
 -- global functions

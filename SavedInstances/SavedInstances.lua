@@ -157,6 +157,13 @@ local currency = {
 }
 addon.currency = currency
 
+local items = {
+  71083, --Darkmoon Game Token
+  40533,--Walnut Stock
+  38426,--Eternium Thread
+}
+addon.items = items
+
 addon.LFRInstances = {
   -- index is the id found in LFGDungeons.dbc or using the command below.
   -- /script local id,name; for i=1,GetNumRFDungeons() do id,name = GetRFDungeonInfo(i);print(i..". "..name.." ("..id..")");end
@@ -1923,6 +1930,7 @@ function addon:UpdateToonData()
     end
     end
     addon:UpdateCurrency()
+    addon:UpdateItems()
     local zone = GetRealZoneText()
     if zone and #zone > 0 then
       t.Zone = zone
@@ -1937,6 +1945,22 @@ function addon:UpdateToonData()
     end
 
     t.LastSeen = time()
+end
+
+function addon:UpdateItems()
+  if addon.logout then return end -- currency is unreliable during logout
+  local t = vars.db.Toons[thisToon]
+  t.items = wipe(t.items or {})
+  for _,idx in ipairs(items) do
+    local itemcount_bank = GetItemCount(idx, true, false)
+    if itemcount_bank == 0 or not itemcount_bank then
+      t.items[idx] = nil
+    else
+      local ci = t.items[idx] or {}
+      ci.amount = itemcount_bank
+      t.items[idx] = ci
+    end
+  end
 end
 
 function addon:UpdateCurrency()
@@ -2595,6 +2619,16 @@ local function ShowSpellIDTooltip(cell, arg, ...)
   finishIndicator()
 end
 
+local function ShowItemTooltip(cell, arg, ...)
+  local toon, idx, ci = unpack(arg)
+  if not toon or not idx or not ci then return end
+  local name,_, _,_,_,_,_,_,_,tex = GetItemInfo(idx)
+  tex = " \124T"..tex..":0\124t"
+  openIndicator(2, "LEFT","RIGHT")
+  indicatortip:AddHeader(ClassColorise(vars.db.Toons[toon].Class, strsplit(' ', toon)), CurrencyColor(ci.amount or 0,0)..tex)
+  finishIndicator()
+end
+
 local function ShowCurrencyTooltip(cell, arg, ...)
   local toon, idx, ci = unpack(arg)
   if not toon or not idx or not ci then return end
@@ -2636,6 +2670,51 @@ local function ShowCurrencyTooltip(cell, arg, ...)
       str = str:gsub(num,addon:formatNumber(num))
     end
     indicatortip:AddLine(str)
+  end
+  finishIndicator()
+end
+
+local function ShowItemSummary(cell, arg, ...)
+  local idx = arg
+  if not idx then return end
+  local name,_, _,_,_,_,_,_,_,tex = GetItemInfo(idx)
+  tex = " \124T"..tex..":0\124t"
+  openIndicator(2, "LEFT","RIGHT")
+  indicatortip:AddHeader(name, "")
+  local total = 0
+  local tmax
+  local temp = {}
+  for toon, t in pairs(vars.db.Toons) do -- deliberately include ALL toons
+    local ci = t.items and t.items[idx]
+    if ci and ci.amount then
+      tmax = tmax or ci.totalMax
+      table.insert(temp, { ["toon"] = toon, ["amount"] = ci.amount,
+        ["str1"] = ClassColorise(t.Class, toon),
+        ["str2"] = CurrencyColor(ci.amount or 0,tmax)..tex,
+      })
+      total = total + ci.amount
+    end
+  end
+  indicatortip:SetCell(1,2,CurrencyColor(total,0)..tex)
+  --indicatortip:AddLine(TOTAL, CurrencyColor(total,tmax)..tex)
+  --indicatortip:AddLine(" ")
+  addon.currency_sort = addon.currency_sort or function(a,b)
+    if a.amount > b.amount then
+      return true
+    elseif a.amount < b.amount then
+      return false
+    end
+    local an, as = a.toon:match('^(.*) [-] (.*)$')
+    local bn, bs = b.toon:match('^(.*) [-] (.*)$')
+    if db.Tooltip.ServerSort and as ~= bs then
+      return as < bs
+    else
+      return a.toon < b.toon
+    end
+  end
+  table.sort(temp, addon.currency_sort)
+  for _,t in ipairs(temp) do
+    indicatortip:AddLine(t.str1, t.str2)
   end
   finishIndicator()
 end
@@ -2734,6 +2813,10 @@ function core:OnInitialize()
   end
   for _, id in ipairs(addon.currency) do
     local name = "Currency"..id
+    db.Tooltip[name] = (db.Tooltip[name]==nil and  vars.defaultDB.Tooltip[name]) or db.Tooltip[name]
+  end
+  for _, id in ipairs(addon.items) do
+    local name = "Items"..id
     db.Tooltip[name] = (db.Tooltip[name]==nil and  vars.defaultDB.Tooltip[name]) or db.Tooltip[name]
   end
   local currtmp = {}
@@ -3826,6 +3909,146 @@ function core:HeaderFont()
   return addon.headerfont
 end
 
+local function some_currency_stuff(columns)
+  local showall = ShowAll()
+  local firstcurrency = true
+  for _,idx in ipairs(currency) do
+    local setting = vars.db.Tooltip["Currency"..idx]
+    if setting or showall then
+      local show
+      for toon, t in cpairs(vars.db.Toons, true) do
+        -- ci.name, ci.amount, ci.earnedThisWeek, ci.weeklyMax, ci.totalMax
+        local ci = t.currency and t.currency[idx]
+        local gotsome
+        if ci then
+          gotsome = ((ci.earnedThisWeek or 0) > 0 and (ci.weeklyMax or 0) > 0) or
+            ((ci.amount or 0) > 0 and showall)
+          -- or ((ci.amount or 0) > 0 and ci.weeklyMax == 0 and t.Level == maxlvl)
+        end
+        if ci and gotsome then
+          addColumns(columns, toon, tooltip)
+        end
+        if ci and (gotsome or (ci.amount or 0) > 0) and columns[toon..1] then
+          local name,_,tex = GetCurrencyInfo(idx)
+          show = string.format(" \124T%s:0\124t%s",tex,name)
+        end
+      end
+      local currLine
+      if show then
+        if not firstcategory and vars.db.Tooltip.CategorySpaces and firstcurrency then
+          addsep()
+          firstcurrency = false
+        end
+        currLine = tooltip:AddLine(YELLOWFONT .. show .. FONTEND)
+        tooltip:SetLineScript(currLine, "OnMouseDown", OpenCurrency)
+        tooltip:SetCellScript(currLine, 1, "OnEnter", ShowCurrencySummary, idx)
+        tooltip:SetCellScript(currLine, 1, "OnLeave", CloseTooltips)
+        tooltip:SetCellScript(currLine, 1, "OnMouseDown", OpenCurrency)
+
+        for toon, t in cpairs(vars.db.Toons, true) do
+          local ci = t.currency and t.currency[idx]
+          local col = columns[toon..1]
+          if ci and col then
+            local earned, weeklymax, totalmax = "","",""
+            if vars.db.Tooltip.CurrencyMax then
+              if (ci.weeklyMax or 0) > 0 then
+                weeklymax = "/"..addon:formatNumber(ci.weeklyMax)
+              end
+              if (ci.totalMax or 0) > 0 then
+                totalmax = "/"..addon:formatNumber(ci.totalMax)
+              end
+            end
+            if vars.db.Tooltip.CurrencyEarned or showall then
+              earned = CurrencyColor(ci.amount,ci.totalMax)..totalmax
+            end
+            local str
+            if (ci.amount or 0) > 0 or (ci.earnedThisWeek or 0) > 0 then
+              if (ci.weeklyMax or 0) > 0 then
+                str = earned.." ("..CurrencyColor(ci.earnedThisWeek,ci.weeklyMax)..weeklymax..")"
+              elseif (ci.amount or 0) > 0 then
+                str = CurrencyColor(ci.amount,ci.totalMax)..totalmax
+              end
+            end
+            if str then
+              if not vars.db.Tooltip.CurrencyValueColor then
+                str = ClassColorise(t.Class,str)
+              end
+              tooltip:SetCell(currLine, col, str, "CENTER",maxcol)
+              tooltip:SetCellScript(currLine, col, "OnEnter", ShowCurrencyTooltip, {toon, idx, ci})
+              tooltip:SetCellScript(currLine, col, "OnLeave", CloseTooltips)
+              tooltip:SetCellScript(currLine, col, "OnMouseDown", OpenCurrency)
+            end
+          end
+        end
+      end
+    end
+  end
+end
+
+local function some_item_stuff(columns)
+  local showall = ShowAll()
+  local firstitem = true
+  for _,idx in ipairs(items) do
+    local setting = vars.db.Tooltip["Items"..idx]
+    if setting or showall then
+      local show
+      for toon, t in cpairs(vars.db.Toons, true) do
+        -- ci.name, ci.amount, ci.earnedThisWeek, ci.weeklyMax, ci.totalMax
+        local ci = t.items and t.items[idx]
+        local gotsome
+        if ci then
+          gotsome = ((ci.amount or 0) > 0 and showall)
+          -- or ((ci.amount or 0) > 0 and ci.weeklyMax == 0 and t.Level == maxlvl)
+        end
+        if ci and gotsome then
+          addColumns(columns, toon, tooltip)
+        end
+        if ci and (gotsome or (ci.amount or 0) > 0) and columns[toon..1] then
+          local name,_, _,_,_,_,_,_,_,tex = GetItemInfo(idx)
+          show = string.format(" \124T%s:0\124t%s",tex,name)
+        end
+      end
+      local currLine
+      if show then
+        if not firstitem and vars.db.Tooltip.CategorySpaces and firstitem then
+          addsep()
+          firstitem = false
+        end
+        currLine = tooltip:AddLine(YELLOWFONT .. show .. FONTEND)
+        --tooltip:SetLineScript(currLine, "OnMouseDown", OpenCurrency)
+        tooltip:SetLineScript(currLine, "OnMouseDown", nil)
+        tooltip:SetCellScript(currLine, 1, "OnEnter", ShowItemSummary, idx)
+        tooltip:SetCellScript(currLine, 1, "OnLeave", CloseTooltips)
+        --tooltip:SetCellScript(currLine, 1, "OnMouseDown", OpenCurrency)
+        tooltip:SetCellScript(currLine, 1, "OnMouseDown", nil)
+        for toon, t in cpairs(vars.db.Toons, true) do
+          local ci = t.items and t.items[idx]
+          local col = columns[toon..1]
+          if ci and col then
+            local earned = ""
+            if vars.db.Tooltip.CurrencyEarned or showall then
+              earned = ci.amount
+            end
+            local str
+            if (earned or 0) > 0 then
+              str = earned
+            end
+            if str then
+              if not vars.db.Tooltip.CurrencyValueColor then
+                str = ClassColorise(t.Class,str)
+              end
+              tooltip:SetCell(currLine, col, str, "CENTER",maxcol)
+              tooltip:SetCellScript(currLine, col, "OnEnter", ShowItemTooltip, {toon, idx, ci})
+              tooltip:SetCellScript(currLine, col, "OnLeave", CloseTooltips)
+              tooltip:SetCellScript(currLine, col, "OnMouseDown", OpenCurrency)
+            end
+          end
+        end
+      end
+    end
+  end
+end
+
 function core:ShowTooltip(anchorframe)
   local showall = ShowAll()
   if tooltip and tooltip:IsShown() and
@@ -4457,80 +4680,10 @@ function core:ShowTooltip(anchorframe)
       end
     end
   end
-
-  local firstcurrency = true
-  for _,idx in ipairs(currency) do
-    local setting = vars.db.Tooltip["Currency"..idx]
-    if setting or showall then
-      local show
-      for toon, t in cpairs(vars.db.Toons, true) do
-        -- ci.name, ci.amount, ci.earnedThisWeek, ci.weeklyMax, ci.totalMax
-        local ci = t.currency and t.currency[idx]
-        local gotsome
-        if ci then
-          gotsome = ((ci.earnedThisWeek or 0) > 0 and (ci.weeklyMax or 0) > 0) or
-            ((ci.amount or 0) > 0 and showall)
-          -- or ((ci.amount or 0) > 0 and ci.weeklyMax == 0 and t.Level == maxlvl)
-        end
-        if ci and gotsome then
-          addColumns(columns, toon, tooltip)
-        end
-        if ci and (gotsome or (ci.amount or 0) > 0) and columns[toon..1] then
-          local name,_,tex = GetCurrencyInfo(idx)
-          show = string.format(" \124T%s:0\124t%s",tex,name)
-        end
-      end
-      local currLine
-      if show then
-        if not firstcategory and vars.db.Tooltip.CategorySpaces and firstcurrency then
-          addsep()
-          firstcurrency = false
-        end
-        currLine = tooltip:AddLine(YELLOWFONT .. show .. FONTEND)
-        tooltip:SetLineScript(currLine, "OnMouseDown", OpenCurrency)
-        tooltip:SetCellScript(currLine, 1, "OnEnter", ShowCurrencySummary, idx)
-        tooltip:SetCellScript(currLine, 1, "OnLeave", CloseTooltips)
-        tooltip:SetCellScript(currLine, 1, "OnMouseDown", OpenCurrency)
-
-        for toon, t in cpairs(vars.db.Toons, true) do
-          local ci = t.currency and t.currency[idx]
-          local col = columns[toon..1]
-          if ci and col then
-            local earned, weeklymax, totalmax = "","",""
-            if vars.db.Tooltip.CurrencyMax then
-              if (ci.weeklyMax or 0) > 0 then
-                weeklymax = "/"..addon:formatNumber(ci.weeklyMax)
-              end
-              if (ci.totalMax or 0) > 0 then
-                totalmax = "/"..addon:formatNumber(ci.totalMax)
-              end
-            end
-            if vars.db.Tooltip.CurrencyEarned or showall then
-              earned = CurrencyColor(ci.amount,ci.totalMax)..totalmax
-            end
-            local str
-            if (ci.amount or 0) > 0 or (ci.earnedThisWeek or 0) > 0 then
-              if (ci.weeklyMax or 0) > 0 then
-                str = earned.." ("..CurrencyColor(ci.earnedThisWeek,ci.weeklyMax)..weeklymax..")"
-              elseif (ci.amount or 0) > 0 then
-                str = CurrencyColor(ci.amount,ci.totalMax)..totalmax
-              end
-            end
-            if str then
-              if not vars.db.Tooltip.CurrencyValueColor then
-                str = ClassColorise(t.Class,str)
-              end
-              tooltip:SetCell(currLine, col, str, "CENTER",maxcol)
-              tooltip:SetCellScript(currLine, col, "OnEnter", ShowCurrencyTooltip, {toon, idx, ci})
-              tooltip:SetCellScript(currLine, col, "OnLeave", CloseTooltips)
-              tooltip:SetCellScript(currLine, col, "OnMouseDown", OpenCurrency)
-            end
-          end
-        end
-      end
-    end
-  end
-
+  
+  some_currency_stuff(columns) --without it 60 upvalue error
+  some_item_stuff(columns) --without it 60 upvalue error
+  
   -- toon names
   for toondiff, col in pairs(columns) do
     local toon = strsub(toondiff, 1, #toondiff-1)
