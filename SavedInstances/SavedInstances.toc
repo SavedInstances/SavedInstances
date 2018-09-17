@@ -32,6 +32,10 @@ Libs\LibDBIcon-1.0\LibDBIcon-1.0.lua
 
 locale.lua
 
-SavedInstances.lua
+Core.lua
 WorldBosses.lua
+Currency.lua
+MythicPlus.lua
+SavedInstances.lua
+
 config.lua

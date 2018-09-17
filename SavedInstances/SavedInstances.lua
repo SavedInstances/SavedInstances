@@ -2,7 +2,8 @@ local addonName, vars = ...
 SavedInstances = vars
 local addon = vars
 local addonAbbrev = "SI"
-vars.core = LibStub("AceAddon-3.0"):NewAddon(addonName, "AceEvent-3.0", "AceTimer-3.0", "AceBucket-3.0")
+vars.core = LibStub("AceAddon-3.0"):GetAddon(addonName):NewModule("Core", "AceEvent-3.0", "AceTimer-3.0", "AceBucket-3.0")
+
 local core = vars.core
 local L = vars.L
 vars.LDB = LibStub("LibDataBroker-1.1", true)
@@ -58,6 +59,8 @@ local SI_GetUnitDebuff = function(unit, spell, filter)
     return SI_GetUnitAura(unit, spell, filter)
 end
 
+local currency = addon.currency
+
 vars.Indicators = {
   ICON_STAR = ICON_LIST[1] .. "16:16:0:0|t",
   ICON_CIRCLE = ICON_LIST[2] .. "16:16:0:0|t",
@@ -70,31 +73,8 @@ vars.Indicators = {
   BLANK = "None",
 }
 
-local KeystoneAbbrev = {
-  [244] = L["AD"],
-  [245] = L["Free"],
-  [246] = L["TD"],
-  [247] = L["MOTHER"],
-  [248] = L["WM"],
-  [249] = L["KR"],
-  [250] = L["ToS"],
-  [251] = L["Under"],
-  [252] = L["SotS"],
-  [353] = L["SoB"],
-}
-
-local KeystonetoAbbrev = {
-  ["Atal'Dazar"] = L["AD"],
-  ["Freehold"] = L["Free"],
-  ["Tol Dagor"] = L["TD"],
-  ["The MOTHERLODE!!"] = L["MOTHER"],
-  ["Waycrest Manor"] = L["WM"],
-  ["Kings' Rest"] = L["KR"],
-  ["Temple of Sethraliss"] = L["ToS"],
-  ["The Underrot"] = L["Under"],
-  ["Shrine of the Storm"] = L["SotS"],
-  ["Siege of Boralus"] = L["SoB"],
-}
+local KeystonetoAbbrev = addon.KeystonetoAbbrev
+local KeystoneAbbrev = addon.KeystoneAbbrev
 
 vars.Categories = { }
 local maxExpansion
@@ -113,49 +93,6 @@ local tooltip, indicatortip
 local thisToon = UnitName("player") .. " - " .. GetRealmName()
 local maxlvl = MAX_PLAYER_LEVEL_TABLE[#MAX_PLAYER_LEVEL_TABLE]
 local scantt = CreateFrame("GameTooltip", "SavedInstancesScanTooltip", UIParent, "GameTooltipTemplate")
-
-local currency = {
-  --390, -- Conquest Points
-  --392, -- Honor Points
-  --395, -- Justice Points
-  81, -- Epicurean Award
-  241, -- Champion's Seal
-  391, -- Tol Barad Commendation
-  402, -- Ironpaw Token
-  416, -- Mark of the World Tree
-  515, -- Darkmoon Prize Ticket
-  697, -- Elder Charm of Good Fortune
-  738, -- Lesser Charm of Good Fortune
-  752, -- Mogu Rune of Fate
-  776, -- Warforged Seal
-  777, -- Timeless Coin
-  789, -- Bloody Coin
-  823, -- Apexis Crystal
-  824, -- Garrison Resources
-  994, -- Seal of Tempered Fate
-  1101, -- Oil
-  1129, -- Seal of Inevitable Fate
-  1149, -- Sightless Eye
-  1155, -- Ancient Mana
-  1166, -- Timewarped Badge
-  1191, -- Valor Points
-  1220, -- Order Resources
-  1226, -- Nethershards
-  1273, -- Seal of Broken Fate
-  1275, -- Curious Coin
-  1299, -- Brawler's Gold
-  1314, -- Lingering Soul Fragment
-  1342, -- Legionfall War Supplies
-  1501, -- Writhing Essence
-  1508, -- Veiled Argunite
-  1533, -- Wakening Essence
-  1565, -- Rich Azerite Fragment
-  1710, -- Seafarer's Dubloon
-  1580, -- Seal of Wartorn Fate
-  1560, -- War Resources
-  1587, -- War Supplies
-}
-addon.currency = currency
 
 addon.LFRInstances = {
   -- index is the id found in LFGDungeons.dbc or using the command below.
@@ -216,7 +153,7 @@ addon.LFRInstances = {
   [1611] = { total=3, base=4, parent=1642, altid=nil, remap={ 1, 2, 3 } }, -- Antorus: Forbidden Descent
   [1612] = { total=3, base=7, parent=1642, altid=nil, remap={ 1, 2, 3 } }, -- Antorus: Hope's End
   [1613] = { total=2, base=10, parent=1642, altid=nil, remap={ 1, 2 } }, -- Antorus: Seat of the Pantheon
-  
+
   [1731] = { total=4, base=1, parent=1887, altid=nil, remap={ 1, 2, 3 } }, -- Uldir: Halls of Containment
   [1732] = { total=2, base=5, parent=1887, altid=nil, remap={ 1, 2, 3 } }, -- Uldir: Crimson Descent
   [1733] = { total=2, base=7, parent=1887, altid=nil, remap={ 1, 2 } },  -- Uldir: Heart of Corruption
