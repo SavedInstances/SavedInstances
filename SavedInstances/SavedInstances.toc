@@ -33,6 +33,7 @@ Libs\LibDBIcon-1.0\LibDBIcon-1.0.lua
 locale.lua
 
 Core.lua
+LFR.lua
 WorldBosses.lua
 Currency.lua
 MythicPlus.lua
