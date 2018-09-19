@@ -62,7 +62,7 @@ addon.LFRInstances = {
   [1613] = { total=2, base=10, parent=1642, altid=nil, remap={ 1, 2 } }, -- Antorus: Seat of the Pantheon
 
   [1731] = { total=3, base=1, parent=1889, altid=nil, remap={ 1, 2, 3 } }, -- Uldir: Halls of Containment
-  [1732] = { total=3, base=5, parent=1889, altid=nil, remap={ 1, 2, 3 } }, -- Uldir: Crimson Descent
+  [1732] = { total=3, base=4, parent=1889, altid=nil, remap={ 1, 2, 3 } }, -- Uldir: Crimson Descent
   [1733] = { total=2, base=7, parent=1889, altid=nil, remap={ 1, 2 } },  -- Uldir: Heart of Corruption
 }
 
