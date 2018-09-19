@@ -47,7 +47,7 @@ function EmissaryModule:RefreshDailyWorldQuestInfo()
       end
     end
   end
-  if IsQuestFlaggedCompleted(43341) then
+  if IsQuestFlaggedCompleted(51918) or IsQuestFlaggedCompleted(51916) then -- Uniting Kul Tiras & Uniting Zandalar
     if t.DailyWorldQuest.days0 == nil then
       t.DailyWorldQuest.days0 = {}
       t.DailyWorldQuest.days0.dayleft = 0
