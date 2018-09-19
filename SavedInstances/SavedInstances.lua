@@ -480,12 +480,6 @@ addon.defaultDB = {
   -- Link: hyperlink
   -- Expires: expiration
 
-  -- FarmPlanted: integer
-  -- FarmHarvested: integer
-  -- FarmCropPlanted: key: spellID value: count
-  -- FarmCropReady: key: spellID value: count
-  -- FarmExpires: expiration
-
   -- BonusRoll: key: int value:
   -- name: string
   -- time: int
@@ -593,7 +587,6 @@ addon.defaultDB = {
     TrackLFG = true,
     TrackDeserter = true,
     TrackSkills = true,
-    TrackFarm = true,
     TrackBonus = false,
     TrackPlayed = true,
     AugmentBonus = true,
@@ -1663,15 +1656,6 @@ function addon:UpdateToonData()
           end
         end
       end
-      if ti.FarmExpires and ti.FarmExpires < time() then
-        ti.FarmPlanted = 0
-        ti.FarmHarvested = 0
-        if ti.FarmCropPlanted and next(ti.FarmCropPlanted) then
-          ti.FarmCropReady = ti.FarmCropPlanted
-          ti.FarmCropPlanted = nil
-        end
-        ti.FarmExpires = nil
-      end
     end
     -- Weekly Reset
     nextreset = addon:GetNextWeeklyResetTime()
@@ -2038,51 +2022,6 @@ local function ShowSkillTooltip(cell, arg, ...)
     local tstr = SecondsToTime((sinfo.Expires or 0) - time())
     indicatortip:SetCell(line,1,title,"LEFT",2)
     indicatortip:SetCell(line,3,tstr,"RIGHT")
-  end
-  finishIndicator()
-end
-
-function addon:plantName(spellid)
-  local name = GetSpellInfo(spellid)
-  if not name then return "unknown" end
-  name = name:gsub(L["Plant"],"")
-  name = name:gsub(L["Throw"],"")
-  name = name:gsub(L["Seeds"],"")
-  name = name:gsub(L["Seed"],"")
-  name = strtrim(name)
-  return name
-end
-
-local function ShowFarmTooltip(cell, arg, ...)
-  local toon = arg
-  local t = addon.db.Toons[toon]
-  if not t then return end
-  openIndicator(2, "LEFT","RIGHT")
-  local tname = ClassColorise(t.Class, toon)
-  indicatortip:AddHeader()
-  indicatortip:SetCell(1,1,tname,"LEFT")
-  indicatortip:SetCell(1,2,L["Farm Crops"],"RIGHT")
-
-  local exp = t.FarmExpires
-  if exp and exp > time() then
-    indicatortip:AddLine(YELLOWFONT .. L["Time Left"] .. ":" .. FONTEND, SecondsToTime(exp - time()))
-  end
-  indicatortip:AddLine(YELLOWFONT .. L["Crops harvested today"] .. ":" .. FONTEND,(t.FarmHarvested or 0))
-  indicatortip:AddLine(YELLOWFONT .. L["Crops planted today"] .. ":" .. FONTEND,  (t.FarmPlanted or 0))
-  local crops
-  if t.FarmCropPlanted and next(t.FarmCropPlanted) then
-    crops = t.FarmCropPlanted
-    indicatortip:AddLine(YELLOWFONT .. L["Crops growing"] .. ":" .. FONTEND)
-  elseif t.FarmCropReady and next(t.FarmCropReady) then
-    crops = t.FarmCropReady
-    indicatortip:AddLine(YELLOWFONT .. L["Crops ready"] .. ":" .. FONTEND)
-  end
-  if crops then
-    for spellid,cnt in pairs(crops) do
-      local line = indicatortip:AddLine()
-      indicatortip:SetCell(line,1, addon:plantName(spellid),"LEFT")
-      indicatortip:SetCell(line,2,"x"..cnt,"RIGHT")
-    end
   end
   finishIndicator()
 end
@@ -4193,33 +4132,6 @@ function core:ShowTooltip(anchorframe)
     end
   end
 
-  if addon.db.Tooltip.TrackFarm or showall then
-    local toonfarm = localarr("toonfarm")
-    local show
-    for toon, t in cpairs(addon.db.Toons, true) do
-      if (t.FarmPlanted or 0) > 0 or (t.FarmHarvested or 0) > 0 or
-        (t.FarmCropReady and next(t.FarmCropReady)) then
-        toonfarm[toon] = (t.FarmHarvested or 0).."/"..(t.FarmPlanted or 0)
-        show = true
-        addColumns(columns, toon, tooltip)
-      end
-    end
-    if show then
-      if not firstcategory and addon.db.Tooltip.CategorySpaces then
-        addsep()
-      end
-      show = tooltip:AddLine(YELLOWFONT .. L["Farm Crops"] .. FONTEND)
-    end
-    for toon, t in cpairs(addon.db.Toons, true) do
-      if toonfarm[toon] then
-        local col = columns[toon..1]
-        tooltip:SetCell(show, col, ClassColorise(t.Class,toonfarm[toon]), "CENTER",maxcol)
-        tooltip:SetCellScript(show, col, "OnEnter", ShowFarmTooltip, toon)
-        tooltip:SetCellScript(show, col, "OnLeave", CloseTooltips)
-      end
-    end
-  end
-
   if addon.db.Tooltip.TrackBonus or showall then
     local show
     local toonbonus = localarr("toonbonus")
@@ -4669,122 +4581,12 @@ function core:TRADE_SKILL_LIST_UPDATE()
   return cnt
 end
 
-local farm_spells = {
-    [111102]="plant", -- Plant Green Cabbage
-    [123361]="plant", -- Plant Juicycrunch Carrot
-    [123388]="plant", -- Plant Scallions
-    [123485]="plant", -- Plant Mogu Pumpkin
-    [123535]="plant", -- Plant Red Blossom Leek
-    [123565]="plant", -- Plant Pink Turnip
-    [123568]="plant", -- Plant White Turnip
-    [123771]="plant", -- Plant Golden Seed
-    [123772]="plant", -- Plant Seed of Harmony
-    [123773]="plant", -- Plant Snakeroot Seed
-    [123774]="plant", -- Plant Enigma Seed
-    [123775]="plant", -- Plant Magebulb Seed
-    [123776]="plant", -- Plant Soybean Seed
-    [123777]="plant", -- Plant Ominous Seed
-    [123892]="plant", -- Plant Autumn Blossom Sapling
-    [123893]="plant", -- Plant Spring Blossom Seed
-    [123894]="plant", -- Plant Winter Blossom Sapling
-    [123895]="plant", -- Plant Kyparite Seed
-    [129623]="plant", -- Plant Windshear Cactus Seed
-    [129628]="plant", -- Plant Raptorleaf Seed
-    [129863]="plant", -- Plant Songbell Seed
-    [129974]="plant", -- Plant Witchberries
-    [129976]="plant", -- Plant Jade Squash
-    [129978]="plant", -- Plant Striped Melon
-    [130170]="plant", -- Plant Spring Blossom Sapling
-    [133036]="plant", -- Plant Unstable Portal Shard
-
-    [116356]="throw", -- Throw Green Cabbage Seeds
-    [123362]="throw", -- Throw Juicycrunch Carrot Seeds
-    [123389]="throw", -- Throw Scallion Seeds
-    [123486]="throw", -- Throw Mogu Pumpkin Seeds
-    [123537]="throw", -- Throw Red Blossom Leek Seeds
-    [123566]="throw", -- Throw Pink Turnip Seeds
-    [123567]="throw", -- Throw White Turnip Seeds
-    [131093]="throw", -- Throw Witchberry Seeds
-    [131094]="throw", -- Throw Jade Squash Seeds
-    [131095]="throw", -- Throw Striped Melon Seeds
-    [139975]="throw", -- Throw Songbell Seeds
-    [139977]="throw", -- Throw Snakeroot Seeds
-    [139978]="throw", -- Throw Enigma Seeds
-    [139981]="throw", -- Throw Magebulb Seeds
-    [139983]="throw", -- Throw Windshear Cactus Seeds
-    [139986]="throw", -- Throw Raptorleaf Seeds
-
-    [111123]="harvest", -- Harvest Green Cabbage
-    [115063]="harvest", -- Harvest EZ-Gro Green Cabbage
-    [123353]="harvest", -- Harvest Juicycrunch Carrot
-    [123355]="harvest", -- Harvest Plump Green Cabbage
-    [123356]="harvest", -- Harvest Plump Juicycrunch Carrot
-    [123375]="harvest", -- Harvest Scallions
-    [123380]="harvest", -- Harvest Plump Scallions
-    [123445]="harvest", -- Harvest Mogu Pumpkin
-    [123451]="harvest", -- Harvest Plump Mogu Pumpkin
-    [123516]="harvest", -- Harvest Winter Blossom Tree
-    [123522]="harvest", -- Harvest Plump Red Blossom Leek
-    [123524]="harvest", -- Harvest Red Blossom Leek
-    [123548]="harvest", -- Harvest Pink Turnip
-    [123549]="harvest", -- Harvest Plump Pink Turnip
-    [123570]="harvest", -- Harvest White Turnip
-    [123571]="harvest", -- Harvest Plump White Turnip
-    [129673]="harvest", -- Harvest Golden Lotus
-    [129674]="harvest", -- Harvest Fool\'s Cap
-    [129675]="harvest", -- Harvest Snow Lily
-    [129676]="harvest", -- Harvest Silkweed
-    [129687]="harvest", -- Harvest Green Tea Leaf
-    [129705]="harvest", -- Harvest Rain Poppy
-    [129757]="harvest", -- Harvest Snakeroot
-    [129796]="harvest", -- Harvest Magebulb
-    [129814]="harvest", -- Harvest Windshear Cactus
-    [129843]="harvest", -- Harvest Raptorleaf
-    [129887]="harvest", -- Harvest Songbell
-    [129983]="harvest", -- Harvest Witchberries
-    [129984]="harvest", -- Harvest Plump Witchberries
-    [130025]="harvest", -- Harvest Jade Squash
-    [130026]="harvest", -- Harvest Plump Jade Squash
-    [130042]="harvest", -- Harvest Striped Melon
-    [130043]="harvest", -- Harvest Plump Striped Melon
-    [130109]="harvest", -- Harvest Terrible Turnip
-    [130140]="harvest", -- Harvest Autumn Blossom Tree
-    [130168]="harvest", -- Harvest Spring Blossom Tree
-    [133106]="harvest", -- Harvest Portal Shard
-}
-
-function core:record_farm(spellID)
-  local ft = farm_spells[spellID]
-  if not ft then return end
-  local t = addon and addon.db.Toons[thisToon]
-  if not t then return end
-  if ft == "plant" or ft == "throw" then
-    local amt = (ft == "plant" and 1 or 4)
-    t.FarmPlanted = (t.FarmPlanted or 0) + amt
-    t.FarmCropPlanted = t.FarmCropPlanted or {}
-    t.FarmCropPlanted[spellID] = (t.FarmCropPlanted[spellID] or 0) + amt
-  elseif ft == "harvest" then
-    if t.FarmExpires and time() + 60 > t.FarmExpires then -- assume this is a fresh day
-      t.FarmExpires = t.FarmExpires - 60
-      addon:UpdateToonData() -- ticket 132: ensure refresh if we're harvesting right after reset
-    end
-    t.FarmHarvested = (t.FarmHarvested or 0) + 1
-    t.FarmCropReady = nil
-  end
-  t.FarmExpires = addon:GetNextDailySkillResetTime()
-  debug("Farm "..ft..": planted="..(t.FarmPlanted or 0)..
-    " harvested="..(t.FarmHarvested or 0).." expires="..date("%c",t.FarmExpires or 0))
-end
-
 function core:UNIT_SPELLCAST_SUCCEEDED(evt, unit, spellName, rank, lineID, spellID)
   if unit ~= "player" then return end
   if trade_spells[spellID] then
     debug("UNIT_SPELLCAST_SUCCEEDED: %s (%s)",GetSpellLink(spellID),spellID)
     if not core:record_skill(spellID) then return end
     core:ScheduleTimer("TradeSkillRescan", 0.5, spellID)
-  elseif farm_spells[spellID] then
-    debug("UNIT_SPELLCAST_SUCCEEDED: %s (%s)",GetSpellLink(spellID),spellID)
-    core:record_farm(spellID)
   end
 end
 
