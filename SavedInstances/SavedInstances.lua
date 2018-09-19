@@ -2556,10 +2556,6 @@ function core:OnEnable()
   self:RegisterEvent("ENCOUNTER_END", "EncounterEnd")
   self:RegisterEvent("BAG_UPDATE", "RefreshMythicKeyInfo")
   self:RegisterEvent("CHALLENGE_MODE_MAPS_UPDATE", "RefreshMythicKeyInfo")
-  self:RegisterEvent("PLAYER_ENTERING_WORLD", "RefreshDailyWorldQuestInfo")
-  self:RegisterEvent("ADDON_LOADED", "RefreshDailyWorldQuestInfo")
-  self:RegisterEvent("QUEST_LOG_UPDATE", "RefreshDailyWorldQuestInfo")
-  self:RegisterEvent("QUEST_WATCH_LIST_CHANGED", "RefreshDailyWorldQuestInfo")
   self:RegisterEvent("CHAT_MSG_MONSTER_YELL")
   self:RegisterEvent("TIME_PLAYED_MSG", function(_,total,level)
     local t = thisToon and addon and addon.db and addon.db.Toons[thisToon]
@@ -2594,7 +2590,6 @@ function core:OnEnable()
   addon:specialQuests()
   core:RefreshMythicKeyInfo()
   core:updateRealmMap()
-  core:RefreshDailyWorldQuestInfo()
 end
 
 function core:ADDON_LOADED()
@@ -2759,64 +2754,6 @@ function core:RefreshMythicKeyInfo(event)
   t.MythicKeyBest.ResetTime = addon:GetNextWeeklyResetTime()
   t.MythicKeyBest.level = bestlevel
   t.MythicKeyBest.WeeklyReward = C_MythicPlus.IsWeeklyRewardAvailable()
-end
-
-function core:RefreshDailyWorldQuestInfo()
-  local t = addon.db.Toons[thisToon]
-  t.DailyWorldQuest = {}
-  local BountyQuest = GetQuestBountyInfoForMapID(876)
-  for BountyIndex, BountyInfo in ipairs(BountyQuest) do
-    local title = GetQuestLogTitle(GetQuestLogIndexByID(BountyInfo.questID))
-    local timeleft = C_TaskQuest.GetQuestTimeLeftMinutes(BountyInfo.questID)
-    local _, _, isFinish, questDone, questNeed = GetQuestObjectiveInfo(BountyInfo.questID, 1, false)
-    if timeleft then
-      if timeleft > 2880 then
-        if t.DailyWorldQuest.days2 then else t.DailyWorldQuest.days2 = {} end
-        t.DailyWorldQuest.days2.name = title
-        t.DailyWorldQuest.days2.dayleft = 2
-        t.DailyWorldQuest.days2.questneed = questNeed
-        t.DailyWorldQuest.days2.questdone = questDone
-        t.DailyWorldQuest.days2.isfinish = isFinish
-        t.DailyWorldQuest.days2.iscompleted = IsQuestFlaggedCompleted(BountyInfo.questID)
-      elseif timeleft > 1440 then
-        if t.DailyWorldQuest.days1 then else t.DailyWorldQuest.days1 = {} end
-        t.DailyWorldQuest.days1.name = title
-        t.DailyWorldQuest.days1.dayleft = 1
-        t.DailyWorldQuest.days1.questneed = questNeed
-        t.DailyWorldQuest.days1.questdone = questDone
-        t.DailyWorldQuest.days1.isfinish = isFinish
-        t.DailyWorldQuest.days1.iscompleted = IsQuestFlaggedCompleted(BountyInfo.questID)
-      else
-        if t.DailyWorldQuest.days0 then else t.DailyWorldQuest.days0 = {} end
-        t.DailyWorldQuest.days0.name = title
-        t.DailyWorldQuest.days0.dayleft = 0
-        t.DailyWorldQuest.days0.questneed = questNeed
-        t.DailyWorldQuest.days0.questdone = questDone
-        t.DailyWorldQuest.days0.isfinish = isFinish
-        t.DailyWorldQuest.days0.iscompleted = IsQuestFlaggedCompleted(BountyInfo.questID)
-      end
-    end
-  end
-  if IsQuestFlaggedCompleted(43341) then
-    if t.DailyWorldQuest.days0 == nil then
-      t.DailyWorldQuest.days0 = {}
-      t.DailyWorldQuest.days0.dayleft = 0
-      t.DailyWorldQuest.days0.iscompleted = true
-      t.DailyWorldQuest.days0.name = L["Emissary Missing"]
-    end
-    if t.DailyWorldQuest.days1 == nil then
-      t.DailyWorldQuest.days1 = {}
-      t.DailyWorldQuest.days1.dayleft = 1
-      t.DailyWorldQuest.days1.iscompleted = true
-      t.DailyWorldQuest.days1.name = L["Emissary Missing"]
-    end
-    if t.DailyWorldQuest.days2 == nil then
-      t.DailyWorldQuest.days2 = {}
-      t.DailyWorldQuest.days2.dayleft = 2
-      t.DailyWorldQuest.days2.iscompleted = true
-      t.DailyWorldQuest.days2.name = L["Emissary Missing"]
-    end
-  end
 end
 
 function core:getRealmGroup(realm)

@@ -35,6 +35,7 @@ locale.lua
 Core.lua
 Tradeskills.lua
 LFR.lua
+Emissary.lua
 WorldBosses.lua
 Currency.lua
 MythicPlus.lua
