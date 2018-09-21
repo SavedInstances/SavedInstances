@@ -37,6 +37,7 @@ Tradeskills.lua
 LFR.lua
 Emissary.lua
 WorldBosses.lua
+Quests.lua
 Currency.lua
 MythicPlus.lua
 SavedInstances.lua

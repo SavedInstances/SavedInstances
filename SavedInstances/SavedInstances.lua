@@ -62,6 +62,8 @@ local trade_spells = addon.trade_spells
 local cdname = addon.cdname
 local QuestExceptions = addon.QuestExceptions
 local scantt = addon.scantt
+local KeystonetoAbbrev = addon.KeystonetoAbbrev
+local KeystoneAbbrev = addon.KeystoneAbbrev
 
 addon.Indicators = {
   ICON_STAR = ICON_LIST[1] .. "16:16:0:0|t",
@@ -74,9 +76,6 @@ addon.Indicators = {
   ICON_SKULL = ICON_LIST[8] .. "16:16:0:0|t",
   BLANK = "None",
 }
-
-local KeystonetoAbbrev = addon.KeystonetoAbbrev
-local KeystoneAbbrev = addon.KeystoneAbbrev
 
 addon.Categories = { }
 local maxExpansion
@@ -220,6 +219,7 @@ local function abbreviate(iname)
   iname = iname:gsub("Cataclysm", "Cata")
   iname = iname:gsub("Mists of Pandaria", "MoP")
   iname = iname:gsub("Warlords of Draenor", "WoD")
+  iname = iname:gsub("Battle for Azeroth", "BfA")
 
   return iname
 end
@@ -1540,65 +1540,6 @@ function addon:UpdateToonData()
     end
 
     t.LastSeen = time()
-end
-
-function addon:UpdateCurrency()
-  if addon.logout then return end -- currency is unreliable during logout
-  local t = addon.db.Toons[thisToon]
-  t.Money = GetMoney()
-  t.currency = wipe(t.currency or {})
-  for _,idx in ipairs(currency) do
-    local _, amount, _, earnedThisWeek, weeklyMax, totalMax, discovered = GetCurrencyInfo(idx)
-    if idx == 390 and amount == 0 then
-      discovered = false -- discovery flag broken for conquest points
-    end
-    if not discovered then
-      t.currency[idx] = nil
-    else
-      local ci = t.currency[idx] or {}
-      ci.amount, ci.earnedThisWeek, ci.weeklyMax, ci.totalMax = amount, earnedThisWeek, weeklyMax, totalMax
-      if idx == 396 then -- VP has a weekly max scaled by 100
-        ci.weeklyMax = ci.weeklyMax and math.floor(ci.weeklyMax/100)
-      end
-      if idx == 390 or idx == 395 or idx == 396 then -- these have a total max scaled by 100
-        ci.totalMax = ci.totalMax and math.floor(ci.totalMax/100)
-      end
-      if idx == 390 then -- these have a weekly earned scaled by 100
-        ci.earnedThisWeek = ci.earnedThisWeek and math.floor(ci.earnedThisWeek/100)
-      end
-      if idx == 1129 then -- Seal of Tempered Fate returns zero for weekly quantities
-        ci.weeklyMax = 3 -- the max via quests
-        ci.earnedThisWeek = 0
-        for id in pairs(WoDSealQuests) do
-          if IsQuestFlaggedCompleted(id) then
-            ci.earnedThisWeek = ci.earnedThisWeek + 1
-          end
-        end
-      elseif idx == 1273 then -- Seal of Broken Fate returns zero for weekly quantities
-        ci.weeklyMax = 3 -- the max via quests
-        ci.earnedThisWeek = 0
-        for id in pairs(LegionSealQuests) do
-          if IsQuestFlaggedCompleted(id) then
-            ci.earnedThisWeek = ci.earnedThisWeek + 1
-          end
-        end
-      end
-      if idx == 1580 then -- Seal of Wartorn Fate returns zero for weekly quantities
-        ci.weeklyMax = 2 -- the max via quests
-        ci.earnedThisWeek = 0
-        for id in pairs(BfASealQuests) do
-          if IsQuestFlaggedCompleted(id) then
-            ci.earnedThisWeek = ci.earnedThisWeek + 1
-          end
-        end
-      end
-      ci.season = addon:GetSeasonCurrency(idx)
-      if ci.weeklyMax == 0 then ci.weeklyMax = nil end -- don't store useless info
-      if ci.totalMax == 0 then ci.totalMax = nil end -- don't store useless info
-      if ci.earnedThisWeek == 0 then ci.earnedThisWeek = nil end -- don't store useless info
-      t.currency[idx] = ci
-    end
-  end
 end
 
 function addon:QuestIsDarkmoonMonthly()
