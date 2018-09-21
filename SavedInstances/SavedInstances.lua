@@ -61,6 +61,7 @@ local currency = addon.currency
 local trade_spells = addon.trade_spells
 local cdname = addon.cdname
 local QuestExceptions = addon.QuestExceptions
+local scantt = addon.scantt
 
 addon.Indicators = {
   ICON_STAR = ICON_LIST[1] .. "16:16:0:0|t",
@@ -93,8 +94,6 @@ end
 local tooltip, indicatortip
 local thisToon = UnitName("player") .. " - " .. GetRealmName()
 local maxlvl = MAX_PLAYER_LEVEL_TABLE[#MAX_PLAYER_LEVEL_TABLE]
-local scantt = CreateFrame("GameTooltip", "SavedInstancesScanTooltip", UIParent, "GameTooltipTemplate")
-
 
 function addon:QuestInfo(questid)
   if not questid or questid == 0 then return nil end
