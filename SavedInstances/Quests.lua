@@ -8,6 +8,7 @@ local _specialQuests = {
   [32611] = { zid=504, lid1=95350 },-- Incantation of X looted
   [32626] = { zid=504, lid=94222 }, -- Key to the Palace of Lei Shen looted
   [32609] = { zid=504, aid=8104, aline="Left5"  }, -- Trove of the Thunder King (outdoor chest)
+
   -- Timeless Isle
   [32962] = { zid=554, aid=8743, daily=true },  -- Zarhym
   [32961] = { zid=554, daily=true },  -- Scary Ghosts and Nice Sprites
@@ -17,16 +18,19 @@ local _specialQuests = {
   [32968] = { zid=554, aid=8726, acid=2, aline="Right7" }, -- Rope-Bound Treasure Chest
   [32969] = { zid=554, aid=8726, acid=1, aline="Left7" },  -- Gleaming Treasure Chest
   [32971] = { zid=554, aid=8726, acid=3, aline="Left8" },  -- Mist-Covered Treasure Chest
+
   -- Garrison
   [37638] = { zone=GARRISON_LOCATION_TOOLTIP, aid=9162 }, -- Bronze Defender
   [37639] = { zone=GARRISON_LOCATION_TOOLTIP, aid=9164 }, -- Silver Defender
   [37640] = { zone=GARRISON_LOCATION_TOOLTIP, aid=9165 }, -- Golden Defender
   [38482] = { zone=GARRISON_LOCATION_TOOLTIP, aid=9826 }, -- Platinum Defender
+
   -- Tanaan Jungle
   [39287] = { zid=534, daily=true }, -- Deathtalon
   [39288] = { zid=534, daily=true }, -- Terrorfist
   [39289] = { zid=534, daily=true }, -- Doomroller
   [39290] = { zid=534, daily=true }, -- Vengeance
+
   -- Order Hall
   [42481] = { zid=717, daily=true }, -- Warlock: Ritual of Doom
   [44707] = { zid=719, daily=true, sid=228651 }, -- Demon Hunter: Twisting Nether
@@ -100,6 +104,7 @@ local QuestExceptions = {
   [31752] = "AccountDaily", -- Blingtron
   [34774] = "AccountDaily", -- Blingtron 5000
   [40753] = "AccountDaily", -- Blingtron 6000
+
   -- also pre-populate a few important quests
   [32640] = "Weekly",  -- Champions of the Thunder King
   [32641] = "Weekly",  -- Champions of the Thunder King

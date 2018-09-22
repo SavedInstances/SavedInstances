@@ -13,13 +13,11 @@ local maxdiff = 23 -- max number of instance difficulties
 local maxcol = 4 -- max columns per player+instance
 local maxid = 2000 -- highest possible value for an instanceID, current max (Tomb of Sargeras) is 1676
 
--- local (optimal) references to provided functions
 local table, math, bit, string, pairs, ipairs, unpack, strsplit, time, type, wipe, tonumber, select, strsub =
   table, math, bit, string, pairs, ipairs, unpack, strsplit, time, type, wipe, tonumber, select, strsub
-local GetSavedInstanceInfo, GetNumSavedInstances, GetSavedInstanceChatLink, GetLFGDungeonNumEncounters, GetLFGDungeonEncounterInfo, GetNumRandomDungeons, GetLFGRandomDungeonInfo, GetLFGDungeonInfo, LFGGetDungeonInfoByID, GetLFGDungeonRewards, GetTime, UnitIsUnit, GetInstanceInfo, IsInInstance, SecondsToTime, GetQuestResetTime, GetGameTime, GetCurrencyInfo, GetNumGroupMembers =
-  GetSavedInstanceInfo, GetNumSavedInstances, GetSavedInstanceChatLink, GetLFGDungeonNumEncounters, GetLFGDungeonEncounterInfo, GetNumRandomDungeons, GetLFGRandomDungeonInfo, GetLFGDungeonInfo, LFGGetDungeonInfoByID, GetLFGDungeonRewards, GetTime, UnitIsUnit, GetInstanceInfo, IsInInstance, SecondsToTime, GetQuestResetTime, GetGameTime, GetCurrencyInfo, GetNumGroupMembers
+local GetSavedInstanceInfo, GetNumSavedInstances, GetSavedInstanceChatLink, GetLFGDungeonNumEncounters, GetLFGDungeonEncounterInfo, GetNumRandomDungeons, GetLFGRandomDungeonInfo, GetLFGDungeonInfo, LFGGetDungeonInfoByID, GetLFGDungeonRewards, GetTime, UnitIsUnit, GetInstanceInfo, IsInInstance, SecondsToTime, GetQuestResetTime, GetGameTime, GetCurrencyInfo, GetNumGroupMembers, UnitAura =
+  GetSavedInstanceInfo, GetNumSavedInstances, GetSavedInstanceChatLink, GetLFGDungeonNumEncounters, GetLFGDungeonEncounterInfo, GetNumRandomDungeons, GetLFGRandomDungeonInfo, GetLFGDungeonInfo, LFGGetDungeonInfoByID, GetLFGDungeonRewards, GetTime, UnitIsUnit, GetInstanceInfo, IsInInstance, SecondsToTime, GetQuestResetTime, GetGameTime, GetCurrencyInfo, GetNumGroupMembers, UnitAura
 
--- local (optimal) references to Blizzard's strings
 local RAID_CLASS_COLORS = RAID_CLASS_COLORS
 local RAID_FINDER = PLAYER_DIFFICULTY3
 local FONTEND = FONT_COLOR_CODE_CLOSE
@@ -36,8 +34,7 @@ local INSTANCE_SAVED, TRANSFER_ABORT_TOO_MANY_INSTANCES, NO_RAID_INSTANCES_SAVED
 
 local ALREADY_LOOTED = ERR_LOOT_GONE:gsub("%(.*%)","")
 
-local UnitAura = UnitAura
--- Unit Aura functions that return info about the first Aura matching the spellName or spellID given on the unit.
+-- Unit Aura functions that return info about the first aura matching the spellName or spellID given on the unit.
 local SI_GetUnitAura = function(unit, spell, filter)
     for i = 1, 40 do
         local name, _, _, _, _, _, _, _, _, spellId = UnitAura(unit, i, filter)
@@ -580,9 +577,6 @@ function addon:GetRegion()
       local gcr = GetCurrentRegion()
       reg = gcr and ({ "US", "KR", "EU", "TW", "CN" })[gcr]
     end
-    if not reg or #reg ~= 2 then
-      reg = (GetCVar("realmList") or ""):match("^(%a+)%.")
-    end
     if not reg or #reg ~= 2 then -- other test realms?
       reg = (GetRealmName() or ""):match("%((%a%a)%)")
     end
@@ -654,7 +648,7 @@ do
   function addon:GetNextDarkmoonResetTime()
     -- Darkmoon faire runs from first Sunday of each month to following Saturday
     -- this function returns an approximate time after the end of the current month's faire
-    local monthInfo = C_Calendar.GetMonthInfo();
+    local monthInfo = C_Calendar.GetMonthInfo()
     local firstweekday = monthInfo.firstWeekday
     local firstsunday = ((firstweekday == 1) and 1) or (9 - firstweekday)
     dmf_end.year = monthInfo.year
@@ -1344,7 +1338,7 @@ function addon:UpdateToonData()
   wipe(addon.activeHolidays)
   -- blizz internally conflates all the holiday flags, so we have to detect which is really active
   for i=1, GetNumRandomDungeons() do
-    local id, name = GetLFGRandomDungeonInfo(i);
+    local id, name = GetLFGRandomDungeonInfo(i)
     local d = addon.db.Instances[name]
     if d and d.Holiday then
       addon.activeHolidays[name] = true
@@ -1941,7 +1935,7 @@ local function ShowLFRTooltip(cell, arg, ...)
         if remap then
           bossid = remap[i-base+1]
         end
-        local bossname = GetLFGDungeonEncounterInfo(thisinstance.LFDID, bossid);
+        local bossname = GetLFGDungeonEncounterInfo(thisinstance.LFDID, bossid)
         local n = indicatortip:AddLine()
         indicatortip:SetCell(n, 1, bossname, "LEFT", 2)
         if info and info[bossid] then
@@ -2038,7 +2032,7 @@ local function ShowIndicatorTooltip(cell, arg, ...)
       if worldboss then
         bossname = addon.WorldBosses[worldboss].name or "UNKNOWN"
       else
-        bossname = GetLFGDungeonEncounterInfo(thisinstance.LFDID, bossid);
+        bossname = GetLFGDungeonEncounterInfo(thisinstance.LFDID, bossid)
       end
       local n = indicatortip:AddLine()
       indicatortip:SetCell(n, 1, bossname, "LEFT", 2)
@@ -2120,15 +2114,24 @@ local function ShowCurrencyTooltip(cell, arg, ...)
     end
   end
   if ci.weeklyMax and ci.weeklyMax > 0 then
-    if not spacer then indicatortip:AddLine(" "); spacer = true end
+    if not spacer then
+      indicatortip:AddLine(" ")
+      spacer = true
+    end
     indicatortip:AddLine(weeklycap:format("", CurrencyColor(ci.earnedThisWeek or 0,ci.weeklyMax), addon:formatNumber(ci.weeklyMax)))
   end
   if ci.totalMax and ci.totalMax > 0 then
-    if not spacer then indicatortip:AddLine(" "); spacer = true end
+    if not spacer then
+      indicatortip:AddLine(" ")
+      spacer = true
+    end
     indicatortip:AddLine(totalcap:format("", CurrencyColor(ci.amount or 0,ci.totalMax), addon:formatNumber(ci.totalMax)))
   end
   if ci.season and #ci.season > 0 then
-    if not spacer then indicatortip:AddLine(" "); spacer = true end
+    if not spacer then
+      indicatortip:AddLine(" ")
+      spacer = true
+    end
     local str = ci.season
     local num = str:match("(%d+)")
     if num then
@@ -2306,7 +2309,6 @@ function core:OnEnable()
   self:RegisterEvent("CHAT_MSG_SYSTEM", "CheckSystemMessage")
   self:RegisterEvent("CHAT_MSG_CURRENCY", "CheckSystemMessage")
   self:RegisterEvent("CHAT_MSG_LOOT", "CheckSystemMessage")
-  self:RegisterBucketEvent("CURRENCY_DISPLAY_UPDATE", 0.25, function() addon:UpdateCurrency() end)
   self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
   self:RegisterBucketEvent("TRADE_SKILL_LIST_UPDATE", 1)
   self:RegisterBucketEvent("PLAYER_ENTERING_WORLD", 1, RequestRaidInfo)
@@ -2578,7 +2580,6 @@ function addon.HistoryEvent(f, evt, ...)
   end
 end
 
-
 addon.histReapTime = 60*60 -- 1 hour
 addon.histLimit = 10 -- instances per hour
 function addon:histZoneKey()
@@ -2796,7 +2797,10 @@ end
 function core:Refresh(recoverdaily)
   -- update entire database from the current character's perspective
   addon:UpdateInstanceData()
-  if not addon.instancesUpdated then addon.RefreshPending = true; return end -- wait for UpdateInstanceData to succeed
+  if not addon.instancesUpdated then
+    addon.RefreshPending = true
+    return
+  end -- wait for UpdateInstanceData to succeed
   local nextreset = addon:GetNextDailyResetTime()
   if not nextreset or ((nextreset - time()) > (24*3600 - 5*60)) then  -- allow 5 minutes for quest DB to update after daily rollover
     debug("Skipping core:Refresh() near daily reset")
@@ -2844,7 +2848,7 @@ function core:Refresh(recoverdaily)
 
   local weeklyreset = addon:GetNextWeeklyResetTime()
   for id,_ in pairs(addon.LFRInstances) do
-    local numEncounters, numCompleted = GetLFGDungeonNumEncounters(id);
+    local numEncounters, numCompleted = GetLFGDungeonNumEncounters(id)
     if ( numCompleted and numCompleted > 0 and weeklyreset ) then
       local truename, instance = addon:LookupInstance(id, nil, true)
       instance[thisToon] = instance[thisToon] or temp[truename] or { }
@@ -2856,7 +2860,7 @@ function core:Refresh(recoverdaily)
       end
       info.ID = -1*numEncounters
       for i=1, numEncounters do
-        local bossName, texture, isKilled = GetLFGDungeonEncounterInfo(id, i);
+        local bossName, texture, isKilled = GetLFGDungeonEncounterInfo(id, i)
         info[i] = isKilled
       end
     end
@@ -2913,7 +2917,7 @@ local function UpdateTooltip(self,elap)
   if addon.firstupdate then
     -- ticket 155: fix QTip backdrop which somehow gets corrupted sometimes, no idea why
     tooltip:SetBackdrop(GameTooltip:GetBackdrop())
-    tooltip:SetBackdropColor(GameTooltip:GetBackdropColor());
+    tooltip:SetBackdropColor(GameTooltip:GetBackdropColor())
     tooltip:SetBackdropBorderColor(GameTooltip:GetBackdropBorderColor())
     addon:SkinFrame(tooltip, "SavedInstancesTooltip")
     addon.firstupdate = false
@@ -3066,11 +3070,17 @@ function addon:ShowDetached()
       f:SetPoint("CENTER")
     end
     f:SetScript("OnMouseDown", function() f:StartMoving() end)
-    f:SetScript("OnMouseUp", function() f:StopMovingOrSizing()
+    f:SetScript("OnMouseUp", function()
+      f:StopMovingOrSizing()
       addon.db.Tooltip.posx = f:GetLeft()
       addon.db.Tooltip.posy = UIParent:GetTop() - (f:GetTop()*f:GetScale())
     end)
-    f:SetScript("OnHide", function() if tooltip then QTip:Release(tooltip); tooltip = nil end  end )
+    f:SetScript("OnHide", function()
+      if tooltip then
+        QTip:Release(tooltip)
+        tooltip = nil
+      end
+    end)
     f:SetScript("OnUpdate", function(self)
       if not tooltip then f:Hide(); return end
       local w,h = tooltip:GetSize()
@@ -3079,7 +3089,7 @@ function addon:ShowDetached()
     f:SetScript("OnKeyDown", function(self,key)
       if key == "ESCAPE" then
         f:SetPropagateKeyboardInput(false)
-        f:Hide();
+        f:Hide()
       end
     end)
     f:EnableKeyboard(true)
@@ -3968,8 +3978,8 @@ function core:ShowTooltip(anchorframe)
       local scale = tooltip:GetScale()
       local w,h = tooltip:GetSize()
       local sw,sh = UIParent:GetSize()
-      w = w*scale;
-      h = h*scale;
+      w = w*scale
+      h = h*scale
       if w > sw or h > sh then
         scale = scale / math.max(w/sw, h/sh)
         scale = scale*0.95 -- 5% slop to speed convergeance
@@ -4164,8 +4174,8 @@ function core:TradeSkillRescan(spellid)
     ExpandTradeSkillSubClass(0)
     local rescan = core:TRADE_SKILL_LIST_UPDATE()
     debug("Rescan: "..(rescan==scan and "Failed" or "Success"))
-    TradeSkillOnlyShowMakeable(addon.filtertmp.hasMaterials);
-    TradeSkillOnlyShowSkillUps(addon.filtertmp.hasSkillUp);
+    TradeSkillOnlyShowMakeable(addon.filtertmp.hasMaterials)
+    TradeSkillOnlyShowSkillUps(addon.filtertmp.hasSkillUp)
     SetTradeSkillCategoryFilter(addon.filtertmp.subClassValue or -1)
     SetTradeSkillInvSlotFilter(addon.filtertmp.slotValue or -1, 1, 1)
   end

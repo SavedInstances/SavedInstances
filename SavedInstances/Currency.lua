@@ -1,12 +1,13 @@
 local addonName, addon = ...
-local CurrencyModule = LibStub("AceAddon-3.0"):GetAddon(addonName):NewModule("Currency")
+local CurrencyModule = LibStub("AceAddon-3.0"):GetAddon(addonName):NewModule("Currency", "AceEvent-3.0", "AceTimer-3.0", "AceBucket-3.0")
 local thisToon = UnitName("player") .. " - " .. GetRealmName()
 local QuestExceptions = addon.QuestExceptions
 
+function CurrencyModule:OnEnable()
+  self:RegisterBucketEvent("CURRENCY_DISPLAY_UPDATE", 0.25, function() addon:UpdateCurrency() end)
+end
+
 local currency = {
-  --390, -- Conquest Points
-  --392, -- Honor Points
-  --395, -- Justice Points
   81, -- Epicurean Award
   241, -- Champion's Seal
   391, -- Tol Barad Commendation
@@ -19,6 +20,8 @@ local currency = {
   776, -- Warforged Seal
   777, -- Timeless Coin
   789, -- Bloody Coin
+
+  -- Warlords of Draenor
   823, -- Apexis Crystal
   824, -- Garrison Resources
   994, -- Seal of Tempered Fate
@@ -28,6 +31,8 @@ local currency = {
   1155, -- Ancient Mana
   1166, -- Timewarped Badge
   1191, -- Valor Points
+
+  -- Legion
   1220, -- Order Resources
   1226, -- Nethershards
   1273, -- Seal of Broken Fate
@@ -38,7 +43,8 @@ local currency = {
   1501, -- Writhing Essence
   1508, -- Veiled Argunite
   1533, -- Wakening Essence
-  1565, -- Rich Azerite Fragment
+
+  --Battle for Azeroth
   1710, -- Seafarer's Dubloon
   1580, -- Seal of Wartorn Fate
   1560, -- War Resources
@@ -74,7 +80,7 @@ local LegionSealQuests = {
   [43892] = "Weekly",
   [43893] = "Weekly",
   [43894] = "Weekly",
-  [43510] = "Weekly", -- order hall
+  [43510] = "Weekly", -- Order Hall
   [47851] = "Weekly", -- Mark of Honor x5
   [47864] = "Weekly", -- Mark of Honor x10
   [47865] = "Weekly", -- Mark of Honor x20
