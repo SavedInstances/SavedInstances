@@ -2316,8 +2316,6 @@ function core:OnEnable()
   self:RegisterEvent("LFG_COMPLETION_REWARD", "RefreshLockInfo") -- for random daily dungeon tracking
   self:RegisterEvent("BOSS_KILL")
   self:RegisterEvent("ENCOUNTER_END", "EncounterEnd")
-  self:RegisterEvent("BAG_UPDATE", "RefreshMythicKeyInfo")
-  self:RegisterEvent("CHALLENGE_MODE_MAPS_UPDATE", "RefreshMythicKeyInfo")
   self:RegisterEvent("CHAT_MSG_MONSTER_YELL")
   self:RegisterEvent("TIME_PLAYED_MSG", function(_,total,level)
     local t = thisToon and addon and addon.db and addon.db.Toons[thisToon]
@@ -2350,7 +2348,6 @@ function core:OnEnable()
   C_ChatInfo.RegisterAddonMessagePrefix(addonName)
   addon:HistoryEvent("PLAYER_ENTERING_WORLD") -- update after initial load
   addon:specialQuests()
-  core:RefreshMythicKeyInfo()
   core:updateRealmMap()
 end
 
@@ -2435,87 +2432,6 @@ function core:updateRealmMap()
       rmap[r] = mapid
     end
   end
-end
-
-function core:RefreshMythicKeyInfo(event)
-
-  if (event ~= "CHALLENGE_MODE_MAPS_UPDATE") then C_MythicPlus.RequestRewards() end -- This event is fired after the rewards data was requested, causing yet another refresh if not checked for
-
-  local t = addon.db.Toons[thisToon]
-  local _
-  t.MythicKey = {}
-  for bagID = 0, 4 do
-    for invID = 1, GetContainerNumSlots(bagID) do
-      local itemID = GetContainerItemID(bagID, invID)
-      if itemID and itemID == 158923 then
-        local keyLink = GetContainerItemLink(bagID, invID)
-        local KeyInfo = {strsplit(':', keyLink)}
-        local mapID = tonumber(KeyInfo[3])
-        local mapLevel = tonumber(KeyInfo[4])
-        local color
-        if KeyInfo[4] == "0" then
-          _,_,_,color = GetItemQualityColor(0)
-        elseif mapLevel >= 10 then
-          _,_,_,color = GetItemQualityColor(4)
-        elseif mapLevel >= 7 then
-          _,_,_,color = GetItemQualityColor(3)
-        elseif mapLevel >= 4 then
-          _,_,_,color = GetItemQualityColor(2)
-        else
-          _,_,_,color = GetItemQualityColor(1)
-        end
-        if addon.db.Tooltip.DebugMode then
-          DEFAULT_CHAT_FRAME:AddMessage(tostring(KeyInfo[1]))
-          DEFAULT_CHAT_FRAME:AddMessage(tostring(KeyInfo[2]))
-          DEFAULT_CHAT_FRAME:AddMessage(tostring(KeyInfo[3]))
-          DEFAULT_CHAT_FRAME:AddMessage(tostring(KeyInfo[4]))
-          DEFAULT_CHAT_FRAME:AddMessage(tostring(KeyInfo[5]))
-          DEFAULT_CHAT_FRAME:AddMessage(tostring(KeyInfo[6]))
-          DEFAULT_CHAT_FRAME:AddMessage(tostring(KeyInfo[7]))
-          DEFAULT_CHAT_FRAME:AddMessage(tostring(KeyInfo[8]))
-          DEFAULT_CHAT_FRAME:AddMessage(tostring(KeyInfo[9]))
-          DEFAULT_CHAT_FRAME:AddMessage(tostring(KeyInfo[10]))
-          DEFAULT_CHAT_FRAME:AddMessage(tostring(KeyInfo[11]))
-          DEFAULT_CHAT_FRAME:AddMessage(tostring(KeyInfo[12]))
-          DEFAULT_CHAT_FRAME:AddMessage(tostring(KeyInfo[13]))
-          DEFAULT_CHAT_FRAME:AddMessage(tostring(KeyInfo[14]))
-          DEFAULT_CHAT_FRAME:AddMessage(tostring(KeyInfo[15]))
-          DEFAULT_CHAT_FRAME:AddMessage(tostring(KeyInfo[16]))
-          DEFAULT_CHAT_FRAME:AddMessage(tostring(KeyInfo[17]))
-          DEFAULT_CHAT_FRAME:AddMessage(tostring(KeyInfo[18]))
-          DEFAULT_CHAT_FRAME:AddMessage(tostring(KeyInfo[19]))
-          DEFAULT_CHAT_FRAME:AddMessage(tostring(KeyInfo[20]))
-        end
-        t.MythicKey.abbrev = KeystoneAbbrev[mapID]
-        t.MythicKey.link = C_ChallengeMode.GetMapUIInfo(mapID)
-        t.MythicKey.color = color
-        t.MythicKey.level = mapLevel
-        t.MythicKey.ResetTime = addon:GetNextWeeklyResetTime()
-        t.MythicKey.link = keyLink
-      end
-    end
-  end
-  local MythicMaps = { }
-  C_MythicPlus.RequestMapInfo()
-  MythicMaps = C_ChallengeMode.GetMapTable()
-  local bestlevel = 0
-  for i = 1, #MythicMaps do
-    local _, level = C_MythicPlus.GetWeeklyBestForMap(MythicMaps[i]);
-    if level then
-      if level > bestlevel then
-        bestlevel = level
-      end
-    end
-  end
-  if t.MythicKeyBest and (t.MythicKeyBest.ResetTime or 0) < time() then -- dont know weekly reset function will run early or not
-    if t.MythicKeyBest.level and t.MythicKeyBest.level > 0 then
-      t.MythicKeyBest.LastWeekLevel = t.MythicKeyBest.level
-  end
-  end
-  t.MythicKeyBest = t.MythicKeyBest or { }
-  t.MythicKeyBest.ResetTime = addon:GetNextWeeklyResetTime()
-  t.MythicKeyBest.level = bestlevel
-  t.MythicKeyBest.WeeklyReward = C_MythicPlus.IsWeeklyRewardAvailable()
 end
 
 function core:getRealmGroup(realm)
