@@ -9,6 +9,14 @@ local filePrefix = ""
 local fileList = {
     SavedInstances_Main = {
         "SavedInstances/SavedInstances.lua",
+        "SavedInstances/Core.lua",
+        "SavedInstances/Currency.lua",
+        "SavedInstances/Emissary.lua",
+        "SavedInstances/LFR.lua",
+        "SavedInstances/MythicPlus.lua",
+        "SavedInstances/Quests.lua",
+        "SavedInstances/Tradeskills.lua",
+        "SavedInstances/WorldBosses.lua",
         "SavedInstances/config.lua"
     },
 }
