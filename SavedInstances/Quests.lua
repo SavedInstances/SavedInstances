@@ -34,6 +34,12 @@ local _specialQuests = {
   -- Order Hall
   [42481] = { zid=717, daily=true }, -- Warlock: Ritual of Doom
   [44707] = { zid=719, daily=true, sid=228651 }, -- Demon Hunter: Twisting Nether
+
+  -- Warfront
+  [53414] = { zid=1161 }, -- Stromgarde Alliance
+  [53416] = { zid=1165 }, -- Stromgarde Horde
+  [53992] = { zid=1161 }, -- Darkshore Alliance
+  -- [?????] = { zid=1165 }, -- Darkshore Horde (Missing Quest ID)
 }
 
 function addon:specialQuests()
@@ -76,7 +82,7 @@ function addon:specialQuests()
     end
 
     if not qinfo.zone and qinfo.zid then
-      qinfo.zone = C_Map.GetMapInfo(qinfo.zid).name
+      qinfo.zone = C_Map.GetMapInfo(qinfo.zid)
     end
   end
 
@@ -127,8 +133,9 @@ local QuestExceptions = {
   [45799] = "Weekly", -- A Shrouded Path Through Time - Mists of Pandaria Timewalking
 
   -- Pet Battle Dungeons
-  [46292] = "Weekly", -- Pet Battle Challenge Dungeon Deadmines
-  [45539] = "Weekly", -- Pet Battle Challenge Dungeon Wailing Caverns
+  [46292] = "AccountWeekly", -- Pet Battle Challenge Dungeon Deadmines
+  [45539] = "AccountWeekly", -- Pet Battle Challenge Dungeon Wailing Caverns
+  [54186] = "AccountWeekly", -- Pet Battle Challenge Dungeon Gnomeregan
 
   -- Argus
   [48910] = "Weekly", -- Supplying Krokuun
