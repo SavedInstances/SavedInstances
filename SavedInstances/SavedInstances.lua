@@ -1717,7 +1717,7 @@ local function ShowQuestTooltip(cell, arg, ...)
       SecondsToTime(reset - time()))
   end
   local ql = {}
-  local zonename
+  local zonename, id
   for id,qi in pairs(t.Quests) do
     if (not isDaily) == (not qi.isDaily) then
       zonename = qi.Zone and qi.Zone.name or ""
@@ -1726,7 +1726,8 @@ local function ShowQuestTooltip(cell, arg, ...)
   end
   table.sort(ql)
   for _,e in ipairs(ql) do
-    local id = tonumber(e:match("# (%d+)"))
+    zonename, id = e:match("(.*) # (%d+)")
+    id = tonumber(id)
     local qi = t.Quests[id]
     local line = indicatortip:AddLine()
     local link = qi.Link
