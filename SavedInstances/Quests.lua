@@ -39,7 +39,7 @@ local _specialQuests = {
   [53414] = { zid=1161 }, -- Stromgarde Alliance
   [53416] = { zid=1165 }, -- Stromgarde Horde
   [53992] = { zid=1161 }, -- Darkshore Alliance
-  -- [?????] = { zid=1165 }, -- Darkshore Horde (Missing Quest ID)
+  [53955] = { zid=1165 }, -- Darkshore Horde
 }
 
 function addon:specialQuests()
