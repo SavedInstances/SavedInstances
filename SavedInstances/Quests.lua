@@ -141,5 +141,12 @@ local QuestExceptions = {
   [48910] = "Weekly", -- Supplying Krokuun
   [48911] = "Weekly", -- Void Inoculation
   [48912] = "Weekly", -- Supplying the Antoran Campaign
+  [48634] = "Regular", -- Further Supplying Krokuun
+  [48635] = "Regular", -- More Void Inoculation
+  [48636] = "Regular", -- Fueling the Antoran Campaign
+
+  -- Island Expeditions
+  [53435] = "Weekly", -- Azerite for the Horde
+  [53436] = "Weekly", -- Azerite for the Alliance
 }
 addon.QuestExceptions = QuestExceptions
