@@ -121,17 +121,6 @@ local QuestExceptions = {
   [33338] = "Weekly",  -- Empowering the Hourglass
   [33334] = "Weekly",  -- Strong Enough to Survive
 
-  -- From Archmage Timear -
-  [44164] = "Weekly", -- A Burning Path Through Time - Burning Crusade Timewalking
-  [44166] = "Weekly", -- A Frozen Path Through Time - Wrath of the Lich King Timewalking
-  [44167] = "Weekly", -- A Shattered Path Through Time - Cataclysm Timewalking
-  [44171] = "Weekly", -- Emisary of War - Complete Legion Mythics
-  [44172] = "Weekly", -- The Arena Calls - Win Legion Arena Skirmishes
-  [44173] = "Weekly", -- A Call to Battle - Win Battlegrounds
-  [44174] = "Weekly", -- The Very Best - Win PvP Pet Battles
-  [44175] = "Weekly", -- The World Awaits - Complete Broken Isles World Quests
-  [45799] = "Weekly", -- A Shrouded Path Through Time - Mists of Pandaria Timewalking
-
   -- Pet Battle Dungeons
   [46292] = "AccountWeekly", -- Pet Battle Challenge Dungeon Deadmines
   [45539] = "AccountWeekly", -- Pet Battle Challenge Dungeon Wailing Caverns
@@ -148,5 +137,16 @@ local QuestExceptions = {
   -- Island Expeditions
   [53435] = "Weekly", -- Azerite for the Horde
   [53436] = "Weekly", -- Azerite for the Alliance
+
+  -- Weekend Event
+  [53030] = "Weekly", -- The World Awaits - World Quests
+  [53032] = "Weekly", -- A Burning Path Through Time - TBC Timewalking
+  [53033] = "Weekly", -- A Frozen Path Through Time - WLK Timewalking
+  [53034] = "Weekly", -- A Shattered Path Through Time - CTM Timewalking
+  [53035] = "Weekly", -- A Shattered Path Through Time - MOP Timewalking
+  [53036] = "Weekly", -- A Call to Battle - Battlegrounds
+  [53037] = "Weekly", -- Emissary of War - Mythic Dungeons
+  [53038] = "AccountWeekly", -- The Very Best - PvP Pet Battles
+  [53039] = "Weekly", -- The Arena Calls - Arena Skirmishes
 }
 addon.QuestExceptions = QuestExceptions
