@@ -2289,7 +2289,19 @@ function core:OnInitialize()
       for i = 1, numEvents do
         local event = C_Calendar.GetDayEvent(monthOffset, day, i)
         debug("eventID: " .. event.eventID)
-        events[event.eventID] = true
+        if event.sequenceType == "START" then
+          local hour, minute = event.startTime.hour, event.startTime.minute
+          if hour > current.hour or (hour == current.hour and minute > current.minute) then
+            events[event.eventID] = true
+          end
+        elseif event.sequenceType == "END" then
+          local hour, minute = event.startTime.hour, event.startTime.minute
+          if hour < current.hour or (hour == current.hour and minute < current.minute) then
+            events[event.eventID] = true
+          end
+        else -- "ONGOING"
+          events[event.eventID] = true
+        end
       end
       for questID, tbl in pairs(TimewalkingItemQuest) do
         if events[tbl.eventID] then
