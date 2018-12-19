@@ -34,12 +34,6 @@ local _specialQuests = {
   -- Order Hall
   [42481] = { zid=717, daily=true }, -- Warlock: Ritual of Doom
   [44707] = { zid=719, daily=true, sid=228651 }, -- Demon Hunter: Twisting Nether
-
-  -- Warfront
-  [53414] = { zid=1161 }, -- Stromgarde Alliance
-  [53416] = { zid=1165 }, -- Stromgarde Horde
-  [53992] = { zid=1161 }, -- Darkshore Alliance
-  [53955] = { zid=1165 }, -- Darkshore Horde
 }
 
 function addon:specialQuests()
@@ -138,6 +132,12 @@ local QuestExceptions = {
   [53435] = "Weekly", -- Azerite for the Horde
   [53436] = "Weekly", -- Azerite for the Alliance
 
+  -- Warfront
+  [53414] = "Weekly", -- Stromgarde Alliance
+  [53416] = "Weekly", -- Stromgarde Horde
+  [53992] = "Weekly", -- Darkshore Alliance
+  [53955] = "Weekly", -- Darkshore Horde
+
   -- Weekend Event
   [53030] = "Weekly", -- The World Awaits - World Quests
   [53032] = "Weekly", -- A Burning Path Through Time - TBC Timewalking
@@ -150,3 +150,21 @@ local QuestExceptions = {
   [53039] = "Weekly", -- The Arena Calls - Arena Skirmishes
 }
 addon.QuestExceptions = QuestExceptions
+
+-- Timewalking Dungeon final boss drops
+-- to find eventID, select the event in calendar and use the command below
+-- /run local i = C_Calendar.GetEventIndex() local e = C_Calendar.GetDayEvent(i.offsetMonths, i.monthDay, i.eventIndex) print(e.eventID)
+-- [eventID] = { questID = ?????, zid=??? }
+local TimewalkingItemQuest = {
+  [40168] = { eventID = 623, zid=111 }, -- The Swirling Vial - TBC Timewalking
+  [40173] = { eventID = 617, zid=125 }, -- The Unstable Prism - WLK Timewalking
+  [40786] = { eventID = 629, zid=85 },  -- The Smoldering Ember - CTM Timewalking - Horde
+  [40787] = { eventID = 629, zid=84 },  -- The Smoldering Ember - CTM Timewalking - Alliance
+  [45563] = { eventID = 654, zid=554 }, -- The Shrouded Coin - MOP Timewalking
+}
+for questID, tbl in pairs(TimewalkingItemQuest) do
+  -- Duplicate for tracking during timewalking
+  _specialQuests[questID] = { zid=tbl.zid }
+  QuestExceptions[questID] = "Regular"
+end
+addon.TimewalkingItemQuest = TimewalkingItemQuest

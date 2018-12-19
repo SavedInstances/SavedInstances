@@ -58,6 +58,7 @@ local currency = addon.currency
 local trade_spells = addon.trade_spells
 local cdname = addon.cdname
 local QuestExceptions = addon.QuestExceptions
+local TimewalkingItemQuest = addon.TimewalkingItemQuest
 local scantt = addon.scantt
 local KeystonetoAbbrev = addon.KeystonetoAbbrev
 local KeystoneAbbrev = addon.KeystoneAbbrev
@@ -2273,6 +2274,31 @@ function core:OnInitialize()
   end
   RequestRaidInfo() -- get lockout data
   RequestLFDPlayerLockInfo()
+  C_Calendar.OpenCalendar()
+  C_Timer.After(0, function()
+    -- This strange double-timer thing works around an issue where the timer starts counting down,
+    -- so to speak, during the loading screen if the UI is being reloaded (as per /reload), making the toast not appear.
+    C_Timer.After(5, function()
+      local current, monthInfo = C_DateAndTime.GetCurrentCalendarTime(), C_Calendar.GetMonthInfo()
+      local month, day, year = current.month, current.monthDay, current.year
+      local showMonth, showYear = monthInfo.month, monthInfo.year
+      local monthOffset = -12 * (showYear - year) + month - showMonth
+      local numEvents = C_Calendar.GetNumDayEvents(monthOffset, day)
+      debug("numEvents: " .. numEvents)
+      local events = {}
+      for i = 1, numEvents do
+        local event = C_Calendar.GetDayEvent(monthOffset, day, i)
+        debug("eventID: " .. event.eventID)
+        events[event.eventID] = true
+      end
+      for questID, tbl in pairs(TimewalkingItemQuest) do
+        if events[tbl.eventID] then
+          QuestExceptions[questID] = "Weekly"
+        end
+      end
+      core:QuestRefresh()
+    end)
+  end)
   addon.dataobject = addon.LDB and addon.LDB:NewDataObject("SavedInstances", {
     text = addonAbbrev,
     type = "launcher",
