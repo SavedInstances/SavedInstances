@@ -33,6 +33,7 @@ local INSTANCE_SAVED, TRANSFER_ABORT_TOO_MANY_INSTANCES, NO_RAID_INSTANCES_SAVED
   INSTANCE_SAVED, TRANSFER_ABORT_TOO_MANY_INSTANCES, NO_RAID_INSTANCES_SAVED
 
 local ALREADY_LOOTED = ERR_LOOT_GONE:gsub("%(.*%)","")
+ALREADY_LOOTED = ALREADY_LOOTED:gsub("（.*）","") -- fix on zhCN and zhTW
 
 -- Unit Aura functions that return info about the first aura matching the spellName or spellID given on the unit.
 local SI_GetUnitAura = function(unit, spell, filter)
