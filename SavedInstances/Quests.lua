@@ -163,8 +163,6 @@ local TimewalkingItemQuest = {
   [45563] = { eventID = 654, zid=554 }, -- The Shrouded Coin - MOP Timewalking
 }
 for questID, tbl in pairs(TimewalkingItemQuest) do
-  -- Duplicate for tracking during timewalking
   _specialQuests[questID] = { zid=tbl.zid }
-  QuestExceptions[questID] = "Regular"
 end
 addon.TimewalkingItemQuest = TimewalkingItemQuest

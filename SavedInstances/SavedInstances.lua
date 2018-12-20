@@ -2305,8 +2305,13 @@ function core:OnInitialize()
         end
       end
       for questID, tbl in pairs(TimewalkingItemQuest) do
-        if events[tbl.eventID] then
-          QuestExceptions[questID] = "Weekly"
+        QuestExceptions[questID] = events[tbl.eventID] and "Weekly" or "Regular"
+      end
+      for toon, ti in pairs(addon.db.Toons) do
+        for questID, _ in pairs(TimewalkingItemQuest) do
+          if QuestExceptions[questID] == "Regular" then
+            ti.Quests[id] = nil
+          end
         end
       end
       core:QuestRefresh()
