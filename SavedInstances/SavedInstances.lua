@@ -2275,7 +2275,7 @@ function core:OnInitialize()
   end
   RequestRaidInfo() -- get lockout data
   RequestLFDPlayerLockInfo()
-  C_Calendar.OpenCalendar()
+  C_Calendar.OpenCalendar() -- Request for event info, not actually open the calendar
   C_Timer.After(0, function()
     -- This strange double-timer thing works around an issue where the timer starts counting down,
     -- so to speak, during the loading screen if the UI is being reloaded (as per /reload), making the toast not appear.
