@@ -2310,7 +2310,7 @@ function core:OnInitialize()
       for toon, ti in pairs(addon.db.Toons) do
         for questID, _ in pairs(TimewalkingItemQuest) do
           if QuestExceptions[questID] == "Regular" then
-            ti.Quests[id] = nil
+            ti.Quests[questID] = nil
           end
         end
       end
