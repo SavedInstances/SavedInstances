@@ -422,6 +422,7 @@ addon.defaultDB = {
     MythicKey = true,
     MythicKeyBest = true,
     DailyWorldQuest = true,
+    DailyWorldQuestAllNames = true,
     AbbreviateKeystone = true,
   },
   Instances = { }, 	-- table key: "Instance name"; value:
@@ -1773,6 +1774,35 @@ local function ShowSkillTooltip(cell, arg, ...)
     local tstr = SecondsToTime((sinfo.Expires or 0) - time())
     indicatortip:SetCell(line,1,title,"LEFT",2)
     indicatortip:SetCell(line,3,tstr,"RIGHT")
+  end
+  finishIndicator()
+end
+
+local function ShowEmissarySummary(cell, arg, ...)
+  local day = arg
+  local buffer = {}
+  openIndicator(2, "LEFT", "RIGHT")
+  indicatortip:AddHeader(L["Emissary quests"], "")
+  local toon, t
+  for toon, t in pairs(addon.db.Toons) do
+    local info = t.DailyWorldQuest["day" .. day]
+    if not info.iscompleted then
+      if not buffer[info.name] then buffer[info.name] = {} end
+      table.insert(buffer[info.name], toon)
+    end
+  end
+  local name, tbl
+  for name, tbl in pairs(buffer) do
+    indicatortip:AddLine(name, "")
+    for _, toon in pairs(tbl) do
+      t = addon.db.Toons[toon]
+      local info, str = t.DailyWorldQuest["day" .. day]
+      if info.isfinish then
+        str = "\124T"..READY_CHECK_WAITING_TEXTURE..":0|t"
+      else
+        str = info.questdone .. "/" .. info.questneed
+      end
+      indicatortip:AddLine(ClassColorise(t.Class, toon), str)
   end
   finishIndicator()
 end
@@ -3716,6 +3746,7 @@ function core:ShowTooltip(anchorframe)
             if(not show[DailyInfo.dayleft] or show[DailyInfo.dayleft] == L["Emissary Missing"]) then
               show[DailyInfo.dayleft] = DailyInfo.name
             elseif (
+              addon.db.Tooltip.DailyWorldQuestAllNames and
               (not show[DailyInfo.dayleft]:find("/")) and
               (show[DailyInfo.dayleft] ~= DailyInfo.name) and
               (DailyInfo.name ~= L["Emissary Missing"])
@@ -3739,6 +3770,8 @@ function core:ShowTooltip(anchorframe)
       if show[dayleft] then
         local showday = show[dayleft]
 			  show[dayleft] = tooltip:AddLine(GOLDFONT .. showday .. " (+" .. dayleft .. " " .. L["Day"] .. ")" .. FONTEND)
+        tooltip:SetCellScript(show[dayleft], 1, "OnEnter", ShowEmissarySummary, dayleft)
+        tooltip:SetCellScript(show[dayleft], 1, "OnLeave", CloseTooltips)
       end
     end
     for toon, t in cpairs(addon.db.Toons, true) do
