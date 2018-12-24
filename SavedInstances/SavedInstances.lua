@@ -1782,7 +1782,7 @@ local function ShowEmissarySummary(cell, arg, ...)
   local day = arg
   local buffer, flag = {}, false
   openIndicator(2, "LEFT", "RIGHT")
-  indicatortip:AddHeader(L["Emissary quests"], "")
+  indicatortip:AddHeader(L["Emissary quests"], "+" .. day .. " " .. L["Day"])
   local toon, t
   for toon, t in pairs(addon.db.Toons) do
     local info = t.DailyWorldQuest["days" .. day]
