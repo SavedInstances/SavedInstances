@@ -1780,29 +1780,35 @@ end
 
 local function ShowEmissarySummary(cell, arg, ...)
   local day = arg
-  local buffer = {}
+  local buffer, flag = {}, false
   openIndicator(2, "LEFT", "RIGHT")
   indicatortip:AddHeader(L["Emissary quests"], "")
   local toon, t
   for toon, t in pairs(addon.db.Toons) do
-    local info = t.DailyWorldQuest["day" .. day]
-    if not info.iscompleted then
+    local info = t.DailyWorldQuest["days" .. day]
+    if info and not info.iscompleted then
       if not buffer[info.name] then buffer[info.name] = {} end
       table.insert(buffer[info.name], toon)
+      flag = true
     end
   end
-  local name, tbl
-  for name, tbl in pairs(buffer) do
-    indicatortip:AddLine(name, "")
-    for _, toon in pairs(tbl) do
-      t = addon.db.Toons[toon]
-      local info, str = t.DailyWorldQuest["day" .. day]
-      if info.isfinish then
-        str = "\124T"..READY_CHECK_WAITING_TEXTURE..":0|t"
-      else
-        str = info.questdone .. "/" .. info.questneed
+  if not flag then
+    indicatortip:AddLine(L["Emissary Missing"], "")
+  else
+    local name, tbl
+    for name, tbl in pairs(buffer) do
+      indicatortip:AddLine(name, "")
+      for _, toon in pairs(tbl) do
+        t = addon.db.Toons[toon]
+        local info, str = t.DailyWorldQuest["days" .. day]
+        if info.isfinish then
+          str = "\124T"..READY_CHECK_WAITING_TEXTURE..":0|t"
+        else
+          str = info.questdone .. "/" .. info.questneed
+        end
+        indicatortip:AddLine(ClassColorise(t.Class, toon), str)
       end
-      indicatortip:AddLine(ClassColorise(t.Class, toon), str)
+    end
   end
   finishIndicator()
 end
