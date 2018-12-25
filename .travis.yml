@@ -1,0 +1,19 @@
+language: minimal
+
+addons:
+  apt:
+    packages:
+      - luarocks
+
+install:
+  - luarocks install --local luacheck
+  - export PATH=${PATH}:~/.luarocks/bin
+
+script:
+  - make test
+
+notifications:
+  email:
+    on_failure: always
+    on_success: never
+
