@@ -1409,126 +1409,126 @@ function addon:UpdateToonData()
   for _,id in ipairs(addon.pvpdesertids) do
     t.pvpdesert = GetTimeToTime(select(6, SI_GetUnitDebuff("player",GetSpellInfo(id)))) or t.pvpdesert
     if t.pvpdesert then addon:updateSpellTip(id) end
-    end
+  end
+  for toon, ti in pairs(addon.db.Toons) do
+    if ti.LFG1 and (ti.LFG1 < now) then ti.LFG1 = nil end
+    if ti.LFG2 and (ti.LFG2 < now) then ti.LFG2 = nil end
+    if ti.pvpdesert and (ti.pvpdesert < now) then ti.pvpdesert = nil end
+    ti.Quests = ti.Quests or {}
+  end
+  local IL,ILe = GetAverageItemLevel()
+  if IL and tonumber(IL) and tonumber(IL) > 0 then -- can fail during logout
+    t.IL, t.ILe = tonumber(IL), tonumber(ILe)
+  end
+  local rating = (GetPersonalRatedInfo and GetPersonalRatedInfo(4))
+  t.RBGrating = tonumber(rating) or t.RBGrating
+  core:scan_item_cds()
+  -- Daily Reset
+  if nextreset and nextreset > time() then
     for toon, ti in pairs(addon.db.Toons) do
-      if ti.LFG1 and (ti.LFG1 < now) then ti.LFG1 = nil end
-      if ti.LFG2 and (ti.LFG2 < now) then ti.LFG2 = nil end
-      if ti.pvpdesert and (ti.pvpdesert < now) then ti.pvpdesert = nil end
-      ti.Quests = ti.Quests or {}
-    end
-    local IL,ILe = GetAverageItemLevel()
-    if IL and tonumber(IL) and tonumber(IL) > 0 then -- can fail during logout
-      t.IL, t.ILe = tonumber(IL), tonumber(ILe)
-    end
-    local rating = (GetPersonalRatedInfo and GetPersonalRatedInfo(4))
-    t.RBGrating = tonumber(rating) or t.RBGrating
-    core:scan_item_cds()
-    -- Daily Reset
-    if nextreset and nextreset > time() then
-      for toon, ti in pairs(addon.db.Toons) do
-        if not ti.DailyResetTime or (ti.DailyResetTime < time()) then
-          for id,qi in pairs(ti.Quests) do
-            if qi.isDaily then
-              ti.Quests[id] = nil
-            end
-          end
-          if ti.DailyWorldQuest then
-            if ti.DailyWorldQuest.days1 then
-              ti.DailyWorldQuest.days0 = ti.DailyWorldQuest.days1
-              ti.DailyWorldQuest.days0.dayleft = 0
-              ti.DailyWorldQuest.days1 = nil
-            end
-            if ti.DailyWorldQuest.days2 then
-              ti.DailyWorldQuest.days1 = ti.DailyWorldQuest.days2
-              ti.DailyWorldQuest.days1.dayleft = 1
-              ti.DailyWorldQuest.days2 = nil
-            end
-          end
-          ti.DailyResetTime = (ti.DailyResetTime and ti.DailyResetTime + 24*3600) or nextreset
-        end
-      end
-      t.DailyResetTime = nextreset
-      if not db.DailyResetTime or (db.DailyResetTime < time()) then -- AccountDaily reset
-        for id,qi in pairs(db.Quests) do
+      if not ti.DailyResetTime or (ti.DailyResetTime < time()) then
+        for id,qi in pairs(ti.Quests) do
           if qi.isDaily then
-            db.Quests[id] = nil
-          end
-      end
-      db.DailyResetTime = nextreset
-      end
-    end
-    -- Skill Reset
-    for toon, ti in pairs(addon.db.Toons) do
-      if ti.Skills then
-        for spellid, sinfo in pairs(ti.Skills) do
-          if sinfo.Expires and sinfo.Expires < time() then
-            ti.Skills[spellid] = nil
+            ti.Quests[id] = nil
           end
         end
-      end
-    end
-    -- Weekly Reset
-    nextreset = addon:GetNextWeeklyResetTime()
-    if nextreset and nextreset > time() then
-      for toon, ti in pairs(addon.db.Toons) do
-        if not ti.WeeklyResetTime or (ti.WeeklyResetTime < time()) then
-          ti.currency = ti.currency or {}
-          for _,idx in ipairs(currency) do
-            local ci = ti.currency[idx]
-            if ci and ci.earnedThisWeek then
-              ci.earnedThisWeek = 0
-            end
+        if ti.DailyWorldQuest then
+          if ti.DailyWorldQuest.days1 then
+            ti.DailyWorldQuest.days0 = ti.DailyWorldQuest.days1
+            ti.DailyWorldQuest.days0.dayleft = 0
+            ti.DailyWorldQuest.days1 = nil
           end
-          ti.WeeklyResetTime = (ti.WeeklyResetTime and ti.WeeklyResetTime + 7*24*3600) or nextreset
+          if ti.DailyWorldQuest.days2 then
+            ti.DailyWorldQuest.days1 = ti.DailyWorldQuest.days2
+            ti.DailyWorldQuest.days1.dayleft = 1
+            ti.DailyWorldQuest.days2 = nil
+          end
+        end
+        ti.DailyResetTime = (ti.DailyResetTime and ti.DailyResetTime + 24*3600) or nextreset
+      end
+    end
+    t.DailyResetTime = nextreset
+    if not db.DailyResetTime or (db.DailyResetTime < time()) then -- AccountDaily reset
+      for id,qi in pairs(db.Quests) do
+        if qi.isDaily then
+          db.Quests[id] = nil
+        end
+    end
+    db.DailyResetTime = nextreset
+    end
+  end
+  -- Skill Reset
+  for toon, ti in pairs(addon.db.Toons) do
+    if ti.Skills then
+      for spellid, sinfo in pairs(ti.Skills) do
+        if sinfo.Expires and sinfo.Expires < time() then
+          ti.Skills[spellid] = nil
         end
       end
-      t.WeeklyResetTime = nextreset
     end
+  end
+  -- Weekly Reset
+  nextreset = addon:GetNextWeeklyResetTime()
+  if nextreset and nextreset > time() then
     for toon, ti in pairs(addon.db.Toons) do
-      for id,qi in pairs(ti.Quests) do
-        if not qi.isDaily and (qi.Expires or 0) < time() then
-          ti.Quests[id] = nil
+      if not ti.WeeklyResetTime or (ti.WeeklyResetTime < time()) then
+        ti.currency = ti.currency or {}
+        for _,idx in ipairs(currency) do
+          local ci = ti.currency[idx]
+          if ci and ci.earnedThisWeek then
+            ci.earnedThisWeek = 0
+          end
         end
-        if QuestExceptions[id] == "Regular" then -- adjust exceptions
-          ti.Quests[id] = nil
-        end
+        ti.WeeklyResetTime = (ti.WeeklyResetTime and ti.WeeklyResetTime + 7*24*3600) or nextreset
       end
     end
-    for toon, ti in pairs(addon.db.Toons) do
-      if ti.MythicKey and (ti.MythicKey.ResetTime or 0) < time() then
-        ti.MythicKey = {}
-      end
-    end
-    for toon, ti in pairs(addon.db.Toons) do
-      if ti.MythicKeyBest and (ti.MythicKeyBest.ResetTime or 0) < time() then
-        if ti.MythicKeyBest.level and ti.MythicKeyBest.level > 0 then
-          ti.MythicKeyBest.LastWeekLevel = ti.MythicKeyBest.level
-          ti.MythicKeyBest.WeeklyReward = true
-        end
-        ti.MythicKeyBest.level = 0
-        ti.MythicKeyBest.ResetTime = addon:GetNextWeeklyResetTime()
-      end
-    end
-    for id,qi in pairs(db.Quests) do -- AccountWeekly reset
+    t.WeeklyResetTime = nextreset
+  end
+  for toon, ti in pairs(addon.db.Toons) do
+    for id,qi in pairs(ti.Quests) do
       if not qi.isDaily and (qi.Expires or 0) < time() then
-        db.Quests[id] = nil
+        ti.Quests[id] = nil
+      end
+      if QuestExceptions[id] == "Regular" then -- adjust exceptions
+        ti.Quests[id] = nil
+      end
     end
+  end
+  for toon, ti in pairs(addon.db.Toons) do
+    if ti.MythicKey and (ti.MythicKey.ResetTime or 0) < time() then
+      ti.MythicKey = {}
     end
-    addon:UpdateCurrency()
-    local zone = GetRealZoneText()
-    if zone and #zone > 0 then
-      t.Zone = zone
+  end
+  for toon, ti in pairs(addon.db.Toons) do
+    if ti.MythicKeyBest and (ti.MythicKeyBest.ResetTime or 0) < time() then
+      if ti.MythicKeyBest.level and ti.MythicKeyBest.level > 0 then
+        ti.MythicKeyBest.LastWeekLevel = ti.MythicKeyBest.level
+        ti.MythicKeyBest.WeeklyReward = true
+      end
+      ti.MythicKeyBest.level = 0
+      ti.MythicKeyBest.ResetTime = addon:GetNextWeeklyResetTime()
     end
-    local lrace, race = UnitRace("player")
-    local faction, lfaction = UnitFactionGroup("player")
-    t.Faction = faction
-    if race == "Pandaren" then
-      t.Race = lrace.." ("..lfaction..")"
-    else
-      t.Race = lrace
-    end
+  end
+  for id,qi in pairs(db.Quests) do -- AccountWeekly reset
+    if not qi.isDaily and (qi.Expires or 0) < time() then
+      db.Quests[id] = nil
+  end
+  end
+  addon:UpdateCurrency()
+  local zone = GetRealZoneText()
+  if zone and #zone > 0 then
+    t.Zone = zone
+  end
+  local lrace, race = UnitRace("player")
+  local faction, lfaction = UnitFactionGroup("player")
+  t.Faction = faction
+  if race == "Pandaren" then
+    t.Race = lrace.." ("..lfaction..")"
+  else
+    t.Race = lrace
+  end
 
-    t.LastSeen = time()
+  t.LastSeen = time()
 end
 
 function addon:QuestIsDarkmoonMonthly()
