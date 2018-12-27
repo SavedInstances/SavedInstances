@@ -3865,7 +3865,7 @@ function core:ShowTooltip(anchorframe)
         if t.Emissary and t.Emissary[expansionLevel] and t.Emissary[expansionLevel].unlocked then
           local day, info
           for day, info in pairs(t.Emissary[expansionLevel].days) do
-            if addon.db.Tooltip.EmissaryShowCompleted == false or info.isComplete == false then
+            if addon.db.Tooltip.EmissaryShowCompleted == true or info.isComplete == false then
               if not show[day].first then
                 show[day].first = t.Faction
               elseif show[day].first ~= t.Faction then
