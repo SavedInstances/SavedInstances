@@ -2328,6 +2328,7 @@ function core:toonInit()
   ti.Order = ti.Order or 50
   ti.Quests = ti.Quests or {}
   ti.Skills = ti.Skills or {}
+  ti.DailyWorldQuest = nil -- REMOVED
   -- try to get a reset time, but don't overwrite existing, which could break quest list
   -- real update comes later in UpdateToonData
   ti.DailyResetTime = ti.DailyResetTime or addon:GetNextDailyResetTime()
