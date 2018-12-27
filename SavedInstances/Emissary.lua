@@ -72,12 +72,12 @@ function EmissaryModule:RefreshDailyWorldQuestInfo()
               Horde = BountyInfo.questID,
             }
           end
+          currExpansion[day].questNeed = questNeed
           currExpansion[day].expiredTime = timeleft * 60 + time()
           t.Emissary[expansionLevel].days[day] = {
             isComplete = false,
             isFinish = isFinish,
             questDone = questDone,
-            questNeed = questNeed,
           }
         end
       end
