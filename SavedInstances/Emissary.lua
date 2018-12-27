@@ -3,6 +3,36 @@ local EmissaryModule = LibStub("AceAddon-3.0"):GetAddon(addonName):NewModule("Em
 local L = addon.L
 local thisToon = UnitName("player") .. " - " .. GetRealmName()
 
+local emissaries = {
+  [6] = {
+    UiMapID = 627,
+    questID = 43341,
+  },
+  [7] = {
+    UiMapID = 876,
+    questID = 51722,
+  },
+}
+
+-- [Alliance] = Horde
+local _switching = {
+  [50605] = 50606, -- Alliance War Effort / Horde War Effort
+  [50601] = 50602, -- Storm's Wake / Talanji's Expedition
+  [50599] = 50598, -- Proudmoore Admiralty / Zandalari Empire
+  [50600] = 50603, -- Order of Embers / Voldunai
+}
+
+-- Switching Table
+-- [questID] = { ["Alliance"] = questID, ["Horde"] = questID }
+local switching, k, v = {}
+for k, v in pairs(_switching) do
+  local tbl = {
+    "Alliance" = k,
+    "Horde" = v,
+  }
+  switching[k] = switching[v] = tbl
+end
+
 function EmissaryModule:OnEnable()
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "RefreshDailyWorldQuestInfo")
   self:RegisterEvent("ADDON_LOADED", "RefreshDailyWorldQuestInfo")

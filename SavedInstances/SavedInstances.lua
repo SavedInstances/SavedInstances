@@ -312,17 +312,33 @@ addon.defaultDB = {
   -- level: string
   -- color: string
   -- link: string
+
   -- MythicKeyBest
   -- lastweeklevel: int
   -- ResetTime: expiry
   -- level: string
   -- weeklyReward: boolean
+
+  -- REMOVED
   -- DailyWorldQuest
   -- days[0,1,2]
   -- name
   -- dayleft
   -- questneed
   -- questdone
+
+  -- Emissary
+  -- [expansionLevel] = {
+  --   unlocked = (boolean),
+  --   days = {
+  --     [Day] = {
+  --       isFinish = isFinish,
+  --       questDone = questDone,
+  --       questNeed = questNeed,
+  --       expiredTime = expiredTime,
+  --     },
+  --   },
+  -- }
 
   Indicators = {
     D1Indicator = "BLANK", -- indicator: ICON_*, BLANK
@@ -421,8 +437,9 @@ addon.defaultDB = {
     CurrencyEarned = true,
     MythicKey = true,
     MythicKeyBest = true,
-    DailyWorldQuest = true,
-    DailyWorldQuestAllNames = true,
+    Emissary6 = false, -- LEG Emissary
+    Emissary7 = true, -- BfA Emissary
+    EmissaryFullName = true,
     AbbreviateKeystone = true,
   },
   Instances = { }, 	-- table key: "Instance name"; value:
@@ -453,6 +470,22 @@ addon.defaultDB = {
     AccountDaily = {},
     AccountWeekly = {},
   },
+  Emissary = {
+    Cache = {},
+    Expansion = {},
+  },
+  -- Track emissaries
+  -- Cache: [questID] = questName
+  -- Expansion:
+  -- [expansionLevel] = {
+  --   [1, 2, 3] = {
+  --     questID = {
+  --       ["Alliance"] = questID,
+  --       ["Horde"] = questID,
+  --     },
+  --     expiredTime = expiredTime
+  --   }
+  -- }
   RealmMap = {},
 }
 

@@ -375,14 +375,19 @@ function module:BuildOptions()
             order = 33.5,
             name = L["Weekly Quests"],
           },
-          DailyWorldQuest = {
+          Emissary6 = {
             type = "toggle",
-            order = 33.6,
-            name = L["Emissary quests"],
+            order = 33.60,
+            name = EXPANSION_NAME6 .. L["Emissary quests"],
           },
-          DailyWorldQuestAllNames = {
+          Emissary7 = {
             type = "toggle",
-            order = 33.65,
+            order = 33.61,
+            name = EXPANSION_NAME7 .. L["Emissary quests"],
+          },
+          EmissaryFullName = {
+            type = "toggle",
+            order = 33.69,
             name = L["Show all emissary names"],
             desc = L["Show both factions' emissay name"],
           },
