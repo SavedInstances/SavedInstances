@@ -444,6 +444,7 @@ addon.defaultDB = {
     Emissary6 = false, -- LEG Emissary
     Emissary7 = true, -- BfA Emissary
     EmissaryFullName = true,
+    EmissaryShowCompleted = true,
     AbbreviateKeystone = true,
   },
   Instances = { }, 	-- table key: "Instance name"; value:
@@ -1867,7 +1868,10 @@ local function ShowEmissarySummary(cell, arg, ...)
   indicatortip:AddHeader(L["Emissary quests"], "+" .. (day - 1) .. " " .. L["Day"])
   local toon, t
   for toon, t in pairs(addon.db.Toons) do
-    local info = t.Emissary and t.Emissary[expansionLevel] and t.Emissary[expansionLevel].days[day]
+    local info = (
+      t.Emissary and t.Emissary[expansionLevel] and
+      t.Emissary[expansionLevel].days and t.Emissary[expansionLevel].days[day]
+    )
     if info then
       tbl[t.Faction] = true
     end
@@ -1875,14 +1879,17 @@ local function ShowEmissarySummary(cell, arg, ...)
   if (not tbl.Alliance and not tbl.Horde) or (not addon.db.Emissary.Expansion[expansionLevel][day]) then
     indicatortip:AddLine(L["Emissary Missing"], "")
   else
-    local globalInfo = addon.db.Emissary.Expansion[expansionLevel][day].questID
+    local globalInfo = addon.db.Emissary.Expansion[expansionLevel][day]
     local merge = (globalInfo.questID.Alliance == globalInfo.questID.Horde) and true or false
     local header, fac, toon, t = false
     for fac, _ in pairs(tbl) do
       if merge == false then header = false end
       for toon, t in pairs(addon.db.Toons) do
         if t.Faction == fac then
-          local info = t.Emissary and t.Emissary[expansionLevel] and t.Emissary[expansionLevel].days[day]
+          local info = (
+            t.Emissary and t.Emissary[expansionLevel] and
+            t.Emissary[expansionLevel].days and t.Emissary[expansionLevel].days[day]
+          )
           if info then
             if header == false then
               local name = addon.db.Emissary.Cache[globalInfo.questID[fac]]
@@ -3846,67 +3853,78 @@ function core:ShowTooltip(anchorframe)
     end
   end
 
-  if addon.db.Tooltip.Emissary7 or showall then
-    local show, tooltips = {
-      [1] = {},
-      [2] = {},
-      [3] = {},
-    }, {}
-    for toon, t in cpairs(addon.db.Toons, true) do
-      if t.Emissary and t.Emissary[7] and t.Emissary[7].unlocked then
-        local day, info
-        for day, info in pairs(t.Emissary[7].days) do
-          if not show[day].first then
-            show[day].first = t.Faction
-          elseif show[day].first ~= t.Faction then
-            show[day].second = t.Faction
-          end
-        end
-        addColumns(columns, toon, tooltip)
-      end
-    end
-
-    if not firstcategory and addon.db.Tooltip.CategorySpaces then
-      addsep()
-    end
-    if addon.db.Tooltip.ShowCategories then
-      tooltip:AddLine(YELLOWFONT .. L["Emissary Quests"] .. FONTEND)
-    end
-
-    local day, tbl
-    for day, tbl in pairs(show) do
-      if show[day].first then
-        local questID = addon.db.Emissary.Expansion[7][day].questID[show[day].first]
-        local name = addon.db.Emissary.Cache[questID]
-        if addon.db.Tooltip.EmissaryFullName and show[day].second then
-          local secondQuestID = addon.db.Emissary.Expansion[7][day].questID[show[day].second]
-          if secondQuestID ~= questID and addon.db.Emissary.Cache[questID] then
-            name = name .. " / " .. addon.db.Emissary.Cache[questID]
-          end
-        end
-        tooltips[day] = tooltip:AddLine(GOLDFONT .. name .. " (+" .. (day - 1) .. " " .. L["Day"] .. ")" .. FONTEND)
-        tooltip:SetCellScript(tooltips[day], 1, "OnEnter", ShowEmissarySummary, {7, day})
-        tooltip:SetCellScript(tooltips[day], 1, "OnLeave", CloseTooltips)
-      end
-    end
-
-    for toon, t in cpairs(addon.db.Toons, true) do
-      if t.Emissary and t.Emissary[7] and t.Emissary[7].unlocked then
-        local day, info
-        for day, info in pairs(t.Emissary[7].days) do
-          if tooltips[day] then
-            local col, text = columns[toon..1]
-            if info.isComplete == true then
-              text = "\124T"..READY_CHECK_READY_TEXTURE..":0|t"
-            elseif info.isFinish == true then
-              text = "\124T"..READY_CHECK_WAITING_TEXTURE..":0|t"
-            else
-              text = info.questDone
-              if addon.db.Emissary.Expansion[7][day].questNeed then
-                text = text .. "/" .. addon.db.Emissary.Expansion[7][day].questNeed
+  local firstEmissary, expansionLevel = true
+  for expansionLevel, _ in pairs(addon.Emissaries) do
+    if addon.db.Tooltip["Emissary" .. expansionLevel] or showall then
+      local show, tooltips = {
+        [1] = {},
+        [2] = {},
+        [3] = {},
+      }, {}
+      for toon, t in cpairs(addon.db.Toons, true) do
+        if t.Emissary and t.Emissary[expansionLevel] and t.Emissary[expansionLevel].unlocked then
+          local day, info
+          for day, info in pairs(t.Emissary[expansionLevel].days) do
+            if addon.db.Tooltip.EmissaryShowCompleted == false or info.isComplete == false then
+              if not show[day].first then
+                show[day].first = t.Faction
+              elseif show[day].first ~= t.Faction then
+                show[day].second = t.Faction
               end
             end
-            tooltip:SetCell(tooltips[day], col, text, "CENTER", maxcol)
+          end
+          addColumns(columns, toon, tooltip)
+        end
+      end
+
+      if not firstcategory and addon.db.Tooltip.CategorySpaces and firstEmissary == true then
+        addsep()
+      end
+      if addon.db.Tooltip.ShowCategories and firstEmissary == true then
+        tooltip:AddLine(YELLOWFONT .. L["Emissary Quests"] .. FONTEND)
+      end
+      firstEmissary = false
+
+      local day, tbl
+      for day, tbl in pairs(show) do
+        if show[day].first then
+          local name
+          if not addon.db.Emissary.Expansion[expansionLevel][day] then
+            name = L["Emissary Missing"]
+          else
+            local questID = addon.db.Emissary.Expansion[expansionLevel][day].questID[show[day].first]
+            name = addon.db.Emissary.Cache[questID]
+            if addon.db.Tooltip.EmissaryFullName and show[day].second then
+              local secondQuestID = addon.db.Emissary.Expansion[expansionLevel][day].questID[show[day].second]
+              if secondQuestID ~= questID and addon.db.Emissary.Cache[questID] then
+                name = name .. " / " .. addon.db.Emissary.Cache[questID]
+              end
+            end
+          end
+          tooltips[day] = tooltip:AddLine(GOLDFONT .. name .. " (+" .. (day - 1) .. " " .. L["Day"] .. ")" .. FONTEND)
+          tooltip:SetCellScript(tooltips[day], 1, "OnEnter", ShowEmissarySummary, {expansionLevel, day})
+          tooltip:SetCellScript(tooltips[day], 1, "OnLeave", CloseTooltips)
+        end
+      end
+
+      for toon, t in cpairs(addon.db.Toons, true) do
+        if t.Emissary and t.Emissary[expansionLevel] and t.Emissary[expansionLevel].unlocked then
+          local day, info
+          for day, info in pairs(t.Emissary[expansionLevel].days) do
+            if tooltips[day] then
+              local col, text = columns[toon..1]
+              if info.isComplete == true then
+                text = "\124T"..READY_CHECK_READY_TEXTURE..":0|t"
+              elseif info.isFinish == true then
+                text = "\124T"..READY_CHECK_WAITING_TEXTURE..":0|t"
+              else
+                text = info.questDone
+                if addon.db.Emissary.Expansion[expansionLevel][day].questNeed then
+                  text = text .. "/" .. addon.db.Emissary.Expansion[expansionLevel][day].questNeed
+                end
+              end
+              tooltip:SetCell(tooltips[day], col, text, "CENTER", maxcol)
+            end
           end
         end
       end
