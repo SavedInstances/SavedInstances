@@ -57,7 +57,8 @@ function MythicPlusModule:RefreshMythicKeyInfo(event)
           _,_,_,color = GetItemQualityColor(2)
         else
           _,_,_,color = GetItemQualityColor(1)
-        endaddon:debug(gsub(keyLink, "\124", "\124\124"))
+        end
+        addon:debug(gsub(keyLink, "\124", "\124\124"))
         t.MythicKey.abbrev = KeystoneAbbrev[mapID]
         t.MythicKey.link = C_ChallengeMode.GetMapUIInfo(mapID)
         t.MythicKey.color = color
