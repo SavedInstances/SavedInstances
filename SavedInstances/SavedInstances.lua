@@ -1884,7 +1884,11 @@ local function ShowEmissarySummary(cell, arg, ...)
           local info = t.Emissary and t.Emissary[expansionLevel] and t.Emissary[expansionLevel].days[day]
           if info then
             if header == false then
-              indicatortip:AddLine(addon.db.Emissary.Cache[addon.db.Emissary.Expansion[expansionLevel][day].questID.Alliance])
+              local name = addon.db.Emissary.Cache[addon.db.Emissary.Expansion[expansionLevel][day].questID[fac]]
+              if not name then
+                name = L["Emissary Missing"]
+              end
+              indicatortip:AddLine(name)
               header = true
             end
             local text
@@ -3881,7 +3885,9 @@ function core:ShowTooltip(anchorframe)
         local name = addon.db.Emissary.Cache[questID]
         if addon.db.Tooltip.EmissaryFullName and show[day].second then
           local questID = addon.db.Emissary.Expansion[7][day].questID[show[day].second]
-          name = name .. " / " .. addon.db.Emissary.Cache[questID]
+          if addon.db.Emissary.Cache[questID] then
+            name = name .. " / " .. addon.db.Emissary.Cache[questID]
+          end
         end
         tooltips[day] = tooltip:AddLine(GOLDFONT .. name .. " (+" .. day .. " " .. L["Day"] .. ")" .. FONTEND)
         tooltip:SetCellScript(tooltips[day], 1, "OnEnter", ShowEmissarySummary, {7, day})
