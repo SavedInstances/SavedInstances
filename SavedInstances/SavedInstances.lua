@@ -339,7 +339,6 @@ addon.defaultDB = {
   --       isComplete = isComplete
   --       isFinish = isFinish,
   --       questDone = questDone,
-  --       questNeed = questNeed,
   --       expiredTime = expiredTime,
   --     },
   --   },
@@ -488,6 +487,7 @@ addon.defaultDB = {
   --       ["Alliance"] = questID,
   --       ["Horde"] = questID,
   --     },
+  --     questNeed = questNeed
   --     expiredTime = expiredTime
   --   }
   -- }
@@ -1861,23 +1861,23 @@ end
 
 local function ShowEmissarySummary(cell, arg, ...)
   local expansionLevel, day = unpack(arg)
-  local tbl, questNeed = {}
+  local tbl = {}
   local cache, buffer, flag = {}, {}, false
   openIndicator(2, "LEFT", "RIGHT")
   indicatortip:AddHeader(L["Emissary quests"], "+" .. (day - 1) .. " " .. L["Day"])
   local toon, t
   for toon, t in pairs(addon.db.Toons) do
     local info = t.Emissary and t.Emissary[expansionLevel] and t.Emissary[expansionLevel].days[day]
-    if info and info.questNeed then
-      questNeed = info.questNeed
+    if info then
+      tbl[t.Faction] = true
     end
-    tbl[t.Faction] = true
   end
   if (not tbl.Alliance and not tbl.Horde) or (not addon.db.Emissary.Expansion[expansionLevel][day]) then
     indicatortip:AddLine(L["Emissary Missing"], "")
   else
-    local questID = addon.db.Emissary.Expansion[expansionLevel][day].questID
-    local merge, header, fac, toon, t = (questID.Alliance == questID.Horde) and true or false, false
+    local globalInfo = addon.db.Emissary.Expansion[expansionLevel][day].questID
+    local merge = (globalInfo.questID.Alliance == globalInfo.questID.Horde) and true or false
+    local header, fac, toon, t = false
     for fac, _ in pairs(tbl) do
       if merge == false then header = false end
       for toon, t in pairs(addon.db.Toons) do
@@ -1885,7 +1885,7 @@ local function ShowEmissarySummary(cell, arg, ...)
           local info = t.Emissary and t.Emissary[expansionLevel] and t.Emissary[expansionLevel].days[day]
           if info then
             if header == false then
-              local name = addon.db.Emissary.Cache[questID[fac]]
+              local name = addon.db.Emissary.Cache[globalInfo.questID[fac]]
               if not name then
                 name = L["Emissary Missing"]
               end
@@ -1899,10 +1899,8 @@ local function ShowEmissarySummary(cell, arg, ...)
               text = "\124T"..READY_CHECK_WAITING_TEXTURE..":0|t"
             else
               text = info.questDone
-              if info.questNeed then
-                text = text .. "/" .. info.questNeed
-              elseif questNeed then
-                text = text .. "/" .. questNeed
+              if globalInfo.questNeed then
+                text = text .. "/" .. globalInfo.questNeed
               end
             end
             indicatortip:AddLine(ClassColorise(t.Class, toon), text)
@@ -3862,10 +3860,6 @@ function core:ShowTooltip(anchorframe)
           elseif show[day].first ~= t.Faction then
             show[day].second = t.Faction
           end
-          -- Auto fill other toon's questNeed
-          if info.questNeed then
-            show[day].questNeed = info.questNeed
-          end
         end
         addColumns(columns, toon, tooltip)
       end
@@ -3907,10 +3901,8 @@ function core:ShowTooltip(anchorframe)
               text = "\124T"..READY_CHECK_WAITING_TEXTURE..":0|t"
             else
               text = info.questDone
-              if info.questNeed then
-                text = text .. "/" .. info.questNeed
-              elseif show[day].questNeed then
-                text = text .. "/" .. show[day].questNeed
+              if addon.db.Emissary.Expansion[7][day].questNeed then
+                text = text .. "/" .. addon.db.Emissary.Expansion[7][day].questNeed
               end
             end
             tooltip:SetCell(tooltips[day], col, text, "CENTER", maxcol)
