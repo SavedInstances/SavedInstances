@@ -28,10 +28,11 @@ local _switching = {
 local switching, k, v = {}
 for k, v in pairs(_switching) do
   local tbl = {
-    "Alliance" = k,
-    "Horde" = v,
+    Alliance = k,
+    Horde = v,
   }
-  switching[k] = switching[v] = tbl
+  switching[k] = tbl
+  switching[v] = tbl
 end
 
 function EmissaryModule:OnEnable()
@@ -67,8 +68,8 @@ function EmissaryModule:RefreshDailyWorldQuestInfo()
             currExpansion[day].questID = switching[BountyInfo.questID]
           else
             currExpansion[day].questID = {
-              "Alliance" = BountyInfo.questID,
-              "Horde" = BountyInfo.questID,
+              Alliance = BountyInfo.questID,
+              Horde = BountyInfo.questID,
             }
           end
           currExpansion[day].expiredTime = timeleft * 60 + time()

@@ -1864,7 +1864,7 @@ local function ShowEmissarySummary(cell, arg, ...)
   local tbl, questNeed = {}
   local cache, buffer, flag = {}, {}, false
   openIndicator(2, "LEFT", "RIGHT")
-  indicatortip:AddHeader(L["Emissary quests"], "+" .. day .. " " .. L["Day"])
+  indicatortip:AddHeader(L["Emissary quests"], "+" .. (day - 1) .. " " .. L["Day"])
   local toon, t
   for toon, t in pairs(addon.db.Toons) do
     local info = t.Emissary and t.Emissary[expansionLevel] and t.Emissary[expansionLevel].days[day]
@@ -1873,18 +1873,19 @@ local function ShowEmissarySummary(cell, arg, ...)
     end
     tbl[t.Faction] = true
   end
-  if not tbl.Alliance and not tbl.Horde then
+  if (not tbl.Alliance and not tbl.Horde) or (not addon.db.Emissary.Expansion[expansionLevel][day]) then
     indicatortip:AddLine(L["Emissary Missing"], "")
   else
-    local fac
+    local questID = addon.db.Emissary.Expansion[expansionLevel][day].questID
+    local merge, header, fac, toon, t = (questID.Alliance == questID.Horde) and true or false, false
     for fac, _ in pairs(tbl) do
-      local header, toon, t = false
+      if merge == false then header = false end
       for toon, t in pairs(addon.db.Toons) do
         if t.Faction == fac then
           local info = t.Emissary and t.Emissary[expansionLevel] and t.Emissary[expansionLevel].days[day]
           if info then
             if header == false then
-              local name = addon.db.Emissary.Cache[addon.db.Emissary.Expansion[expansionLevel][day].questID[fac]]
+              local name = addon.db.Emissary.Cache[questID[fac]]
               if not name then
                 name = L["Emissary Missing"]
               end
@@ -1904,7 +1905,7 @@ local function ShowEmissarySummary(cell, arg, ...)
                 text = text .. "/" .. questNeed
               end
             end
-            indicatortip:AddLine(ClassColorise(t.Class, toon), str)
+            indicatortip:AddLine(ClassColorise(t.Class, toon), text)
           end
         end
       end
@@ -2360,6 +2361,7 @@ function core:OnInitialize()
   core:toonInit()
   db.Lockouts = nil -- deprecated
   db.History = db.History or {}
+  db.Emissary = db.Emissary or addon.defaultDB.Emissary
   db.Quests = db.Quests or addon.defaultDB.Quests
   db.QuestDB = db.QuestDB or addon.defaultDB.QuestDB
   for name,default in pairs(addon.defaultDB.Tooltip) do
@@ -3855,16 +3857,14 @@ function core:ShowTooltip(anchorframe)
       if t.Emissary and t.Emissary[7] and t.Emissary[7].unlocked then
         local day, info
         for day, info in pairs(t.Emissary[7].days) do
-          if not info.isFinish then
-            if not show[day].first then
-              show[day].first = t.Faction
-            elseif show[day].first ~= t.Faction then
-              show[day].second = t.Faction
-            end
-            -- Auto fill other toon's questNeed
-            if info.questNeed then
-              show[day].questNeed = info.questNeed
-            end
+          if not show[day].first then
+            show[day].first = t.Faction
+          elseif show[day].first ~= t.Faction then
+            show[day].second = t.Faction
+          end
+          -- Auto fill other toon's questNeed
+          if info.questNeed then
+            show[day].questNeed = info.questNeed
           end
         end
         addColumns(columns, toon, tooltip)
@@ -3879,17 +3879,17 @@ function core:ShowTooltip(anchorframe)
     end
 
     local day, tbl
-    for day, tbl in pairs(show) then
+    for day, tbl in pairs(show) do
       if show[day].first then
         local questID = addon.db.Emissary.Expansion[7][day].questID[show[day].first]
         local name = addon.db.Emissary.Cache[questID]
         if addon.db.Tooltip.EmissaryFullName and show[day].second then
-          local questID = addon.db.Emissary.Expansion[7][day].questID[show[day].second]
-          if addon.db.Emissary.Cache[questID] then
+          local secondQuestID = addon.db.Emissary.Expansion[7][day].questID[show[day].second]
+          if secondQuestID ~= questID and addon.db.Emissary.Cache[questID] then
             name = name .. " / " .. addon.db.Emissary.Cache[questID]
           end
         end
-        tooltips[day] = tooltip:AddLine(GOLDFONT .. name .. " (+" .. day .. " " .. L["Day"] .. ")" .. FONTEND)
+        tooltips[day] = tooltip:AddLine(GOLDFONT .. name .. " (+" .. (day - 1) .. " " .. L["Day"] .. ")" .. FONTEND)
         tooltip:SetCellScript(tooltips[day], 1, "OnEnter", ShowEmissarySummary, {7, day})
         tooltip:SetCellScript(tooltips[day], 1, "OnLeave", CloseTooltips)
       end
