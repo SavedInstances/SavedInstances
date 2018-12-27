@@ -375,15 +375,18 @@ function module:BuildOptions()
             order = 33.5,
             name = L["Weekly Quests"],
           },
+          --[[
           Emissary6 = {
             type = "toggle",
             order = 33.60,
             name = EXPANSION_NAME6 .. L["Emissary quests"],
           },
+          --]]
           Emissary7 = {
             type = "toggle",
             order = 33.61,
-            name = EXPANSION_NAME7 .. L["Emissary quests"],
+            -- name = EXPANSION_NAME7 .. L["Emissary quests"],
+            name = L["Emissary quests"],
           },
           EmissaryFullName = {
             type = "toggle",
