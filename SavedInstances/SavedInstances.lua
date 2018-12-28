@@ -1503,7 +1503,7 @@ function addon:UpdateToonData()
         end
         if ti.Emissary then
           local expansionLevel, tbl
-          for expansionLevel, tbl in (ti.Emissary) do
+          for expansionLevel, tbl in pairs(ti.Emissary) do
             if tbl.unlocked then
               tbl.days[1] = tbl.days[2]
               tbl.days[2] = tbl.days[3]
@@ -3919,7 +3919,10 @@ function core:ShowTooltip(anchorframe)
                 text = "\124T"..READY_CHECK_WAITING_TEXTURE..":0|t"
               else
                 text = info.questDone
-                if addon.db.Emissary.Expansion[expansionLevel][day].questNeed then
+                if (
+                  addon.db.Emissary.Expansion[expansionLevel][day] and 
+                  addon.db.Emissary.Expansion[expansionLevel][day].questNeed
+                ) then
                   text = text .. "/" .. addon.db.Emissary.Expansion[expansionLevel][day].questNeed
                 end
               end
