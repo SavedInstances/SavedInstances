@@ -11,6 +11,7 @@ install:
 
 script:
   - make test
+  - if [[ "$TRAVIS_BRANCH" == "master" && "$TRAVIS_PULL_REQUEST" == "false" ]]; then ./wowace_translations.sh; fi
 
 notifications:
   email:
