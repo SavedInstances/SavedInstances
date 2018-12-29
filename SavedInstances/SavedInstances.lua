@@ -3920,7 +3920,7 @@ function core:ShowTooltip(anchorframe)
               else
                 text = info.questDone
                 if (
-                  addon.db.Emissary.Expansion[expansionLevel][day] and 
+                  addon.db.Emissary.Expansion[expansionLevel][day] and
                   addon.db.Emissary.Expansion[expansionLevel][day].questNeed
                 ) then
                   text = text .. "/" .. addon.db.Emissary.Expansion[expansionLevel][day].questNeed
