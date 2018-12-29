@@ -3896,8 +3896,8 @@ function core:ShowTooltip(anchorframe)
             name = addon.db.Emissary.Cache[questID]
             if addon.db.Tooltip.EmissaryFullName and show[day].second then
               local secondQuestID = addon.db.Emissary.Expansion[expansionLevel][day].questID[show[day].second]
-              if secondQuestID ~= questID and addon.db.Emissary.Cache[questID] then
-                name = name .. " / " .. addon.db.Emissary.Cache[questID]
+              if secondQuestID ~= questID and addon.db.Emissary.Cache[secondQuestID] then
+                name = name .. " / " .. addon.db.Emissary.Cache[secondQuestID]
               end
             end
           end
