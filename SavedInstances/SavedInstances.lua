@@ -283,6 +283,7 @@ addon.defaultDB = {
   -- PlayedTotal: integer
   -- Money: integer
   -- Zone: string
+  -- Warmode: boolean
 
   -- currency: key: currencyID  value:
   -- amount: integer
@@ -1607,6 +1608,7 @@ function addon:UpdateToonData()
   else
     t.Race = lrace
   end
+  t.Warmode = C_PvP.IsWarModeDesired()
 
   t.LastSeen = time()
 end
@@ -1748,6 +1750,9 @@ local function ShowToonTooltip(cell, arg, ...)
   end
   if t.Money then
     indicatortip:AddLine(MONEY,addon:formatNumber(t.Money,true))
+  end
+  if t.Warmode and t.Warmode == true then
+    indicatortip:AddLine(PVP_LABEL_WAR_MODE, PVP_WAR_MODE_ENABLED)
   end
   if t.Zone then
     indicatortip:AddLine(ZONE,t.Zone)
