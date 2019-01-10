@@ -737,12 +737,12 @@ local function UpdateEventInfo()
     debug("eventID: " .. event.eventID)
     if event.sequenceType == "START" then
       local hour, minute = event.startTime.hour, event.startTime.minute
-      if hour > current.hour or (hour == current.hour and minute > current.minute) then
+      if hour < current.hour or (hour == current.hour and minute < current.minute) then
         eventInfo[event.eventID] = true
       end
     elseif event.sequenceType == "END" then
       local hour, minute = event.startTime.hour, event.startTime.minute
-      if hour < current.hour or (hour == current.hour and minute < current.minute) then
+      if hour > current.hour or (hour == current.hour and minute > current.minute) then
         eventInfo[event.eventID] = true
       end
     else -- "ONGOING"
