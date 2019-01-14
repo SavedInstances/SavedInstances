@@ -1503,20 +1503,6 @@ function addon:UpdateToonData()
             ti.Quests[id] = nil
           end
         end
-        if ti.Emissary then
-          local expansionLevel, tbl
-          for expansionLevel, tbl in pairs(ti.Emissary) do
-            if tbl.unlocked then
-              tbl.days[1] = tbl.days[2]
-              tbl.days[2] = tbl.days[3]
-              tbl.days[3] = {
-                isComplete = false,
-                isFinish = false,
-                questDone = 0,
-              }
-            end
-          end
-        end
         ti.DailyResetTime = (ti.DailyResetTime and ti.DailyResetTime + 24*3600) or nextreset
       end
     end
@@ -1527,12 +1513,29 @@ function addon:UpdateToonData()
           db.Quests[id] = nil
         end
     end
+    -- Emissary Quest Reset
     if addon.db.Emissary and addon.db.Emissary.Expansion then
       local expansionLevel, tbl
       for expansionLevel, tbl in pairs(addon.db.Emissary.Expansion) do
-        tbl[1] = tbl[2]
-        tbl[2] = tbl[3]
-        tbl[3] = nil
+        while tbl[1] and tbl[1].expiredTime < time() do
+          tbl[1] = tbl[2]
+          tbl[2] = tbl[3]
+          tbl[3] = nil
+          for toon, ti in pairs(addon.db.Toons) do
+            if ti.Emissary then
+              local t = ti.Emissary[expansionLevel]
+              if tbl.unlocked then
+                tbl.days[1] = tbl.days[2]
+                tbl.days[2] = tbl.days[3]
+                tbl.days[3] = {
+                  isComplete = false,
+                  isFinish = false,
+                  questDone = 0,
+                }
+              end
+            end
+          end
+        end
       end
     end
     db.DailyResetTime = nextreset
