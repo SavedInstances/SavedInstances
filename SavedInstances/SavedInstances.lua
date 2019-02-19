@@ -35,6 +35,9 @@ local INSTANCE_SAVED, TRANSFER_ABORT_TOO_MANY_INSTANCES, NO_RAID_INSTANCES_SAVED
 local ALREADY_LOOTED = ERR_LOOT_GONE:gsub("%(.*%)","")
 ALREADY_LOOTED = ALREADY_LOOTED:gsub("（.*）","") -- fix on zhCN and zhTW
 
+-- Quartermaster's Coin, obtained when failing a bonus roll in pvp
+local QUARTERMASTER_COIN_ID = 163827
+
 -- Unit Aura functions that return info about the first aura matching the spellName or spellID given on the unit.
 local SI_GetUnitAura = function(unit, spell, filter)
     for i = 1, 40 do
@@ -307,7 +310,8 @@ addon.defaultDB = {
   -- BonusRoll: key: int value:
   -- name: string
   -- time: int
-  -- currencyID: int
+  -- costCurrencyID: int
+  -- currencyID: int or nil
   -- money: integer or nil
   -- item: linkstring or nil
 
@@ -1943,7 +1947,7 @@ local function ShowBonusTooltip(cell, arg, ...)
   for i,roll in ipairs(t.BonusRoll) do
     if i > 10 then break end
     local line = indicatortip:AddLine()
-    local icon = roll.currencyID and select(3,GetCurrencyInfo(roll.currencyID))
+    local icon = roll.costCurrencyID and select(3,GetCurrencyInfo(roll.costCurrencyID))
     if icon then
       indicatortip:SetCell(line,1, " \124T"..icon..":0\124t ")
     end
@@ -1952,6 +1956,15 @@ local function ShowBonusTooltip(cell, arg, ...)
     end
     if roll.item then
       indicatortip:SetCell(line,3,roll.item)
+    elseif roll.currencyID then
+      local currencyIcon = select(3, GetCurrencyInfo(roll.currencyID))
+      local str = "\124T" .. currencyIcon .. ":0\124t"
+      if roll.money then
+        str = str .. roll.money
+      else
+        str = str .. GetCurrencyInfo(roll.currencyID)
+      end
+      indicatortip:SetCell(line,3,str)
     elseif roll.money then
       indicatortip:SetCell(line,3,GetMoneyString(roll.money))
     end
@@ -3953,10 +3966,15 @@ function core:ShowTooltip(anchorframe)
       if t.BonusRoll and t.BonusRoll[1] then
         local gold = 0
         for _,roll in ipairs(t.BonusRoll) do
-          if roll.money then
+          if not roll.item then
             gold = gold + 1
           else
-            break
+            local itemID = GetItemInfoInstant(roll.item)
+            if itemID == QUARTERMASTER_COIN_ID then
+              gold = gold + 1
+            else
+              break
+            end
           end
         end
         toonbonus[toon] = gold
@@ -4404,7 +4422,7 @@ function core:UNIT_SPELLCAST_SUCCEEDED(evt, unit, spellName, rank, lineID, spell
   end
 end
 
-function core:BonusRollResult(event, rewardType, rewardLink, rewardQuantity, rewardSpecID)
+function core:BonusRollResult(event, rewardType, rewardLink, rewardQuantity, rewardSpecID, _, _, currencyID)
   local t = addon.db.Toons[thisToon]
   debug("BonusRollResult:%s:%s:%s:%s (boss=%s|%s)",
     tostring(rewardType), tostring(rewardLink), tostring(rewardQuantity), tostring(rewardSpecID),
@@ -4424,12 +4442,16 @@ function core:BonusRollResult(event, rewardType, rewardLink, rewardQuantity, rew
   if not bossname then
     bossname = GetSubZoneText() or GetRealZoneText() -- zone fallback
   end
-  local roll = { name = bossname, time = now, currencyID = BonusRollFrame.currencyID }
+  local roll = {
+    name = bossname,
+    time = now,
+    costCurrencyID = BonusRollFrame.CurrentCountFrame.currencyID,
+  }
   if rewardType == "money" then
     roll.money = rewardQuantity
-  elseif rewardType == "artifact_power" then
-    roll.money = 25 -- Hacky and cludgy but it'll do for now
-    --roll.item = rewardlink -- Possible alternative to at least show Artifact Power rewarded
+  elseif rewardType == "currency" then
+    roll.currencyID = currencyID
+    roll.money = rewardQuantity
   elseif rewardType == "item" then
     roll.item = rewardLink
   end
@@ -4463,10 +4485,15 @@ function addon.BonusRollShow()
   end
   local bonus = 0
   for _,rinfo in ipairs(binfo) do
-    if rinfo.money then
+    if not rinfo.item then
       bonus = bonus + 1
     else
-      break
+      local itemID = GetItemInfoInstant(rinfo.item)
+      if itemID == QUARTERMASTER_COIN_ID then
+        bonus = bonus + 1
+      else
+        break
+      end
     end
   end
   frame.text:SetText((bonus > 0 and "+" or "")..bonus)
