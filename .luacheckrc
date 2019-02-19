@@ -1752,6 +1752,7 @@ globals = {
 	"GetBlockChance",
 	"GetBonusBarIndex",
 	"GetBonusBarOffset",
+	"GetBonusRollEncounterJournalLinkDifficulty",
 	"GetBuildInfo",
 	"GetBuybackItemInfo",
 	"GetBuybackItemLink",
