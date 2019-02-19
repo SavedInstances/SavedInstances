@@ -31,6 +31,7 @@ local GRAY_COLOR = { 0.5, 0.5, 0.5, 1 }
 local LFD_RANDOM_REWARD_EXPLANATION2 = LFD_RANDOM_REWARD_EXPLANATION2
 local INSTANCE_SAVED, TRANSFER_ABORT_TOO_MANY_INSTANCES, NO_RAID_INSTANCES_SAVED =
   INSTANCE_SAVED, TRANSFER_ABORT_TOO_MANY_INSTANCES, NO_RAID_INSTANCES_SAVED
+local DIFFICULTY_DUNGEON_CHALLENGE = DIFFICULTY_DUNGEON_CHALLENGE
 
 local ALREADY_LOOTED = ERR_LOOT_GONE:gsub("%(.*%)","")
 ALREADY_LOOTED = ALREADY_LOOTED:gsub("（.*）","") -- fix on zhCN and zhTW
@@ -4432,15 +4433,39 @@ function core:BonusRollResult(event, rewardType, rewardLink, rewardQuantity, rew
   t.BonusRoll = t.BonusRoll or {}
   --local rewardstr = _G["BONUS_ROLL_REWARD_"..string.upper(rewardType)]
   local now = time()
-  local bossname = t.lastboss
-  if now > (t.lastbosstime or 0) + 3*60 then -- user rolled before lastboss was updated, ignore the stale one. Roll timeout is 3 min.
-    bossname = nil
-  end
-  if not bossname and t.lastbossyell and now < (t.lastbossyelltime or 0) + 10*60 then
-    bossname = t.lastbossyell -- yell fallback
+  local bossname
+  -- Mythic+ Dungeon Roll
+  if GetBonusRollEncounterJournalLinkDifficulty() == DIFFICULTY_DUNGEON_CHALLENGE then
+    local name, _, difficultyID, difficultyName = GetInstanceInfo()
+    if difficultyID == DIFFICULTY_DUNGEON_CHALLENGE then
+      bossname = name .. difficultyName
+    else
+      local tmp, key, value = {}
+      for key, value in pairs(db.History) do
+        local _, name, _, diff = strsplit(":", key)
+        if tonumber(diff) == DIFFICULTY_DUNGEON_CHALLENGE then
+          local tbl = {
+            name = name,
+            last = value.last,
+          }
+          table.insert(tmp, tbl)
+        end
+      end
+      table.sort(tmp, function(l, r) return l.last > r.last end)
+      bossname = tmp[1] and tmp[1].name
+    end
   end
   if not bossname then
-    bossname = GetSubZoneText() or GetRealZoneText() -- zone fallback
+    bossname = t.lastboss
+    if now > (t.lastbosstime or 0) + 3*60 then -- user rolled before lastboss was updated, ignore the stale one. Roll timeout is 3 min.
+      bossname = nil
+    end
+    if not bossname and t.lastbossyell and now < (t.lastbossyelltime or 0) + 10*60 then
+      bossname = t.lastbossyell -- yell fallback
+    end
+    if not bossname then
+      bossname = GetSubZoneText() or GetRealZoneText() -- zone fallback
+    end
   end
   local roll = {
     name = bossname,
