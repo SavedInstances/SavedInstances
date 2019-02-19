@@ -3891,7 +3891,7 @@ function core:ShowTooltip(anchorframe)
       local day, tbl
       for day, tbl in pairs(show) do
         if show[day][1] then
-          local name
+          local name = ""
           if not addon.db.Emissary.Expansion[expansionLevel][day] then
             name = L["Emissary Missing"]
           else
