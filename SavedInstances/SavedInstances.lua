@@ -1025,6 +1025,15 @@ function addon:instanceBosses(instance,toon,diff)
     local bits = save.Link:match(":(%d+)\124h")
     bits = bits and tonumber(bits)
     if bits then
+      if inst.LFDID == 1944 then
+        -- Battle of Dazar'alor
+        -- https://github.com/SavedInstances/SavedInstances/issues/233
+        if db.Toons[toon].Faction == "Alliance" then
+          bits = bit.band(bits, 0x3134D)
+        else
+          bits = bit.band(bits, 0x3135A)
+        end
+      end
       while bits > 0 do
         if bit.band(bits,1) > 0 then
           killed = killed + 1
@@ -2142,8 +2151,36 @@ local function ShowIndicatorTooltip(cell, arg, ...)
     indicatortip:SetCell(n, 2, info.ID, "RIGHT", 2)
   end
   if info.Link then
+    local link = info.Link
+    if thisinstance.LFDID == 1944 then
+      -- Battle of Dazar'alor
+      -- https://github.com/SavedInstances/SavedInstances/issues/233
+      local locFaction = UnitFactionGroup("player")
+      if db.Toons[toon].Faction ~= locFaction then
+        local bits = tonumber(link:match(":(%d+)\124h"))
+        if db.Toons[toon].Faction == "Alliance" then
+          bits = bit.band(bits, 0x3134D)
+          if bit.band(bits, 0x1) > 0 then -- Grong the Revenant (Alliance)
+            bits = bit.bor(bits, 0x2)
+          end
+          if bit.band(bits, 0x4) > 0 then -- Jadefire Masters (Alliance)
+            bits = bit.bor(bits, 0x10)
+          end
+        else
+          bits = bit.band(bits, 0x3135A)
+          if bit.band(bits, 0x2) > 0 then -- Grong, the Jungle Lord (Horde)
+            bits = bit.bor(bits, 0x1)
+          end
+          if bit.band(bits, 0x10) > 0 then -- Jadefire Masters (Horde)
+            bits = bit.bor(bits, 0x4)
+          end
+        end
+        link = "\124cffff8000\124Hinstancelock:Player-0000-00000000:2070:"
+          .. diff .. ":" .. bits .. "\124h[Battle of Dazar'alor]\124h\124r"
+      end
+    end
     scantt:SetOwner(UIParent,"ANCHOR_NONE")
-    scantt:SetHyperlink(info.Link)
+    scantt:SetHyperlink(link)
     local name = scantt:GetName()
     local gotbossinfo
     for i=2,scantt:NumLines() do
@@ -2159,7 +2196,7 @@ local function ShowIndicatorTooltip(cell, arg, ...)
     end
     if not gotbossinfo then
       local exc = addon:instanceException(thisinstance.LFDID)
-      local bits = tonumber(info.Link:match(":(%d+)\124h"))
+      local bits = tonumber(link:match(":(%d+)\124h"))
       if exc and bits then
         for i=1,exc.total do
           local n = indicatortip:AddLine()
