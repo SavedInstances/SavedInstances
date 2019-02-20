@@ -36,9 +36,6 @@ local DIFFICULTY_DUNGEON_CHALLENGE = DIFFICULTY_DUNGEON_CHALLENGE
 local ALREADY_LOOTED = ERR_LOOT_GONE:gsub("%(.*%)","")
 ALREADY_LOOTED = ALREADY_LOOTED:gsub("（.*）","") -- fix on zhCN and zhTW
 
--- Quartermaster's Coin, obtained when failing a bonus roll in pvp
-local QUARTERMASTER_COIN_ID = 163827
-
 -- Unit Aura functions that return info about the first aura matching the spellName or spellID given on the unit.
 local SI_GetUnitAura = function(unit, spell, filter)
     for i = 1, 40 do
@@ -4008,7 +4005,7 @@ function core:ShowTooltip(anchorframe)
             gold = gold + 1
           else
             local itemID = GetItemInfoInstant(roll.item)
-            if itemID == QUARTERMASTER_COIN_ID then
+            if itemID == 163827 then -- Quartermaster's Coin, obtained when failing a bonus roll in pvp
               gold = gold + 1
             else
               break
@@ -4551,7 +4548,7 @@ function addon.BonusRollShow()
       bonus = bonus + 1
     else
       local itemID = GetItemInfoInstant(rinfo.item)
-      if itemID == QUARTERMASTER_COIN_ID then
+      if itemID == 163827 then -- Quartermaster's Coin, obtained when failing a bonus roll in pvp
         bonus = bonus + 1
       else
         break
