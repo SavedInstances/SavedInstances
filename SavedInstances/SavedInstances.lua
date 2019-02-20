@@ -2781,7 +2781,7 @@ function addon:histZoneKey()
   if insttype == nil or insttype == "none" or insttype == "arena" or insttype == "pvp" then -- pvp doesnt count
     return nil
   end
-  if IsInLFGDungeon() or IsInScenarioGroup() then -- LFG instances don't count
+  if (IsInLFGDungeon() or IsInScenarioGroup()) and diff ~= 19 then -- LFG instances don't count, but Holiday Event counts
     return nil
   end
   if C_Garrison.IsOnGarrisonMap() then -- Garrisons don't count
