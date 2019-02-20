@@ -4472,14 +4472,14 @@ function core:BonusRollResult(event, rewardType, rewardLink, rewardQuantity, rew
   if GetBonusRollEncounterJournalLinkDifficulty() == DIFFICULTY_DUNGEON_CHALLENGE then
     local name, _, difficultyID, difficultyName = GetInstanceInfo()
     if difficultyID == DIFFICULTY_DUNGEON_CHALLENGE then
-      bossname = name .. difficultyName
+      bossname = name .. ": " .. difficultyName
     else
       local tmp, key, value = {}
       for key, value in pairs(db.History) do
         local _, name, _, diff = strsplit(":", key)
         if tonumber(diff) == DIFFICULTY_DUNGEON_CHALLENGE then
           local tbl = {
-            name = name,
+            name = name .. ": " .. GetDifficultyInfo(diff),
             last = value.last,
           }
           table.insert(tmp, tbl)
