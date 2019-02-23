@@ -3848,14 +3848,15 @@ function core:ShowTooltip(anchorframe)
         if t.MythicKey.link then
           local col = columns[toon..1]
           if addon.db.Tooltip.AbbreviateKeystone then
+            if not t.MythicKey.name then t.MythicKey.name = t.MythicKey.link end
             if t.MythicKey.abbrev then
               tooltip:SetCell(show, col, "|c"..t.MythicKey.color..t.MythicKey.abbrev.." ("..t.MythicKey.level..")"..FONTEND, "CENTER",maxcol)
             else
-              local kabbrev = KeystonetoAbbrev[t.MythicKey.link] or t.MythicKey.link
+              local kabbrev = KeystonetoAbbrev[t.MythicKey.name] or t.MythicKey.name
               tooltip:SetCell(show, col, "|c"..t.MythicKey.color..kabbrev.." ("..t.MythicKey.level..")"..FONTEND, "CENTER",maxcol)
             end
           else
-          tooltip:SetCell(show, col, "|c"..t.MythicKey.color..t.MythicKey.link.." ("..t.MythicKey.level..")"..FONTEND, "CENTER",maxcol)
+            tooltip:SetCell(show, col, "|c"..t.MythicKey.color..t.MythicKey.name.." ("..t.MythicKey.level..")"..FONTEND, "CENTER",maxcol)
           end
           tooltip:SetCellScript(show, col, "OnMouseDown", ChatLink, t.MythicKey.link)
         end
