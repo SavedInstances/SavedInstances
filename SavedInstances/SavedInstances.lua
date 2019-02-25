@@ -1965,7 +1965,7 @@ local function ShowBonusTooltip(cell, arg, ...)
       indicatortip:SetCell(line,3,roll.item)
     elseif roll.currencyID then
       local currencyIcon = select(3, GetCurrencyInfo(roll.currencyID))
-      local str = "\124T" .. currencyIcon .. ":0\124t"
+      local str = "\124T" .. currencyIcon .. ":0\124t "
       if roll.money then
         str = str .. roll.money
       else
@@ -2235,28 +2235,6 @@ local function ShowIndicatorTooltip(cell, arg, ...)
     end
   end
   finishIndicator()
-end
-
-local colorpat = "\124c%c%c%c%c%c%c%c%c"
-local weeklycap = CURRENCY_WEEKLY_CAP:gsub("%%%d*?([ds])","%%%1")
-local weeklycap_scan = weeklycap:gsub("%%d","(%%d+)"):gsub("%%s","(\124c%%x%%x%%x%%x%%x%%x%%x%%x)")
-weeklycap = weeklycap:gsub("%%d","%%s")
-local totalcap = CURRENCY_TOTAL_CAP:gsub("%%%d*?([ds])","%%%1")
-local totalcap_scan = totalcap:gsub("%%d","(%%d+)"):gsub("%%s","(\124c%%x%%x%%x%%x%%x%%x%%x%%x)")
-totalcap = totalcap:gsub("%%d","%%s")
-local season_scan = CURRENCY_SEASON_TOTAL:gsub("%%%d*?([ds])","(%%%1*)")
-
-function addon:GetSeasonCurrency(idx)
-  scantt:SetOwner(UIParent,"ANCHOR_NONE")
-  scantt:SetCurrencyByID(idx)
-  local name = scantt:GetName()
-  for i=1,scantt:NumLines() do
-    local left = _G[name.."TextLeft"..i]
-    if left:GetText():find(season_scan) then
-      return left:GetText()
-    end
-  end
-  return nil
 end
 
 local function ShowSpellIDTooltip(cell, arg, ...)
