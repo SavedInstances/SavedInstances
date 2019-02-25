@@ -3114,6 +3114,7 @@ globals = {
 	"QuestPOIGetQuestIDByVisibleIndex",
 	"QuestPOIGetSecondaryLocations",
 	"QuestPOIUpdateIcons",
+	"QuestUtils_GetBestQualityItemRewardIndex",
 	"Quit",
 	"RaidProfileExists",
 	"RaidProfileHasUnsavedChanges",
