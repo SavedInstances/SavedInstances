@@ -2300,6 +2300,14 @@ hoverTooltip.ShowSpellIDTooltip = function (cell, arg, ...)
   finishIndicator()
 end
 
+local weeklycap = CURRENCY_WEEKLY_CAP:gsub("%%%d*?([ds])","%%%1")
+local weeklycap_scan = weeklycap:gsub("%%d","(%%d+)"):gsub("%%s","(\124c%%x%%x%%x%%x%%x%%x%%x%%x)")
+weeklycap = weeklycap:gsub("%%d","%%s")
+local totalcap = CURRENCY_TOTAL_CAP:gsub("%%%d*?([ds])","%%%1")
+local totalcap_scan = totalcap:gsub("%%d","(%%d+)"):gsub("%%s","(\124c%%x%%x%%x%%x%%x%%x%%x%%x)")
+totalcap = totalcap:gsub("%%d","%%s")
+local season_scan = CURRENCY_SEASON_TOTAL:gsub("%%%d*?([ds])","(%%%1*)")
+
 hoverTooltip.ShowCurrencyTooltip = function (cell, arg, ...)
   local toon, idx, ci = unpack(arg)
   if not toon or not idx or not ci then return end
