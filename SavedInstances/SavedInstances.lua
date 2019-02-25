@@ -339,10 +339,18 @@ addon.defaultDB = {
   --   unlocked = (boolean),
   --   days = {
   --     [Day] = {
-  --       isComplete = isComplete
+  --       isComplete = isComplete,
   --       isFinish = isFinish,
   --       questDone = questDone,
   --       expiredTime = expiredTime,
+  --       questReward = {
+  --         money = money,
+  --         itemName = itemName,
+  --         itemLvl = itemLvl,
+  --         quality = quality,
+  --         currencyID = currencyID,
+  --         quantity = quantity,
+  --       },
   --     },
   --   },
   -- }
@@ -1933,6 +1941,40 @@ hoverTooltip.ShowEmissarySummary = function (cell, arg, ...)
         end
       end
     end
+  end
+  finishIndicator()
+end
+
+hoverTooltip.ShowEmissaryTooltip = function (cell, arg, ...)
+  local expansionLevel, day, toon = unpack(arg)
+  local info = db.Toons[toon].Emissary[expansionLevel].days[day]
+  if not info then return end
+  openIndicator(2, "LEFT", "RIGHT")
+  local globalInfo = addon.db.Emissary.Expansion[expansionLevel][day]
+  local text
+  if info.isComplete == true then
+    text = "\124T"..READY_CHECK_READY_TEXTURE..":0|t"
+  elseif info.isFinish == true then
+    text = "\124T"..READY_CHECK_WAITING_TEXTURE..":0|t"
+  else
+    text = info.questDone
+    if globalInfo.questNeed then
+      text = text .. "/" .. globalInfo.questNeed
+    end
+  end
+  indicatortip:AddLine(ClassColorise(db.Toons[toon].Class, toon), text)
+  if info.questReward then
+    text = ""
+    if info.questReward.itemName then
+      text = "|c" .. select(4, GetItemQualityColor(info.questReward.quality)) ..
+            "[" .. info.questReward.itemName .. "(" .. info.questReward.itemLvl .. ")]" .. FONTEND
+    elseif info.questReward.money then
+      text = GetMoneyString(info.questReward.money)
+    elseif info.questReward.currencyID then
+      text = "\124T" .. select(3, GetCurrencyInfo(info.questReward.currencyID)) .. ":0\124t " .. info.questReward.quantity
+    end
+    indicatortip:AddLine()
+    indicatortip:SetCell(2, 1, text, "RIGHT", 2)
   end
   finishIndicator()
 end
@@ -3967,6 +4009,8 @@ function core:ShowTooltip(anchorframe)
                 end
               end
               tooltip:SetCell(tooltips[day], col, text, "CENTER", maxcol)
+              tooltip:SetCellScript(tooltips[day], col, "OnEnter", hoverTooltip.ShowEmissaryTooltip, {expansionLevel, day, toon})
+              tooltip:SetCellScript(tooltips[day], col, "OnLeave", CloseTooltips)
             end
           end
         end
