@@ -1260,7 +1260,6 @@ globals = {
 	"CalendarEventSortInvites",
 	"CalendarEventTentative",
 	"CalendarGetAbsMonth",
-	"C_Calendar.GetDate",
 	"CalendarGetDayEvent",
 	"CalendarGetDayEventSequenceInfo",
 	"CalendarGetEventIndex",
