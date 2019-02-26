@@ -1962,7 +1962,7 @@ hoverTooltip.ShowEmissaryTooltip = function (cell, arg, ...)
   local info = db.Toons[toon].Emissary[expansionLevel].days[day]
   if not info then return end
   openIndicator(2, "LEFT", "RIGHT")
-  local globalInfo = addon.db.Emissary.Expansion[expansionLevel][day]
+  local globalInfo = addon.db.Emissary.Expansion[expansionLevel][day] or {}
   local text
   if info.isComplete == true then
     text = "\124T"..READY_CHECK_READY_TEXTURE..":0|t"
