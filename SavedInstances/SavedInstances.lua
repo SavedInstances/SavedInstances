@@ -721,8 +721,14 @@ function addon:QuestCount(toonname)
   -- ticket 96: GetDailyQuestsCompleted() is unreliable, the response is laggy and it fails to count some quests
   local id, info
   for id, info in pairs(t.Quests) do
-    -- Timewalking Item Quests only show during Timewalking Weeks
-    if (not TimewalkingItemQuest[id]) or eventInfo[TimewalkingItemQuest[id]] then
+    if (TimewalkingItemQuest[id] and (not eventInfo[TimewalkingItemQuest[id]])) then
+      -- Timewalking Item Quests only show during Timewalking Weeks
+    elseif (
+      (t.Faction == "Alliance" and id == 53435) or
+      (t.Faction == "Horde" and id == 53436)
+    ) then
+      -- Island Expeditions Weekly Quest (Issue #208)
+    else
       if info.isDaily then
         dailycount = dailycount + 1
       else
@@ -1822,8 +1828,14 @@ hoverTooltip.ShowQuestTooltip = function (cell, arg, ...)
   local zonename, id
   for id,qi in pairs(t.Quests) do
     if (not isDaily) == (not qi.isDaily) then
-      -- Timewalking Item Quests only show during Timewalking Weeks
-      if (not TimewalkingItemQuest[id]) or eventInfo[TimewalkingItemQuest[id]] then
+      if (TimewalkingItemQuest[id] and (not eventInfo[TimewalkingItemQuest[id]])) then
+        -- Timewalking Item Quests only show during Timewalking Weeks
+      elseif (
+        (t.Faction == "Alliance" and id == 53435) or
+        (t.Faction == "Horde" and id == 53436)
+      ) then
+        -- Island Expeditions Weekly Quest (Issue #208)
+      else
         zonename = qi.Zone and qi.Zone.name or ""
         table.insert(ql,zonename.." # "..id)
       end
