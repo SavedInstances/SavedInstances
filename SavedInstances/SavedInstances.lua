@@ -499,8 +499,8 @@ addon.defaultDB = {
   --       ["Alliance"] = questID,
   --       ["Horde"] = questID,
   --     },
-  --     questNeed = questNeed
-  --     expiredTime = expiredTime
+  --     questNeed = questNeed,
+  --     expiredTime = expiredTime,
   --   }
   -- }
   RealmMap = {},
