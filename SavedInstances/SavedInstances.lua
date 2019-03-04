@@ -989,6 +989,7 @@ local _instance_exceptions = {
     25315, -- Kil'jaeden
   },
   [1347] = { total=8 }, -- Return to Karazhan
+  [1701] = { total=4 }, -- Siege of Boralus
 }
 
 function addon:instanceException(LFDID)
