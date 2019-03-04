@@ -1015,7 +1015,7 @@ end
 
 function addon:instanceBosses(instance,toon,diff)
   local killed,total,base = 0,0,1
-  local remap = nil
+  local remap, origin
   local inst = addon.db.Instances[instance]
   local save = inst and inst[toon] and inst[toon][diff]
   if inst.WorldBoss then
@@ -1029,9 +1029,10 @@ function addon:instanceBosses(instance,toon,diff)
     total = LFR.total or total
     base = LFR.base or base
     remap = LFR.remap
+    origin = LFR.origin
   end
   if not save then
-    return killed, total, base, remap
+    return killed, total, base, remap, origin
   elseif save.Link then
     local bits = save.Link:match(":(%d+)\124h")
     bits = bits and tonumber(bits)
@@ -1057,7 +1058,7 @@ function addon:instanceBosses(instance,toon,diff)
       killed = killed + (save[i] and 1 or 0)
     end
   end
-  return killed, total, base, remap
+  return killed, total, base, remap, origin
 end
 
 local lfrkey = "^"..L["LFR"]..": "
@@ -2128,11 +2129,9 @@ hoverTooltip.ShowWorldBossTooltip = function (cell, arg, ...)
 end
 
 hoverTooltip.ShowLFRTooltip = function (cell, arg, ...)
-  local boxname = arg[1]
-  local toon = arg[2]
-  local lfrmap = arg[3]
+  local boxname, toon, tbl = unpack(arg)
   local t = addon.db.Toons[toon]
-  if not boxname or not t or not lfrmap then return end
+  if not boxname or not t or not tbl then return end
   openIndicator(3, "LEFT", "LEFT","RIGHT")
   local line = indicatortip:AddHeader()
   local toonstr = (db.Tooltip.ShowServer and toon) or strsplit(' ', toon)
@@ -2141,13 +2140,13 @@ hoverTooltip.ShowLFRTooltip = function (cell, arg, ...)
   indicatortip:SetCell(line, 2, GOLDFONT .. boxname .. FONTEND, indicatortip:GetHeaderFont(), "RIGHT", 2)
   indicatortip:AddLine(YELLOWFONT .. L["Time Left"] .. ":" .. FONTEND, nil, SecondsToTime(reset - time()))
   for i=1,20 do
-    local instance = lfrmap[boxname..":"..i]
+    local instance = tbl[i]
     local diff = 2
     if instance then
       indicatortip:SetCell(indicatortip:AddLine(), 1, YELLOWFONT .. instance .. FONTEND, "CENTER",3)
       local thisinstance = addon.db.Instances[instance]
       local info = thisinstance[toon] and thisinstance[toon][diff]
-      local killed, total, base, remap = addon:instanceBosses(instance,toon,diff)
+      local killed, total, base, remap, origin = addon:instanceBosses(instance,toon,diff)
       for i=base,base+total-1 do
         local bossid = i
         if remap then
@@ -2156,7 +2155,9 @@ hoverTooltip.ShowLFRTooltip = function (cell, arg, ...)
         local bossname = GetLFGDungeonEncounterInfo(thisinstance.LFDID, bossid)
         local n = indicatortip:AddLine()
         indicatortip:SetCell(n, 1, bossname, "LEFT", 2)
-        if info and info[bossid] then
+        -- for LFRs that are different between two factions
+        -- https://github.com/SavedInstances/SavedInstances/pull/238
+        if info and info[origin and origin[i-base+1] or bossid] then
           indicatortip:SetCell(n, 3, REDFONT..ALREADY_LOOTED..FONTEND, "RIGHT", 1)
         else
           indicatortip:SetCell(n, 3, GREENFONT..AVAILABLE..FONTEND, "RIGHT", 1)
@@ -3641,11 +3642,21 @@ function core:ShowTooltip(anchorframe)
       local boxid = pinst.LFDID
       local firstid
       local total = 0
+      local flag = false -- flag for LFRs that are different between two factions
+      local tbl, other = {}, {}
       for lfdid, lfrinfo in pairs(addon.LFRInstances) do
         if lfrinfo.parent == pinst.LFDID and lfrmap[lfdid] then
-          firstid = math.min(lfdid, firstid or lfdid)
-          total = total + lfrinfo.total
-          lfrmap[boxname..":"..lfrinfo.base] = lfrmap[lfdid]
+          if (not lfrinfo.faction) or (lfrinfo.faction == UnitFactionGroup("player")) then
+            firstid = math.min(lfdid, firstid or lfdid)
+          end
+          if lfrinfo.faction and lfrinfo.faction == "Horde" then
+            flag = true
+            other[lfrinfo.base] = lfrmap[lfdid]
+          else
+            -- count total bosses for only one faction
+            total = total + lfrinfo.total
+            tbl[lfrinfo.base] = lfrmap[lfdid]
+          end
         end
       end
       tooltip:SetCell(line, 1, (instancesaved[boxid] and GOLDFONT or GRAYFONT) .. boxname .. FONTEND)
@@ -3653,16 +3664,15 @@ function core:ShowTooltip(anchorframe)
       for toon, t in cpairs(addon.db.Toons, true) do
         local saved = 0
         local diff = 2
-        for key, instance in pairs(lfrmap) do
-          if string.match(key,boxname..":%d+$") then
-            saved = saved + addon:instanceBosses(instance, toon, diff)
-          end
+        local curr = (flag and t.Faction == "Horde") and other or tbl
+        for key, instance in pairs(curr) do
+          saved = saved + addon:instanceBosses(instance, toon, diff)
         end
         if saved > 0 then
           addColumns(columns, toon, tooltip)
           local col = columns[toon..1]
           tooltip:SetCell(line, col, DifficultyString(pinstance, diff, toon, false, saved, total),4)
-          tooltip:SetCellScript(line, col, "OnEnter", hoverTooltip.ShowLFRTooltip, {boxname, toon, lfrmap})
+          tooltip:SetCellScript(line, col, "OnEnter", hoverTooltip.ShowLFRTooltip, {boxname, toon, curr})
           tooltip:SetCellScript(line, col, "OnLeave", CloseTooltips)
         end
       end
