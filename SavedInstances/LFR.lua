@@ -1,6 +1,8 @@
 local addonName, addon = ...
 local LFRModule = LibStub("AceAddon-3.0"):GetAddon(addonName):NewModule("LFR")
 
+local locFaction = UnitFactionGroup("player")
+
 local LFRInstances = {
   -- index is the id found in LFGDungeons.dbc or using the command below.
   -- /script local id,name; for i=1,GetNumRFDungeons() do id,name = GetRFDungeonInfo(i);print(i..". "..name.." ("..id..")");end
@@ -9,6 +11,8 @@ local LFRInstances = {
   -- /run for i, v in ipairs(GetLFRChoiceOrder()) do print(i, v, GetLFGDungeonInfo(v)) end
   -- altid is for alternate LFRID for higher level toons, use the command below
   -- /run for i = 1, 1951 do local _, _, _, _, maxLvl = GetLFGDungeonInfo(i) if maxLvl == 255 then print(i, GetLFGDungeonInfo(i)) end end
+  -- remap is the boss index different from increasing normally for current character
+  -- origin is the remap of character that runs the LFR
 
   -- Cataclysm
   [416] = { total=4, base=1,  parent=448, altid=843 }, -- DS1: The Siege of Wyrmrest Temple
@@ -76,19 +80,28 @@ local LFRInstances = {
   [1732] = { total=3, base=4,  parent=1889, remap={ 1, 2, 3 } }, -- Uldir2: Crimson Descent
   [1733] = { total=2, base=7,  parent=1889, remap={ 1, 2 } },  -- Uldir3: Heart of Corruption
 
-  [1945] = { total=3, base=1,  parent=1944, remap={ 1, 2, 3 } }, -- BoD1: Siege of Dazar'alor (Alliance)
-  [1946] = { total=3, base=4,  parent=1944, remap={ 1, 2, 3 } }, -- BoD2: Empire's Fall (Alliance)
-  [1947] = { total=3, base=7,  parent=1944, remap={ 1, 2, 3 } }, -- BoD3: Might of the Alliance (Alliance)
+  [1945] = { total=3, base=1,  parent=1944, remap={ 1, 2, 3 }, faction="Alliance" }, -- BoD1: Siege of Dazar'alor (Alliance)
+  [1946] = { total=3, base=4,  parent=1944, remap={ 1, 2, 3 }, faction="Alliance" }, -- BoD2: Empire's Fall (Alliance)
+  [1947] = { total=3, base=7,  parent=1944, remap={ 1, 2, 3 }, faction="Alliance" }, -- BoD3: Might of the Alliance (Alliance)
 
-  [1948] = { total=3, base=1,  parent=1944, remap={ 1, 2, 3 } }, -- BoD1: Defense of Dazar'alor (Horde)
-  [1949] = { total=3, base=4,  parent=1944, remap={ 1, 2, 3 } }, -- BoD2: Death's Bargain (Horde)
-  [1950] = { total=3, base=7,  parent=1944, remap={ 1, 2, 3 } }, -- BoD3: Victory or Death (Horde)
+  [1948] = { total=3, base=1,  parent=1944, remap={ 1, 2, 3 }, faction="Horde" }, -- BoD1: Defense of Dazar'alor (Horde)
+  [1949] = { total=3, base=4,  parent=1944, remap={ 1, 2, 3 }, faction="Horde" }, -- BoD2: Death's Bargain (Horde)
+  [1950] = { total=3, base=7,  parent=1944, remap={ 1, 2, 3 }, faction="Horde" }, -- BoD3: Victory or Death (Horde)
 
-  [1951] = { total=2, base=1,  parent=1954}, -- Crucible of Storms
+  [1951] = { total=2, base=1,  parent=1954, remap={ 1, 2 } }, -- Crucible of Storms
 }
 
 local tbl = {}
 for id, info in pairs(LFRInstances) do
+  if info.faction and locFaction ~= info.faction then
+    info.origin = info.remap
+    info.remap = nil
+    -- Battle of Dazar'alor
+    if id == 1945 or id == 1948 then
+      info.remap = {1, 3, 2}
+    end
+  end
+
   tbl[id] = info
   if info.altid then
     tbl[info.altid] = info
