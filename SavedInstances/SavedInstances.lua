@@ -285,6 +285,7 @@ addon.defaultDB = {
   -- Money: integer
   -- Zone: string
   -- Warmode: boolean
+  -- Artifact: string
 
   -- currency: key: currencyID  value:
   -- amount: integer
@@ -1637,6 +1638,12 @@ function addon:UpdateToonData()
     t.Race = lrace
   end
   t.Warmode = C_PvP.IsWarModeDesired()
+  local azeriteItemLocation = C_AzeriteItem.FindActiveAzeriteItem()
+  if azeriteItemLocation then
+    local xp, totalLevelXP = C_AzeriteItem.GetAzeriteItemXPInfo(azeriteItemLocation)
+    local currentLevel = C_AzeriteItem.GetPowerLevel(azeriteItemLocation)
+    t.Artifact = format("%d (%d%%)", currentLevel, xp / totalLevelXP  * 100)
+  end
 
   t.LastSeen = time()
 end
@@ -1776,6 +1783,9 @@ hoverTooltip.ShowToonTooltip = function (cell, arg, ...)
   indicatortip:SetCell(indicatortip:AddHeader(),1,ftex..ClassColorise(t.Class, toon))
   indicatortip:SetCell(1,2,ClassColorise(t.Class, LEVEL.." "..t.Level.." "..(t.LClass or "")))
   indicatortip:AddLine(STAT_AVERAGE_ITEM_LEVEL,("%d "):format(t.IL or 0)..STAT_AVERAGE_ITEM_LEVEL_EQUIPPED:format(t.ILe or 0))
+  if t.Artifact then
+    indicatortip:AddLine(ARTIFACT_POWER, t.Artifact)
+  end
   if t.RBGrating and t.RBGrating > 0 then
     indicatortip:AddLine(BATTLEGROUND_RATING, t.RBGrating)
   end
