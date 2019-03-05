@@ -77,7 +77,7 @@ function EmissaryModule:RefreshDailyWorldQuestInfo()
           end
           currExpansion[day].questNeed = questNeed
           currExpansion[day].expiredTime = timeleft * 60 + time()
-          local tbl = t.Emissary[expansionLevel].days[day]
+          local tbl = t.Emissary[expansionLevel].days[day] or {}
           tbl.expiredTime = timeleft * 60 + time()
           tbl.isComplete = false
           tbl.isFinish = isFinish
