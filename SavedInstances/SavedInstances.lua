@@ -9,9 +9,9 @@ addon.icon = addon.LDB and LibStub("LibDBIcon-1.0", true)
 
 local QTip = LibStub("LibQTip-1.0")
 local dataobject, db, config
-local maxdiff = 23 -- max number of instance difficulties
+local maxdiff = 33 -- max number of instance difficulties
 local maxcol = 4 -- max columns per player+instance
-local maxid = 2000 -- highest possible value for an instanceID, current max (Tomb of Sargeras) is 1676
+local maxid = 3000 -- highest possible value for an instanceID, current max (Battle of Dazar'alor) is 2070
 
 local table, math, bit, string, pairs, ipairs, unpack, strsplit, time, type, wipe, tonumber, select, strsub =
   table, math, bit, string, pairs, ipairs, unpack, strsplit, time, type, wipe, tonumber, select, strsub
