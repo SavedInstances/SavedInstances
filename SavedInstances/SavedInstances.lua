@@ -12,6 +12,7 @@ local dataobject, db, config
 local maxdiff = 33 -- max number of instance difficulties
 local maxcol = 4 -- max columns per player+instance
 local maxid = 3000 -- highest possible value for an instanceID, current max (Battle of Dazar'alor) is 2070
+local BONUS_ROLL_REQUIRED_CURRENCY = 1580 -- bonus roll currency of current expansion
 
 local table, math, bit, string, pairs, ipairs, unpack, strsplit, time, type, wipe, tonumber, select, strsub =
   table, math, bit, string, pairs, ipairs, unpack, strsplit, time, type, wipe, tonumber, select, strsub
@@ -4120,14 +4121,17 @@ function core:ShowTooltip(anchorframe)
       if t.BonusRoll and t.BonusRoll[1] then
         local gold = 0
         for _,roll in ipairs(t.BonusRoll) do
-          if not roll.item then
-            gold = gold + 1
-          else
-            local itemID = GetItemInfoInstant(roll.item)
-            if itemID == 163827 then -- Quartermaster's Coin, obtained when failing a bonus roll in pvp
+          if not roll.costCurrencyID then break end
+          if roll.costCurrencyID == BONUS_ROLL_REQUIRED_CURRENCY then
+            if not roll.item then
               gold = gold + 1
             else
-              break
+              local itemID = GetItemInfoInstant(roll.item)
+              if itemID == 163827 then -- Quartermaster's Coin, obtained when failing a bonus roll in pvp
+                gold = gold + 1
+              else
+                break
+              end
             end
           end
         end
@@ -4649,14 +4653,17 @@ function addon.BonusRollShow()
   end
   local bonus = 0
   for _,rinfo in ipairs(binfo) do
-    if not rinfo.item then
-      bonus = bonus + 1
-    else
-      local itemID = GetItemInfoInstant(rinfo.item)
-      if itemID == 163827 then -- Quartermaster's Coin, obtained when failing a bonus roll in pvp
+    if not rinfo.costCurrencyID then break end
+    if rinfo.costCurrencyID == BonusRollFrame.CurrentCountFrame.currencyID then
+      if not rinfo.item then
         bonus = bonus + 1
       else
-        break
+        local itemID = GetItemInfoInstant(rinfo.item)
+        if itemID == 163827 then -- Quartermaster's Coin, obtained when failing a bonus roll in pvp
+          bonus = bonus + 1
+        else
+          break
+        end
       end
     end
   end
