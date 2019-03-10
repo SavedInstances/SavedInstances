@@ -803,6 +803,7 @@ addon.transInstance = {
   [1516] = 1190, -- Arcway: ticket 227/233 ptBR
   [1651] = 1347, -- Return to Karazhan: ticket 237 (fake LFDID)
   [545] = 185, -- The Steamvault: issue #143 esES
+  [1530] = 1353, -- The Nighthold: issue #186 frFR
 }
 
 -- some instances (like sethekk halls) are named differently by GetSavedInstanceInfo() and LFGGetDungeonInfoByID()
@@ -1371,6 +1372,9 @@ function addon:UpdateInstance(id)
     name = L["LFR"]..": "..name
   end
   if id == 1661 then -- ignore AI Test - Arathi Basin
+    return nil, nil, true
+  end
+  if id == 1508 then -- ignore AI Test - Warsong Gulch
     return nil, nil, true
   end
   if id == 852 and expansionLevel == 5 then -- XXX: Molten Core hack
