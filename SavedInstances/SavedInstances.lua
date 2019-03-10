@@ -58,6 +58,7 @@ end
 
 local currency = addon.currency
 local trade_spells = addon.trade_spells
+local itemcds = addon.itemcds
 local cdname = addon.cdname
 local QuestExceptions = addon.QuestExceptions
 local TimewalkingItemQuest = addon.TimewalkingItemQuest
@@ -4418,20 +4419,6 @@ StaticPopupDialogs["SAVEDINSTANCES_DELETE_CHARACTER"] = {
   hideOnEscape = true,
   enterClicksFirstButton = false,
   showAlert = true,
-}
-
-local itemcds = { -- [itemid] = spellid
-  [87214] = 126459, 	-- Blingtron 4000
-  [111821] = 161414, 	-- Blingtron 5000
-  [132530] = 200146,	-- Reaves: Bling (Blingtron 6000)
-  [40768] = 54710, 	-- MOLL-E
-  [49040] = 67826,	-- Jeeves
-  [132525] = 200087,	-- Reaves: Repair
-  [112059] = 163830,	-- Wormhole Centrifuge
-  [48933] = 67833,	-- Wormhole Generator: Northrend
-  [87215] = 126755,	-- Wormhole Generator: Pandaria
-  [18986] = 23453, 	-- Ultrasafe Transporter: Gadgetzhan
-  [30544] = 36941,	-- Ultrasafe Transporter: Toshley's Station
 }
 
 function core:scan_item_cds()
