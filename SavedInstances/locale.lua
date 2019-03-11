@@ -3,16 +3,16 @@
 -- To help with missing translations please go here:
 local url = "http://www.wowace.com/addons/saved_instances/localization/"
 
-local addonName, vars = ...
+local addonName, addon = ...
 local Ld, La = {}, {}
 local locale = GAME_LOCALE or GetLocale()
 if locale == "enGB" then locale = "enUS" end
 
-vars.L = setmetatable({},{
+addon.L = setmetatable({},{
   __index = function(t, s)
     if locale ~= "enUS" and Ld[s] and
-      not La[s] and url and not vars.locale_warning then
-      vars.locale_warning = true
+      not La[s] and url and not addon.locale_warning then
+      addon.locale_warning = true
       print(string.format("*** %s needs help translating to your language! (%s)", addonName, locale))
       print("*** If you speak English, you can contribute by visiting:")
       print("*** "..url)

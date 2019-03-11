@@ -317,7 +317,8 @@ addon.defaultDB = {
   -- MythicKey
   -- name: string
   -- ResetTime: expiry
-  -- level: string
+  -- mapID: int
+  -- level: int
   -- color: string
   -- link: string
 
@@ -2477,7 +2478,7 @@ function core:OnInitialize()
     versionString = "Dev"
   end
   --@end-debug@
-  SavedInstances.version = versionString
+  addon.version = versionString
 
   SavedInstancesDB = SavedInstancesDB or addon.defaultDB
   -- begin backwards compatibility
@@ -3891,17 +3892,19 @@ function core:ShowTooltip(anchorframe)
       if t.MythicKey then
         if t.MythicKey.link then
           local col = columns[toon..1]
+          local name
           if addon.db.Tooltip.AbbreviateKeystone then
-            if not t.MythicKey.name then t.MythicKey.name = t.MythicKey.link end
-            if t.MythicKey.abbrev then
-              tooltip:SetCell(show, col, "|c"..t.MythicKey.color..t.MythicKey.abbrev.." ("..t.MythicKey.level..")"..FONTEND, "CENTER",maxcol)
+            if t.MythicKey.mapID then
+              name = addon.KeystoneAbbrev[t.MythicKey.mapID] or t.MythicKey.name
             else
-              local kabbrev = KeystonetoAbbrev[t.MythicKey.name] or t.MythicKey.name
-              tooltip:SetCell(show, col, "|c"..t.MythicKey.color..kabbrev.." ("..t.MythicKey.level..")"..FONTEND, "CENTER",maxcol)
+              -- TODO: this is fallback to previous version, remove this in future
+              name = t.MythicKey.abbrev or t.MythicKey.name or t.MythicKey.link
             end
           else
-            tooltip:SetCell(show, col, "|c"..t.MythicKey.color..t.MythicKey.name.." ("..t.MythicKey.level..")"..FONTEND, "CENTER",maxcol)
+            -- TODO: this is fallback to previous version, remove this in future
+            name = t.MythicKey.name or t.MythicKey.link
           end
+          tooltip:SetCell(show, col, "|c" .. t.MythicKey.color .. name .. " (" .. t.MythicKey.level .. ")" .. FONTEND, "CENTER", maxcol)
           tooltip:SetCellScript(show, col, "OnMouseDown", ChatLink, t.MythicKey.link)
         end
       end
