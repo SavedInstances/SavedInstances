@@ -3,6 +3,19 @@ local MythicPlusModule = LibStub("AceAddon-3.0"):GetAddon(addonName):NewModule("
 local L = addon.L
 local thisToon = UnitName("player") .. " - " .. GetRealmName()
 
+-- Lua functions
+local strsplit, tonumber, select, time = strsplit, tonumber, select, time
+
+-- WoW API / Variables
+local GetContainerNumSlots = GetContainerNumSlots
+local GetContainerItemID = GetContainerItemID
+local GetContainerItemLink = GetContainerItemLink
+local GetItemQualityColor = GetItemQualityColor
+local C_MythicPlus_RequestRewards = C_MythicPlus.RequestRewards
+local C_ChallengeMode_GetMapUIInfo = C_ChallengeMode.GetMapUIInfo
+local C_MythicPlus_GetWeeklyChestRewardLevel = C_MythicPlus.GetWeeklyChestRewardLevel
+local C_MythicPlus_IsWeeklyRewardAvailable = C_MythicPlus.IsWeeklyRewardAvailable
+
 local KeystoneAbbrev = {
   [244] = L["AD"],
   [245] = L["Free"],
@@ -17,26 +30,17 @@ local KeystoneAbbrev = {
 }
 addon.KeystoneAbbrev = KeystoneAbbrev
 
-local KeystonetoAbbrev = {
-  ["Atal'Dazar"] = L["AD"],
-  ["Freehold"] = L["Free"],
-  ["Tol Dagor"] = L["TD"],
-  ["The MOTHERLODE!!"] = L["MOTHER"],
-  ["Waycrest Manor"] = L["WM"],
-  ["Kings' Rest"] = L["KR"],
-  ["Temple of Sethraliss"] = L["ToS"],
-  ["The Underrot"] = L["Under"],
-  ["Shrine of the Storm"] = L["SotS"],
-  ["Siege of Boralus"] = L["SoB"],
-}
-addon.KeystonetoAbbrev = KeystonetoAbbrev
+function MythicPlusModule:OnEnable()
+  self:RegisterEvent("BAG_UPDATE", "RefreshMythicKeyInfo")
+  self:RegisterEvent("CHALLENGE_MODE_MAPS_UPDATE", "RefreshMythicKeyInfo")
+  self:RefreshMythicKeyInfo()
+end
 
 function MythicPlusModule:RefreshMythicKeyInfo(event)
-
-  if (event ~= "CHALLENGE_MODE_MAPS_UPDATE") then C_MythicPlus.RequestRewards() end -- This event is fired after the rewards data was requested, causing yet another refresh if not checked for
+  -- This event is fired after the rewards data was requested, causing yet another refresh if not checked for
+  if (event ~= "CHALLENGE_MODE_MAPS_UPDATE") then C_MythicPlus_RequestRewards() end
 
   local t = addon.db.Toons[thisToon]
-  local _
   t.MythicKey = {}
   for bagID = 0, 4 do
     for invID = 1, GetContainerNumSlots(bagID) do
@@ -48,20 +52,19 @@ function MythicPlusModule:RefreshMythicKeyInfo(event)
         local mapLevel = tonumber(KeyInfo[4])
         local color
         if KeyInfo[4] == "0" then
-          _,_,_,color = GetItemQualityColor(0)
+          color = select(4, GetItemQualityColor(0))
         elseif mapLevel >= 10 then
-          _,_,_,color = GetItemQualityColor(4)
+          color = select(4, GetItemQualityColor(4))
         elseif mapLevel >= 7 then
-          _,_,_,color = GetItemQualityColor(3)
+          color = select(4, GetItemQualityColor(3))
         elseif mapLevel >= 4 then
-          _,_,_,color = GetItemQualityColor(2)
+          color = select(4, GetItemQualityColor(2))
         else
-          _,_,_,color = GetItemQualityColor(1)
+          color = select(4, GetItemQualityColor(1))
         end
-        -- Disabled Debug Message
         -- addon.debug("Mythic Keystone: %s", gsub(keyLink, "\124", "\124\124"))
-        t.MythicKey.abbrev = KeystoneAbbrev[mapID]
-        t.MythicKey.name = C_ChallengeMode.GetMapUIInfo(mapID)
+        t.MythicKey.name = C_ChallengeMode_GetMapUIInfo(mapID)
+        t.MythicKey.mapID = mapID
         t.MythicKey.color = color
         t.MythicKey.level = mapLevel
         t.MythicKey.ResetTime = addon:GetNextWeeklyResetTime()
@@ -74,14 +77,8 @@ function MythicPlusModule:RefreshMythicKeyInfo(event)
       t.MythicKeyBest.LastWeekLevel = t.MythicKeyBest.level
   end
   end
-  t.MythicKeyBest = t.MythicKeyBest or { }
+  t.MythicKeyBest = t.MythicKeyBest or {}
   t.MythicKeyBest.ResetTime = addon:GetNextWeeklyResetTime()
-  t.MythicKeyBest.level = C_MythicPlus.GetWeeklyChestRewardLevel()
-  t.MythicKeyBest.WeeklyReward = C_MythicPlus.IsWeeklyRewardAvailable()
-end
-
-function MythicPlusModule:OnEnable()
-  self:RegisterEvent("BAG_UPDATE", "RefreshMythicKeyInfo")
-  self:RegisterEvent("CHALLENGE_MODE_MAPS_UPDATE", "RefreshMythicKeyInfo")
-  MythicPlusModule:RefreshMythicKeyInfo()
+  t.MythicKeyBest.level = C_MythicPlus_GetWeeklyChestRewardLevel()
+  t.MythicKeyBest.WeeklyReward = C_MythicPlus_IsWeeklyRewardAvailable()
 end

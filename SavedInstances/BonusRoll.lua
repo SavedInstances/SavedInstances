@@ -7,6 +7,7 @@ local BonusFrame -- Frame attached to BonusRollFrame
 -- Lua functions
 local tostring, ipairs, time, pairs, strsplit = tostring, ipairs, time, pairs, strsplit
 local tonumber, tinsert, sort, select = tonumber, tinsert, sort, select
+local _G = _G
 
 -- WoW API / Variables
 local GetItemInfoInstant = GetItemInfoInstant
@@ -16,7 +17,6 @@ local GetDifficultyInfo = GetDifficultyInfo
 local GetSubZoneText = GetSubZoneText
 local GetRealZoneText = GetRealZoneText
 local CreateFrame = CreateFrame
-local BonusRollFrame = BonusRollFrame
 local DIFFICULTY_DUNGEON_CHALLENGE = DIFFICULTY_DUNGEON_CHALLENGE
 
 local MAX_BONUS_ROLL_RECORD_LIMIT = 25 -- the max cap of bonus roll records
@@ -67,6 +67,7 @@ end
 
 local function BonusRollShow()
   local t = addon.db.Toons[thisToon]
+  local BonusRollFrame = _G.BonusRollFrame
   if not t or not BonusRollFrame then return end
   local bonus = addon:BonusRollCount(thisToon, BonusRollFrame.CurrentCountFrame.currencyID)
   if not bonus then
@@ -163,7 +164,7 @@ function BonusRollModule:BONUS_ROLL_RESULT(event, rewardType, rewardLink, reward
   local roll = {
     name = bossname,
     time = now,
-    costCurrencyID = BonusRollFrame.CurrentCountFrame.currencyID,
+    costCurrencyID = _G.BonusRollFrame.CurrentCountFrame.currencyID,
   }
   if rewardType == "money" then
     roll.money = rewardQuantity
