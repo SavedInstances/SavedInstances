@@ -1,12 +1,10 @@
 local addonName, addon = ...
 local addonAbbrev = "SI"
-addon.core = LibStub("AceAddon-3.0"):GetAddon(addonName):NewModule("Core", "AceEvent-3.0", "AceTimer-3.0", "AceBucket-3.0")
-
 local core = addon.core
 local L = addon.L
 
 local QTip = LibStub("LibQTip-1.0")
-local dataobject, db, config
+local db
 local maxdiff = 33 -- max number of instance difficulties
 local maxcol = 4 -- max columns per player+instance
 local maxid = 3000 -- highest possible value for an instanceID, current max (Battle of Dazar'alor) is 2070
@@ -2492,7 +2490,6 @@ function core:OnInitialize()
   -- end backwards compatibilty
   db = db or SavedInstancesDB
   addon.db = db
-  config = addon.config
   core:toonInit()
   db.Lockouts = nil -- deprecated
   db.History = db.History or {}
@@ -2559,7 +2556,7 @@ function core:OnInitialize()
       elseif button == "LeftButton" then
         addon:ToggleDetached()
       else
-        config:ShowConfig()
+        addon.config:ShowConfig()
       end
     end
   })

@@ -1,5 +1,5 @@
-local addonName, addon = ...
-local MythicPlusModule = LibStub("AceAddon-3.0"):GetAddon(addonName):NewModule("MythicPlus", "AceEvent-3.0")
+local _, addon = ...
+local MythicPlusModule = addon.core:NewModule("MythicPlus", "AceEvent-3.0")
 local L = addon.L
 local thisToon = UnitName("player") .. " - " .. GetRealmName()
 

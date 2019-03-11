@@ -1,5 +1,5 @@
-local addonName, addon = ...
-local TradeskillsModule = LibStub("AceAddon-3.0"):GetAddon(addonName):NewModule("Tradeskills")
+local _, addon = ...
+local TradeskillsModule = addon.core:NewModule("Tradeskills")
 local L = addon.L
 
 local trade_spells = {
