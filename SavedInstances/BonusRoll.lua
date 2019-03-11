@@ -1,5 +1,5 @@
-local addonName, addon = ...
-local BonusRollModule = LibStub("AceAddon-3.0"):GetAddon(addonName):NewModule("BonusRoll", "AceEvent-3.0")
+local _, addon = ...
+local BonusRollModule = addon.core:NewModule("BonusRoll", "AceEvent-3.0")
 local thisToon = UnitName("player") .. " - " .. GetRealmName()
 
 local BonusFrame -- Frame attached to BonusRollFrame

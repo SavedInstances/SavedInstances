@@ -1,5 +1,5 @@
-local addonName, addon = ...
-local CurrencyModule = LibStub("AceAddon-3.0"):GetAddon(addonName):NewModule("Currency", "AceEvent-3.0", "AceTimer-3.0", "AceBucket-3.0")
+local _, addon = ...
+local CurrencyModule = addon.core:NewModule("Currency", "AceEvent-3.0", "AceTimer-3.0", "AceBucket-3.0")
 local thisToon = UnitName("player") .. " - " .. GetRealmName()
 
 -- Lua functions

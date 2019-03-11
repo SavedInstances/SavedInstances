@@ -1,5 +1,5 @@
-local addonName, addon = ...
-local EmissaryModule = LibStub("AceAddon-3.0"):GetAddon(addonName):NewModule("Emissary", "AceEvent-3.0")
+local _, addon = ...
+local EmissaryModule = addon.core:NewModule("Emissary", "AceEvent-3.0")
 local thisToon = UnitName("player") .. " - " .. GetRealmName()
 
 -- Lua functions

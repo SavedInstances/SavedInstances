@@ -1,5 +1,5 @@
-local addonName, addon = ...
-local QuestsModule = LibStub("AceAddon-3.0"):GetAddon(addonName):NewModule("Quests")
+local _, addon = ...
+local QuestsModule = addon.core:NewModule("Quests")
 
 -- Lua functions
 local pairs, strtrim = pairs, strtrim
