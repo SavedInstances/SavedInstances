@@ -10,6 +10,7 @@ local fileList = {
     SavedInstances_Main = {
         "SavedInstances/SavedInstances.lua",
         "SavedInstances/Core.lua",
+        "SavedInstances/BonusRoll.lua",
         "SavedInstances/Currency.lua",
         "SavedInstances/Emissary.lua",
         "SavedInstances/LFR.lua",
