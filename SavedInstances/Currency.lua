@@ -2,16 +2,16 @@ local _, addon = ...
 local CurrencyModule = addon.core:NewModule("Currency", "AceEvent-3.0", "AceTimer-3.0", "AceBucket-3.0")
 local thisToon = UnitName("player") .. " - " .. GetRealmName()
 
+local SEASON_SCAN = CURRENCY_SEASON_TOTAL:gsub("%%%d*?([ds])","(%%%1*)")
+
 -- Lua functions
 local wipe, ipairs, pairs = wipe, ipairs, pairs
 local _G = _G
 
 -- WoW API / Variables
-local GetMoney = GetMoney
 local GetCurrencyInfo = GetCurrencyInfo
+local GetMoney = GetMoney
 local IsQuestFlaggedCompleted = IsQuestFlaggedCompleted
-
-local SEASON_SCAN = CURRENCY_SEASON_TOTAL:gsub("%%%d*?([ds])","(%%%1*)")
 
 function CurrencyModule:OnEnable()
   self:RegisterBucketEvent("CURRENCY_DISPLAY_UPDATE", 0.25, function() addon:UpdateCurrency() end)

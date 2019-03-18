@@ -3,6 +3,11 @@ local BonusRollModule = addon.core:NewModule("BonusRoll", "AceEvent-3.0")
 local thisToon = UnitName("player") .. " - " .. GetRealmName()
 
 local BonusFrame -- Frame attached to BonusRollFrame
+local MAX_BONUS_ROLL_RECORD_LIMIT = 25 -- the max cap of bonus roll records
+local BONUS_ROLL_REQUIRED_CURRENCY = 1580 -- bonus roll currency of current expansion
+local ignoreItem = {
+  [163827] = true, -- Quartermaster's Coin, obtained when failing a bonus roll in pvp
+}
 
 -- Lua functions
 local tostring, ipairs, time, pairs, strsplit = tostring, ipairs, time, pairs, strsplit
@@ -10,60 +15,14 @@ local tonumber, tinsert, sort, select = tonumber, tinsert, sort, select
 local _G = _G
 
 -- WoW API / Variables
-local GetItemInfoInstant = GetItemInfoInstant
-local GetBonusRollEncounterJournalLinkDifficulty = GetBonusRollEncounterJournalLinkDifficulty
-local GetInstanceInfo = GetInstanceInfo
-local GetDifficultyInfo = GetDifficultyInfo
-local GetSubZoneText = GetSubZoneText
-local GetRealZoneText = GetRealZoneText
 local CreateFrame = CreateFrame
+local GetBonusRollEncounterJournalLinkDifficulty = GetBonusRollEncounterJournalLinkDifficulty
+local GetDifficultyInfo = GetDifficultyInfo
+local GetInstanceInfo = GetInstanceInfo
+local GetItemInfoInstant = GetItemInfoInstant
+local GetRealZoneText = GetRealZoneText
+local GetSubZoneText = GetSubZoneText
 local DIFFICULTY_DUNGEON_CHALLENGE = DIFFICULTY_DUNGEON_CHALLENGE
-
-local MAX_BONUS_ROLL_RECORD_LIMIT = 25 -- the max cap of bonus roll records
-local BONUS_ROLL_REQUIRED_CURRENCY = 1580 -- bonus roll currency of current expansion
-local ignoreItem = {
-  [163827] = true, -- Quartermaster's Coin, obtained when failing a bonus roll in pvp
-}
-
-function addon:BonusRollCount(toon, currencyID)
-  local t = addon.db.Toons[toon]
-  if not t or not t.BonusRoll or #t.BonusRoll == 0 then return end
-  currencyID = currencyID or BONUS_ROLL_REQUIRED_CURRENCY
-  local count = 0
-  for _, tbl in ipairs(t.BonusRoll) do
-    if not tbl.costCurrencyID then break end
-    if tbl.costCurrencyID == currencyID then
-      if not tbl.item then
-        count = count + 1
-      else
-        local itemID = GetItemInfoInstant(tbl.item)
-        if ignoreItem[itemID] then
-          count = count + 1
-        else
-          break
-        end
-      end
-    end
-  end
-  return count
-end
-
-function addon:BossRecord(toon, bossname, difficultyID, soft)
-  local t = addon.db.Toons[toon]
-  if not t then return end
-  local now = time()
-  -- boss mods can often detect completion before ENCOUNTER_END
-  -- also some world bosses never send ENCOUNTER_END
-  -- enough timeout to prevent overwriting, but short enough to prevent cross-boss contamination
-  if soft and soft == false and (not bossname or now <= (t.lastbosstime or 0) + 120) then return end
-  bossname = tostring(bossname) -- for safety
-  local difficultyName = GetDifficultyInfo(difficultyID)
-  if difficultyName and #difficultyName > 0 then
-    bossname = bossname .. ": ".. difficultyName
-  end
-  t.lastboss = bossname
-  t.lastbosstime = now
-end
 
 local function BonusRollShow()
   local t = addon.db.Toons[thisToon]
@@ -93,7 +52,6 @@ local function BonusRollShow()
   BonusFrame.text:SetText((bonus > 0 and "+" or "")..bonus)
   BonusFrame:Show()
 end
-
 hooksecurefunc("BonusRollFrame_StartBonusRoll", BonusRollShow)
 
 function BonusRollModule:OnEnable()
@@ -178,4 +136,44 @@ function BonusRollModule:BONUS_ROLL_RESULT(event, rewardType, rewardLink, reward
   for i = MAX_BONUS_ROLL_RECORD_LIMIT + 1, #t.BonusRoll do
     t.BonusRoll[i] = nil
   end
+end
+
+function addon:BonusRollCount(toon, currencyID)
+  local t = addon.db.Toons[toon]
+  if not t or not t.BonusRoll or #t.BonusRoll == 0 then return end
+  currencyID = currencyID or BONUS_ROLL_REQUIRED_CURRENCY
+  local count = 0
+  for _, tbl in ipairs(t.BonusRoll) do
+    if not tbl.costCurrencyID then break end
+    if tbl.costCurrencyID == currencyID then
+      if not tbl.item then
+        count = count + 1
+      else
+        local itemID = GetItemInfoInstant(tbl.item)
+        if ignoreItem[itemID] then
+          count = count + 1
+        else
+          break
+        end
+      end
+    end
+  end
+  return count
+end
+
+function addon:BossRecord(toon, bossname, difficultyID, soft)
+  local t = addon.db.Toons[toon]
+  if not t then return end
+  local now = time()
+  -- boss mods can often detect completion before ENCOUNTER_END
+  -- also some world bosses never send ENCOUNTER_END
+  -- enough timeout to prevent overwriting, but short enough to prevent cross-boss contamination
+  if soft and soft == false and (not bossname or now <= (t.lastbosstime or 0) + 120) then return end
+  bossname = tostring(bossname) -- for safety
+  local difficultyName = GetDifficultyInfo(difficultyID)
+  if difficultyName and #difficultyName > 0 then
+    bossname = bossname .. ": ".. difficultyName
+  end
+  t.lastboss = bossname
+  t.lastbosstime = now
 end

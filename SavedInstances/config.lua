@@ -10,16 +10,24 @@ local unpack, date, type, tinsert, sort = unpack, date, type, tinsert, sort
 local _G = _G
 
 -- WoW API / Variables
-local GetCurrencyInfo = GetCurrencyInfo
 local GetBindingKey = GetBindingKey
-local SetBinding = SetBinding
-local SaveBindings = SaveBindings
+local GetCurrencyInfo = GetCurrencyInfo
 local GetCurrentBindingSet = GetCurrentBindingSet
 local GetRealmName = GetRealmName
+local InterfaceOptionsFrame_OpenToCategory = InterfaceOptionsFrame_OpenToCategory
+local SaveBindings = SaveBindings
+local SetBinding = SetBinding
+local StaticPopup_Show = StaticPopup_Show
+local ALL = ALL
+local COLOR = COLOR
+local CURRENCY = CURRENCY
+local DELETE = DELETE
+local EMBLEM_SYMBOL = EMBLEM_SYMBOL
+local GREEN_FONT_COLOR_CODE = GREEN_FONT_COLOR_CODE
+local LEVEL = LEVEL
+local RED_FONT_COLOR_CODE = RED_FONT_COLOR_CODE
 
--- GLOBALS: BINDING_NAME_SAVEDINSTANCES, BINDING_HEADER_SAVEDINSTANCES, EMBLEM_SYMBOL, COLOR
--- GLOBALS: GREEN_FONT_COLOR_CODE, RED_FONT_COLOR_CODE, CURRENCY, ALL, StaticPopup_Show
--- GLOBALS: LEVEL, DELETE, InterfaceOptionsFrame, InterfaceOptionsFrame_OpenToCategory
+-- GLOBALS: BINDING_NAME_SAVEDINSTANCES, BINDING_HEADER_SAVEDINSTANCES
 
 addon.diff_strings = {
   D1 = DUNGEON_DIFFICULTY1, -- 5 man
@@ -868,8 +876,8 @@ end
 
 local firstoptiongroup, lastoptiongroup
 function Config:ReopenConfigDisplay(f)
-  if InterfaceOptionsFrame:IsShown() then
-    InterfaceOptionsFrame:Hide();
+  if _G.InterfaceOptionsFrame:IsShown() then
+    _G.InterfaceOptionsFrame:Hide();
     InterfaceOptionsFrame_OpenToCategory(lastoptiongroup)
     InterfaceOptionsFrame_OpenToCategory(firstoptiongroup)
     InterfaceOptionsFrame_OpenToCategory(f)
@@ -918,8 +926,8 @@ function Config:SetupOptions()
 end
 
 function Config:ShowConfig()
-  if InterfaceOptionsFrame:IsShown() then
-    InterfaceOptionsFrame:Hide()
+  if _G.InterfaceOptionsFrame:IsShown() then
+    _G.InterfaceOptionsFrame:Hide()
   else
     InterfaceOptionsFrame_OpenToCategory(lastoptiongroup)
     InterfaceOptionsFrame_OpenToCategory(firstoptiongroup)
