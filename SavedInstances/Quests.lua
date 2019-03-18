@@ -6,12 +6,11 @@ local pairs, strtrim = pairs, strtrim
 local _G = _G
 
 -- WoW API / Variables
-local GetItemInfo = GetItemInfo
-local GetAchievementCriteriaInfo = GetAchievementCriteriaInfo
-local GetSpellInfo = GetSpellInfo
 local C_Map_GetMapInfo = C_Map.GetMapInfo
-
--- GLOBALS: LOOT
+local GetAchievementCriteriaInfo = GetAchievementCriteriaInfo
+local GetItemInfo = GetItemInfo
+local GetSpellInfo = GetSpellInfo
+local LOOT = LOOT
 
 local _specialQuests = {
   -- Isle of Thunder

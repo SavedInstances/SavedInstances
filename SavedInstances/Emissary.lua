@@ -6,18 +6,18 @@ local thisToon = UnitName("player") .. " - " .. GetRealmName()
 local time, pairs, ipairs, tonumber, floor = time, pairs, ipairs, tonumber, floor
 
 -- WoW API / Variables
-local IsQuestFlaggedCompleted = IsQuestFlaggedCompleted
-local GetQuestBountyInfoForMapID = GetQuestBountyInfoForMapID
-local GetQuestLogTitle = GetQuestLogTitle
-local GetQuestLogIndexByID = GetQuestLogIndexByID
 local C_TaskQuest_GetQuestTimeLeftMinutes = C_TaskQuest.GetQuestTimeLeftMinutes
-local GetQuestObjectiveInfo = GetQuestObjectiveInfo
-local GetQuestLogRewardMoney = GetQuestLogRewardMoney
-local GetNumQuestLogRewards = GetNumQuestLogRewards
 local GetNumQuestLogRewardCurrencies = GetNumQuestLogRewardCurrencies
-local QuestUtils_GetBestQualityItemRewardIndex = QuestUtils_GetBestQualityItemRewardIndex
-local GetQuestLogRewardInfo = GetQuestLogRewardInfo
+local GetNumQuestLogRewards = GetNumQuestLogRewards
+local GetQuestBountyInfoForMapID = GetQuestBountyInfoForMapID
+local GetQuestLogIndexByID = GetQuestLogIndexByID
 local GetQuestLogRewardCurrencyInfo = GetQuestLogRewardCurrencyInfo
+local GetQuestLogRewardInfo = GetQuestLogRewardInfo
+local GetQuestLogRewardMoney = GetQuestLogRewardMoney
+local GetQuestLogTitle = GetQuestLogTitle
+local GetQuestObjectiveInfo = GetQuestObjectiveInfo
+local IsQuestFlaggedCompleted = IsQuestFlaggedCompleted
+local QuestUtils_GetBestQualityItemRewardIndex = QuestUtils_GetBestQualityItemRewardIndex
 
 local Emissaries = {
   [6] = {

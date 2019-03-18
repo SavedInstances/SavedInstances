@@ -7,14 +7,14 @@ local thisToon = UnitName("player") .. " - " .. GetRealmName()
 local strsplit, tonumber, select, time = strsplit, tonumber, select, time
 
 -- WoW API / Variables
-local GetContainerNumSlots = GetContainerNumSlots
-local GetContainerItemID = GetContainerItemID
-local GetContainerItemLink = GetContainerItemLink
-local GetItemQualityColor = GetItemQualityColor
-local C_MythicPlus_RequestRewards = C_MythicPlus.RequestRewards
 local C_ChallengeMode_GetMapUIInfo = C_ChallengeMode.GetMapUIInfo
 local C_MythicPlus_GetWeeklyChestRewardLevel = C_MythicPlus.GetWeeklyChestRewardLevel
 local C_MythicPlus_IsWeeklyRewardAvailable = C_MythicPlus.IsWeeklyRewardAvailable
+local C_MythicPlus_RequestRewards = C_MythicPlus.RequestRewards
+local GetContainerItemID = GetContainerItemID
+local GetContainerItemLink = GetContainerItemLink
+local GetContainerNumSlots = GetContainerNumSlots
+local GetItemQualityColor = GetItemQualityColor
 
 local KeystoneAbbrev = {
   [244] = L["AD"],
