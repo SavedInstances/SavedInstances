@@ -3142,9 +3142,13 @@ local function UpdateTooltip(self,elap)
   if not tooltip or not tooltip:IsShown() then return end
   if addon.firstupdate then
     -- ticket 155: fix QTip backdrop which somehow gets corrupted sometimes, no idea why
-    tooltip:SetBackdrop(GameTooltip:GetBackdrop())
-    tooltip:SetBackdropColor(GameTooltip:GetBackdropColor())
-    tooltip:SetBackdropBorderColor(GameTooltip:GetBackdropBorderColor())
+    -- issue #248 ElvUI >= 11.05 will drop the backdrop of GameTooltip on World Map
+    local backdrop = GameTooltip:GetBackdrop()
+    if backdrop then
+      tooltip:SetBackdrop(backdrop)
+      tooltip:SetBackdropColor(GameTooltip:GetBackdropColor())
+      tooltip:SetBackdropBorderColor(GameTooltip:GetBackdropBorderColor())
+    end
     addon:SkinFrame(tooltip, "SavedInstancesTooltip")
     addon.firstupdate = false
   end
