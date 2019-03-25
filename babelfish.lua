@@ -15,6 +15,7 @@ local fileList = {
         "SavedInstances/Emissary.lua",
         "SavedInstances/LFR.lua",
         "SavedInstances/MythicPlus.lua",
+        "SavedInstances/Paragon.lua",
         "SavedInstances/Quests.lua",
         "SavedInstances/Tradeskills.lua",
         "SavedInstances/WorldBosses.lua",

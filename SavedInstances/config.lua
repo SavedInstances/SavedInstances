@@ -454,6 +454,11 @@ function Config:BuildOptions()
             name = L["Mythic Best"],
             desc = L["Track Mythic keystone best run"],
           },
+          TrackParagon = {
+            type = "toggle",
+            order = 48,
+            name = L["Paragon Chest"],
+          },
           BindHeader = {
             order = -0.6,
             type = "header",
