@@ -8,12 +8,15 @@ local Ld, La = {}, {}
 local locale = GAME_LOCALE or GetLocale()
 if locale == "enGB" then locale = "enUS" end
 
+-- Lua functions
+local print, format, rawget = print, format, rawget
+
 addon.L = setmetatable({},{
   __index = function(t, s)
     if locale ~= "enUS" and Ld[s] and
       not La[s] and url and not addon.locale_warning then
       addon.locale_warning = true
-      print(string.format("*** %s needs help translating to your language! (%s)", addonName, locale))
+      print(format("*** %s needs help translating to your language! (%s)", addonName, locale))
       print("*** If you speak English, you can contribute by visiting:")
       print("*** "..url)
     end
