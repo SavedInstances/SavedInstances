@@ -41,6 +41,7 @@ WorldBosses.lua
 Quests.lua
 Currency.lua
 MythicPlus.lua
+Paragon.lua
 SavedInstances.lua
 
 config.lua
