@@ -16,6 +16,8 @@ externals:
 ignore:
     - README.md
     - babelfish.lua
+    - Makefile
+    - wowace_translations.sh
 
 license-output: LICENSE.txt
 
