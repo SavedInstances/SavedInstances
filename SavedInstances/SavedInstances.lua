@@ -2024,6 +2024,20 @@ hoverTooltip.ShowEmissaryTooltip = function (cell, arg, ...)
   finishIndicator()
 end
 
+hoverTooltip.ShowParagonTooltip = function (cell, arg, ...)
+  local toon = arg
+  local t = addon.db.Toons[toon]
+  if not t or not t.Paragon then return end
+  openIndicator(2, "LEFT", "RIGHT")
+  indicatortip:AddHeader(ClassColorise(t.Class, toon), #t.Paragon)
+  for k, v in pairs(t.Paragon) do
+    local name = GetFactionInfoByID(v)
+    indicatortip:AddLine()
+    indicatortip:SetCell(k + 1, 1, name, "RIGHT", 2)
+  end
+  finishIndicator()
+end
+
 hoverTooltip.ShowBonusTooltip = function (cell, arg, ...)
   local toon = arg
   local parent
@@ -4091,10 +4105,12 @@ function core:ShowTooltip(anchorframe)
       end
       show = tooltip:AddLine(YELLOWFONT .. L["Paragon Chests"] .. FONTEND)
       for toon, t in cpairs(addon.db.Toons, true) do
-        local col = columns[toon..1]
-        tooltip:SetCell(show, col, t.Paragon and #t.Paragon or 0, "CENTER", maxcol)
-        tooltip:SetCellScript(show, col, "OnEnter", hoverTooltip.ShowParagonTooltip, toon)
-        tooltip:SetCellScript(show, col, "OnLeave", CloseTooltips)
+        if t.Paragon and #t.Paragon > 0 then
+          local col = columns[toon..1]
+          tooltip:SetCell(show, col, #t.Paragon, "CENTER", maxcol)
+          tooltip:SetCellScript(show, col, "OnEnter", hoverTooltip.ShowParagonTooltip, toon)
+          tooltip:SetCellScript(show, col, "OnLeave", CloseTooltips)
+        end
       end
     end
   end
