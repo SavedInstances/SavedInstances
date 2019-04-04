@@ -598,13 +598,13 @@ end
 -- convert server time -> local time: subtract this value
 function addon:GetServerOffset()
   local serverDate = C_DateAndTime.GetCurrentCalendarTime() -- 1-based starts on Sun
-  local serverDay, serverWeekday, serverMonth, serverMinute, serverHour, serverYear = serverDate.monthDay, serverDate.weekday, serverDate.month, serverDate.minute, serverDate.hour, serverDate.year
+  local serverWeekday, serverMinute, serverHour = serverDate.weekday, serverDate.minute, serverDate.hour
   -- #211: date("%w") is 0-based starts on Sun
-  local localDay = tonumber(date("%w")) + 1
+  local localWeekday = tonumber(date("%w")) + 1
   local localHour, localMinute = tonumber(date("%H")), tonumber(date("%M"))
-  if serverDay == (localDay + 1)%7 then -- server is a day ahead
+  if serverWeekday == (localWeekday + 1)%7 then -- server is a day ahead
     serverHour = serverHour + 24
-  elseif localDay == (serverDay + 1)%7 then -- local is a day ahead
+  elseif localWeekday == (serverWeekday + 1)%7 then -- local is a day ahead
     localHour = localHour + 24
   end
   local server = serverHour + serverMinute / 60
