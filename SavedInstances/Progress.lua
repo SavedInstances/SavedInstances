@@ -205,7 +205,11 @@ function P:ShowTooltip(tooltip, columns, showall, preshow)
               text = value.numFulfilled .. "/" .. value.numRequired
             end
             local col = columns[toon .. 1]
-            tooltip:SetCell(line, col, text, "CENTER", 4)
+            if col then
+              -- check if current toon is showing
+              -- don't add columns
+              tooltip:SetCell(line, col, text, "CENTER", 4)
+            end
           end
         end
       end
