@@ -42,6 +42,7 @@ Quests.lua
 Currency.lua
 MythicPlus.lua
 Paragon.lua
+Progress.lua
 SavedInstances.lua
 
 config.lua

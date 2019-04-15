@@ -138,9 +138,9 @@ local QuestExceptions = {
   [48635] = "Regular", -- More Void Inoculation
   [48636] = "Regular", -- Fueling the Antoran Campaign
 
-  -- Island Expeditions
-  [53435] = "Weekly", -- Azerite for the Horde
-  [53436] = "Weekly", -- Azerite for the Alliance
+  -- Island Expeditions (Moved to Progress.lua)
+  [53435] = "Regular", -- Azerite for the Horde
+  [53436] = "Regular", -- Azerite for the Alliance
 
   -- Warfront
   [53414] = "Weekly", -- Stromgarde Alliance

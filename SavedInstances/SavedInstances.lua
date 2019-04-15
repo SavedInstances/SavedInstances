@@ -354,6 +354,15 @@ addon.defaultDB = {
   --   },
   -- }
 
+  -- Progress
+  --   [index] = {
+  --     isComplete = isComplete,
+  --     isFinish = isFinish,
+  --     numFulfilled = numFulfilled,
+  --     numRequired = numRequired,
+  --     -- others
+  -- }
+
   Indicators = {
     D1Indicator = "BLANK", -- indicator: ICON_*, BLANK
     D1Text = "KILLED/TOTAL",
@@ -458,6 +467,8 @@ addon.defaultDB = {
     CombineEmissary = false,
     AbbreviateKeystone = true,
     TrackParagon = true,
+    Progress1 = true, -- PvP Conquest
+    Progress2 = true, -- Island Weekly
   },
   Instances = { }, 	-- table key: "Instance name"; value:
   -- Show: boolean
@@ -724,11 +735,6 @@ function addon:QuestCount(toonname)
   for id, info in pairs(t.Quests) do
     if (TimewalkingItemQuest[id] and (not eventInfo[TimewalkingItemQuest[id]])) then
       -- Timewalking Item Quests only show during Timewalking Weeks
-    elseif (
-      (t.Faction == "Alliance" and id == 53435) or
-      (t.Faction == "Horde" and id == 53436)
-    ) then
-      -- Island Expeditions Weekly Quest (Issue #208)
     else
       if info.isDaily then
         dailycount = dailycount + 1
@@ -1527,6 +1533,7 @@ function addon:UpdateToonData()
   local rating = (GetPersonalRatedInfo and GetPersonalRatedInfo(4))
   t.RBGrating = tonumber(rating) or t.RBGrating
   core:GetModule("Tradeskills"):ScanItemCDs()
+  local Progress = core:GetModule("Progress")
   -- Daily Reset
   if nextreset and nextreset > time() then
     for toon, ti in pairs(addon.db.Toons) do
@@ -1536,6 +1543,7 @@ function addon:UpdateToonData()
             ti.Quests[id] = nil
           end
         end
+        Progress:OnDailyReset(toon)
         ti.DailyResetTime = (ti.DailyResetTime and ti.DailyResetTime + 24*3600) or nextreset
       end
     end
@@ -1596,6 +1604,7 @@ function addon:UpdateToonData()
             ci.earnedThisWeek = 0
           end
         end
+        Progress:OnWeeklyReset(toon)
         ti.WeeklyResetTime = (ti.WeeklyResetTime and ti.WeeklyResetTime + 7*24*3600) or nextreset
       end
     end
@@ -1851,11 +1860,6 @@ hoverTooltip.ShowQuestTooltip = function (cell, arg, ...)
     if (not isDaily) == (not qi.isDaily) then
       if (TimewalkingItemQuest[id] and (not eventInfo[TimewalkingItemQuest[id]])) then
         -- Timewalking Item Quests only show during Timewalking Weeks
-      elseif (
-        (t.Faction == "Alliance" and id == 53435) or
-        (t.Faction == "Horde" and id == 53436)
-      ) then
-        -- Island Expeditions Weekly Quest (Issue #208)
       else
         zonename = qi.Zone and qi.Zone.name or ""
         table.insert(ql,zonename.." # "..id)
@@ -3275,6 +3279,7 @@ do
     return cnext, t, nil
   end
 end
+addon.cpairs = cpairs
 
 function addon:IsDetached()
   return addon.detachframe and addon.detachframe:IsShown()
@@ -3849,6 +3854,12 @@ function core:ShowTooltip(anchorframe)
       end
     end
   end
+
+  core:GetModule("Progress"):ShowTooltip(columns, showall, function()
+    if not firstcategory and addon.db.Tooltip.CategorySpaces then
+      addsep()
+    end
+  end)
 
   if addon.db.Tooltip.TrackSkills or showall then
     local show = false
