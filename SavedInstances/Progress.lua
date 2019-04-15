@@ -95,6 +95,7 @@ local trackedQuest = {
 }
 
 function P:OnEnable()
+  self:QUEST_LOG_UPDATE()
   self:RegisterEvent("QUEST_LOG_UPDATE")
 end
 
@@ -162,7 +163,7 @@ function P:OnWeeklyReset(toon)
   end
 end
 
-function P:BuildConfig(order)
+function P:BuildOptions(order)
   local option = {}
   for index, tbl in pairs(trackedQuest) do
     option["Progress" .. index] = {
@@ -174,8 +175,7 @@ function P:BuildConfig(order)
   return option
 end
 
-function P:ShowTooltip(columns, showall, preshow)
-  local tooltip = addon.tooltip
+function P:ShowTooltip(tooltip, columns, showall, preshow)
   local cpairs = addon.cpairs
   local first = true
   for index, tbl in pairs(trackedQuest) do
@@ -194,15 +194,16 @@ function P:ShowTooltip(columns, showall, preshow)
         local line = tooltip:AddLine(tbl.name)
         for toon, t in cpairs(addon.db.Toons, true) do
           if t.Progress and t.Progress[index] then
+            local value = t.Progress[index]
             local text
             if tbl.showFunc then
-              text = tbl.showFunc(index)
-            elseif tbl.isComplete then
+              text = tbl.showFunc(toon, index)
+            elseif value.isComplete then
               text = "\124T" .. READY_CHECK_READY_TEXTURE .. ":0|t"
-            elseif tbl.isFinish then
+            elseif value.isFinish then
               text = "\124T" .. READY_CHECK_WAITING_TEXTURE .. ":0|t"
             else
-              text = tbl.numFulfilled .. "/" .. tbl.numRequired
+              text = value.numFulfilled .. "/" .. value.numRequired
             end
             local col = columns[toon .. 1]
             tooltip:SetCell(line, col, text, "CENTER", 4)

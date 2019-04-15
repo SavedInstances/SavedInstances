@@ -87,7 +87,6 @@ end
 -- eventInfo format: [eventID] = true
 local eventInfo = {}
 local tooltip, indicatortip = nil, nil
-addon.tooltip = tooltip
 addon.indicatortip = indicatortip
 local thisToon = UnitName("player") .. " - " .. GetRealmName()
 local maxlvl = MAX_PLAYER_LEVEL_TABLE[#MAX_PLAYER_LEVEL_TABLE]
@@ -3855,7 +3854,7 @@ function core:ShowTooltip(anchorframe)
     end
   end
 
-  core:GetModule("Progress"):ShowTooltip(columns, showall, function()
+  core:GetModule("Progress"):ShowTooltip(tooltip, columns, showall, function()
     if not firstcategory and addon.db.Tooltip.CategorySpaces then
       addsep()
     end
