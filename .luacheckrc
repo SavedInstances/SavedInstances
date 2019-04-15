@@ -644,7 +644,6 @@ globals = {
 	"C_Heirloom.SetUncollectedHeirloomFilter",
 	"C_Heirloom.ShouldShowHeirloomHelp",
 	"C_Heirloom.UpgradeHeirloom",
-	"C_IslandsQueue",
 	"C_LFGList",
 	"C_LFGList.AcceptInvite",
 	"C_LFGList.ApplyToGroup",

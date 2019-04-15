@@ -3,7 +3,7 @@ local P = addon.core:NewModule("Progress", "AceEvent-3.0")
 local thisToon = UnitName("player") .. " - " .. GetRealmName()
 
 -- Lua functions
-local pairs = pairs
+local pairs, type = pairs, type
 
 -- WoW API / Variables
 local C_PvP_GetWeeklyChestInfo = C_PvP.GetWeeklyChestInfo
@@ -84,13 +84,12 @@ local trackedQuest = {
   -- Island Expedition
   {
     name = ISLANDS_HEADER,
-    quest = C_IslandsQueue.GetIslandsWeeklyQuestID(),
+    quest = {
+      ["Alliance"] = 53436,
+      ["Horde"]    = 53435,
+    },
     weekly = true,
     resetFunc = KeepProgress,
-    -- quest = {
-    --   ["Alliance"] = 53436,
-    --   ["Horde"]    = 53435,
-    -- },
   },
 }
 
@@ -107,9 +106,9 @@ function P:QUEST_LOG_UPDATE()
       tbl.func(i)
     elseif tbl.quest then
       local questID = tbl.quest
-      -- if type(questID) ~= "number" then
-      --   questID = questID[t.Faction]
-      -- end
+      if type(questID) ~= "number" then
+        questID = questID[t.Faction]
+      end
       local result = {}
       if IsQuestFlaggedCompleted(questID) then
         result.isComplete = true
