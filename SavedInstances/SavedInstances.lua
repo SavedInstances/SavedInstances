@@ -354,12 +354,18 @@ addon.defaultDB = {
   -- }
 
   -- Progress
-  --   [index] = {
-  --     isComplete = isComplete,
-  --     isFinish = isFinish,
-  --     numFulfilled = numFulfilled,
-  --     numRequired = numRequired,
-  --     -- others
+  -- [index] = {
+  --   isComplete = isComplete,
+  --   isFinish = isFinish,
+  --   numFulfilled = numFulfilled,
+  --   numRequired = numRequired,
+  --   -- others
+  -- }
+
+  -- Warfront
+  -- [index] = {
+  --   scenario = (boolean),
+  --   boss = (boolean),
   -- }
 
   Indicators = {
@@ -468,6 +474,8 @@ addon.defaultDB = {
     TrackParagon = true,
     Progress1 = true, -- PvP Conquest
     Progress2 = true, -- Island Weekly
+    Warfront1 = true, -- Arathi Highlands
+    Warfront2 = true, -- Darkshores
   },
   Instances = { }, 	-- table key: "Instance name"; value:
   -- Show: boolean
@@ -497,6 +505,13 @@ addon.defaultDB = {
     AccountDaily = {},
     AccountWeekly = {},
   },
+  Warfront = {},
+  -- Track Warfronts
+  -- [index] = {
+  --   captureSide = ("Alliance" or "Horde"), -- Capture Side of Warfront
+  --   contributing = (boolean), -- if it is contributing
+  --   restTime = restTime, -- timeOfNextStateChange
+  -- }
   Emissary = {
     Cache = {},
     Expansion = {},
@@ -2514,6 +2529,7 @@ function core:OnInitialize()
   db.Emissary = db.Emissary or addon.defaultDB.Emissary
   db.Quests = db.Quests or addon.defaultDB.Quests
   db.QuestDB = db.QuestDB or addon.defaultDB.QuestDB
+  db.Warfront = db.Warfront or addon.defaultDB.Warfront
   for name,default in pairs(addon.defaultDB.Tooltip) do
     db.Tooltip[name] = (db.Tooltip[name]==nil and default) or db.Tooltip[name]
   end
@@ -3857,6 +3873,18 @@ function core:ShowTooltip(anchorframe)
   core:GetModule("Progress"):ShowTooltip(tooltip, columns, showall, function()
     if not firstcategory and addon.db.Tooltip.CategorySpaces then
       addsep()
+    end
+    if addon.db.Tooltip.ShowCategories then
+      tooltip:AddLine(YELLOWFONT .. L["Quest progresses"] .. FONTEND)
+    end
+  end)
+
+  core:GetModule("Warfront"):ShowTooltip(tooltip, columns, showall, function()
+    if not firstcategory and addon.db.Tooltip.CategorySpaces then
+      addsep()
+    end
+    if addon.db.Tooltip.ShowCategories then
+      tooltip:AddLine(YELLOWFONT .. L["Warfronts"] .. FONTEND)
     end
   end)
 

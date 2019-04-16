@@ -43,6 +43,7 @@ Currency.lua
 MythicPlus.lua
 Paragon.lua
 Progress.lua
+Warfront.lua
 SavedInstances.lua
 
 config.lua

@@ -142,11 +142,11 @@ local QuestExceptions = {
   [53435] = "Regular", -- Azerite for the Horde
   [53436] = "Regular", -- Azerite for the Alliance
 
-  -- Warfront
-  [53414] = "Weekly", -- Stromgarde Alliance
-  [53416] = "Weekly", -- Stromgarde Horde
-  [53992] = "Weekly", -- Darkshore Alliance
-  [53955] = "Weekly", -- Darkshore Horde
+  -- Warfront (Moved to Warfront.lua)
+  [53414] = "Regular", -- Stromgarde Alliance
+  [53416] = "Regular", -- Stromgarde Horde
+  [53992] = "Regular", -- Darkshore Alliance
+  [53955] = "Regular", -- Darkshore Horde
 
   -- Weekend Event
   [53030] = "Weekly", -- The World Awaits - World Quests
