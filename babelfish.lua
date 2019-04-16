@@ -19,6 +19,7 @@ local fileList = {
         "SavedInstances/Progress.lua",
         "SavedInstances/Quests.lua",
         "SavedInstances/Tradeskills.lua",
+        "SavedInstances/Warfront.lua",
         "SavedInstances/WorldBosses.lua",
         "SavedInstances/config.lua"
     },

@@ -377,6 +377,11 @@ function Config:BuildOptions()
             type = "header",
             name = L["Quest progresses"],
           },
+          WarfrontHeader = {
+            order = 33,
+            type = "header",
+            name = L["Warfronts"],
+          },
           EmissaryHeader = {
             order = 36,
             type = "header",
@@ -849,6 +854,10 @@ function Config:BuildOptions()
   end
   local progress = core:GetModule("Progress"):BuildOptions(32)
   for k, v in pairs(progress) do
+    core.Options.args.General.args[k] = v
+  end
+  local warfront = core:GetModule("Warfront"):BuildOptions(34)
+  for k, v in pairs(warfront) do
     core.Options.args.General.args[k] = v
   end
   for expansion, _ in pairs(addon.Emissaries) do
