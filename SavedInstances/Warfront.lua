@@ -1,5 +1,5 @@
 local _, addon = ...
-local W = addon.core:NewModule("Warfront", "AceEvent-3.0")
+local W = addon.core:NewModule("Warfront", "AceEvent-3.0", "AceTimer-3.0")
 local thisToon = UnitName("player") .. " - " .. GetRealmName()
 
 -- Lua functions
@@ -164,5 +164,5 @@ function W:ShowTooltip(tooltip, columns, showall, preshow)
 end
 
 hooksecurefunc("GetQuestReward", function()
-  W:UpdateQuest()
+  W:ScheduleTimer("UpdateQuest", 1)
 end)
