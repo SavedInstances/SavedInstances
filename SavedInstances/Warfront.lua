@@ -11,6 +11,8 @@ local C_ContributionCollector_GetState = C_ContributionCollector.GetState
 local IsQuestFlaggedCompleted = IsQuestFlaggedCompleted
 local UnitLevel = UnitLevel
 
+local FONT_COLOR_CODE_CLOSE = FONT_COLOR_CODE_CLOSE
+local NORMAL_FONT_COLOR_CODE = NORMAL_FONT_COLOR_CODE
 local READY_CHECK_READY_TEXTURE = READY_CHECK_READY_TEXTURE
 
 -- Use following macro to get warfront ids
@@ -130,7 +132,7 @@ function W:ShowTooltip(tooltip, columns, showall, preshow)
           preshow()
           first = false
         end
-        local line = tooltip:AddLine(C_ContributionCollector_GetName(tbl.Alliance.id))
+        local line = tooltip:AddLine(NORMAL_FONT_COLOR_CODE .. C_ContributionCollector_GetName(tbl.Alliance.id) .. FONT_COLOR_CODE_CLOSE)
         for toon, t in cpairs(addon.db.Toons, true) do
           if t.Warfront and t.Warfront[index] then
             local value = t.Warfront[index]
