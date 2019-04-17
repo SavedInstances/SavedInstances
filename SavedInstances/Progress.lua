@@ -11,6 +11,8 @@ local GetQuestObjectiveInfo = GetQuestObjectiveInfo
 local IsQuestFlaggedCompleted = IsQuestFlaggedCompleted
 local QuestUtils_GetCurrentQuestLineQuest = QuestUtils_GetCurrentQuestLineQuest
 
+local FONT_COLOR_CODE_CLOSE = FONT_COLOR_CODE_CLOSE
+local NORMAL_FONT_COLOR_CODE = NORMAL_FONT_COLOR_CODE
 local READY_CHECK_READY_TEXTURE = READY_CHECK_READY_TEXTURE
 local READY_CHECK_WAITING_TEXTURE = READY_CHECK_WAITING_TEXTURE
 
@@ -190,7 +192,7 @@ function P:ShowTooltip(tooltip, columns, showall, preshow)
           preshow()
           first = false
         end
-        local line = tooltip:AddLine(tbl.name)
+        local line = tooltip:AddLine(NORMAL_FONT_COLOR_CODE .. tbl.name .. FONT_COLOR_CODE_CLOSE)
         for toon, t in cpairs(addon.db.Toons, true) do
           if t.Progress and t.Progress[index] then
             local value = t.Progress[index]
