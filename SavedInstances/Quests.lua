@@ -176,15 +176,15 @@ local QuestExceptions = {
 addon.QuestExceptions = QuestExceptions
 
 -- Timewalking Dungeon final boss drops
--- to find eventID, select the event in calendar and use the command below
--- /run local i = C_Calendar.GetEventIndex() local e = C_Calendar.GetDayEvent(i.offsetMonths, i.monthDay, i.eventIndex) print(e.eventID)
--- [questID] = eventID
+-- to find iconTexture, select the event in calendar and use the command below
+-- /run local i = C_Calendar.GetEventIndex() local e = C_Calendar.GetDayEvent(i.offsetMonths, i.monthDay, i.eventIndex) print(e.iconTexture)
+-- [questID] = iconTexture
 local TimewalkingItemQuest = {
-  [40168] = 623, -- The Swirling Vial - TBC Timewalking
-  [40173] = 617, -- The Unstable Prism - WLK Timewalking
-  [40786] = 629, -- The Smoldering Ember - CTM Timewalking - Horde
-  [40787] = 629, -- The Smoldering Ember - CTM Timewalking - Alliance
-  [45563] = 654, -- The Shrouded Coin - MOP Timewalking
+  [40168] = 1129674, -- The Swirling Vial - TBC Timewalking
+  [40173] = 1129686, -- The Unstable Prism - WLK Timewalking
+  [40786] = 1304688, -- The Smoldering Ember - CTM Timewalking - Horde
+  [40787] = 1304688, -- The Smoldering Ember - CTM Timewalking - Alliance
+  [45563] = 1530590, -- The Shrouded Coin - MOP Timewalking
 }
 for questID, tbl in pairs(TimewalkingItemQuest) do
   QuestExceptions[questID] = "Weekly"
