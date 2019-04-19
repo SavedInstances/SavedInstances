@@ -355,6 +355,7 @@ addon.defaultDB = {
 
   -- Progress
   -- [index] = {
+  --   unlocked = (boolean), -- if player can complete this quest
   --   isComplete = isComplete,
   --   isFinish = isFinish,
   --   numFulfilled = numFulfilled,

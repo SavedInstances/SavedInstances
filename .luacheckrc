@@ -926,6 +926,7 @@ globals = {
 	"C_Questline",
 	"C_Questline.GetNumAvailableQuestlines",
 	"C_Questline.GetQuestlineInfoByIndex",
+	"C_QuestLog",
 	"C_RecruitAFriend",
 	"C_RecruitAFriend.CheckEmailEnabled",
 	"C_RecruitAFriend.GetRecruitInfo",
