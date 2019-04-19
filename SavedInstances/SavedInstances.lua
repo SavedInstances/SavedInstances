@@ -84,7 +84,7 @@ for i = 0,10 do
   end
 end
 
--- eventInfo format: [eventID] = true
+-- eventInfo format: [iconTexture] = true
 local eventInfo = {}
 local tooltip, indicatortip = nil, nil
 addon.indicatortip = indicatortip
@@ -771,19 +771,19 @@ local function UpdateEventInfo()
   debug("numEvents: " .. numEvents)
   for i = 1, numEvents do
     local event = C_Calendar.GetDayEvent(monthOffset, day, i)
-    debug("eventID: " .. event.eventID)
+    debug("iconTexture: " .. event.iconTexture)
     if event.sequenceType == "START" then
       local hour, minute = event.startTime.hour, event.startTime.minute
       if hour < current.hour or (hour == current.hour and minute < current.minute) then
-        eventInfo[event.eventID] = true
+        eventInfo[event.iconTexture] = true
       end
     elseif event.sequenceType == "END" then
       local hour, minute = event.startTime.hour, event.startTime.minute
       if hour > current.hour or (hour == current.hour and minute > current.minute) then
-        eventInfo[event.eventID] = true
+        eventInfo[event.iconTexture] = true
       end
     else -- "ONGOING"
-      eventInfo[event.eventID] = true
+      eventInfo[event.iconTexture] = true
     end
   end
 end
