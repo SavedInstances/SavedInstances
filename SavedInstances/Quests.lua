@@ -154,6 +154,7 @@ local QuestExceptions = {
   [53033] = "Weekly", -- A Frozen Path Through Time - WLK Timewalking
   [53034] = "Weekly", -- A Shattered Path Through Time - CTM Timewalking
   [53035] = "Weekly", -- A Shattered Path Through Time - MOP Timewalking
+  [54995] = "Weekly", -- A Savage Path Through Time - WOD Timewalking
   [53036] = "Weekly", -- A Call to Battle - Battlegrounds
   [53037] = "Weekly", -- Emissary of War - Mythic Dungeons
   [53038] = "AccountWeekly", -- The Very Best - PvP Pet Battles
@@ -185,6 +186,8 @@ local TimewalkingItemQuest = {
   [40786] = 1304688, -- The Smoldering Ember - CTM Timewalking - Horde
   [40787] = 1304688, -- The Smoldering Ember - CTM Timewalking - Alliance
   [45563] = 1530590, -- The Shrouded Coin - MOP Timewalking
+  [55498] = 1129683, -- The Shimmering Crystal - WOD Timewalking - Alliance
+  [55499] = 1129683, -- The Shimmering Crystal - WOD Timewalking - Horde
 }
 for questID, tbl in pairs(TimewalkingItemQuest) do
   QuestExceptions[questID] = "Weekly"
