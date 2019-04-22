@@ -125,6 +125,13 @@ local QuestExceptions = {
   [33338] = "Weekly",  -- Empowering the Hourglass
   [33334] = "Weekly",  -- Strong Enough to Survive
 
+  -- Draenor Pet Battle
+  [37644] = "AccountDaily", -- Mastering the Menagerie (Alliance)
+  [37645] = "AccountDaily", -- Mastering the Menagerie (Horde)
+  [38299] = "AccountDaily", -- Critters of Draenor (Alliance)
+  [38300] = "AccountDaily", -- Critters of Draenor (Horde)
+  [40329] = "AccountWeekly", -- Battle Pet Tamers: Warlords
+
   -- Pet Battle Dungeons
   [46292] = "AccountWeekly", -- Pet Battle Challenge Dungeon Deadmines
   [45539] = "AccountWeekly", -- Pet Battle Challenge Dungeon Wailing Caverns
