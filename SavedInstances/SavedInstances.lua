@@ -3155,6 +3155,7 @@ function core:Refresh(recoverdaily)
   end
 
   core:QuestRefresh(recoverdaily, questcomplete, nextreset, weeklyreset)
+  core:GetModule('Warfront'):UpdateQuest()
 
   local icnt, dcnt = 0,0
   for name, _ in pairs(temp) do
