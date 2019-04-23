@@ -772,19 +772,21 @@ local function UpdateEventInfo()
   debug("numEvents: " .. numEvents)
   for i = 1, numEvents do
     local event = C_Calendar.GetDayEvent(monthOffset, day, i)
-    debug("iconTexture: " .. event.iconTexture)
-    if event.sequenceType == "START" then
-      local hour, minute = event.startTime.hour, event.startTime.minute
-      if hour < current.hour or (hour == current.hour and minute < current.minute) then
+    if event.iconTexture then
+      debug("iconTexture: " .. event.iconTexture)
+      if event.sequenceType == "START" then
+        local hour, minute = event.startTime.hour, event.startTime.minute
+        if hour < current.hour or (hour == current.hour and minute < current.minute) then
+          eventInfo[event.iconTexture] = true
+        end
+      elseif event.sequenceType == "END" then
+        local hour, minute = event.startTime.hour, event.startTime.minute
+        if hour > current.hour or (hour == current.hour and minute > current.minute) then
+          eventInfo[event.iconTexture] = true
+        end
+      else -- "ONGOING"
         eventInfo[event.iconTexture] = true
       end
-    elseif event.sequenceType == "END" then
-      local hour, minute = event.startTime.hour, event.startTime.minute
-      if hour > current.hour or (hour == current.hour and minute > current.minute) then
-        eventInfo[event.iconTexture] = true
-      end
-    else -- "ONGOING"
-      eventInfo[event.iconTexture] = true
     end
   end
 end
