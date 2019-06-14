@@ -34,6 +34,7 @@ globals = {
 	"DBM",
 	"BigWigsLoader",
 	"READY_CHECK_WAITING_TEXTURE",
+	"Enum",
 
 	-- SavedInstances
 	"SavedInstances",

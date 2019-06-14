@@ -1757,7 +1757,7 @@ local function SI_GetQuestReward()
   end
   local questTagID, tagName = GetQuestTagInfo(id)
   if questTagID and tagName then
-    isAccount = (questTagID == QUEST_TAG_ACCOUNT)
+    isAccount = (questTagID == Enum.QuestTag.Account)
   else
     isAccount = db.QuestDB.AccountDaily[id] or db.QuestDB.AccountWeekly[id]
     debug("Fetched isAccount")
