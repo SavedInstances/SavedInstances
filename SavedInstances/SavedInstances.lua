@@ -2609,7 +2609,6 @@ function core:OnInitialize()
   end
   RequestRaidInfo() -- get lockout data
   RequestLFDPlayerLockInfo()
-  C_Calendar.OpenCalendar() -- Request for event info, not actually open the calendar
   addon.dataobject = addon.LDB and addon.LDB:NewDataObject("SavedInstances", {
     text = addonAbbrev,
     type = "launcher",
