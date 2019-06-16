@@ -1704,7 +1704,7 @@ function addon:UpdateToonData()
   end
   t.Warmode = C_PvP.IsWarModeDesired()
   local azeriteItemLocation = C_AzeriteItem.FindActiveAzeriteItem()
-  if azeriteItemLocation then
+  if azeriteItemLocation and azeriteItemLocation:IsEquipmentSlot() then
     local xp, totalLevelXP = C_AzeriteItem.GetAzeriteItemXPInfo(azeriteItemLocation)
     local currentLevel = C_AzeriteItem.GetPowerLevel(azeriteItemLocation)
     t.Artifact = format("%d (%d%%)", currentLevel, xp / totalLevelXP  * 100)
