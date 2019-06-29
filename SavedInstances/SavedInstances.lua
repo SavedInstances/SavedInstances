@@ -1940,7 +1940,7 @@ hoverTooltip.ShowQuestTooltip = function (cell, arg, ...)
       end
     end
     -- Exception: Some quests should not show zone name, such as Blingtron
-    if (id == 31752 or id == 34774 or id == 40753) then
+    if (id == 31752 or id == 34774 or id == 40753 or id == 56042) then
       zonename = ""
     end
     indicatortip:SetCell(line,1,zonename,"LEFT")

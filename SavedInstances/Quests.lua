@@ -155,6 +155,7 @@ local QuestExceptions = {
   [37819] = "Regular", -- Darkmoon Faire races referral
 
   -- Blingtron
+  -- update `ShowQuestTooltip` in SavedInstances.lua when updating Blingtron quest list
   [31752] = "AccountDaily", -- Blingtron 4000
   [34774] = "AccountDaily", -- Blingtron 5000
   [40753] = "AccountDaily", -- Blingtron 6000
