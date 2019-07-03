@@ -847,6 +847,7 @@ addon.transInstance = {
   [1651] = 1347, -- Return to Karazhan: ticket 237 (fake LFDID)
   [545] = 185, -- The Steamvault: issue #143 esES
   [1530] = 1353, -- The Nighthold: issue #186 frFR
+  [585] = 1154, -- Magisters' Terrace: issue #293 frFR
 }
 
 -- some instances (like sethekk halls) are named differently by GetSavedInstanceInfo() and LFGGetDungeonInfoByID()
