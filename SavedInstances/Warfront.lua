@@ -3,7 +3,7 @@ local W = addon.core:NewModule("Warfront", "AceEvent-3.0", "AceTimer-3.0")
 local thisToon = UnitName("player") .. " - " .. GetRealmName()
 
 -- Lua functions
-local pairs = pairs
+local pairs, type = pairs, type
 
 -- WoW API / Variables
 local C_ContributionCollector_GetName = C_ContributionCollector.GetName
