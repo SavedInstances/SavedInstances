@@ -3982,24 +3982,16 @@ function core:ShowTooltip(anchorframe)
       show = tooltip:AddLine(YELLOWFONT .. L["Mythic Keystone"] .. FONTEND)
     end
     for toon, t in cpairs(addon.db.Toons, true) do
-      if t.MythicKey then
-        if t.MythicKey.link then
-          local col = columns[toon..1]
-          local name
-          if addon.db.Tooltip.AbbreviateKeystone then
-            if t.MythicKey.mapID then
-              name = addon.KeystoneAbbrev[t.MythicKey.mapID] or t.MythicKey.name
-            else
-              -- TODO: this is fallback to previous version, remove this in future
-              name = t.MythicKey.abbrev or t.MythicKey.name or t.MythicKey.link
-            end
-          else
-            -- TODO: this is fallback to previous version, remove this in future
-            name = t.MythicKey.name or t.MythicKey.link
-          end
-          tooltip:SetCell(show, col, "|c" .. t.MythicKey.color .. name .. " (" .. t.MythicKey.level .. ")" .. FONTEND, "CENTER", maxcol)
-          tooltip:SetCellScript(show, col, "OnMouseDown", ChatLink, t.MythicKey.link)
+      if t.MythicKey and t.MythicKey.link then
+        local col = columns[toon..1]
+        local name
+        if addon.db.Tooltip.AbbreviateKeystone then
+          name = addon.KeystoneAbbrev[t.MythicKey.mapID] or t.MythicKey.name
+        else
+          name = t.MythicKey.name
         end
+        tooltip:SetCell(show, col, "|c" .. t.MythicKey.color .. name .. " (" .. t.MythicKey.level .. ")" .. FONTEND, "CENTER", maxcol)
+        tooltip:SetCellScript(show, col, "OnMouseDown", ChatLink, t.MythicKey.link)
       end
     end
   end
