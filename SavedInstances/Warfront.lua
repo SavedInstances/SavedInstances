@@ -153,7 +153,7 @@ function W:ShowTooltip(tooltip, columns, showall, preshow)
                 if value.scenario then
                   if type(value.scenario) == 'table' then
                     local completed = 0
-                    local length = tbl.Alliance.scenario
+                    local length = #tbl.Alliance.scenario
                     for _, v in pairs(value.scenario) do
                       if v then
                         completed = completed + 1
