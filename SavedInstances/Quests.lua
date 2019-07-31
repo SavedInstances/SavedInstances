@@ -147,6 +147,8 @@ local QuestExceptions = {
   [52953] = "Weekly", -- Call to Arms: Vol'dun (Horde)
   [52951] = "Weekly", -- Call to Arms: Zuldazar (Alliance)
   [52952] = "Weekly", -- Call to Arms: Zuldazar (Horde)
+  -- Nazjatar
+  [55121] = "Weekly", -- The Laboratory of Mardivas
   -- Mechagon
   [56116] = "Regular", -- Even More Recycling
 
