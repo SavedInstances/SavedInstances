@@ -25,7 +25,8 @@ local function ConquestUpdate(index)
   local data
   if UnitLevel("player") >= maxLvl then
     local currentQuestID = QuestUtils_GetCurrentQuestLineQuest(CONQUEST_QUESTLINE_ID)
-    local rewardAchieved = C_PvP_GetWeeklyChestInfo()
+    local rewardAchieved, lastWeekRewardAchieved, lastWeekRewardClaimed = C_PvP_GetWeeklyChestInfo()
+    local rewardWaiting = lastWeekRewardAchieved and not lastWeekRewardClaimed
     if currentQuestID == 0 then
       data = {
         unlocked = true,
@@ -34,6 +35,7 @@ local function ConquestUpdate(index)
         numFulfilled = 500,
         numRequired = 500,
         rewardAchieved = rewardAchieved,
+        rewardWaiting = rewardWaiting,
       }
     else
       local text, _, finished, numFulfilled, numRequired = GetQuestObjectiveInfo(currentQuestID, 1, false)
@@ -45,6 +47,7 @@ local function ConquestUpdate(index)
           numFulfilled = numFulfilled,
           numRequired = numRequired,
           rewardAchieved = rewardAchieved,
+          rewardWaiting = rewardWaiting,
         }
       end
     end
@@ -56,6 +59,7 @@ local function ConquestUpdate(index)
       numFulfilled = 500,
       numRequired = 500,
       rewardAchieved = false,
+      rewardWaiting = false,
     }
   end
   addon.db.Toons[thisToon].Progress[index] = data
@@ -75,7 +79,9 @@ local function ConquestShow(toon, index)
   else
     text = data.numFulfilled .. "/" .. data.numRequired
   end
-  if data.rewardAchieved then
+  if data.rewardWaiting then
+    text = text .. "(\124T" .. READY_CHECK_WAITING_TEXTURE .. ":0|t)"
+  elseif data.rewardAchieved then
     text = text .. "(\124T" .. READY_CHECK_READY_TEXTURE .. ":0|t)"
   end
   return text
@@ -91,6 +97,7 @@ local function KeepProgress(toon, index)
     isFinish = false,
     numFulfilled = prev.isComplete and 0 or prev.numFulfilled,
     numRequired = prev.numRequired,
+    rewardWaiting = prev.rewardAchieved, -- nil for non-Conquest
   }
 end
 
