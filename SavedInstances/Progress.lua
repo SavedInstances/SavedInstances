@@ -22,12 +22,12 @@ local CONQUEST_QUESTLINE_ID = 782
 local maxLvl = MAX_PLAYER_LEVEL_TABLE[#MAX_PLAYER_LEVEL_TABLE]
 
 local function ConquestUpdate(index)
-  local tbl = addon.db.Toons[thisToon].Progress
+  local data
   if UnitLevel("player") >= maxLvl then
     local currentQuestID = QuestUtils_GetCurrentQuestLineQuest(CONQUEST_QUESTLINE_ID)
     local rewardAchieved = C_PvP_GetWeeklyChestInfo()
     if currentQuestID == 0 then
-      tbl[index] = {
+      data = {
         unlocked = true,
         isComplete = true,
         isFinish = true,
@@ -38,7 +38,7 @@ local function ConquestUpdate(index)
     else
       local text, _, finished, numFulfilled, numRequired = GetQuestObjectiveInfo(currentQuestID, 1, false)
       if text then
-        tbl[index] = {
+        data = {
           unlocked = true,
           isComplete = false,
           isFinish = finished,
@@ -49,7 +49,7 @@ local function ConquestUpdate(index)
       end
     end
   else
-    tbl[index] = {
+    data = {
       unlocked = false,
       isComplete = false,
       isFinish = false,
@@ -58,23 +58,24 @@ local function ConquestUpdate(index)
       rewardAchieved = false,
     }
   end
+  addon.db.Toons[thisToon].Progress[index] = data
 end
 
 local function ConquestShow(toon, index)
   local t = addon.db.Toons[toon]
   if not t or not t.Progress or not t.Progress[index] then return end
-  local tbl = t.Progress[index]
+  local data = t.Progress[index]
   local text
-  if not tbl.unlocked then
+  if not data.unlocked then
     text = ""
-  elseif tbl.isComplete then
+  elseif data.isComplete then
     text = "\124T" .. READY_CHECK_READY_TEXTURE .. ":0|t"
-  elseif tbl.isFinish then
+  elseif data.isFinish then
     text = "\124T" .. READY_CHECK_WAITING_TEXTURE .. ":0|t"
   else
-    text = tbl.numFulfilled .. "/" .. tbl.numRequired
+    text = data.numFulfilled .. "/" .. data.numRequired
   end
-  if tbl.rewardAchieved then
+  if data.rewardAchieved then
     text = text .. "(\124T" .. READY_CHECK_READY_TEXTURE .. ":0|t)"
   end
   return text
@@ -83,13 +84,13 @@ end
 local function KeepProgress(toon, index)
   local t = addon.db.Toons[toon]
   if not t or not t.Progress or not t.Progress[index] then return end
-  local tbl = t.Progress[index]
-  tbl = {
-    unlocked = tbl.unlocked,
+  local prev = t.Progress[index]
+  t.Progress[index] = {
+    unlocked = prev.unlocked,
     isComplete = false,
     isFinish = false,
-    numFulfilled = tbl.isComplete and 0 or tbl.numFulfilled,
-    numRequired = tbl.numRequired,
+    numFulfilled = prev.isComplete and 0 or prev.numFulfilled,
+    numRequired = prev.numRequired,
   }
 end
 
@@ -159,12 +160,13 @@ function P:OnDailyReset(toon)
       if tbl.resetFunc then
         tbl.resetFunc(toon, i)
       else
-        tbl = {
-          unlocked = tbl.unlocked,
+        local prev = t.Progress[i]
+        t.Progress[i] = {
+          unlocked = prev.unlocked,
           isComplete = false,
           isFinish = false,
           numFulfilled = 0,
-          numRequired = tbl.numRequired,
+          numRequired = prev.numRequired,
         }
       end
     end
@@ -179,12 +181,13 @@ function P:OnWeeklyReset(toon)
       if tbl.resetFunc then
         tbl.resetFunc(toon, i)
       else
-        tbl = {
-          unlocked = tbl.unlocked,
+        local prev = t.Progress[i]
+        t.Progress[i] = {
+          unlocked = prev.unlocked,
           isComplete = false,
           isFinish = false,
           numFulfilled = 0,
-          numRequired = tbl.numRequired,
+          numRequired = prev.numRequired,
         }
       end
     end
