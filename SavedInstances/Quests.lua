@@ -1,5 +1,6 @@
 local _, addon = ...
 local QuestsModule = addon.core:NewModule("Quests")
+local L = addon.L
 
 -- Lua functions
 local pairs, strtrim = pairs, strtrim
@@ -44,6 +45,11 @@ local _specialQuests = {
   -- Order Hall
   [42481] = { zid=717, daily=true }, -- Warlock: Ritual of Doom
   [44707] = { zid=719, daily=true, sid=228651 }, -- Demon Hunter: Twisting Nether
+
+  -- Old Vanilla Bosses during Anniversary Event
+  [47461] = { daily=true, name=L["Lord Kazzak"] },          -- Lord Kazzak
+  [47462] = { daily=true, name=L["Azuregos"] },             -- Azuregos
+  [47463] = { daily=true, name=L["Dragon of Nightmare"] },  -- Dragon of Nightmare
 }
 
 function addon:specialQuests()
