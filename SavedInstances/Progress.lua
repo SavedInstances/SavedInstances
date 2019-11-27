@@ -243,7 +243,9 @@ function P:ShowTooltip(tooltip, columns, showall, preshow)
             elseif value.isFinish then
               text = "\124T" .. READY_CHECK_WAITING_TEXTURE .. ":0|t"
             else
-              text = value.numFulfilled .. "/" .. value.numRequired
+              -- Note: no idea why .numRequired is nil rarely (#325)
+              -- protect this now to stop lua error
+              text = (value.numFulfilled or "?") .. "/" .. (value.numRequired or "?")
             end
             local col = columns[toon .. 1]
             if col then
