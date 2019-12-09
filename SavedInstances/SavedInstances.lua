@@ -819,6 +819,7 @@ addon.transInstance = {
   [1530] = 1353, -- The Nighthold: issue #186 frFR
   [585] = 1154, -- Magisters' Terrace: issue #293 frFR
   [2235] = 1911, -- Caverns of Time - Anniversary: issue #315 (fake LFDID used by Escape from Tol Dagor)
+  [725] = 1148, -- The Stonecore: issue #328 frFR
 }
 
 -- some instances (like sethekk halls) are named differently by GetSavedInstanceInfo() and LFGGetDungeonInfoByID()
