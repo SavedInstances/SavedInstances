@@ -745,7 +745,7 @@ do
 end
 
 function addon:QuestIgnored(questID)
-  if (TimewalkingItemQuest[questID]) then
+  if (TimewalkingItemQuest[questID]) and addon.activeHolidays then
     -- Timewalking Item Quests
     if addon.activeHolidays[TimewalkingItemQuest[questID]] then
       -- Timewalking Weedend Event ONGOING
