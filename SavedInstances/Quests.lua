@@ -169,14 +169,14 @@ local QuestExceptions = {
   [56116] = "Regular", -- Even More Recycling
   [56649] = "Weekly", -- Call to Arms: Mechagon (Alliance)
   [56650] = "Weekly", -- Call to Arms: Mechagon (Horde)
-    -- Assaults
+  -- Assaults
   [57157] = "Weekly", -- Assault: The Black Empire (Uldum)
   [56064] = "Weekly", -- Assault: The Black Empite (Vale of Eternal Blossoms)
-  [55350] = "Weekly", -- Assault: Amathet Advance (Umdum)
+  [55350] = "Weekly", -- Assault: Amathet Advance (Uldum)
   [57008] = "Weekly", -- Assault: The Warring Clans (Vale of Eternal Blossoms)
   [57728] = "Weekly", -- Assault: The Endless Swarm (Vale of Eternal Blossoms)
   [56308] = "Weekly", -- Assault: Aqir Unearthed (Uldum)
-  -- Lesser Visions
+  -- Lesser Visions of N'Zoth
   [58168] = "Daily", -- A Dark, Glaring Reality
   [58155] = "Daily", -- A Hand in the Dark
   [58151] = "Daily", -- Minions of N'Zoth
