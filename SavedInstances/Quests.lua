@@ -139,8 +139,8 @@ local QuestExceptions = {
 
   -- BfA
   -- Island Expeditions (Moved to Progress.lua)
-  [53435] = "Regular", -- Azerite for the Horde
-  [53436] = "Regular", -- Azerite for the Alliance
+  [53435] = "Weekly", -- Azerite for the Horde
+  [53436] = "Weekly", -- Azerite for the Alliance
   -- Warfront (Moved to Warfront.lua)
   [53414] = "Regular", -- Stromgarde Alliance
   [53416] = "Regular", -- Stromgarde Horde

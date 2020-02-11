@@ -753,8 +753,9 @@ function addon:QuestIgnored(questID)
       return
     end
     return true
+  elseif core:GetModule("Progress"):QuestEnabled(questID) then
+    return true
   end
-  return
 end
 
 function addon:QuestCount(toonname)
