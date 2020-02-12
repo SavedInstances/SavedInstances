@@ -5,12 +5,11 @@ local thisToon = UnitName("player") .. " - " .. GetRealmName()
 local seasonTotalPatten = gsub(CURRENCY_SEASON_TOTAL, "%%s%%s", "(.+)")
 
 -- Lua functions
-local ipairs, pairs, strfind, wipe = ipairs, pairs, strfind, wipe
+local wipe, ipairs, pairs = wipe, ipairs, pairs
 local _G = _G
 
 -- WoW API / Variables
 local GetCurrencyInfo = GetCurrencyInfo
-local GetItemCount = GetItemCount
 local GetMoney = GetMoney
 local IsQuestFlaggedCompleted = C_QuestLog and C_QuestLog.IsQuestFlaggedCompleted or IsQuestFlaggedCompleted
 
@@ -183,8 +182,10 @@ function CU:UpdateCurrency()
 end
 
 function CU:UpdateCurrencyItem()
+  if not addon.db.Toons[thisToon].currency then return end
+
   for currencyID, tbl in pairs(specialCurrency) do
-    if tbl.relatedItem then
+    if tbl.relatedItem and addon.db.Toons[thisToon].currency[currencyID] then
       addon.db.Toons[thisToon].currency[currencyID].relatedItemCount = GetItemCount(tbl.relatedItem.id)
     end
   end
