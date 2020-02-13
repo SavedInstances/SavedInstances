@@ -201,6 +201,7 @@ local QuestExceptions = {
   [46292] = "AccountWeekly", -- Pet Battle Challenge: Deadmines
   [54186] = "AccountWeekly", -- Pet Battle Challenge: Gnomeregan
   [56492] = "AccountWeekly", -- Pet Battle Challenge: Stratholme
+  [58458] = "AccountWeekly", -- Pet Battle Challenge: Blackrock Depths
 
   -- Weekend Event
   [53030] = "Weekly", -- The World Awaits - World Quests
