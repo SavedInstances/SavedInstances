@@ -62,6 +62,11 @@ local currency = {
   1719, -- Corrupted Memento
   1755, -- Coalescing Visions
 }
+table.sort(currency, function (c1, c2)
+  local c1_name = GetCurrencyInfo(c1)
+  local c2_name = GetCurrencyInfo(c2)
+  return c1_name < c2_name
+end)
 addon.currency = currency
 
 local specialCurrency = {
