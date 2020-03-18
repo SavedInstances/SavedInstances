@@ -61,6 +61,7 @@ local currency = {
   1721, -- Prismatic Manapearl
   1719, -- Corrupted Memento
   1755, -- Coalescing Visions
+  1803, -- Echoes of Ny'alotha
 }
 addon.currency = currency
 
