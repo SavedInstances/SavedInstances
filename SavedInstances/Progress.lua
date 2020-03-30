@@ -136,7 +136,10 @@ end
 local function HorrificVisionReset(toon, index)
   local t = addon.db.Toons[toon]
   if not t or not t.Progress or not t.Progress[index] then return end
+
+  local unlocked = t.Progress[index].unlocked
   wipe(t.Progress[index])
+  t.Progress[index].unlocked = unlocked
 end
 
 -- N'Zoth Assaults (index 4)
@@ -165,6 +168,15 @@ local function NZothAssaultShow(toon, index)
   end
 end
 
+local function NZothAssaultReset(toon, index)
+  local t = addon.db.Toons[toon]
+  if not t or not t.Progress or not t.Progress[index] then return end
+
+  local unlocked = t.Progress[index].unlocked
+  wipe(t.Progress[index])
+  t.Progress[index].unlocked = unlocked
+end
+
 -- Lesser Visions of N'Zoth (index 5)
 
 local function LesserVisionUpdate(index)
@@ -180,6 +192,10 @@ local function LesserVisionShow(toon, index)
       return "\124T" .. READY_CHECK_READY_TEXTURE .. ":0|t"
     end
   end
+end
+
+local function LesserVisionReset(toon, index)
+  -- do nothing
 end
 
 P.TrackedQuest = {
@@ -238,6 +254,7 @@ P.TrackedQuest = {
     weekly = true,
     func = NZothAssaultUpdate,
     showFunc = NZothAssaultShow,
+    resetFunc = NZothAssaultReset,
     tooltipKey = 'ShowNZothAssaultTooltip',
     relatedQuest = {
       -- Uldum
@@ -266,6 +283,7 @@ P.TrackedQuest = {
     name = L["Lesser Visions of N'Zoth"],
     func = LesserVisionUpdate,
     showFunc = LesserVisionShow,
+    resetFunc = LesserVisionReset,
     relatedQuest = {
       58151, -- Minions of N'Zoth
       58155, -- A Hand in the Dark
