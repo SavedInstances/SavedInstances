@@ -2574,7 +2574,7 @@ hoverTooltip.ShowNZothAssaultTooltip = function (cell, arg, ...)
       for _, questID in ipairs(data) do
         indicatortip:AddLine(addon:QuestInfo(questID),
           t.Quests[questID] and (REDFONT .. CRITERIA_COMPLETED .. FONTEND) or (
-            t.Progress[index][keyQuestID] and
+            t.Progress[index][questID] and
             (GREENFONT .. AVAILABLE .. FONTEND) or
             (REDFONT .. ADDON_NOT_AVAILABLE .. FONTEND)
           )
