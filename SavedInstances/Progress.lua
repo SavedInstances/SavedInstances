@@ -180,7 +180,6 @@ local function LesserVisionShow(toon, index)
       return "\124T" .. READY_CHECK_READY_TEXTURE .. ":0|t"
     end
   end
-  return ""
 end
 
 P.TrackedQuest = {
@@ -399,8 +398,12 @@ function P:ShowTooltip(tooltip, columns, showall, preshow)
     if addon.db.Tooltip["Progress" .. index] or showall then
       local show
       for toon, t in cpairs(addon.db.Toons, true) do
-        if t.Progress and t.Progress[index] then
+        if (
+          (t.Progress and t.Progress[index] and t.Progress[index].unlocked) or
+          (tbl.showFunc and tbl.showFunc(toon, index))
+        ) then
           show = true
+          break
         end
       end
       if show then
@@ -410,12 +413,12 @@ function P:ShowTooltip(tooltip, columns, showall, preshow)
         end
         local line = tooltip:AddLine(NORMAL_FONT_COLOR_CODE .. tbl.name .. FONT_COLOR_CODE_CLOSE)
         for toon, t in cpairs(addon.db.Toons, true) do
-          if t.Progress and t.Progress[index] then
-            local value = t.Progress[index]
-            local text
-            if tbl.showFunc then
-              text = tbl.showFunc(toon, index)
-            elseif not value.unlocked then
+          local value = t.Progress and t.Progress[index]
+          local text
+          if tbl.showFunc then
+            text = tbl.showFunc(toon, index)
+          elseif value then
+            if not value.unlocked then
               -- do nothing
             elseif value.isComplete then
               text = "\124T" .. READY_CHECK_READY_TEXTURE .. ":0|t"
@@ -426,16 +429,16 @@ function P:ShowTooltip(tooltip, columns, showall, preshow)
               -- protect this now to stop lua error
               text = (value.numFulfilled or "?") .. "/" .. (value.numRequired or "?")
             end
-            local col = columns[toon .. 1]
-            if col and text then
-              -- check if current toon is showing
-              -- don't add columns
-              -- showFunc may return nil, or tbl.unlocked is nil, don't :SetCell and :SetCellScript in this case
-              tooltip:SetCell(line, col, text, "CENTER", 4)
-              if tbl.tooltipKey then
-                tooltip:SetCellScript(line, col, "OnEnter", addon.hoverTooltip[tbl.tooltipKey], {toon, index})
-                tooltip:SetCellScript(line, col, "OnLeave", CloseTooltips)
-              end
+          end
+          local col = columns[toon .. 1]
+          if col and text then
+            -- check if current toon is showing
+            -- don't add columns
+            -- showFunc may return nil, or tbl.unlocked is nil, don't :SetCell and :SetCellScript in this case
+            tooltip:SetCell(line, col, text, "CENTER", 4)
+            if tbl.tooltipKey then
+              tooltip:SetCellScript(line, col, "OnEnter", addon.hoverTooltip[tbl.tooltipKey], {toon, index})
+              tooltip:SetCellScript(line, col, "OnLeave", CloseTooltips)
             end
           end
         end
