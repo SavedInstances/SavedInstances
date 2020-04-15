@@ -1,6 +1,5 @@
 local SI, L = unpack(select(2, ...))
 local MP = SI:NewModule('MythicPlus', 'AceEvent-3.0')
-local thisToon = UnitName('player') .. ' - ' .. GetRealmName()
 
 -- Lua functions
 local strsplit, tonumber, select, time = strsplit, tonumber, select, time
@@ -41,7 +40,7 @@ function MythicPlusModule:RefreshMythicKeyInfo(event)
   -- This event is fired after the rewards data was requested, causing yet another refresh if not checked for
   if (event ~= "CHALLENGE_MODE_MAPS_UPDATE") then C_MythicPlus_RequestRewards() end
 
-  local t = SI.db.Toons[thisToon]
+  local t = SI.db.Toons[SI.thisToon]
   t.MythicKey = {}
   for bagID = 0, 4 do
     for invID = 1, GetContainerNumSlots(bagID) do
@@ -63,7 +62,7 @@ function MythicPlusModule:RefreshMythicKeyInfo(event)
         else
           color = select(4, GetItemQualityColor(1))
         end
-        -- SI.debug("Mythic Keystone: %s", gsub(keyLink, "\124", "\124\124"))
+        -- SI:Debug("Mythic Keystone: %s", gsub(keyLink, "\124", "\124\124"))
         t.MythicKey.name = C_ChallengeMode_GetMapUIInfo(mapID)
         t.MythicKey.mapID = mapID
         t.MythicKey.color = color

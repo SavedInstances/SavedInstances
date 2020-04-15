@@ -1,6 +1,5 @@
 local SI, L = unpack(select(2, ...))
 local Config = SI:NewModule('Config')
-local thisToon = UnitName('player') .. ' - ' .. GetRealmName()
 
 SI.config = Config
 
@@ -181,13 +180,13 @@ function Config:BuildOptions()
         name = L["Dump time debugging information"],
         guiHidden = true,
         type = "execute",
-        func = function() SI:timedebug() end,
+        func = function() SI:TimeDebug() end,
       },
       quest = {
         name = L["Dump quest debugging information"],
         guiHidden = true,
         type = "execute",
-        func = function(...) SI:questdebug(...) end,
+        func = function(...) SI:QuestDebug(...) end,
       },
       show = {
         name = L["Show/Hide the SavedInstances tooltip"],
@@ -739,7 +738,7 @@ function Config:BuildOptions()
                   return true
                 else
                   local err = L["Order must be a number in [0 - 999]"]
-                  SI.chatMsg(err)
+                  SI:ChatMsg(err)
                   return err
                 end
               end

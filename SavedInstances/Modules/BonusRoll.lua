@@ -1,6 +1,5 @@
 local SI, L = unpack(select(2, ...))
 local BR = SI:NewModule('BonusRoll', 'AceEvent-3.0')
-local thisToon = UnitName('player') .. ' - ' .. GetRealmName()
 
 local BonusFrame -- Frame attached to BonusRollFrame
 local MAX_BONUS_ROLL_RECORD_LIMIT = 25 -- the max cap of bonus roll records
@@ -25,10 +24,10 @@ local GetSubZoneText = GetSubZoneText
 local DIFFICULTY_DUNGEON_CHALLENGE = DIFFICULTY_DUNGEON_CHALLENGE
 
 local function BonusRollShow()
-  local t = SI.db.Toons[thisToon]
+  local t = SI.db.Toons[SI.thisToon]
   local BonusRollFrame = _G.BonusRollFrame
   if not t or not BonusRollFrame then return end
-  local bonus = SI:BonusRollCount(thisToon, BonusRollFrame.CurrentCountFrame.currencyID)
+  local bonus = SI:BonusRollCount(SI.thisToon, BonusRollFrame.CurrentCountFrame.currencyID)
   if not bonus or not SI.db.Tooltip.AugmentBonus then
     if BonusFrame then BonusFrame:Hide() end
     return
@@ -39,7 +38,7 @@ local function BonusRollShow()
     BonusFrame.text = BonusFrame:CreateFontString(nil, "OVERLAY","GameFontNormal")
     BonusFrame.text:SetPoint("CENTER")
     BonusFrame:SetScript("OnEnter", function()
-      SI.hoverTooltip.ShowBonusTooltip(nil, { thisToon, BonusFrame })
+      SI.hoverTooltip.ShowBonusTooltip(nil, { SI.thisToon, BonusFrame })
     end)
     BonusFrame:SetScript("OnLeave", function()
       if SI.indicatortip then
@@ -63,7 +62,7 @@ end
 function BR:CHAT_MSG_MONSTER_YELL(event, msg, bossname)
   -- cheapest possible outdoor boss detection for players lacking a proper boss mod
   -- should work for sha and nalak, oon and gal report a related mob
-  local t = SI.db.Toons[thisToon]
+  local t = SI.db.Toons[SI.thisToon]
   local now = time()
   if bossname and t then
     bossname = tostring(bossname) -- for safety
@@ -71,13 +70,13 @@ function BR:CHAT_MSG_MONSTER_YELL(event, msg, bossname)
     if diff and #diff > 0 then bossname = bossname .. ": ".. diff end
     t.lastbossyell = bossname
     t.lastbossyelltime = now
-    -- SI.debug("CHAT_MSG_MONSTER_YELL: "..tostring(bossname));
+    -- SI:Debug("CHAT_MSG_MONSTER_YELL: "..tostring(bossname));
   end
 end
 
 function BR:BONUS_ROLL_RESULT(event, rewardType, rewardLink, rewardQuantity, rewardSpecID, _, _, currencyID)
-  local t = SI.db.Toons[thisToon]
-  SI.debug("BONUS_ROLL_RESULT:%s:%s:%s:%s (boss=%s|%s)",
+  local t = SI.db.Toons[SI.thisToon]
+  SI:Debug("BONUS_ROLL_RESULT:%s:%s:%s:%s (boss=%s|%s)",
     tostring(rewardType), tostring(rewardLink), tostring(rewardQuantity), tostring(rewardSpecID),
     tostring(t and t.lastboss), tostring(t and t.lastbossyell))
   if not t then return end

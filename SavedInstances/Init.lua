@@ -13,3 +13,7 @@ SI.Libs.LDBI = SI.Libs.LDB and LibStub('LibDBIcon-1.0', true)
 
 SI.ScanTooltip = CreateFrame('GameTooltip', 'SavedInstancesScanTooltip', _G.UIParent, 'GameTooltipTemplate')
 SI.ScanTooltip:SetOwner(_G.UIParent, 'ANCHOR_NONE')
+
+SI.playerName = UnitName('player')
+SI.realmName = GetRealmName()
+SI.thisToon = SI.playerName .. ' - ' .. SI.realmName

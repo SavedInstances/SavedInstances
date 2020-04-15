@@ -1,6 +1,5 @@
 local SI, L = unpack(select(2, ...))
 local WF = SI:NewModule('Warfront', 'AceEvent-3.0', 'AceTimer-3.0')
-local thisToon = UnitName('player') .. ' - ' .. GetRealmName()
 
 -- Lua functions
 local pairs, type = pairs, type
@@ -76,7 +75,7 @@ function WF:CONTRIBUTION_CHANGED()
 end
 
 function WF:UpdateQuest()
-  local t = SI.db.Toons[thisToon]
+  local t = SI.db.Toons[SI.thisToon]
   if not t or UnitLevel("player") < 120 then return end
   if not t.Warfront then t.Warfront = {} end
   for index, tbl in pairs(warfronts) do
