@@ -99,13 +99,6 @@ local function bugReport(msg)
 end
 SI.bugReport = bugReport
 
-local GTToffset = time() - GetTime()
-local function GetTimeToTime(val)
-  if not val then return nil end
-  return val + GTToffset
-end
-SI.GetTimeToTime = GetTimeToTime
-
 function SI:timedebug()
   chatMsg("Version: %s", self.version)
   chatMsg("Realm: %s (%s)", GetRealmName(), self:GetRegion())
@@ -1518,13 +1511,13 @@ function SI:UpdateToonData()
     end
     RequestTimePlayed()
   end
-  t.LFG1 = GetTimeToTime(GetLFGRandomCooldownExpiration()) or t.LFG1
-  t.LFG2 = GetTimeToTime(select(6, SI:GetUnitDebuff('player', 71041))) or t.LFG2 -- GetLFGDeserterExpiration()
+  t.LFG1 = SI:GetTimeToTime(GetLFGRandomCooldownExpiration()) or t.LFG1
+  t.LFG2 = SI:GetTimeToTime(select(6, SI:GetUnitDebuff('player', 71041))) or t.LFG2 -- GetLFGDeserterExpiration()
   if t.LFG2 then SI:updateSpellTip(71041) end
   SI.pvpdesertids = SI.pvpdesertids or { 26013,   -- BG queue
     194958 } -- Ashran
   for _,id in ipairs(SI.pvpdesertids) do
-    t.pvpdesert = GetTimeToTime(select(6, SI:GetUnitDebuff('player', id))) or t.pvpdesert
+    t.pvpdesert = SI:GetTimeToTime(select(6, SI:GetUnitDebuff('player', id))) or t.pvpdesert
     if t.pvpdesert then SI:updateSpellTip(id) end
   end
   for toon, ti in pairs(SI.db.Toons) do
