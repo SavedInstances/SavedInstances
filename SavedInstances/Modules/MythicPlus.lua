@@ -31,7 +31,7 @@ local KeystoneAbbrev = {
 SI.KeystoneAbbrev = KeystoneAbbrev
 
 function MP:OnEnable()
-  self:RegisterEvent("BAG_UPDATE", "RefreshMythicKeyInfo")
+  self:RegisterEvent("BAG_UPDATE_DELAYED", "RefreshMythicKeyInfo")
   self:RegisterEvent("CHALLENGE_MODE_MAPS_UPDATE", "RefreshMythicKeyInfo")
   self:RefreshMythicKeyInfo()
 end
