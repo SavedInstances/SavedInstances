@@ -1,6 +1,5 @@
 local SI, L = unpack(select(2, ...))
 local TS = SI:NewModule('TradeSkill', 'AceEvent-3.0', 'AceTimer-3.0', 'AceBucket-3.0')
-local thisToon = UnitName('player') .. ' - ' .. GetRealmName()
 
 -- Lua functions
 local pairs, type, floor, abs, format = pairs, type, floor, abs, format
@@ -223,12 +222,12 @@ local cdname = {
   ["magni"] = GetSpellInfo(2108).. ": "..GetSpellInfo(140040)
 }
 
-function TradeSkillsModule:OnEnable()
+function TS:OnEnable()
   self:RegisterBucketEvent("TRADE_SKILL_LIST_UPDATE", 1)
   self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
 end
 
-function TradeSkillsModule:ScanItemCDs()
+function TS:ScanItemCDs()
   for itemid, spellid in pairs(itemcds) do
     local start, duration = GetItemCooldown(itemid)
     if start and duration and start > 0 then
@@ -237,18 +236,18 @@ function TradeSkillsModule:ScanItemCDs()
   end
 end
 
-function TradeSkillsModule:RecordSkill(spellID, expires)
+function TS:RecordSkill(spellID, expires)
   if not spellID then return end
   local cdinfo = trade_spells[spellID]
   if not cdinfo then
     SI.skillwarned = SI.skillwarned or {}
     if expires and expires > 0 and not SI.skillwarned[spellID] then
       SI.skillwarned[spellID] = true
-      SI.bugReport("Unrecognized trade skill cd "..(GetSpellInfo(spellID) or "??").." ("..spellID..")")
+      SI:BugReport("Unrecognized trade skill cd "..(GetSpellInfo(spellID) or "??").." ("..spellID..")")
     end
     return
   end
-  local t = SI and SI.db.Toons[thisToon]
+  local t = SI and SI.db.Toons[SI.thisToon]
   if not t then return end
   local spellName = GetSpellInfo(spellID)
   t.Skills = t.Skills or {}
@@ -286,7 +285,7 @@ function TradeSkillsModule:RecordSkill(spellID, expires)
   end
   if expires == 0 then
     if t.Skills[idx] then -- a cd ended early
-      SI.debug("Clearing Trade skill cd: %s (%s)",spellName,spellID)
+      SI:Debug("Clearing Trade skill cd: %s (%s)",spellName,spellID)
     end
     t.Skills[idx] = nil
     return
@@ -302,7 +301,7 @@ function TradeSkillsModule:RecordSkill(spellID, expires)
   t.Skills[idx] = sinfo
   local change = expires - (sinfo.Expires or 0)
   if abs(change) > 180 then -- updating expiration guess (more than 3 min update lag)
-    SI.debug("Trade skill cd: "..(link or title).." ("..spellID..") "..
+    SI:Debug("Trade skill cd: "..(link or title).." ("..spellID..") "..
       (sinfo.Expires and format("%d",change).." sec" or "(new)")..
       " Local time: "..date("%c",expires))
   end
@@ -313,7 +312,7 @@ function TradeSkillsModule:RecordSkill(spellID, expires)
   return true
 end
 
-function TradeSkillsModule:TradeSkillRescan(spellid)
+function TS:TradeSkillRescan(spellid)
   local scan = self:TRADE_SKILL_LIST_UPDATE()
   if _G.TradeSkillFrame and _G.TradeSkillFrame.filterTbl and
     (scan == 0 or not self.seencds or not self.seencds[spellid]) then
@@ -326,7 +325,7 @@ function TradeSkillsModule:TradeSkillRescan(spellid)
     SetTradeSkillInvSlotFilter(-1, 1, 1)
     ExpandTradeSkillSubClass(0)
     local rescan = self:TRADE_SKILL_LIST_UPDATE()
-    SI.debug("Rescan: "..(rescan==scan and "Failed" or "Success"))
+    SI:Debug("Rescan: "..(rescan==scan and "Failed" or "Success"))
     TradeSkillOnlyShowMakeable(self.filtertmp.hasMaterials)
     TradeSkillOnlyShowSkillUps(self.filtertmp.hasSkillUp)
     SetTradeSkillCategoryFilter(self.filtertmp.subClassValue or -1)
@@ -334,7 +333,7 @@ function TradeSkillsModule:TradeSkillRescan(spellid)
   end
 end
 
-function TradeSkillsModule:TRADE_SKILL_LIST_UPDATE()
+function TS:TRADE_SKILL_LIST_UPDATE()
   local cnt = 0
   if C_TradeSkillUI_IsTradeSkillLinked() or C_TradeSkillUI_IsTradeSkillGuild() then return end
   local recipeids = C_TradeSkillUI_GetFilteredRecipeIDs()
@@ -359,10 +358,10 @@ function TradeSkillsModule:TRADE_SKILL_LIST_UPDATE()
   return cnt
 end
 
-function TradeSkillsModule:UNIT_SPELLCAST_SUCCEEDED(_, unit, _, spellID)
+function TS:UNIT_SPELLCAST_SUCCEEDED(_, unit, _, spellID)
   if unit ~= "player" then return end
   if trade_spells[spellID] then
-    SI.debug("UNIT_SPELLCAST_SUCCEEDED: %s (%s)",GetSpellLink(spellID),spellID)
+    SI:Debug("UNIT_SPELLCAST_SUCCEEDED: %s (%s)",GetSpellLink(spellID),spellID)
     if not self:RecordSkill(spellID) then return end
     self:ScheduleTimer("TradeSkillRescan", 0.5, spellID)
   end

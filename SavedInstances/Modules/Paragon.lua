@@ -1,6 +1,5 @@
 local SI, L = unpack(select(2, ...))
 local P = SI:NewModule('Paragon', 'AceEvent-3.0', 'AceTimer-3.0')
-local thisToon = UnitName('player') .. ' - ' .. GetRealmName()
 
 -- Lua functions
 local pairs, tinsert = pairs, tinsert
@@ -45,7 +44,7 @@ function P:OnEnable()
 end
 
 function P:UPDATE_FACTION()
-  local t = SI.db.Toons[thisToon]
+  local t = SI.db.Toons[SI.thisToon]
   t.Paragon = {}
   for _, faction in pairs(factionID) do
     local currentValue, _, _, hasRewardPending = C_Reputation_GetFactionParagonInfo(faction)
@@ -53,7 +52,7 @@ function P:UPDATE_FACTION()
       tinsert(t.Paragon, faction)
     end
   end
-  SI.debug("Paragon faction update: %d", #t.Paragon)
+  SI:Debug("Paragon faction update: %d", #t.Paragon)
 end
 
 hooksecurefunc("GetQuestReward", function()

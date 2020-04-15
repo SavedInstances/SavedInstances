@@ -1,6 +1,5 @@
 local SI, L = unpack(select(2, ...))
 local CU = SI:NewModule('Currency', 'AceEvent-3.0', 'AceTimer-3.0', 'AceBucket-3.0')
-local thisToon = UnitName('player') .. ' - ' .. GetRealmName()
 
 local seasonTotalPatten = gsub(CURRENCY_SEASON_TOTAL, "%%s%%s", "(.+)")
 
@@ -157,7 +156,7 @@ end
 
 function CU:UpdateCurrency()
   if SI.logout then return end -- currency is unreliable during logout
-  local t = SI.db.Toons[thisToon]
+  local t = SI.db.Toons[SI.thisToon]
   t.Money = GetMoney()
   t.currency = wipe(t.currency or {})
   for _,idx in ipairs(currency) do
@@ -193,11 +192,11 @@ function CU:UpdateCurrency()
 end
 
 function CU:UpdateCurrencyItem()
-  if not SI.db.Toons[thisToon].currency then return end
+  if not SI.db.Toons[SI.thisToon].currency then return end
 
   for currencyID, tbl in pairs(specialCurrency) do
-    if tbl.relatedItem and SI.db.Toons[thisToon].currency[currencyID] then
-      SI.db.Toons[thisToon].currency[currencyID].relatedItemCount = GetItemCount(tbl.relatedItem.id)
+    if tbl.relatedItem and SI.db.Toons[SI.thisToon].currency[currencyID] then
+      SI.db.Toons[SI.thisToon].currency[currencyID].relatedItemCount = GetItemCount(tbl.relatedItem.id)
     end
   end
 end

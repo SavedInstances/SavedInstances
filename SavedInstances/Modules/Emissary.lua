@@ -1,6 +1,5 @@
 local SI, L = unpack(select(2, ...))
 local E = SI:NewModule('Emissary', 'AceEvent-3.0')
-local thisToon = UnitName('player') .. ' - ' .. GetRealmName()
 
 -- Lua functions
 local time, pairs, ipairs, tonumber, floor = time, pairs, ipairs, tonumber, floor
@@ -58,7 +57,7 @@ end
 
 function E:QUEST_LOG_UPDATE()
   if SI.db.DailyResetTime < time() then return end -- daliy reset not run yet
-  local t = SI.db.Toons[thisToon]
+  local t = SI.db.Toons[SI.thisToon]
   if not t.Emissary then t.Emissary = {} end
   local expansionLevel, tbl
   for expansionLevel, tbl in pairs(Emissaries) do

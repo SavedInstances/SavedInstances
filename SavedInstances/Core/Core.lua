@@ -63,7 +63,6 @@ for i = 0,10 do
 end
 
 local tooltip, indicatortip = nil, nil
-local thisToon = UnitName("player") .. " - " .. GetRealmName()
 local maxlvl = MAX_PLAYER_LEVEL_TABLE[#MAX_PLAYER_LEVEL_TABLE]
 
 function SI:QuestInfo(questid)
@@ -73,109 +72,6 @@ function SI:QuestInfo(questid)
   l = l and l:GetText()
   if not l or #l == 0 then return nil end -- cache miss
   return l, "\124cffffff00\124Hquest:"..questid..":90\124h["..l.."]\124h\124r"
-end
-
-local function chatMsg(...)
-  DEFAULT_CHAT_FRAME:AddMessage("\124cFFFF0000".."SavedInstances".."\124r: "..string.format(...))
-end
-SI.chatMsg = chatMsg
-
-local function debug(...)
-  if SI.db.Tooltip.DebugMode then
-    chatMsg(...)
-  end
-end
-SI.debug = debug
-
-local function bugReport(msg)
-  SI.bugreport = SI.bugreport or {}
-  local now = GetTime()
-  if now < (SI.bugreport[msg] or 0)+60 then return end
-  SI.bugreport[msg] = now
-  chatMsg(msg)
-  if now < (SI.bugreport["url"] or 0)+5 then return end
-  chatMsg("Please report this bug at: https://github.com/SavedInstances/SavedInstances/issues")
-  SI.bugreport["url"] = now
-end
-SI.bugReport = bugReport
-
-function SI:timedebug()
-  chatMsg("Version: %s", self.version)
-  chatMsg("Realm: %s (%s)", GetRealmName(), self:GetRegion())
-  chatMsg("Zone: %s (%s)", GetRealZoneText(), self:GetCurrentMapAreaID())
-  chatMsg("time()=%s GetTime()=%s", time(), GetTime())
-  chatMsg("Local time: %s local", date("%A %c"))
-  chatMsg("GetGameTime: %s:%s server",GetGameTime())
-  local t = C_DateAndTime.GetCurrentCalendarTime()
-  chatMsg("C_DateAndTime.GetCurrentCalendarTime: %s %s/%s/%s server",t.weekday,t.month,t.monthDay,t.year)
-  chatMsg("GetQuestResetTime: %s",SecondsToTime(GetQuestResetTime()))
-  chatMsg(date("Daily reset: %a %c local (based on GetQuestResetTime)",time()+GetQuestResetTime()))
-  chatMsg("Local to server offset: %d hours",self:GetServerOffset())
-  t = self:GetNextDailyResetTime()
-  chatMsg("Next daily reset: %s local, %s server",date("%a %c",t), date("%a %c",t+3600*self:GetServerOffset()))
-  t = self:GetNextWeeklyResetTime()
-  chatMsg("Next weekly reset: %s local, %s server",date("%a %c",t), date("%a %c",t+3600*self:GetServerOffset()))
-  t = self:GetNextDailySkillResetTime()
-  chatMsg("Next skill reset: %s local, %s server",date("%a %c",t), date("%a %c",t+3600*self:GetServerOffset()))
-  t = self:GetNextDarkmoonResetTime()
-  chatMsg("Next Darkmoon reset: %s local, %s server",date("%a %c",t), date("%a %c",t+3600*self:GetServerOffset()))
-end
-
-local function questTableToString(t)
-  local ret = ""
-  local lvl = UnitLevel("player")
-  for k,v in pairs(t) do
-    ret = string.format("%s%s\124cffffff00\124Hquest:%s:%s\124h[%s]\124h\124r", ret, (#ret == 0 and "" or ", "),k,lvl,k)
-  end
-  return ret
-end
-
-function SI:questdebug(info)
-  local t = SI.db.Toons[thisToon]
-  local ql = GetQuestsCompleted()
-
-  local cmd = info.input
-  cmd = cmd and strtrim(cmd:gsub("^%s*(%w+)%s*","")):lower()
-  if t.completedquests and (cmd == "load" or not SI.completedquests) then
-    chatMsg("Loaded quest list")
-    SI.completedquests = t.completedquests
-  elseif cmd == "load" then
-    chatMsg("No saved quest list")
-  elseif cmd == "save" then
-    chatMsg("Saved quest list")
-    t.completedquests = ql
-  elseif cmd == "clear" then
-    chatMsg("Cleared quest list")
-    SI.completedquests = nil
-    t.completedquests = nil
-    return
-  elseif cmd and #cmd > 0 then
-    chatMsg("Quest command not understood: '"..cmd.."'")
-    chatMsg("/si quest ([save|load|clear])")
-    return
-  end
-  local cnt = 0
-  local add = {}
-  local remove = {}
-  for id,_ in pairs(ql) do
-    cnt = cnt + 1
-  end
-  chatMsg("Completed quests: "..cnt)
-  if SI.completedquests then
-    for id,_ in pairs(ql) do
-      if not SI.completedquests[id] then
-        add[id] = true
-      end
-    end
-    for id,_ in pairs(SI.completedquests) do
-      if not ql[id] then
-        remove[id] = true
-      end
-    end
-    if next(add) then chatMsg("Added IDs:   "..questTableToString(add)) end
-    if next(remove) then chatMsg("Removed IDs: "..questTableToString(remove)) end
-  end
-  SI.completedquests = ql
 end
 
 -- abbreviate expansion names (which apparently are not localized in any western character set)
@@ -603,123 +499,6 @@ local function TableLen(table)
   return i
 end
 
--- returns how many hours the server time is ahead of local time
--- convert local time -> server time: add this value
--- convert server time -> local time: subtract this value
-function SI:GetServerOffset()
-  local serverDate = C_DateAndTime.GetCurrentCalendarTime() -- 1-based starts on Sun
-  local serverWeekday, serverMinute, serverHour = serverDate.weekday, serverDate.minute, serverDate.hour
-  -- #211: date("%w") is 0-based starts on Sun
-  local localWeekday = tonumber(date("%w")) + 1
-  local localHour, localMinute = tonumber(date("%H")), tonumber(date("%M"))
-  if serverWeekday == (localWeekday + 1)%7 then -- server is a day ahead
-    serverHour = serverHour + 24
-  elseif localWeekday == (serverWeekday + 1)%7 then -- local is a day ahead
-    localHour = localHour + 24
-  end
-  local server = serverHour + serverMinute / 60
-  local localT = localHour + localMinute / 60
-  local offset = floor((server - localT) * 2 + 0.5) / 2
-  return offset
-end
-
-function SI:GetRegion()
-  if not SI.region then
-    local reg
-    reg = GetCVar("portal")
-    if reg == "public-test" then -- PTR uses US region resets, despite the misleading realm name suffix
-      reg = "US"
-    end
-    if not reg or #reg ~= 2 then
-      local gcr = GetCurrentRegion()
-      reg = gcr and ({ "US", "KR", "EU", "TW", "CN" })[gcr]
-    end
-    if not reg or #reg ~= 2 then -- other test realms?
-      reg = (GetRealmName() or ""):match("%((%a%a)%)")
-    end
-    reg = reg and reg:upper()
-    if reg and #reg == 2 then
-      SI.region = reg
-    end
-  end
-  return SI.region
-end
-
-function SI:GetNextDailyResetTime()
-  local resettime = GetQuestResetTime()
-  if not resettime or resettime <= 0 or -- ticket 43: can fail during startup
-    -- also right after a daylight savings rollover, when it returns negative values >.<
-    resettime > 24*3600+30 then -- can also be wrong near reset in an instance
-    return nil
-  end
-
-  return time() + resettime
-end
-
-do
-  local midnight = {hour=23, min=59, sec=59}
-  function SI:GetNextDailySkillResetTime() -- trade skill reset time
-    -- this is just a "best guess" because in reality,
-    -- different trade skills reset at up to 3 different times
-    local rt = SI:GetNextDailyResetTime()
-    if not rt then return nil end
-    --local info = date("*t"); print(info.isdst)
-    -- Blizzard's ridiculous reset crap:
-    -- trade skills ignore daylight savings after the date it changes UNTIL the next restart, then go back to observing it
-
-    return rt
-  end
-end
-
-function SI:GetNextWeeklyResetTime()
-  if not SI.resetDays then
-    local region = SI:GetRegion()
-    if not region then return nil end
-    SI.resetDays = {}
-    SI.resetDays.DLHoffset = 0
-    if region == "US" then
-      SI.resetDays["2"] = true -- tuesday
-      -- ensure oceanic servers over the dateline still reset on tues UTC (wed 1/2 AM server)
-      SI.resetDays.DLHoffset = -3
-    elseif region == "EU" then
-      SI.resetDays["3"] = true -- wednesday
-    elseif region == "CN" or region == "KR" or region == "TW" then -- XXX: codes unconfirmed
-      SI.resetDays["4"] = true -- thursday
-    else
-      SI.resetDays["2"] = true -- tuesday?
-    end
-  end
-  local offset = (SI:GetServerOffset() + SI.resetDays.DLHoffset) * 3600
-  local nightlyReset = SI:GetNextDailyResetTime()
-  if not nightlyReset then return nil end
-  --while date("%A",nightlyReset+offset) ~= WEEKDAY_TUESDAY do
-  while not SI.resetDays[date("%w",nightlyReset+offset)] do
-    nightlyReset = nightlyReset + 24 * 3600
-  end
-
-  return nightlyReset
-end
-
-do
-  local dmf_end = {hour=23, min=59}
-  function SI:GetNextDarkmoonResetTime()
-    -- Darkmoon faire runs from first Sunday of each month to following Saturday
-    -- this function returns an approximate time after the end of the current month's faire
-    local monthInfo = C_Calendar.GetMonthInfo()
-    local firstweekday = monthInfo.firstWeekday
-    local firstsunday = ((firstweekday == 1) and 1) or (9 - firstweekday)
-    dmf_end.year = monthInfo.year
-    dmf_end.month = monthInfo.month
-    dmf_end.day = firstsunday + 7 -- 1 days of "slop"
-    -- Unfortunately, DMF boundary ignores daylight savings, and the time of day varies across regions
-    -- Report a reset well past end to make sure we don't drop quests early
-    local ret = time(dmf_end)
-    local offset = SI:GetServerOffset() * 3600
-    ret = ret - offset
-    return ret
-  end
-end
-
 function SI:QuestIgnored(questID)
   if (TimewalkingItemQuest[questID]) and SI.activeHolidays then
     -- Timewalking Item Quests
@@ -829,7 +608,7 @@ function SI:FindInstance(name, raid)
     local tname = SI:normalizeName(truename)
     if (tname:find(nname, 1, true) or nname:find(tname, 1, true)) and
       info.Raid == raid then -- Tempest Keep: The Botanica
-      --debug("FindInstance("..name..") => "..truename)
+      -- SI:Debug("FindInstance("..name..") => "..truename)
       return truename, info.LFDID
     end
   end
@@ -838,7 +617,7 @@ end
 
 -- provide either id or name/raid to get the instance truename and db entry
 function SI:LookupInstance(id, name, raid)
-  --debug("LookupInstance("..(id or "nil")..","..(name or "nil")..","..(raid and "true" or "false")..")")
+  -- SI:Debug("LookupInstance("..(id or "nil")..","..(name or "nil")..","..(raid and "true" or "false")..")")
   local truename, instance
   if name then
     truename, id = SI:FindInstance(name, raid)
@@ -850,7 +629,7 @@ function SI:LookupInstance(id, name, raid)
     instance = SI.db.Instances[truename]
   end
   if not instance then
-    debug("LookupInstance() failed to find instance: "..(name or "")..":"..(id or 0).." : "..GetLocale())
+    SI:Debug("LookupInstance() failed to find instance: "..(name or "")..":"..(id or 0).." : "..GetLocale())
     SI.warned = SI.warned or {}
     if not SI.warned[name] then
       SI.warned[name] = true
@@ -860,7 +639,7 @@ function SI:LookupInstance(id, name, raid)
         local tlid,tlname = link:match(":(%d+):%d+:%d+\124h%[(.+)%]\124h")
         if tlname == name then lid = tlid end
       end
-      bugReport("SavedInstances: ERROR: Refresh() failed to find instance: "..name.." : "..GetLocale().." : "..(lid or "x"))
+      SI:BugReport("SavedInstances: ERROR: Refresh() failed to find instance: "..name.." : "..GetLocale().." : "..(lid or "x"))
     end
     instance = {}
     --SI.db.Instances[name] = instance
@@ -1192,7 +971,7 @@ end
 
 -- run about once per session to update our database of instance info
 function SI:UpdateInstanceData()
-  --debug("UpdateInstanceData()")
+  -- SI:Debug("UpdateInstanceData()")
   if SI.instancesUpdated then return end  -- nil before first use in UI
   SI.instancesUpdated = true
   local added = 0
@@ -1213,7 +992,7 @@ function SI:UpdateInstanceData()
     end
     if instname then
       if lfdid_to_name[id] then
-        debug("Duplicate entry in lfdid_to_name: "..id..":"..lfdid_to_name[id]..":"..instname)
+        SI:Debug("Duplicate entry in lfdid_to_name: "..id..":"..lfdid_to_name[id]..":"..instname)
       end
       lfdid_to_name[id] = instname
     end
@@ -1256,27 +1035,27 @@ function SI:UpdateInstanceData()
     elseif inst.LFDID then
       truename = lfdid_to_name[inst.LFDID]
     else
-      debug("Ignoring bogus entry in instance database: "..instname)
+      SI:Debug("Ignoring bogus entry in instance database: "..instname)
     end
     if not truename then
       if inst.LFDID and id_blacklist[inst.LFDID] then
-        debug("Removing blacklisted entry in instance database: "..instname)
+        SI:Debug("Removing blacklisted entry in instance database: "..instname)
         SI.db.Instances[instname] = nil
       else
-        debug("Ignoring unmatched entry in instance database: "..instname)
+        SI:Debug("Ignoring unmatched entry in instance database: "..instname)
       end
     elseif instname == truename then
     -- this is the canonical entry, nothing to do
     else -- this is a stale entry, merge data and remove it
       local trueinst = SI.db.Instances[truename]
       if not trueinst or trueinst == inst then
-        debug("Merge error in UpdateInstanceData: "..truename)
+        SI:Debug("Merge error in UpdateInstanceData: "..truename)
       else
         for key, info in pairs(inst) do
           if key:find(" - ") then -- is a character key
             if trueinst[key] then
               -- merge conflict: keep the trueinst data
-              debug("Merge conflict on "..truename..":"..instname..":"..key)
+              SI:Debug("Merge conflict on "..truename..":"..instname..":"..key)
               conflicts = conflicts + 1
           else
             trueinst[key] = info
@@ -1298,7 +1077,7 @@ function SI:UpdateInstanceData()
 	if key:find(" - ") then -- is a character key
 			for difficulty, entry in pairs(info) do -- Check difficulty for LFR
 				if difficulty == 7 or difficulty == 17 then -- Difficulties 7 and 17 are for (legacy) LFR modes -> Kill them... with fire!
-					debug("Purge LFR lockout entry for " .. truename .. ":" .. instname .. ":" .. key)
+					SI:Debug("Purge LFR lockout entry for " .. truename .. ":" .. instname .. ":" .. key)
 					purges = purges + 1
 					SI.db.Instances[instname][key][difficulty] = nil
 				end
@@ -1313,7 +1092,7 @@ function SI:UpdateInstanceData()
   SI.config:BuildOptions() -- refresh config table
 
   starttime = debugprofilestop()-starttime
-  debug("UpdateInstanceData(): completed in %.3f ms : %d added, %d renames, %d merges, %d conflicts, %d purges.", starttime, added, renames, merges, conflicts, purges)
+  SI:Debug("UpdateInstanceData(): completed in %.3f ms : %d added, %d renames, %d merges, %d conflicts, %d purges.", starttime, added, renames, merges, conflicts, purges)
   if SI.RefreshPending then
     SI.RefreshPending = nil
     SI:Refresh()
@@ -1323,7 +1102,7 @@ end
 --if LFDParentFrame then hooksecurefunc(LFDParentFrame,"Show",function() SI:UpdateInstanceData() end) end
 function SI:UpdateInstance(id)
   -- returns: <instance_name>, <is_new_instance>, <blacklisted_id>
-  --debug("UpdateInstance: "..id)
+  -- SI:Debug("UpdateInstance: "..id)
   if not id or id <= 0 then return end
   local name, typeID, subtypeID,
     minLevel, maxLevel, recLevel, minRecLevel, maxRecLevel,
@@ -1392,7 +1171,7 @@ function SI:UpdateInstance(id)
   local instance = SI.db.Instances[name]
   local newinst = false
   if not instance then
-    debug("UpdateInstance: "..id.." "..(name or "nil").." "..(expansionLevel or "nil").." "..(recLevel or "nil").." "..(maxPlayers or "nil"))
+    SI:Debug("UpdateInstance: "..id.." "..(name or "nil").." "..(expansionLevel or "nil").." "..(recLevel or "nil").." "..(maxPlayers or "nil"))
     instance = {}
     newinst = true
   end
@@ -1479,9 +1258,9 @@ function SI:UpdateToonData()
         donetoday = false
       end
       if nextreset and donetoday and (i.Holiday or (money and money > 0)) then
-        i[thisToon] = i[thisToon] or {}
-        i[thisToon][1] = i[thisToon][1] or {}
-        local d = i[thisToon][1]
+        i[SI.thisToon] = i[SI.thisToon] or {}
+        i[SI.thisToon][1] = i[SI.thisToon][1] or {}
+        local d = i[SI.thisToon][1]
         d.ID = -1
         d.Locked = false
         d.Expires = nextreset
@@ -1489,7 +1268,7 @@ function SI:UpdateToonData()
     end
   end
   -- update random toon info
-  local t = SI.db.Toons[thisToon]
+  local t = SI.db.Toons[SI.thisToon]
   local now = time()
   if SI.logout or SI.PlayedTime or SI.playedpending then
     if SI.PlayedTime then
@@ -1709,12 +1488,8 @@ function SI:QuestIsDarkmoonMonthly()
   return false
 end
 
-function SI:GetCurrentMapAreaID()
-  return C_Map.GetBestMapForUnit("player")
-end
-
 local function SI_GetQuestReward()
-  local t = SI and SI.db.Toons[thisToon]
+  local t = SI and SI.db.Toons[SI.thisToon]
   if not t then return end
   local id = GetQuestID() or -1
   local title = GetTitleText() or ""
@@ -1742,7 +1517,7 @@ local function SI_GetQuestReward()
     isAccount = (questTagID == Enum.QuestTag.Account)
   else
     isAccount = db.QuestDB.AccountDaily[id] or db.QuestDB.AccountWeekly[id]
-    debug("Fetched isAccount")
+    SI:Debug("Fetched isAccount")
   end
   if QuestExceptions[id] then
     local qe = QuestExceptions[id]
@@ -1762,7 +1537,7 @@ local function SI_GetQuestReward()
   elseif isDaily then
     questDB = (isAccount and db.QuestDB.AccountDaily) or db.QuestDB.Daily
   end
-  debug("Quest Complete: "..(link or title).." "..id.." : "..title.." "..
+  SI:Debug("Quest Complete: "..(link or title).." "..id.." : "..title.." "..
     (isAccount and "(Account) " or "")..
     (isMonthly and "(Monthly)" or isWeekly and "(Weekly)" or isDaily and "(Daily)" or "(Regular)").."  "..
     (expires and date("%c",expires) or ""))
@@ -1780,9 +1555,9 @@ local function SI_GetQuestReward()
   end
   scope.Quests = scope.Quests or {}
   scope.Quests[id] = qinfo
-  local dc, wc = SI:QuestCount(thisToon)
+  local dc, wc = SI:QuestCount(SI.thisToon)
   local adc, awc = SI:QuestCount(nil)
-  debug("DailyCount: "..dc.."  WeeklyCount: "..wc.." AccountDailyCount: "..adc.."  AccountWeeklyCount: "..awc)
+  SI:Debug("DailyCount: "..dc.."  WeeklyCount: "..wc.." AccountDailyCount: "..adc.."  AccountWeeklyCount: "..awc)
 end
 hooksecurefunc("GetQuestReward", SI_GetQuestReward)
 
@@ -2583,8 +2358,8 @@ end
 
 -- global addon code below
 function SI:toonInit()
-  local ti = db.Toons[thisToon] or { }
-  db.Toons[thisToon] = ti
+  local ti = db.Toons[SI.thisToon] or { }
+  db.Toons[SI.thisToon] = ti
   ti.LClass, ti.Class = UnitClass("player")
   ti.Level = UnitLevel("player")
   ti.Show = ti.Show or "saved"
@@ -2651,7 +2426,7 @@ function SI:OnInitialize()
   end
   for qid, _ in pairs(db.QuestDB.Daily) do
     if db.QuestDB.AccountDaily[qid] then
-      debug("Removing duplicate questDB entry: "..qid)
+      SI:Debug("Removing duplicate questDB entry: "..qid)
       db.QuestDB.Daily[qid] = nil
     end
   end
@@ -2713,7 +2488,7 @@ function SI:OnEnable()
   self:RegisterEvent("BOSS_KILL")
   self:RegisterEvent("ENCOUNTER_END")
   self:RegisterEvent("TIME_PLAYED_MSG", function(_,total,level)
-    local t = thisToon and SI and SI.db and SI.db.Toons[thisToon]
+    local t = SI.thisToon and SI and SI.db and SI.db.Toons[SI.thisToon]
     if total > 0 and t then
       t.PlayedTotal = total
       t.PlayedLevel = level
@@ -2838,20 +2613,20 @@ function SI:getRealmGroup(realm)
 end
 
 function SI:BossModEncounterEnd(modname, bossname)
-  debug("%s refresh: %s", (modname or "BossMod"), tostring(bossname))
-  SI:BossRecord(thisToon, bossname, select(3, GetInstanceInfo()), true)
+  SI:Debug("%s refresh: %s", (modname or "BossMod"), tostring(bossname))
+  SI:BossRecord(SI.thisToon, bossname, select(3, GetInstanceInfo()), true)
   self:RefreshLockInfo()
 end
 
 function SI:ENCOUNTER_END(event, encounterID, encounterName, difficultyID, raidSize, endStatus)
-  debug("ENCOUNTER_END:%s:%s:%s:%s:%s", tostring(encounterID), tostring(encounterName), tostring(difficultyID), tostring(raidSize), tostring(endStatus))
+  SI:Debug("ENCOUNTER_END:%s:%s:%s:%s:%s", tostring(encounterID), tostring(encounterName), tostring(difficultyID), tostring(raidSize), tostring(endStatus))
   if endStatus ~= 1 then return end -- wipe
   self:RefreshLockInfo()
-  SI:BossRecord(thisToon, encounterName, difficultyID)
+  SI:BossRecord(SI.thisToon, encounterName, difficultyID)
 end
 
 function SI:BOSS_KILL(event, encounterID, encounterName, ...)
-  debug("BOSS_KILL:%s:%s",tostring(encounterID),tostring(encounterName)) -- ..":"..strjoin(":",...))
+  SI:Debug("BOSS_KILL:%s:%s",tostring(encounterID),tostring(encounterName)) -- ..":"..strjoin(":",...))
   local name = encounterName
   if name and type(name) == "string" then
     name = name:gsub(",.*$","") -- remove extraneous trailing boss titles
@@ -2896,7 +2671,7 @@ local raiddiffmsg = ERR_RAID_DIFFICULTY_CHANGED_S:gsub("%%s",".+")
 local dungdiffmsg = ERR_DUNGEON_DIFFICULTY_CHANGED_S:gsub("%%s",".+")
 local delaytime = 3 -- seconds to wait on zone change for settings to stabilize
 function SI.HistoryEvent(f, evt, ...)
-  --debug("HistoryEvent: "..evt, ...)
+  -- SI:Debug("HistoryEvent: "..evt, ...)
   if evt == "CHAT_MSG_ADDON" then
     local prefix, message, channel, sender = ...
     if prefix ~= "SavedInstances" then return end
@@ -2954,7 +2729,7 @@ function SI:histZoneKey()
   local truename = SI:FindInstance(instname, insttype == "raid")
   local locked = false
   local inst = truename and SI.db.Instances[truename]
-  inst = inst and inst[thisToon]
+  inst = inst and inst[SI.thisToon]
   for d=1,maxdiff do
     if inst and inst[d] and inst[d].Locked then
       locked = true
@@ -2963,7 +2738,7 @@ function SI:histZoneKey()
   if diff == 1 and maxPlayers == 5 then -- never locked to 5-man regs
     locked = false
   end
-  local toonstr = thisToon
+  local toonstr = SI.thisToon
   if not db.Tooltip.ShowServer then
     toonstr = strsplit(" - ", toonstr)
   end
@@ -2971,7 +2746,7 @@ function SI:histZoneKey()
   if diffname and #diffname > 0 then
     desc = desc .. " - " .. diffname
   end
-  local key = thisToon..":"..instname..":"..insttype..":"..diff
+  local key = SI.thisToon..":"..instname..":"..insttype..":"..diff
   if not locked then
     key = key..":"..SI.db.histGeneration
   end
@@ -2981,17 +2756,17 @@ end
 function SI:HistoryUpdate(forcereset, forcemesg)
   SI.db.histGeneration = SI.db.histGeneration or 1
   if forcereset and SI:histZoneKey() then -- delay reset until we zone out
-    debug("HistoryUpdate reset delayed")
+    SI:Debug("HistoryUpdate reset delayed")
     SI.delayedReset = true
   end
   if (forcereset or SI.delayedReset) and not SI:histZoneKey() then
-    debug("HistoryUpdate generation advance")
+    SI:Debug("HistoryUpdate generation advance")
     SI.db.histGeneration = (SI.db.histGeneration + 1) % 100000
     SI.delayedReset = false
   end
   local now = time()
   if SI.delayUpdate and now < SI.delayUpdate then
-    debug("HistoryUpdate delayed")
+    SI:Debug("HistoryUpdate delayed")
     return
   end
   local zoningin = false
@@ -3025,7 +2800,7 @@ function SI:HistoryUpdate(forcereset, forcemesg)
   for zk, zi in pairs(SI.db.History) do
     if now > zi.last + SI.histReapTime or
       zi.last > (now + 3600) then -- temporary bug fix
-      debug("Reaping %s",zi.desc)
+      SI:Debug("Reaping %s",zi.desc)
       SI.db.History[zk] = nil
     else
       livecnt = livecnt + 1
@@ -3042,14 +2817,14 @@ function SI:HistoryUpdate(forcereset, forcemesg)
     local msg = livecnt.." live instances, oldest ("..(oldestkey or "none")..") expires in "..oldestremt..". Current Zone="..(newzone or "nil")
     if msg ~= SI.lasthistdbg then
       SI.lasthistdbg = msg
-      debug(msg)
+      SI:Debug(msg)
     end
-    --debug(SI.db.History)
+    -- SI:Debug(SI.db.History)
   end
   -- display update
 
   if forcemesg or (SI.db.Tooltip.LimitWarn and zoningin and livecnt >= SI.histLimit-1) then
-    chatMsg(L["Warning: You've entered about %i instances recently and are approaching the %i instance per hour limit for your account. More instances should be available in %s."],livecnt, SI.histLimit, oldestremt)
+    SI:ChatMsg(L["Warning: You've entered about %i instances recently and are approaching the %i instance per hour limit for your account. More instances should be available in %s."],livecnt, SI.histLimit, oldestremt)
   end
   SI.histLiveCount = livecnt
   SI.histOldest = oldestremt
@@ -3081,7 +2856,7 @@ function SI:memcheck(context)
   local newval = GetAddOnMemoryUsage("SavedInstances")
   SI.memusage = SI.memusage or 0
   if newval ~= SI.memusage then
-    debug("%.3f KB in %s",(newval - SI.memusage),context)
+    SI:Debug("%.3f KB in %s",(newval - SI.memusage),context)
     SI.memusage = newval
   end
 end
@@ -3089,7 +2864,7 @@ end
 -- Lightweight refresh of just quest flag information
 -- all may be nil if not instantiataed
 function SI:QuestRefresh(recoverdaily, questcomplete, nextreset, weeklyreset)
-  local tiq = SI.db.Toons[thisToon]
+  local tiq = SI.db.Toons[SI.thisToon]
   tiq = tiq and tiq.Quests
   if not tiq then return end
   nextreset = nextreset or SI:GetNextDailyResetTime()
@@ -3137,7 +2912,7 @@ function SI:QuestRefresh(recoverdaily, questcomplete, nextreset, weeklyreset)
               end
             end
             if not found then
-              debug("Recovering lost quest: "..title.." ("..scope..")")
+              SI:Debug("Recovering lost quest: "..title.." ("..scope..")")
               questlist[qid] = { ["Title"] = title, ["Link"] = link,
                 ["isDaily"] = (scope:find("Daily") and true) or nil,
                 ["Expires"] = list.expires,
@@ -3148,7 +2923,7 @@ function SI:QuestRefresh(recoverdaily, questcomplete, nextreset, weeklyreset)
       end
     end
   end
-  SI:QuestCount(thisToon)
+  SI:QuestCount(SI.thisToon)
 end
 
 function SI:Refresh(recoverdaily)
@@ -3160,22 +2935,22 @@ function SI:Refresh(recoverdaily)
   end -- wait for UpdateInstanceData to succeed
   local nextreset = SI:GetNextDailyResetTime()
   if not nextreset or ((nextreset - time()) > (24*3600 - 5*60)) then  -- allow 5 minutes for quest DB to update after daily rollover
-    debug("Skipping SI:Refresh() near daily reset")
+    SI:Debug("Skipping SI:Refresh() near daily reset")
     SI:UpdateToonData()
     return
   end
   local temp = localarr("RefreshTemp")
   for name, instance in pairs(SI.db.Instances) do -- clear current toons lockouts before refresh
     local id = instance.LFDID
-    if instance[thisToon]
+    if instance[SI.thisToon]
     -- disabled for ticket 178/195:
     --and not (id and SI.LFRInstances[id] and select(2,GetLFGDungeonNumEncounters(id)) == 0) -- ticket 103
     then
-      temp[name] = instance[thisToon] -- use a temp to reduce memory churn
+      temp[name] = instance[SI.thisToon] -- use a temp to reduce memory churn
       for diff,info in pairs(temp[name]) do
         wipe(info)
       end
-      instance[thisToon] = nil
+      instance[SI.thisToon] = nil
     end
   end
   local numsaved = GetNumSavedInstances()
@@ -3190,15 +2965,15 @@ function SI:Refresh(recoverdaily)
           expires = 0
         end
         instance.Raid = instance.Raid or raid
-        instance[thisToon] = instance[thisToon] or temp[truename] or { }
-        local info = instance[thisToon][diff] or {}
+        instance[SI.thisToon] = instance[SI.thisToon] or temp[truename] or { }
+        local info = instance[SI.thisToon][diff] or {}
         wipe(info)
         info.ID = id
         info.Expires = expires
         info.Link = GetSavedInstanceChatLink(i)
         info.Locked = locked
         info.Extended = extended
-        instance[thisToon][diff] = info
+        instance[SI.thisToon][diff] = info
       end
 	end
   end
@@ -3208,9 +2983,9 @@ function SI:Refresh(recoverdaily)
     local numEncounters, numCompleted = GetLFGDungeonNumEncounters(id)
     if ( numCompleted and numCompleted > 0 and weeklyreset ) then
       local truename, instance = SI:LookupInstance(id, nil, true)
-      instance[thisToon] = instance[thisToon] or temp[truename] or { }
-      local info = instance[thisToon][2] or {}
-      instance[thisToon][2] = info
+      instance[SI.thisToon] = instance[SI.thisToon] or temp[truename] or { }
+      local info = instance[SI.thisToon][2] or {}
+      instance[SI.thisToon][2] = info
       if not (info.Expires and info.Expires < (time() + 300)) then -- ticket 109: don't refresh expiration close to reset
         wipe(info)
         info.Expires = weeklyreset
@@ -3239,10 +3014,10 @@ function SI:Refresh(recoverdaily)
       ) then
       local truename = einfo.name
       local instance = SI.db.Instances[truename]
-      instance[thisToon] = instance[thisToon] or temp[truename] or { }
-      local info = instance[thisToon][2] or {}
+      instance[SI.thisToon] = instance[SI.thisToon] or temp[truename] or { }
+      local info = instance[SI.thisToon][2] or {}
       wipe(info)
-      instance[thisToon][2] = info
+      instance[SI.thisToon][2] = info
       info.Expires = weeklyreset
       info.ID = -1
       info[1] = true
@@ -3254,10 +3029,10 @@ function SI:Refresh(recoverdaily)
 
   local icnt, dcnt = 0,0
   for name, _ in pairs(temp) do
-    if SI.db.Instances[name][thisToon] then
-      for diff,info in pairs(SI.db.Instances[name][thisToon]) do
+    if SI.db.Instances[name][SI.thisToon] then
+      for diff,info in pairs(SI.db.Instances[name][SI.thisToon]) do
         if not info.ID then
-          SI.db.Instances[name][thisToon][diff] = nil
+          SI.db.Instances[name][SI.thisToon][diff] = nil
           dcnt = dcnt + 1
         end
       end
@@ -3265,7 +3040,7 @@ function SI:Refresh(recoverdaily)
       icnt = icnt + 1
     end
   end
-  --debug("Refresh temp reaped "..icnt.." instances and "..dcnt.." diffs")
+  -- SI:Debug("Refresh temp reaped "..icnt.." instances and "..dcnt.." diffs")
   wipe(temp)
   SI:UpdateToonData()
 end
@@ -3328,7 +3103,7 @@ do
         local t = SI.db.Toons[n]
         local tn, tr = n:match('^(.*) [-] (.*)$')
         if t and
-          (t.Show ~= "never" or (n == thisToon and settings.SelfAlways))  and
+          (t.Show ~= "never" or (n == SI.thisToon and settings.SelfAlways))  and
           (not settings.ServerOnly
           or thisrealm == tr
           or thisrealm == SI:getRealmGroup(tr))
@@ -3337,7 +3112,7 @@ do
           cnext_ekey = 1
 
           if settings.SelfFirst then
-            if n == thisToon then
+            if n == SI.thisToon then
               e[cnext_ekey] = 1
             else
               e[cnext_ekey] = 2
@@ -3387,7 +3162,7 @@ do
       end
       end
       table.sort(cnext_list, cpairs_sort)
-      --debug(cnext_list)
+      -- SI:Debug(cnext_list)
     end
     cnext_pos = 1
     return cnext, t, nil
@@ -3583,7 +3358,7 @@ function SI:ShowTooltip(anchorframe)
   -- allocating columns for characters
   for toon, t in cpairs(SI.db.Toons) do
     if SI.db.Toons[toon].Show == "always" or
-      (toon == thisToon and SI.db.Tooltip.SelfAlways) then
+      (toon == SI.thisToon and SI.db.Tooltip.SelfAlways) then
       addColumns(columns, toon, tooltip)
     end
   end
@@ -3721,7 +3496,7 @@ function SI:ShowTooltip(anchorframe)
           span = 1
         end
         if showcnt > maxcol then
-          bugReport("Column overflow! showcnt="..showcnt)
+          SI:BugReport("Column overflow! showcnt="..showcnt)
         end
         for diff = 1, maxdiff do
           if showcol[diff] then
@@ -3751,7 +3526,7 @@ function SI:ShowTooltip(anchorframe)
   if lfrcons then
     for boxname, line in pairs(lfrbox) do
       if type(boxname) == "number" then
-        bugReport("Unrecognized LFR instance parent id= "..boxname)
+        SI:BugReport("Unrecognized LFR instance parent id= "..boxname)
         lfrbox[boxname] = nil
       end
     end
@@ -4449,7 +4224,7 @@ function SI:ShowTooltip(anchorframe)
     end
   end
   if fail then -- retry with corrected cache
-    debug("Tooltip cache miss")
+    SI:Debug("Tooltip cache miss")
     SI.scaleCache[showall] = nil
     --SI:ShowTooltip(anchorframe)
     -- reschedule continuation to reduce time-slice exceeded errors in combat
@@ -4482,7 +4257,7 @@ function SI:ShowTooltip(anchorframe)
       if w > sw or h > sh then
         scale = scale / math.max(w/sw, h/sh)
         scale = scale*0.95 -- 5% slop to speed convergeance
-        debug("Downscaling to %.4f",scale)
+        SI:Debug("Downscaling to %.4f",scale)
         tooltip:SetScale(scale)
         tooltip:Hide()
         SI.scaleCache[showall] = scale
@@ -4491,11 +4266,11 @@ function SI:ShowTooltip(anchorframe)
     end
   end
   starttime = debugprofilestop()-starttime
-  debug("ShowTooltip(): completed in %.3fms", starttime)
+  SI:Debug("ShowTooltip(): completed in %.3fms", starttime)
 end
 
 local function ResetConfirmed()
-  debug("Resetting characters")
+  SI:Debug("Resetting characters")
   if SI:IsDetached() then
     SI:HideDetached()
   end
@@ -4507,7 +4282,7 @@ local function ResetConfirmed()
   end
   wipe(SI.db.Toons) -- clear toon db
   SI.PlayedTime = nil -- reset played cache
-  SI:toonInit() -- rebuild thisToon
+  SI:toonInit() -- rebuild SI.thisToon
   SI:Refresh()
   SI.config:BuildOptions() -- refresh config table
   SI.config:ReopenConfigDisplay(SI.config.ftoon)
@@ -4528,11 +4303,11 @@ StaticPopupDialogs["SAVEDINSTANCES_RESET"] = {
 }
 
 local function DeleteCharacter(toon)
-  if toon == thisToon or not SI.db.Toons[toon] then
-    chatMsg("ERROR: Failed to delete "..toon..". Character is active or does not exist.")
+  if toon == SI.thisToon or not SI.db.Toons[toon] then
+    SI:ChatMsg("ERROR: Failed to delete "..toon..". Character is active or does not exist.")
     return
   end
-  debug("Deleting character: "..toon)
+  SI:Debug("Deleting character: "..toon)
   if SI:IsDetached() then
     SI:HideDetached()
   end

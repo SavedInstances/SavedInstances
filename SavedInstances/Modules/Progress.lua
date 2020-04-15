@@ -1,6 +1,5 @@
 local SI, L = unpack(select(2, ...))
 local P = SI:NewModule('Progress', 'AceEvent-3.0')
-local thisToon = UnitName('player') .. ' - ' .. GetRealmName()
 
 -- Lua functions
 local _G = _G
@@ -82,7 +81,7 @@ local function ConquestUpdate(index)
       rewardWaiting = false,
     }
   end
-  SI.db.Toons[thisToon].Progress[index] = data
+  SI.db.Toons[SI.thisToon].Progress[index] = data
 end
 
 local function ConquestShow(toon, index)
@@ -110,11 +109,11 @@ end
 -- Horrific Vision (index 3)
 
 local function HorrificVisionUpdate(index)
-  SI.db.Toons[thisToon].Progress[index] = wipe(SI.db.Toons[thisToon].Progress[index] or {})
+  SI.db.Toons[SI.thisToon].Progress[index] = wipe(SI.db.Toons[SI.thisToon].Progress[index] or {})
   for i, questID in ipairs(P.TrackedQuest[index].rewardQuestID) do
-    SI.db.Toons[thisToon].Progress[index][i] = IsQuestFlaggedCompleted(questID)
+    SI.db.Toons[SI.thisToon].Progress[index][i] = IsQuestFlaggedCompleted(questID)
   end
-  SI.db.Toons[thisToon].Progress[index].unlocked = IsQuestFlaggedCompleted(58634) -- Opening the Gateway
+  SI.db.Toons[SI.thisToon].Progress[index].unlocked = IsQuestFlaggedCompleted(58634) -- Opening the Gateway
 end
 
 local function HorrificVisionShow(toon, index)
@@ -144,11 +143,11 @@ end
 -- N'Zoth Assaults (index 4)
 
 local function NZothAssaultUpdate(index)
-  SI.db.Toons[thisToon].Progress[index] = wipe(SI.db.Toons[thisToon].Progress[index] or {})
+  SI.db.Toons[SI.thisToon].Progress[index] = wipe(SI.db.Toons[SI.thisToon].Progress[index] or {})
   for _, questID in ipairs(P.TrackedQuest[index].relatedQuest) do
-    SI.db.Toons[thisToon].Progress[index][questID] = C_TaskQuest_IsActive(questID)
+    SI.db.Toons[SI.thisToon].Progress[index][questID] = C_TaskQuest_IsActive(questID)
   end
-  SI.db.Toons[thisToon].Progress[index].unlocked = IsQuestFlaggedCompleted(57362) -- Deeper Into the Darkness
+  SI.db.Toons[SI.thisToon].Progress[index].unlocked = IsQuestFlaggedCompleted(57362) -- Deeper Into the Darkness
 end
 
 local function NZothAssaultShow(toon, index)
@@ -299,7 +298,7 @@ function P:OnEnable()
 end
 
 function P:QUEST_LOG_UPDATE()
-  local t = SI.db.Toons[thisToon]
+  local t = SI.db.Toons[SI.thisToon]
   if not t.Progress then t.Progress = {} end
   for i, tbl in ipairs(self.TrackedQuest) do
     if tbl.func then
