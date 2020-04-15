@@ -30,13 +30,13 @@ local KeystoneAbbrev = {
 }
 SI.KeystoneAbbrev = KeystoneAbbrev
 
-function MythicPlusModule:OnEnable()
+function MP:OnEnable()
   self:RegisterEvent("BAG_UPDATE", "RefreshMythicKeyInfo")
   self:RegisterEvent("CHALLENGE_MODE_MAPS_UPDATE", "RefreshMythicKeyInfo")
   self:RefreshMythicKeyInfo()
 end
 
-function MythicPlusModule:RefreshMythicKeyInfo(event)
+function MP:RefreshMythicKeyInfo(event)
   -- This event is fired after the rewards data was requested, causing yet another refresh if not checked for
   if (event ~= "CHALLENGE_MODE_MAPS_UPDATE") then C_MythicPlus_RequestRewards() end
 
