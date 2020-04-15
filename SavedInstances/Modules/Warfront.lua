@@ -1,6 +1,6 @@
-local _, addon = ...
-local W = addon.core:NewModule("Warfront", "AceEvent-3.0", "AceTimer-3.0")
-local thisToon = UnitName("player") .. " - " .. GetRealmName()
+local SI, L = unpack(select(2, ...))
+local WF = SI:NewModule('Warfront', 'AceEvent-3.0', 'AceTimer-3.0')
+local thisToon = UnitName('player') .. ' - ' .. GetRealmName()
 
 -- Lua functions
 local pairs, type = pairs, type
@@ -47,14 +47,14 @@ local warfronts = {
   },
 }
 
-function W:OnEnable()
+function WF:OnEnable()
   self:CONTRIBUTION_CHANGED()
   self:UpdateQuest()
   self:RegisterEvent("CONTRIBUTION_CHANGED")
 end
 
-function W:CONTRIBUTION_CHANGED()
-  local globalInfo = addon.db.Warfront
+function WF:CONTRIBUTION_CHANGED()
+  local globalInfo = SI.db.Warfront
   for index, tbl in pairs(warfronts) do
     local captureSide = "Horde"
     local state, _, timeOfNextStateChange = C_ContributionCollector_GetState(tbl.Alliance.id)
@@ -75,8 +75,8 @@ function W:CONTRIBUTION_CHANGED()
   end
 end
 
-function W:UpdateQuest()
-  local t = addon.db.Toons[thisToon]
+function WF:UpdateQuest()
+  local t = SI.db.Toons[thisToon]
   if not t or UnitLevel("player") < 120 then return end
   if not t.Warfront then t.Warfront = {} end
   for index, tbl in pairs(warfronts) do
@@ -95,9 +95,9 @@ function W:UpdateQuest()
   end
 end
 
-function W:OnReset(index, captureSide)
-  for toon, ti in pairs(addon.db.Toons) do
-    local t = addon.db.Toons[toon]
+function WF:OnReset(index, captureSide)
+  for toon, ti in pairs(SI.db.Toons) do
+    local t = SI.db.Toons[toon]
     if not t or not t.Warfront or not t.Warfront[index] then return end
     local tbl = t.Warfront[index]
     if t.Faction == captureSide then
@@ -109,7 +109,7 @@ function W:OnReset(index, captureSide)
   self:UpdateQuest()
 end
 
-function W:BuildOptions(order)
+function WF:BuildOptions(order)
   local option = {}
   for index, tbl in pairs(warfronts) do
     option["Warfront" .. index] = {
@@ -121,13 +121,13 @@ function W:BuildOptions(order)
   return option
 end
 
-function W:ShowTooltip(tooltip, columns, showall, preshow)
-  local cpairs = addon.cpairs
+function WF:ShowTooltip(tooltip, columns, showall, preshow)
+  local cpairs = SI.cpairs
   local first = true
   for index, tbl in pairs(warfronts) do
-    if addon.db.Tooltip["Warfront" .. index] or showall then
+    if SI.db.Tooltip["Warfront" .. index] or showall then
       local show
-      for toon, t in cpairs(addon.db.Toons, true) do
+      for toon, t in cpairs(SI.db.Toons, true) do
         if t.Warfront and t.Warfront[index] then
           show = true
         end
@@ -138,18 +138,18 @@ function W:ShowTooltip(tooltip, columns, showall, preshow)
           first = false
         end
         local line = tooltip:AddLine(NORMAL_FONT_COLOR_CODE .. C_ContributionCollector_GetName(tbl.Alliance.id) .. FONT_COLOR_CODE_CLOSE)
-        for toon, t in cpairs(addon.db.Toons, true) do
+        for toon, t in cpairs(SI.db.Toons, true) do
           if t.Warfront and t.Warfront[index] then
             local value = t.Warfront[index]
             local text = ""
-            if addon.db.Warfront[index] then
-              if addon.db.Warfront[index].captureSide == t.Faction then
+            if SI.db.Warfront[index] then
+              if SI.db.Warfront[index].captureSide == t.Faction then
                 if value.boss then
                   text = "\124T" .. READY_CHECK_READY_TEXTURE .. ":0|t"
                 else
                   text = "0/1"
                 end
-              elseif not addon.db.Warfront[index].contributing then
+              elseif not SI.db.Warfront[index].contributing then
                 if value.scenario then
                   if type(value.scenario) == 'table' then
                     local completed = 0
@@ -188,5 +188,5 @@ function W:ShowTooltip(tooltip, columns, showall, preshow)
 end
 
 hooksecurefunc("GetQuestReward", function()
-  W:ScheduleTimer("UpdateQuest", 1)
+  WF:ScheduleTimer("UpdateQuest", 1)
 end)

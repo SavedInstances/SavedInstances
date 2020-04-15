@@ -3,22 +3,23 @@
 -- To help with missing translations please go here:
 local url = "http://www.wowace.com/addons/saved_instances/localization/"
 
-local addonName, addon = ...
-local Ld, La = {}, {}
-local locale = GAME_LOCALE or GetLocale()
-if locale == "enGB" then locale = "enUS" end
+local SI, L = unpack(select(2, ...))
 
 -- Lua functions
 local print, format, rawget = print, format, rawget
 
-addon.L = setmetatable({},{
+local Ld, La = {}, {}
+local locale = GAME_LOCALE or GetLocale()
+if locale == "enGB" then locale = "enUS" end
+
+local localeWarning
+L = setmetatable(L, {
   __index = function(t, s)
-    if locale ~= "enUS" and Ld[s] and
-      not La[s] and url and not addon.locale_warning then
-      addon.locale_warning = true
-      print(format("*** %s needs help translating to your language! (%s)", addonName, locale))
+    if not localeWarning and url and Ld[s] and not La[s] and locale ~= 'enUS' then
+      localeWarning = true
+      print(format("*** SavedInstances needs help translating to your language! (%s)", locale))
       print("*** If you speak English, you can contribute by visiting:")
-      print("*** "..url)
+      print("*** " .. url)
     end
     return La[s] or Ld[s] or rawget(t,s) or s
   end

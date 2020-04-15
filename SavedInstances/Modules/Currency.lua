@@ -1,6 +1,6 @@
-local _, addon = ...
-local CU = addon.core:NewModule("Currency", "AceEvent-3.0", "AceTimer-3.0", "AceBucket-3.0")
-local thisToon = UnitName("player") .. " - " .. GetRealmName()
+local SI, L = unpack(select(2, ...))
+local CU = SI:NewModule('Currency', 'AceEvent-3.0', 'AceTimer-3.0', 'AceBucket-3.0')
+local thisToon = UnitName('player') .. ' - ' .. GetRealmName()
 
 local seasonTotalPatten = gsub(CURRENCY_SEASON_TOTAL, "%%s%%s", "(.+)")
 
@@ -64,7 +64,7 @@ local currency = {
   1755, -- Coalescing Visions
   1803, -- Echoes of Ny'alotha
 }
-addon.currency = currency
+SI.currency = currency
 
 local currencySorted = {}
 for _, idx in ipairs(currency) do
@@ -75,7 +75,7 @@ table.sort(currencySorted, function (c1, c2)
   local c2_name = GetCurrencyInfo(c2)
   return c1_name < c2_name
 end)
-addon.currencySorted = currencySorted
+SI.currencySorted = currencySorted
 
 local specialCurrency = {
   [1129] = { -- WoD - Seal of Tempered Fate
@@ -129,21 +129,21 @@ local specialCurrency = {
     },
   },
 }
-addon.specialCurrency = specialCurrency
+SI.specialCurrency = specialCurrency
 
 for _, tbl in pairs(specialCurrency) do
   if tbl.earnByQuest then
     for _, questID in ipairs(tbl.earnByQuest) do
-      addon.QuestExceptions[questID] = "Regular" -- not show in Weekly Quest
+      SI.QuestExceptions[questID] = "Regular" -- not show in Weekly Quest
     end
   end
 end
 
 local function GetSeasonCurrency(idx)
-  addon.scantt:SetOwner(_G.UIParent, "ANCHOR_NONE")
-  addon.scantt:SetCurrencyByID(idx)
-  local name = addon.scantt:GetName()
-  for i = 1, addon.scantt:NumLines() do
+  SI.ScanTooltip:SetOwner(_G.UIParent, "ANCHOR_NONE")
+  SI.ScanTooltip:SetCurrencyByID(idx)
+  local name = SI.ScanTooltip:GetName()
+  for i = 1, SI.ScanTooltip:NumLines() do
     local text = _G[name .. "TextLeft" .. i]:GetText()
     if strfind(text, seasonTotalPatten) then
       return text
@@ -157,8 +157,8 @@ function CU:OnEnable()
 end
 
 function CU:UpdateCurrency()
-  if addon.logout then return end -- currency is unreliable during logout
-  local t = addon.db.Toons[thisToon]
+  if SI.logout then return end -- currency is unreliable during logout
+  local t = SI.db.Toons[thisToon]
   t.Money = GetMoney()
   t.currency = wipe(t.currency or {})
   for _,idx in ipairs(currency) do
@@ -194,11 +194,11 @@ function CU:UpdateCurrency()
 end
 
 function CU:UpdateCurrencyItem()
-  if not addon.db.Toons[thisToon].currency then return end
+  if not SI.db.Toons[thisToon].currency then return end
 
   for currencyID, tbl in pairs(specialCurrency) do
-    if tbl.relatedItem and addon.db.Toons[thisToon].currency[currencyID] then
-      addon.db.Toons[thisToon].currency[currencyID].relatedItemCount = GetItemCount(tbl.relatedItem.id)
+    if tbl.relatedItem and SI.db.Toons[thisToon].currency[currencyID] then
+      SI.db.Toons[thisToon].currency[currencyID].relatedItemCount = GetItemCount(tbl.relatedItem.id)
     end
   end
 end

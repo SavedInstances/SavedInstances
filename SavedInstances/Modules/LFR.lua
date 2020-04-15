@@ -1,5 +1,5 @@
-local _, addon = ...
-local LFRModule = addon.core:NewModule("LFR")
+local SI, L = unpack(select(2, ...))
+local LFR = SI:NewModule('LFR')
 
 local locLevel = UnitLevel("player")
 local locFaction = UnitFactionGroup("player")
@@ -131,4 +131,4 @@ for id, info in pairs(LFRInstances) do
     tbl[info.altid] = info
   end
 end
-addon.LFRInstances = tbl
+SI.LFRInstances = tbl

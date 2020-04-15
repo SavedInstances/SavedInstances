@@ -1,10 +1,14 @@
-local addonName, addon = ...
-local core = LibStub("AceAddon-3.0"):NewAddon(addonName, "AceEvent-3.0", "AceTimer-3.0", "AceBucket-3.0")
+local addon, Engine = ...
+local SI = LibStub('AceAddon-3.0'):NewAddon(addon, 'AceEvent-3.0', 'AceTimer-3.0', 'AceBucket-3.0')
 
--- GLOBALS: SavedInstances
+Engine[1] = SI
+Engine[2] = {}
 
-SavedInstances = addon
-addon.core = core:NewModule("Core", "AceEvent-3.0", "AceTimer-3.0", "AceBucket-3.0")
-addon.LDB = LibStub("LibDataBroker-1.1", true)
-addon.icon = addon.LDB and LibStub("LibDBIcon-1.0", true)
-addon.scantt = CreateFrame("GameTooltip", "SavedInstancesScanTooltip", UIParent, "GameTooltipTemplate")
+_G.SavedInstances = Engine
+
+SI.Libs = {}
+SI.Libs.QTip = LibStub('LibQTip-1.0')
+SI.Libs.LDB = LibStub('LibDataBroker-1.1', true)
+SI.Libs.LDBI = SI.Libs.LDB and LibStub('LibDBIcon-1.0', true)
+
+SI.ScanTooltip = CreateFrame('GameTooltip', 'SavedInstancesScanTooltip', _G.UIParent, 'GameTooltipTemplate')

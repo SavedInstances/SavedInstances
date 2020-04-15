@@ -1,9 +1,8 @@
-local _, addon = ...
-local WorldBoss = addon.core:NewModule("WorldBoss")
-local L = addon.L
+local SI, L = unpack(select(2, ...))
+local WB = SI:NewModule('WorldBoss')
 
-  -- encounter index is embedded in the Hjournal hyperlink
-addon.WorldBosses = {
+-- encounter index is embedded in the Hjournal hyperlink
+SI.WorldBosses = {
   -- Mist of Pandaria
   [691] = { quest=32099, expansion=4, level=90 }, -- Sha of Anger
   [725] = { quest=32098, expansion=4, level=90 }, -- Galleon
