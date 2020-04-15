@@ -232,7 +232,7 @@ function TradeSkillsModule:ScanItemCDs()
   for itemid, spellid in pairs(itemcds) do
     local start, duration = GetItemCooldown(itemid)
     if start and duration and start > 0 then
-      self:RecordSkill(spellid, SI.GetTimeToTime(start + duration))
+      self:RecordSkill(spellid, SI:GetTimeToTime(start + duration))
     end
   end
 end
