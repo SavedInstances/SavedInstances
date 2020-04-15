@@ -66,7 +66,7 @@ do
         region = portal
       end
     end
-    return portal
+    return region
   end
 end
 
