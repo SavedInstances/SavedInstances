@@ -1,5 +1,5 @@
 local _, addon = ...
-local WorldBosses = addon.core:NewModule("WorldBosses")
+local WorldBoss = addon.core:NewModule("WorldBoss")
 local L = addon.L
 
   -- encounter index is embedded in the Hjournal hyperlink

@@ -2703,7 +2703,7 @@ function core:OnInitialize()
   addon.dataobject = addon.LDB and addon.LDB:NewDataObject("SavedInstances", {
     text = addonAbbrev,
     type = "launcher",
-    icon = "Interface\\Addons\\SavedInstances\\icon.tga",
+    icon = "Interface\\Addons\\SavedInstances\\Media\\Icon.tga",
     OnEnter = function(frame)
       if not addon:IsDetached() and not db.Tooltip.DisableMouseover then
         core:ShowTooltip(frame)

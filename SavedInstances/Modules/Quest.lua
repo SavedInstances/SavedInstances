@@ -1,5 +1,5 @@
 local _, addon = ...
-local QuestsModule = addon.core:NewModule("Quests")
+local QuestModule = addon.core:NewModule("Quest")
 local L = addon.L
 
 -- Lua functions
