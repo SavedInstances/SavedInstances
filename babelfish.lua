@@ -5,24 +5,18 @@ local filePrefix = ""
 
 -- luacheck: globals io
 
--- find . -name "*.lua" | grep -v Localization-
+local function generateFileList(dir)
+    local fileTable = {}
+    local p = io.popen('find "'.. dir ..'" -name "*.lua" -not -path "*/Locales/*" -not -path "*/Libs/*"')
+    for file in p:lines() do
+        table.insert(fileTable, file)
+    end
+
+    return fileTable
+end
+
 local fileList = {
-    SavedInstances_Main = {
-        "SavedInstances/SavedInstances.lua",
-        "SavedInstances/Core.lua",
-        "SavedInstances/BonusRoll.lua",
-        "SavedInstances/Currency.lua",
-        "SavedInstances/Emissary.lua",
-        "SavedInstances/LFR.lua",
-        "SavedInstances/MythicPlus.lua",
-        "SavedInstances/Paragon.lua",
-        "SavedInstances/Progress.lua",
-        "SavedInstances/Quests.lua",
-        "SavedInstances/Tradeskills.lua",
-        "SavedInstances/Warfront.lua",
-        "SavedInstances/WorldBosses.lua",
-        "SavedInstances/config.lua"
-    },
+    SavedInstances_Main = generateFileList("SavedInstances"),
 }
 
 local ordered = {

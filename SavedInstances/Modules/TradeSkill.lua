@@ -1,5 +1,5 @@
 local _, addon = ...
-local TradeskillsModule = addon.core:NewModule("Tradeskills", "AceEvent-3.0", "AceTimer-3.0", "AceBucket-3.0")
+local TradeSkillsModule = addon.core:NewModule("TradeSkill", "AceEvent-3.0", "AceTimer-3.0", "AceBucket-3.0")
 local L = addon.L
 local thisToon = UnitName("player") .. " - " .. GetRealmName()
 
@@ -224,12 +224,12 @@ local cdname = {
   ["magni"] = GetSpellInfo(2108).. ": "..GetSpellInfo(140040)
 }
 
-function TradeskillsModule:OnEnable()
+function TradeSkillsModule:OnEnable()
   self:RegisterBucketEvent("TRADE_SKILL_LIST_UPDATE", 1)
   self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
 end
 
-function TradeskillsModule:ScanItemCDs()
+function TradeSkillsModule:ScanItemCDs()
   for itemid, spellid in pairs(itemcds) do
     local start, duration = GetItemCooldown(itemid)
     if start and duration and start > 0 then
@@ -238,7 +238,7 @@ function TradeskillsModule:ScanItemCDs()
   end
 end
 
-function TradeskillsModule:RecordSkill(spellID, expires)
+function TradeSkillsModule:RecordSkill(spellID, expires)
   if not spellID then return end
   local cdinfo = trade_spells[spellID]
   if not cdinfo then
@@ -315,7 +315,7 @@ function TradeskillsModule:RecordSkill(spellID, expires)
   return true
 end
 
-function TradeskillsModule:TradeSkillRescan(spellid)
+function TradeSkillsModule:TradeSkillRescan(spellid)
   local scan = self:TRADE_SKILL_LIST_UPDATE()
   if _G.TradeSkillFrame and _G.TradeSkillFrame.filterTbl and
     (scan == 0 or not self.seencds or not self.seencds[spellid]) then
@@ -336,7 +336,7 @@ function TradeskillsModule:TradeSkillRescan(spellid)
   end
 end
 
-function TradeskillsModule:TRADE_SKILL_LIST_UPDATE()
+function TradeSkillsModule:TRADE_SKILL_LIST_UPDATE()
   local cnt = 0
   if C_TradeSkillUI_IsTradeSkillLinked() or C_TradeSkillUI_IsTradeSkillGuild() then return end
   local recipeids = C_TradeSkillUI_GetFilteredRecipeIDs()
@@ -361,7 +361,7 @@ function TradeskillsModule:TRADE_SKILL_LIST_UPDATE()
   return cnt
 end
 
-function TradeskillsModule:UNIT_SPELLCAST_SUCCEEDED(_, unit, _, spellID)
+function TradeSkillsModule:UNIT_SPELLCAST_SUCCEEDED(_, unit, _, spellID)
   if unit ~= "player" then return end
   if trade_spells[spellID] then
     addon.debug("UNIT_SPELLCAST_SUCCEEDED: %s (%s)",GetSpellLink(spellID),spellID)
