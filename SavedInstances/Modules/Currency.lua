@@ -140,7 +140,6 @@ for _, tbl in pairs(specialCurrency) do
 end
 
 local function GetSeasonCurrency(idx)
-  SI.ScanTooltip:SetOwner(_G.UIParent, "ANCHOR_NONE")
   SI.ScanTooltip:SetCurrencyByID(idx)
   local name = SI.ScanTooltip:GetName()
   for i = 1, SI.ScanTooltip:NumLines() do

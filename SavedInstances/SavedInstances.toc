@@ -17,7 +17,11 @@ Init.lua
 Locales\Locale.lua
 
 # core files
+Core\Functions.lua
+Core\Time.lua
 Core\Core.lua
+
+Core\Debug.lua
 Core\Config.lua
 
 # modules

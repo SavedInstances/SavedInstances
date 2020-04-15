@@ -30,26 +30,6 @@ local IsQuestFlaggedCompleted = C_QuestLog and C_QuestLog.IsQuestFlaggedComplete
 local ALREADY_LOOTED = ERR_LOOT_GONE:gsub("%(.*%)","")
 ALREADY_LOOTED = ALREADY_LOOTED:gsub("（.*）","") -- fix on zhCN and zhTW
 
--- Unit Aura functions that return info about the first aura matching the spellName or spellID given on the unit.
-local SI_GetUnitAura = function(unit, spell, filter)
-    for i = 1, 40 do
-        local name, _, _, _, _, _, _, _, _, spellId = UnitAura(unit, i, filter)
-        if not name then return end
-        if spell == spellId or spell == name then
-            return UnitAura(unit, i, filter)
-        end
-    end
-end
-
-local SI_GetUnitBuff = function(unit, spell, filter)
-    return SI_GetUnitAura(unit, spell, filter)
-end
-
-local SI_GetUnitDebuff = function(unit, spell, filter)
-    filter = filter and filter.."|HARMFUL" or "HARMFUL"
-    return SI_GetUnitAura(unit, spell, filter)
-end
-
 local currency = SI.currency
 local QuestExceptions = SI.QuestExceptions
 local TimewalkingItemQuest = SI.TimewalkingItemQuest
@@ -88,7 +68,6 @@ local maxlvl = MAX_PLAYER_LEVEL_TABLE[#MAX_PLAYER_LEVEL_TABLE]
 
 function SI:QuestInfo(questid)
   if not questid or questid == 0 then return nil end
-  SI.ScanTooltip:SetOwner(UIParent,"ANCHOR_NONE")
   SI.ScanTooltip:SetHyperlink("\124cffffff00\124Hquest:"..questid..":90\124h[]\124h\124r")
   local l = _G[SI.ScanTooltip:GetName().."TextLeft1"]
   l = l and l:GetText()
@@ -1023,7 +1002,6 @@ function SI:instanceException(LFDID)
     local total = 0
     for idx, id in ipairs(exc) do
       if type(id) == "number" then
-        SI.ScanTooltip:SetOwner(UIParent,"ANCHOR_NONE")
         SI.ScanTooltip:SetHyperlink(("unit:Creature-0-0-0-0-%d:0000000000"):format(id))
         local line = SI.ScanTooltip:IsShown() and _G[SI.ScanTooltip:GetName().."TextLeft1"]
         line = line and line:GetText()
@@ -1444,20 +1422,22 @@ function SI:UpdateInstance(id)
   return name, newinst
 end
 
-function SI:updateSpellTip(spellid)
+function SI:updateSpellTip(spellID)
   local slot
   SI.db.spelltip = SI.db.spelltip or {}
-  SI.db.spelltip[spellid] = SI.db.spelltip[spellid] or {}
-  for i=1,20 do
-    local id = select(10, SI_GetUnitDebuff("player",i))
-    if id == spellid then slot = i end
+  SI.db.spelltip[spellID] = SI.db.spelltip[spellID] or {}
+  for i = 1, 255 do
+    local id = select(10, UnitAura('player', i, 'HARMFUL'))
+    if id == spellID then
+      slot = i
+      break
+    end
   end
   if slot then
-    SI.ScanTooltip:SetOwner(UIParent,"ANCHOR_NONE")
-    SI.ScanTooltip:SetUnitDebuff("player",slot)
-    for i=1,SI.ScanTooltip:NumLines()-1 do
-      local left = _G[SI.ScanTooltip:GetName().."TextLeft"..i]
-      SI.db.spelltip[spellid][i] = left:GetText()
+    SI.ScanTooltip:SetUnitDebuff('player', slot)
+    for i = 1, SI.ScanTooltip:NumLines() - 1 do
+      local textLeft = _G[SI.ScanTooltip:GetName() .. 'TextLeft' .. i]
+      SI.db.spelltip[spellID][i] = textLeft:GetText()
     end
   end
 end
@@ -1539,12 +1519,12 @@ function SI:UpdateToonData()
     RequestTimePlayed()
   end
   t.LFG1 = GetTimeToTime(GetLFGRandomCooldownExpiration()) or t.LFG1
-  t.LFG2 = GetTimeToTime(select(6, SI_GetUnitDebuff("player",GetSpellInfo(71041)))) or t.LFG2 -- GetLFGDeserterExpiration()
+  t.LFG2 = GetTimeToTime(select(6, SI:GetUnitDebuff('player', 71041))) or t.LFG2 -- GetLFGDeserterExpiration()
   if t.LFG2 then SI:updateSpellTip(71041) end
   SI.pvpdesertids = SI.pvpdesertids or { 26013,   -- BG queue
     194958 } -- Ashran
   for _,id in ipairs(SI.pvpdesertids) do
-    t.pvpdesert = GetTimeToTime(select(6, SI_GetUnitDebuff("player",GetSpellInfo(id)))) or t.pvpdesert
+    t.pvpdesert = GetTimeToTime(select(6, SI:GetUnitDebuff('player', id))) or t.pvpdesert
     if t.pvpdesert then SI:updateSpellTip(id) end
   end
   for toon, ti in pairs(SI.db.Toons) do
@@ -2347,7 +2327,6 @@ hoverTooltip.ShowIndicatorTooltip = function (cell, arg, ...)
           .. diff .. ":" .. bits .. "\124h[Battle of Dazar'alor]\124h\124r"
       end
     end
-    SI.ScanTooltip:SetOwner(UIParent,"ANCHOR_NONE")
     SI.ScanTooltip:SetHyperlink(link)
     local name = SI.ScanTooltip:GetName()
     local gotbossinfo
@@ -2440,7 +2419,6 @@ hoverTooltip.ShowCurrencyTooltip = function (cell, arg, ...)
   openIndicator(2, "LEFT","RIGHT")
   indicatortip:AddHeader(ClassColorise(SI.db.Toons[toon].Class, strsplit(' ', toon)), CurrencyColor(ci.amount or 0,ci.totalMax)..tex)
 
-  SI.ScanTooltip:SetOwner(UIParent,"ANCHOR_NONE")
   SI.ScanTooltip:SetCurrencyByID(idx)
   name = SI.ScanTooltip:GetName()
   local spacer
