@@ -1,7 +1,6 @@
-local _, addon = ...
-local TradeSkillsModule = addon.core:NewModule("TradeSkill", "AceEvent-3.0", "AceTimer-3.0", "AceBucket-3.0")
-local L = addon.L
-local thisToon = UnitName("player") .. " - " .. GetRealmName()
+local SI, L = unpack(select(2, ...))
+local TS = SI:NewModule('TradeSkill', 'AceEvent-3.0', 'AceTimer-3.0', 'AceBucket-3.0')
+local thisToon = UnitName('player') .. ' - ' .. GetRealmName()
 
 -- Lua functions
 local pairs, type, floor, abs, format = pairs, type, floor, abs, format
@@ -233,7 +232,7 @@ function TradeSkillsModule:ScanItemCDs()
   for itemid, spellid in pairs(itemcds) do
     local start, duration = GetItemCooldown(itemid)
     if start and duration and start > 0 then
-      self:RecordSkill(spellid, addon.GetTimeToTime(start + duration))
+      self:RecordSkill(spellid, SI.GetTimeToTime(start + duration))
     end
   end
 end
@@ -242,14 +241,14 @@ function TradeSkillsModule:RecordSkill(spellID, expires)
   if not spellID then return end
   local cdinfo = trade_spells[spellID]
   if not cdinfo then
-    addon.skillwarned = addon.skillwarned or {}
-    if expires and expires > 0 and not addon.skillwarned[spellID] then
-      addon.skillwarned[spellID] = true
-      addon.bugReport("Unrecognized trade skill cd "..(GetSpellInfo(spellID) or "??").." ("..spellID..")")
+    SI.skillwarned = SI.skillwarned or {}
+    if expires and expires > 0 and not SI.skillwarned[spellID] then
+      SI.skillwarned[spellID] = true
+      SI.bugReport("Unrecognized trade skill cd "..(GetSpellInfo(spellID) or "??").." ("..spellID..")")
     end
     return
   end
-  local t = addon and addon.db.Toons[thisToon]
+  local t = SI and SI.db.Toons[thisToon]
   if not t then return end
   local spellName = GetSpellInfo(spellID)
   t.Skills = t.Skills or {}
@@ -274,9 +273,9 @@ function TradeSkillsModule:RecordSkill(spellID, expires)
     local slink = GetSpellLink(spellID)
     if slink and #slink > 0 then  -- tt scan for the full name with profession
       link = "\124cffffd000\124Henchant:"..spellID.."\124h[X]\124h\124r"
-      addon.scantt:SetOwner(_G.UIParent,"ANCHOR_NONE")
-      addon.scantt:SetHyperlink(link)
-      local l = _G[addon.scantt:GetName().."TextLeft1"]
+      SI.ScanTooltip:SetOwner(_G.UIParent,"ANCHOR_NONE")
+      SI.ScanTooltip:SetHyperlink(link)
+      local l = _G[SI.ScanTooltip:GetName().."TextLeft1"]
       l = l and l:GetText()
       if l and #l > 0 then
         title = l
@@ -288,12 +287,12 @@ function TradeSkillsModule:RecordSkill(spellID, expires)
   end
   if expires == 0 then
     if t.Skills[idx] then -- a cd ended early
-      addon.debug("Clearing Trade skill cd: %s (%s)",spellName,spellID)
+      SI.debug("Clearing Trade skill cd: %s (%s)",spellName,spellID)
     end
     t.Skills[idx] = nil
     return
   elseif not expires then
-    expires = addon:GetNextDailySkillResetTime()
+    expires = SI:GetNextDailySkillResetTime()
     if not expires then return end -- ticket 127
     if type(cdinfo) == "number" then -- over a day, make a rough guess
       expires = expires + (cdinfo-1)*24*60*60
@@ -304,7 +303,7 @@ function TradeSkillsModule:RecordSkill(spellID, expires)
   t.Skills[idx] = sinfo
   local change = expires - (sinfo.Expires or 0)
   if abs(change) > 180 then -- updating expiration guess (more than 3 min update lag)
-    addon.debug("Trade skill cd: "..(link or title).." ("..spellID..") "..
+    SI.debug("Trade skill cd: "..(link or title).." ("..spellID..") "..
       (sinfo.Expires and format("%d",change).." sec" or "(new)")..
       " Local time: "..date("%c",expires))
   end
@@ -328,7 +327,7 @@ function TradeSkillsModule:TradeSkillRescan(spellid)
     SetTradeSkillInvSlotFilter(-1, 1, 1)
     ExpandTradeSkillSubClass(0)
     local rescan = self:TRADE_SKILL_LIST_UPDATE()
-    addon.debug("Rescan: "..(rescan==scan and "Failed" or "Success"))
+    SI.debug("Rescan: "..(rescan==scan and "Failed" or "Success"))
     TradeSkillOnlyShowMakeable(self.filtertmp.hasMaterials)
     TradeSkillOnlyShowSkillUps(self.filtertmp.hasSkillUp)
     SetTradeSkillCategoryFilter(self.filtertmp.subClassValue or -1)
@@ -344,7 +343,7 @@ function TradeSkillsModule:TRADE_SKILL_LIST_UPDATE()
     local cd, daily = C_TradeSkillUI_GetRecipeCooldown(spellid)
     if cd and daily -- GetTradeSkillCooldown often returns WRONG answers for daily cds
       and not tonumber(trade_spells[spellid]) then -- daily flag incorrectly set for some multi-day cds (Northrend Alchemy Research)
-      cd = addon:GetNextDailySkillResetTime()
+      cd = SI:GetNextDailySkillResetTime()
     elseif cd then
       cd = time() + cd  -- on cd
     else
@@ -364,7 +363,7 @@ end
 function TradeSkillsModule:UNIT_SPELLCAST_SUCCEEDED(_, unit, _, spellID)
   if unit ~= "player" then return end
   if trade_spells[spellID] then
-    addon.debug("UNIT_SPELLCAST_SUCCEEDED: %s (%s)",GetSpellLink(spellID),spellID)
+    SI.debug("UNIT_SPELLCAST_SUCCEEDED: %s (%s)",GetSpellLink(spellID),spellID)
     if not self:RecordSkill(spellID) then return end
     self:ScheduleTimer("TradeSkillRescan", 0.5, spellID)
   end

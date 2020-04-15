@@ -1,6 +1,5 @@
-local _, addon = ...
-local QuestModule = addon.core:NewModule("Quest")
-local L = addon.L
+local SI, L = unpack(select(2, ...))
+local Q = SI:NewModule('Quest')
 
 -- Lua functions
 local pairs, strtrim = pairs, strtrim
@@ -58,7 +57,7 @@ local _specialQuests = {
   [47463] = { daily=true, name=L["Dragon of Nightmare"] },  -- Dragon of Nightmare
 }
 
-function addon:specialQuests()
+function SI:specialQuests()
   for qid, qinfo in pairs(_specialQuests) do
     qinfo.quest = qid
 
@@ -78,9 +77,9 @@ function addon:specialQuests()
         qinfo.name = l:gsub("%p$","")
       end
     elseif not qinfo.name and qinfo.aid then
-      addon.scantt:SetOwner(_G.UIParent,"ANCHOR_NONE")
-      addon.scantt:SetAchievementByID(qinfo.aid)
-      local l = _G[addon.scantt:GetName().."Text"..(qinfo.aline or "Left1")]
+      SI.ScanTooltip:SetOwner(_G.UIParent,"ANCHOR_NONE")
+      SI.ScanTooltip:SetAchievementByID(qinfo.aid)
+      local l = _G[SI.ScanTooltip:GetName().."Text"..(qinfo.aline or "Left1")]
       l = l and l:GetText()
       if l then
         qinfo.name = l:gsub("%p$","")
@@ -89,7 +88,7 @@ function addon:specialQuests()
       qinfo.name = GetSpellInfo(qinfo.sid)
     end
     if not qinfo.name or #qinfo.name == 0 then
-      local title, link = addon:QuestInfo(qid)
+      local title, link = SI:QuestInfo(qid)
       if title then
         title = title:gsub("%p?%s*[Tt]racking%s*[Qq]uest","")
         title = strtrim(title)
@@ -219,7 +218,7 @@ local QuestExceptions = {
   [53038] = "AccountWeekly", -- The Very Best - PvP Pet Battles
   [53039] = "Weekly", -- The Arena Calls - Arena Skirmishes
 }
-addon.QuestExceptions = QuestExceptions
+SI.QuestExceptions = QuestExceptions
 
 -- Timewalking Dungeon final boss drops
 -- [questID] = LFDID,
@@ -235,4 +234,4 @@ local TimewalkingItemQuest = {
 for questID, tbl in pairs(TimewalkingItemQuest) do
   QuestExceptions[questID] = "Weekly"
 end
-addon.TimewalkingItemQuest = TimewalkingItemQuest
+SI.TimewalkingItemQuest = TimewalkingItemQuest

@@ -1,7 +1,6 @@
-local _, addon = ...
-local MythicPlusModule = addon.core:NewModule("MythicPlus", "AceEvent-3.0")
-local L = addon.L
-local thisToon = UnitName("player") .. " - " .. GetRealmName()
+local SI, L = unpack(select(2, ...))
+local MP = SI:NewModule('MythicPlus', 'AceEvent-3.0')
+local thisToon = UnitName('player') .. ' - ' .. GetRealmName()
 
 -- Lua functions
 local strsplit, tonumber, select, time = strsplit, tonumber, select, time
@@ -30,7 +29,7 @@ local KeystoneAbbrev = {
   [369] = L["YARD"],  -- Operation: Mechagon - Junkyard
   [370] = L["WORK"],  -- Operation: Mechagon - Workshop
 }
-addon.KeystoneAbbrev = KeystoneAbbrev
+SI.KeystoneAbbrev = KeystoneAbbrev
 
 function MythicPlusModule:OnEnable()
   self:RegisterEvent("BAG_UPDATE", "RefreshMythicKeyInfo")
@@ -42,7 +41,7 @@ function MythicPlusModule:RefreshMythicKeyInfo(event)
   -- This event is fired after the rewards data was requested, causing yet another refresh if not checked for
   if (event ~= "CHALLENGE_MODE_MAPS_UPDATE") then C_MythicPlus_RequestRewards() end
 
-  local t = addon.db.Toons[thisToon]
+  local t = SI.db.Toons[thisToon]
   t.MythicKey = {}
   for bagID = 0, 4 do
     for invID = 1, GetContainerNumSlots(bagID) do
@@ -64,12 +63,12 @@ function MythicPlusModule:RefreshMythicKeyInfo(event)
         else
           color = select(4, GetItemQualityColor(1))
         end
-        -- addon.debug("Mythic Keystone: %s", gsub(keyLink, "\124", "\124\124"))
+        -- SI.debug("Mythic Keystone: %s", gsub(keyLink, "\124", "\124\124"))
         t.MythicKey.name = C_ChallengeMode_GetMapUIInfo(mapID)
         t.MythicKey.mapID = mapID
         t.MythicKey.color = color
         t.MythicKey.level = mapLevel
-        t.MythicKey.ResetTime = addon:GetNextWeeklyResetTime()
+        t.MythicKey.ResetTime = SI:GetNextWeeklyResetTime()
         t.MythicKey.link = keyLink
       end
     end
@@ -80,7 +79,7 @@ function MythicPlusModule:RefreshMythicKeyInfo(event)
   end
   end
   t.MythicKeyBest = t.MythicKeyBest or {}
-  t.MythicKeyBest.ResetTime = addon:GetNextWeeklyResetTime()
+  t.MythicKeyBest.ResetTime = SI:GetNextWeeklyResetTime()
   t.MythicKeyBest.level = C_MythicPlus_GetWeeklyChestRewardLevel()
   t.MythicKeyBest.WeeklyReward = C_MythicPlus_IsWeeklyRewardAvailable()
 end

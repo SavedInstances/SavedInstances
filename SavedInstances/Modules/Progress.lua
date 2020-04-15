@@ -1,7 +1,6 @@
-local _, addon = ...
-local P = addon.core:NewModule("Progress", "AceEvent-3.0")
-local L = addon.L
-local thisToon = UnitName("player") .. " - " .. GetRealmName()
+local SI, L = unpack(select(2, ...))
+local P = SI:NewModule('Progress', 'AceEvent-3.0')
+local thisToon = UnitName('player') .. ' - ' .. GetRealmName()
 
 -- Lua functions
 local _G = _G
@@ -27,7 +26,7 @@ local maxLvl = MAX_PLAYER_LEVEL_TABLE[#MAX_PLAYER_LEVEL_TABLE]
 -- GLOBAL
 
 local function KeepProgress(toon, index)
-  local t = addon.db.Toons[toon]
+  local t = SI.db.Toons[toon]
   if not t or not t.Progress or not t.Progress[index] then return end
   local prev = t.Progress[index]
   t.Progress[index] = {
@@ -83,11 +82,11 @@ local function ConquestUpdate(index)
       rewardWaiting = false,
     }
   end
-  addon.db.Toons[thisToon].Progress[index] = data
+  SI.db.Toons[thisToon].Progress[index] = data
 end
 
 local function ConquestShow(toon, index)
-  local t = addon.db.Toons[toon]
+  local t = SI.db.Toons[toon]
   if not t or not t.Progress or not t.Progress[index] then return end
   local data = t.Progress[index]
   local text
@@ -111,15 +110,15 @@ end
 -- Horrific Vision (index 3)
 
 local function HorrificVisionUpdate(index)
-  addon.db.Toons[thisToon].Progress[index] = wipe(addon.db.Toons[thisToon].Progress[index] or {})
+  SI.db.Toons[thisToon].Progress[index] = wipe(SI.db.Toons[thisToon].Progress[index] or {})
   for i, questID in ipairs(P.TrackedQuest[index].rewardQuestID) do
-    addon.db.Toons[thisToon].Progress[index][i] = IsQuestFlaggedCompleted(questID)
+    SI.db.Toons[thisToon].Progress[index][i] = IsQuestFlaggedCompleted(questID)
   end
-  addon.db.Toons[thisToon].Progress[index].unlocked = IsQuestFlaggedCompleted(58634) -- Opening the Gateway
+  SI.db.Toons[thisToon].Progress[index].unlocked = IsQuestFlaggedCompleted(58634) -- Opening the Gateway
 end
 
 local function HorrificVisionShow(toon, index)
-  local t = addon.db.Toons[toon]
+  local t = SI.db.Toons[toon]
   if not t or not t.Progress or not t.Progress[index] then return end
 
   if t.Progress[index].unlocked then
@@ -134,7 +133,7 @@ local function HorrificVisionShow(toon, index)
 end
 
 local function HorrificVisionReset(toon, index)
-  local t = addon.db.Toons[toon]
+  local t = SI.db.Toons[toon]
   if not t or not t.Progress or not t.Progress[index] then return end
 
   local unlocked = t.Progress[index].unlocked
@@ -145,15 +144,15 @@ end
 -- N'Zoth Assaults (index 4)
 
 local function NZothAssaultUpdate(index)
-  addon.db.Toons[thisToon].Progress[index] = wipe(addon.db.Toons[thisToon].Progress[index] or {})
+  SI.db.Toons[thisToon].Progress[index] = wipe(SI.db.Toons[thisToon].Progress[index] or {})
   for _, questID in ipairs(P.TrackedQuest[index].relatedQuest) do
-    addon.db.Toons[thisToon].Progress[index][questID] = C_TaskQuest_IsActive(questID)
+    SI.db.Toons[thisToon].Progress[index][questID] = C_TaskQuest_IsActive(questID)
   end
-  addon.db.Toons[thisToon].Progress[index].unlocked = IsQuestFlaggedCompleted(57362) -- Deeper Into the Darkness
+  SI.db.Toons[thisToon].Progress[index].unlocked = IsQuestFlaggedCompleted(57362) -- Deeper Into the Darkness
 end
 
 local function NZothAssaultShow(toon, index)
-  local t = addon.db.Toons[toon]
+  local t = SI.db.Toons[toon]
   if not t or not t.Quests then return end
   if not t or not t.Progress or not t.Progress[index] then return end
 
@@ -169,7 +168,7 @@ local function NZothAssaultShow(toon, index)
 end
 
 local function NZothAssaultReset(toon, index)
-  local t = addon.db.Toons[toon]
+  local t = SI.db.Toons[toon]
   if not t or not t.Progress or not t.Progress[index] then return end
 
   local unlocked = t.Progress[index].unlocked
@@ -184,7 +183,7 @@ local function LesserVisionUpdate(index)
 end
 
 local function LesserVisionShow(toon, index)
-  local t = addon.db.Toons[toon]
+  local t = SI.db.Toons[toon]
   if not t or not t.Quests then return end
 
   for _, questID in ipairs(P.TrackedQuest[index].relatedQuest) do
@@ -300,7 +299,7 @@ function P:OnEnable()
 end
 
 function P:QUEST_LOG_UPDATE()
-  local t = addon.db.Toons[thisToon]
+  local t = SI.db.Toons[thisToon]
   if not t.Progress then t.Progress = {} end
   for i, tbl in ipairs(self.TrackedQuest) do
     if tbl.func then
@@ -332,7 +331,7 @@ function P:QUEST_LOG_UPDATE()
 end
 
 function P:OnDailyReset(toon)
-  local t = addon.db.Toons[toon]
+  local t = SI.db.Toons[toon]
   if not t or not t.Progress then return end
   for i, tbl in ipairs(self.TrackedQuest) do
     if tbl.daily then
@@ -353,7 +352,7 @@ function P:OnDailyReset(toon)
 end
 
 function P:OnWeeklyReset(toon)
-  local t = addon.db.Toons[toon]
+  local t = SI.db.Toons[toon]
   if not t or not t.Progress then return end
   for i, tbl in ipairs(self.TrackedQuest) do
     if tbl.weekly then
@@ -397,25 +396,25 @@ function P:QuestEnabled(questID)
     end
   end
   if self.questMap[questID] then
-    return addon.db.Tooltip["Progress" .. self.questMap[questID]]
+    return SI.db.Tooltip["Progress" .. self.questMap[questID]]
   end
 end
 
 -- Use addon global function in future
 local function CloseTooltips()
   _G.GameTooltip:Hide()
-  if addon.indicatortip then
-    addon.indicatortip:Hide()
+  if SI.indicatortip then
+    SI.indicatortip:Hide()
   end
 end
 
 function P:ShowTooltip(tooltip, columns, showall, preshow)
-  local cpairs = addon.cpairs
+  local cpairs = SI.cpairs
   local first = true
   for index, tbl in ipairs(self.TrackedQuest) do
-    if addon.db.Tooltip["Progress" .. index] or showall then
+    if SI.db.Tooltip["Progress" .. index] or showall then
       local show
-      for toon, t in cpairs(addon.db.Toons, true) do
+      for toon, t in cpairs(SI.db.Toons, true) do
         if (
           (t.Progress and t.Progress[index] and t.Progress[index].unlocked) or
           (tbl.showFunc and tbl.showFunc(toon, index))
@@ -430,7 +429,7 @@ function P:ShowTooltip(tooltip, columns, showall, preshow)
           first = false
         end
         local line = tooltip:AddLine(NORMAL_FONT_COLOR_CODE .. tbl.name .. FONT_COLOR_CODE_CLOSE)
-        for toon, t in cpairs(addon.db.Toons, true) do
+        for toon, t in cpairs(SI.db.Toons, true) do
           local value = t.Progress and t.Progress[index]
           local text
           if tbl.showFunc then
@@ -455,7 +454,7 @@ function P:ShowTooltip(tooltip, columns, showall, preshow)
             -- showFunc may return nil, or tbl.unlocked is nil, don't :SetCell and :SetCellScript in this case
             tooltip:SetCell(line, col, text, "CENTER", 4)
             if tbl.tooltipKey then
-              tooltip:SetCellScript(line, col, "OnEnter", addon.hoverTooltip[tbl.tooltipKey], {toon, index})
+              tooltip:SetCellScript(line, col, "OnEnter", SI.hoverTooltip[tbl.tooltipKey], {toon, index})
               tooltip:SetCellScript(line, col, "OnLeave", CloseTooltips)
             end
           end

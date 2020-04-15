@@ -1,6 +1,6 @@
-local _, addon = ...
-local EmissaryModule = addon.core:NewModule("Emissary", "AceEvent-3.0")
-local thisToon = UnitName("player") .. " - " .. GetRealmName()
+local SI, L = unpack(select(2, ...))
+local E = SI:NewModule('Emissary', 'AceEvent-3.0')
+local thisToon = UnitName('player') .. ' - ' .. GetRealmName()
 
 -- Lua functions
 local time, pairs, ipairs, tonumber, floor = time, pairs, ipairs, tonumber, floor
@@ -29,7 +29,7 @@ local Emissaries = {
     questID = 51722,
   },
 }
-addon.Emissaries = Emissaries
+SI.Emissaries = Emissaries
 
 -- [Alliance] = Horde
 local _switching = {
@@ -52,18 +52,18 @@ for k, v in pairs(_switching) do
   switching[v] = tbl
 end
 
-function EmissaryModule:OnEnable()
+function E:OnEnable()
   self:RegisterEvent("QUEST_LOG_UPDATE")
 end
 
-function EmissaryModule:QUEST_LOG_UPDATE()
-  if addon.db.DailyResetTime < time() then return end -- daliy reset not run yet
-  local t = addon.db.Toons[thisToon]
+function E:QUEST_LOG_UPDATE()
+  if SI.db.DailyResetTime < time() then return end -- daliy reset not run yet
+  local t = SI.db.Toons[thisToon]
   if not t.Emissary then t.Emissary = {} end
   local expansionLevel, tbl
   for expansionLevel, tbl in pairs(Emissaries) do
-    if not addon.db.Emissary.Expansion[expansionLevel] then addon.db.Emissary.Expansion[expansionLevel] = {} end
-    local currExpansion = addon.db.Emissary.Expansion[expansionLevel]
+    if not SI.db.Emissary.Expansion[expansionLevel] then SI.db.Emissary.Expansion[expansionLevel] = {} end
+    local currExpansion = SI.db.Emissary.Expansion[expansionLevel]
     if not t.Emissary[expansionLevel] then t.Emissary[expansionLevel] = {} end
     if IsQuestFlaggedCompleted(tbl.questID) then
       t.Emissary[expansionLevel].unlocked = true
@@ -82,7 +82,7 @@ function EmissaryModule:QUEST_LOG_UPDATE()
         local numQuestRewards = GetNumQuestLogRewards(info.questID)
         local numCurrencyRewards = GetNumQuestLogRewardCurrencies(info.questID)
         if title then
-          addon.db.Emissary.Cache[info.questID] = title -- cache quest name
+          SI.db.Emissary.Cache[info.questID] = title -- cache quest name
           local day = tonumber(floor(timeleft / 1440) + 1) -- [1, 2, 3]
           if not currExpansion[day] then currExpansion[day] = {} end
           if switching[info.questID] then
