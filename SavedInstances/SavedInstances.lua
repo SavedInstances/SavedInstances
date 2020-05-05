@@ -283,6 +283,7 @@ addon.defaultDB = {
   -- Zone: string
   -- Warmode: boolean
   -- Artifact: string
+  -- Cloak: string
   -- Paragon: table
   -- oRace: string
   -- isResting: boolean
@@ -1703,6 +1704,21 @@ function addon:UpdateToonData()
     local currentLevel = C_AzeriteItem.GetPowerLevel(azeriteItemLocation)
     t.Artifact = format("%d (%d%%)", currentLevel, xp / totalLevelXP  * 100)
   end
+  local cloakResist = GetCorruptionResistance()
+  if cloakResist and cloakResist > 0 then
+    local cloakIlvl = C_Item.GetCurrentItemLevel(ItemLocation:CreateFromEquipmentSlot(15))
+    local cloakRank = min(15, (cloakIlvl - 468) / 2)
+    local essenceResist = 0
+    local milestones = {119, 117, 116, 115} -- neck essence slots
+    for i,m in ipairs(milestones) do
+      local ess = C_AzeriteEssence.GetMilestoneEssence(m)
+      if ess and ess > 33 then
+        essenceResist = 10
+      end
+    end
+    t.Cloak = format("Rank %d (|cffffdf00+%d|r)", cloakRank, cloakResist - essenceResist)
+  end
+
 
   t.LastSeen = time()
 end
@@ -1851,6 +1867,9 @@ hoverTooltip.ShowToonTooltip = function (cell, arg, ...)
   indicatortip:AddLine(STAT_AVERAGE_ITEM_LEVEL,("%d "):format(t.IL or 0)..STAT_AVERAGE_ITEM_LEVEL_EQUIPPED:format(t.ILe or 0))
   if t.Artifact then
     indicatortip:AddLine(ARTIFACT_POWER, t.Artifact)
+  end
+  if t.Cloak then
+    indicatortip:AddLine("Cloak", t.Cloak)
   end
   if t.RBGrating and t.RBGrating > 0 then
     indicatortip:AddLine(BATTLEGROUND_RATING, t.RBGrating)
