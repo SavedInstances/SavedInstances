@@ -1716,7 +1716,7 @@ function addon:UpdateToonData()
         essenceResist = 10
       end
     end
-    t.Cloak = format("Rank %d (|cffffdf00+%d|r)", cloakRank, cloakResist - essenceResist)
+    t.Cloak = format(AZERITE_ESSENCE_RANK.." (|cffffdf00+%d|r)", cloakRank, cloakResist - essenceResist)
   end
 
 
@@ -1869,7 +1869,7 @@ hoverTooltip.ShowToonTooltip = function (cell, arg, ...)
     indicatortip:AddLine(ARTIFACT_POWER, t.Artifact)
   end
   if t.Cloak then
-    indicatortip:AddLine("Cloak", t.Cloak)
+    indicatortip:AddLine(AUCTION_SUBCATEGORY_CLOAK, t.Cloak)
   end
   if t.RBGrating and t.RBGrating > 0 then
     indicatortip:AddLine(BATTLEGROUND_RATING, t.RBGrating)
