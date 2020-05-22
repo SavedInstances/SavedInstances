@@ -11,8 +11,8 @@ local maxid = 3000 -- highest possible value for an instanceID, current max (Bat
 
 local table, math, bit, string, pairs, ipairs, unpack, strsplit, time, type, wipe, tonumber, select, strsub =
   table, math, bit, string, pairs, ipairs, unpack, strsplit, time, type, wipe, tonumber, select, strsub
-local GetSavedInstanceInfo, GetNumSavedInstances, GetSavedInstanceChatLink, GetLFGDungeonNumEncounters, GetLFGDungeonEncounterInfo, GetNumRandomDungeons, GetLFGRandomDungeonInfo, GetLFGDungeonInfo, LFGGetDungeonInfoByID, GetLFGDungeonRewards, GetTime, UnitIsUnit, GetInstanceInfo, IsInInstance, SecondsToTime, GetQuestResetTime, GetGameTime, GetCurrencyInfo, GetNumGroupMembers, UnitAura =
-  GetSavedInstanceInfo, GetNumSavedInstances, GetSavedInstanceChatLink, GetLFGDungeonNumEncounters, GetLFGDungeonEncounterInfo, GetNumRandomDungeons, GetLFGRandomDungeonInfo, GetLFGDungeonInfo, LFGGetDungeonInfoByID, GetLFGDungeonRewards, GetTime, UnitIsUnit, GetInstanceInfo, IsInInstance, SecondsToTime, GetQuestResetTime, GetGameTime, GetCurrencyInfo, GetNumGroupMembers, UnitAura
+local GetSavedInstanceInfo, GetNumSavedInstances, GetSavedInstanceChatLink, GetLFGDungeonNumEncounters, GetLFGDungeonEncounterInfo, GetNumRandomDungeons, GetLFGRandomDungeonInfo, GetLFGDungeonInfo, GetLFGDungeonRewards, GetTime, UnitIsUnit, GetInstanceInfo, IsInInstance, SecondsToTime, GetQuestResetTime, GetGameTime, GetCurrencyInfo, GetNumGroupMembers, UnitAura =
+  GetSavedInstanceInfo, GetNumSavedInstances, GetSavedInstanceChatLink, GetLFGDungeonNumEncounters, GetLFGDungeonEncounterInfo, GetNumRandomDungeons, GetLFGRandomDungeonInfo, GetLFGDungeonInfo, GetLFGDungeonRewards, GetTime, UnitIsUnit, GetInstanceInfo, IsInInstance, SecondsToTime, GetQuestResetTime, GetGameTime, GetCurrencyInfo, GetNumGroupMembers, UnitAura
 
 local RAID_CLASS_COLORS = RAID_CLASS_COLORS
 local RAID_FINDER = PLAYER_DIFFICULTY3
@@ -1704,21 +1704,24 @@ function addon:UpdateToonData()
     local currentLevel = C_AzeriteItem.GetPowerLevel(azeriteItemLocation)
     t.Artifact = format("%d (%d%%)", currentLevel, xp / totalLevelXP  * 100)
   end
-  local cloakResist = GetCorruptionResistance()
-  if cloakResist and cloakResist > 0 then
-    local cloakIlvl = C_Item.GetCurrentItemLevel(ItemLocation:CreateFromEquipmentSlot(15))
-    local cloakRank = min(15, (cloakIlvl - 468) / 2)
-    local essenceResist = 0
-    local milestones = {119, 117, 116, 115} -- neck essence slots
-    for i,m in ipairs(milestones) do
-      local ess = C_AzeriteEssence.GetMilestoneEssence(m)
-      if ess and ess > 33 then
-        essenceResist = 10
+  local cloakItemLocation = ItemLocation:CreateFromEquipmentSlot(15)
+  if cloakItemLocation then
+    local itemID = C_Item.GetItemID(cloakItemLocation)
+    if itemID == 169223 then
+      local cloakIlvl = C_Item.GetCurrentItemLevel(cloakItemLocation)
+      local cloakRank = min(15, (cloakIlvl - 468) / 2)
+      local cloakResist = GetCorruptionResistance()
+      local essenceResist = 0
+      local milestones = {119, 117, 116, 115} -- neck essence slots
+      for _, milestone in ipairs(milestones) do
+        local essence = C_AzeriteEssence.GetMilestoneEssence(milestone)
+        if essence and (essence >= 33 or essence == 16 or essence == 24) then
+          essenceResist = 10
+        end
       end
+      t.Cloak = format(AZERITE_ESSENCE_RANK.." (|cffffdf00+%d|r)", cloakRank, cloakResist - essenceResist)
     end
-    t.Cloak = format(AZERITE_ESSENCE_RANK.." (|cffffdf00+%d|r)", cloakRank, cloakResist - essenceResist)
   end
-
 
   t.LastSeen = time()
 end
