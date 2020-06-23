@@ -3543,6 +3543,14 @@ end
 
 local function DoNothing() end
 
+local function ReportKeys()
+  for toon, t in cpairs(addon.db.Toons, true) do
+    if t.MythicKey and t.MythicKey.link then
+      SendChatMessage(toon .. ' - ' .. t.MythicKey.link)
+    end
+  end
+end
+
 -----------------------------------------------------------------------------------------------
 
 local function ShowAll()
@@ -4055,7 +4063,10 @@ function core:ShowTooltip(anchorframe)
       if not firstcategory and addon.db.Tooltip.CategorySpaces then
         addsep()
       end
-      show = tooltip:AddLine(YELLOWFONT .. L["Mythic Keystone"] .. FONTEND)
+      --show = tooltip:AddLine(YELLOWFONT .. L["Mythic Keystone"] .. FONTEND)
+      show = tooltip:AddLine()
+      tooltip:SetCell(show, 1, YELLOWFONT .. L["Mythic Keystone"] .. FONTEND)
+      tooltip:SetCellScript(show, 1, "OnMouseDown", ReportKeys, nil)
     end
     for toon, t in cpairs(addon.db.Toons, true) do
       if t.MythicKey and t.MythicKey.link then
