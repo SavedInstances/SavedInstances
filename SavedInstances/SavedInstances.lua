@@ -4063,10 +4063,15 @@ function core:ShowTooltip(anchorframe)
       if not firstcategory and addon.db.Tooltip.CategorySpaces then
         addsep()
       end
-      --show = tooltip:AddLine(YELLOWFONT .. L["Mythic Keystone"] .. FONTEND)
-      show = tooltip:AddLine()
-      tooltip:SetCell(show, 1, YELLOWFONT .. L["Mythic Keystone"] .. FONTEND)
-      tooltip:SetCellScript(show, 1, "OnMouseDown", ReportKeys, nil)
+      show = tooltip:AddLine(YELLOWFONT .. L["Mythic Keystone"] .. FONTEND)
+      local target = addon.db.Tooltip.KeystoneReportTarget
+      tooltip:SetCellScript(show, 1, "OnMouseDown", function()
+        if target == 'EXPORT' then
+          core:GetModule("MythicPlus"):ReportKeys(target)
+        else
+          local dialog = StaticPopup_Show("SAVEDINSTANCES_REPORT_KEYS", target, nil, target)
+        end
+      end, nil)
     end
     for toon, t in cpairs(addon.db.Toons, true) do
       if t.MythicKey and t.MythicKey.link then
@@ -4585,6 +4590,19 @@ StaticPopupDialogs["SAVEDINSTANCES_DELETE_CHARACTER"] = {
   button1 = OKAY,
   button2 = CANCEL,
   OnAccept = function(self,data) DeleteCharacter(data) end,
+  timeout = 0,
+  whileDead = true,
+  hideOnEscape = true,
+  enterClicksFirstButton = false,
+  showAlert = true,
+}
+
+StaticPopupDialogs["SAVEDINSTANCES_REPORT_KEYS"] = {
+  preferredIndex = 3, -- reduce the chance of UI taint
+  text = string.format(L["Are you sure you want to report all your keys to %s?"], "%s"),
+  button1 = OKAY,
+  button2 = CANCEL,
+  OnAccept = function(self, target) core:GetModule("MythicPlus"):ReportKeys(target) end,
   timeout = 0,
   whileDead = true,
   hideOnEscape = true,
