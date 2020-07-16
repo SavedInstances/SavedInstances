@@ -2608,6 +2608,12 @@ hoverTooltip.ShowNZothAssaultTooltip = function (cell, arg, ...)
   finishIndicator()
 end
 
+hoverTooltip.ShowKeyReportTarget = function (cell, arg, ...)
+  openIndicator(2, "LEFT", "RIGHT")
+  indicatortip:AddHeader(GOLDFONT..L["Keystone report target"]..FONTEND, addon.db.Tooltip.KeystoneReportTarget)
+  finishIndicator()
+end
+
 -- global addon code below
 function core:toonInit()
   local ti = db.Toons[thisToon] or { }
@@ -4056,6 +4062,8 @@ function core:ShowTooltip(anchorframe)
         addsep()
       end
       show = tooltip:AddLine(YELLOWFONT .. L["Mythic Keystone"] .. FONTEND)
+      tooltip:SetCellScript(show, 1, "OnEnter", hoverTooltip.ShowKeyReportTarget)
+      tooltip:SetCellScript(show, 1, "OnLeave", CloseTooltips)
       tooltip:SetCellScript(show, 1, "OnMouseDown", function()
         core:GetModule("MythicPlus"):Keys()
       end, nil)
