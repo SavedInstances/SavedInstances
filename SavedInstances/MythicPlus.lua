@@ -85,33 +85,46 @@ function MythicPlusModule:RefreshMythicKeyInfo(event)
   t.MythicKeyBest.WeeklyReward = C_MythicPlus_IsWeeklyRewardAvailable()
 end
 
-function MythicPlusModule:ReportKeys(target)
-  local cpairs = addon.cpairs
+function MythicPlusModule:Keys()
+  local target = addon.db.Tooltip.KeystoneReportTarget
   addon.debug("Key report target: %s", target)
 
   if target == 'EXPORT' then
-    local keys = ""
-    for toon, t in cpairs(addon.db.Toons, true) do
-      if t.MythicKey and t.MythicKey.link then
-        keys = keys .. '\n' .. toon .. ' - ' .. t.MythicKey.link
-      end
-    end
-    SavedInstancesKeyExport:Show()
-    SavedInstancesKeyExportScroll:Show()
-    SavedInstancesKeyExportScrollText:Show()
-    SavedInstancesKeyExportScrollText:SetText(keys)
-    SavedInstancesKeyExportScrollText:HighlightText()
-    SavedInstancesKeyExportScrollText:SetScript("OnEscapePressed", function(self)
-      SavedInstancesKeyExport:Hide()
-    end)
-    SavedInstancesKeyExportButton:SetScript("OnClick", function(self)
-      SavedInstancesKeyExport:Hide()
-    end)
+    MythicPlusModule:ExportKeys()
   else
-    for toon, t in cpairs(addon.db.Toons, true) do
-      if t.MythicKey and t.MythicKey.link then
-        SendChatMessage(toon .. ' - ' .. t.MythicKey.link, target)
-      end
+    local dialog = StaticPopup_Show("SAVEDINSTANCES_REPORT_KEYS", target, nil, target)
+  end
+end
+
+function MythicPlusModule:ReportKeys(target)
+  local cpairs = addon.cpairs
+
+  for toon, t in cpairs(addon.db.Toons, true) do
+    if t.MythicKey and t.MythicKey.link then
+      SendChatMessage(toon .. ' - ' .. t.MythicKey.link, target)
     end
   end
+end
+
+function MythicPlusModule:ExportKeys()
+  local cpairs = addon.cpairs
+  local keys = ""
+  
+  for toon, t in cpairs(addon.db.Toons, true) do
+    if t.MythicKey and t.MythicKey.link then
+      keys = keys .. '\n' .. toon .. ' - ' .. t.MythicKey.link
+    end
+  end
+  
+  SavedInstancesKeyExport:Show()
+  SavedInstancesKeyExportScroll:Show()
+  SavedInstancesKeyExportScrollText:Show()
+  SavedInstancesKeyExportScrollText:SetText(keys)
+  SavedInstancesKeyExportScrollText:HighlightText()
+  SavedInstancesKeyExportScrollText:SetScript("OnEscapePressed", function(self)
+    SavedInstancesKeyExport:Hide()
+  end)
+  SavedInstancesKeyExportButton:SetScript("OnClick", function(self)
+    SavedInstancesKeyExport:Hide()
+  end)
 end

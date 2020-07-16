@@ -3543,14 +3543,6 @@ end
 
 local function DoNothing() end
 
-local function ReportKeys()
-  for toon, t in cpairs(addon.db.Toons, true) do
-    if t.MythicKey and t.MythicKey.link then
-      SendChatMessage(toon .. ' - ' .. t.MythicKey.link)
-    end
-  end
-end
-
 -----------------------------------------------------------------------------------------------
 
 local function ShowAll()
@@ -4064,13 +4056,8 @@ function core:ShowTooltip(anchorframe)
         addsep()
       end
       show = tooltip:AddLine(YELLOWFONT .. L["Mythic Keystone"] .. FONTEND)
-      local target = addon.db.Tooltip.KeystoneReportTarget
       tooltip:SetCellScript(show, 1, "OnMouseDown", function()
-        if target == 'EXPORT' then
-          core:GetModule("MythicPlus"):ReportKeys(target)
-        else
-          local dialog = StaticPopup_Show("SAVEDINSTANCES_REPORT_KEYS", target, nil, target)
-        end
+        core:GetModule("MythicPlus"):Keys()
       end, nil)
     end
     for toon, t in cpairs(addon.db.Toons, true) do
