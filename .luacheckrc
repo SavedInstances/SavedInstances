@@ -98,8 +98,8 @@ globals = {
 	"ScenarioFinderFrame",
 	"BonusRollFrame",
 	"SavedInstancesKeyExport",
-  	"SavedInstancesKeyExportScroll",
-  	"SavedInstancesKeyExportScrollText",
+	"SavedInstancesKeyExportScroll",
+	"SavedInstancesKeyExportScrollText",
 	"SavedInstancesKeyExportButton",
 
 	-- HybridScrollFrame
