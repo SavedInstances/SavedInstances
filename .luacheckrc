@@ -97,6 +97,10 @@ globals = {
 	"RaidFinderQueueFrame",
 	"ScenarioFinderFrame",
 	"BonusRollFrame",
+	"SavedInstancesKeyExport",
+  	"SavedInstancesKeyExportScroll",
+  	"SavedInstancesKeyExportScrollText",
+	"SavedInstancesKeyExportButton",
 
 	-- HybridScrollFrame
 	"HybridScrollFrame_CreateButtons",

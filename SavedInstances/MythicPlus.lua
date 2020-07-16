@@ -108,7 +108,7 @@ function MythicPlusModule:KeyData(action)
         local tname, tserver = toon:match('^(.*) [-] (.*)$')
         toonname = tname
       end
-      
+
       action(toonname, t.MythicKey.link)
     end
   end
@@ -119,6 +119,7 @@ function MythicPlusModule:ReportKeys(target)
 end
 
 function MythicPlusModule:ExportKeys()
+  local SavedInstancesKeyExport
   local keys = ""
 
   MythicPlusModule:KeyData(function(toon, key) keys = keys .. '\n' .. toon .. ' - ' .. key end)
