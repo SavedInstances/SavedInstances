@@ -96,26 +96,33 @@ function MythicPlusModule:Keys()
   end
 end
 
-function MythicPlusModule:ReportKeys(target)
+function MythicPlusModule:KeyData(action)
   local cpairs = addon.cpairs
 
   for toon, t in cpairs(addon.db.Toons, true) do
     if t.MythicKey and t.MythicKey.link then
-      SendChatMessage(toon .. ' - ' .. t.MythicKey.link, target)
+      local toonname
+      if addon.db.Tooltip.ShowServer then
+        toonname = toon
+      else
+        local tname, tserver = toon:match('^(.*) [-] (.*)$')
+        toonname = tname
+      end
+      
+      action(toonname, t.MythicKey.link)
     end
   end
 end
 
+function MythicPlusModule:ReportKeys(target)
+  MythicPlusModule:KeyData(function(toon, key) SendChatMessage(toon .. ' - '.. key, target) end)
+end
+
 function MythicPlusModule:ExportKeys()
-  local cpairs = addon.cpairs
   local keys = ""
-  
-  for toon, t in cpairs(addon.db.Toons, true) do
-    if t.MythicKey and t.MythicKey.link then
-      keys = keys .. '\n' .. toon .. ' - ' .. t.MythicKey.link
-    end
-  end
-  
+
+  MythicPlusModule:KeyData(function(toon, key) keys = keys .. '\n' .. toon .. ' - ' .. key end)
+
   SavedInstancesKeyExport:Show()
   SavedInstancesKeyExportScroll:Show()
   SavedInstancesKeyExportScrollText:Show()
