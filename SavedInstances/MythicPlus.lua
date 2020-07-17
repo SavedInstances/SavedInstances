@@ -32,6 +32,9 @@ local KeystoneAbbrev = {
 }
 addon.KeystoneAbbrev = KeystoneAbbrev
 
+-- Frames
+local SavedInstancesKeyExport, SavedInstancesKeyExportScroll, SavedInstancesKeyExportScrollText
+
 function MythicPlusModule:OnEnable()
   self:RegisterEvent("BAG_UPDATE", "RefreshMythicKeyInfo")
   self:RegisterEvent("CHALLENGE_MODE_MAPS_UPDATE", "RefreshMythicKeyInfo")
@@ -121,17 +124,43 @@ end
 function MythicPlusModule:ExportKeys()
   local keys = ""
 
-  MythicPlusModule:KeyData(function(toon, key) keys = keys .. '\n' .. toon .. ' - ' .. key end)
+  MythicPlusModule:KeyData(function(toon, key) keys = keys .. toon .. ' - ' .. key .. '\n' end)
 
-  SavedInstancesKeyExport:Show()
-  SavedInstancesKeyExportScroll:Show()
-  SavedInstancesKeyExportScrollText:Show()
-  SavedInstancesKeyExportScrollText:SetText(keys)
-  SavedInstancesKeyExportScrollText:HighlightText()
-  SavedInstancesKeyExportScrollText:SetScript("OnEscapePressed", function(self)
-    SavedInstancesKeyExport:Hide()
-  end)
-  SavedInstancesKeyExportButton:SetScript("OnClick", function(self)
-    SavedInstancesKeyExport:Hide()
-  end)
+  if not self.SavedInstancesKeyExport then
+    local f = CreateFrame("Frame", "SavedInstancesKeyExport", UIParent, "DialogBoxFrame")
+    f:SetSize(700, 450)
+    f:SetPoint("CENTER")
+    f:SetFrameStrata("HIGH")
+    f:SetMovable(true)
+    f:EnableMouse(true)
+    f:SetClampedToScreen(true)
+    f:RegisterForDrag("LeftButton")
+    f:SetScript("OnDragStart", f.StartMoving)
+    f:SetScript("OnDragStop", f.StopMovingOrSizing)
+    self.SavedInstancesKeyExport = f
+
+    local sf = CreateFrame("ScrollFrame", "SavedInstancesKeyExportScroll", f, "UIPanelScrollFrameTemplate")
+    sf:SetPoint("TOP", 0, -16)
+    sf:SetPoint("BOTTOM", f, "BOTTOM", 0, 50)
+    sf:SetPoint("LEFT", 16, 0)
+    sf:SetPoint("RIGHT", -36, 0)
+    self.SavedInstancesKeyExportScroll = sf
+
+    local st = CreateFrame("EditBox", "SavedInstancesKeyExportScrollText", sf)
+    st:SetSize(sf:GetSize())
+    st:SetMultiLine(true)
+    st:SetFontObject("ChatFontNormal")
+    st:SetScript("OnEscapePressed", function()
+      f:Hide()
+    end)
+    sf:SetScrollChild(st)
+    self.SavedInstancesKeyExportScrollText = st
+  end
+
+  self.SavedInstancesKeyExportScrollText:SetText(keys)
+  self.SavedInstancesKeyExportScrollText:HighlightText()
+
+  self.SavedInstancesKeyExport:Show()
+  self.SavedInstancesKeyExportScroll:Show()
+  self.SavedInstancesKeyExportScrollText:Show()
 end

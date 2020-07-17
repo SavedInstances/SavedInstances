@@ -40,7 +40,6 @@ Emissary.lua
 WorldBosses.lua
 Quests.lua
 Currency.lua
-MythicPlus.xml
 MythicPlus.lua
 Paragon.lua
 Progress.lua
