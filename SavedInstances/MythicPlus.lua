@@ -32,9 +32,6 @@ local KeystoneAbbrev = {
 }
 addon.KeystoneAbbrev = KeystoneAbbrev
 
--- Frames
-local SavedInstancesKeyExport, SavedInstancesKeyExportScroll, SavedInstancesKeyExportScrollText
-
 function MythicPlusModule:OnEnable()
   self:RegisterEvent("BAG_UPDATE", "RefreshMythicKeyInfo")
   self:RegisterEvent("CHALLENGE_MODE_MAPS_UPDATE", "RefreshMythicKeyInfo")
@@ -93,7 +90,7 @@ function MythicPlusModule:Keys()
   addon.debug("Key report target: %s", target)
 
   if target == 'EXPORT' then
-    MythicPlusModule:ExportKeys()
+    self:ExportKeys()
   else
     local dialog = StaticPopup_Show("SAVEDINSTANCES_REPORT_KEYS", target, nil, target)
   end
@@ -118,16 +115,16 @@ function MythicPlusModule:KeyData(action)
 end
 
 function MythicPlusModule:ReportKeys(target)
-  MythicPlusModule:KeyData(function(toon, key) SendChatMessage(toon .. ' - '.. key, target) end)
+  self:KeyData(function(toon, key) SendChatMessage(toon .. ' - '.. key, target) end)
 end
 
 function MythicPlusModule:ExportKeys()
   local keys = ""
 
-  MythicPlusModule:KeyData(function(toon, key) keys = keys .. toon .. ' - ' .. key .. '\n' end)
+  self:KeyData(function(toon, key) keys = keys .. toon .. ' - ' .. key .. '\n' end)
 
   if not self.SavedInstancesKeyExport then
-    local f = CreateFrame("Frame", "SavedInstancesKeyExport", UIParent, "DialogBoxFrame")
+    local f = CreateFrame("Frame", nil, UIParent, "DialogBoxFrame")
     f:SetSize(700, 450)
     f:SetPoint("CENTER")
     f:SetFrameStrata("HIGH")
@@ -139,14 +136,14 @@ function MythicPlusModule:ExportKeys()
     f:SetScript("OnDragStop", f.StopMovingOrSizing)
     self.SavedInstancesKeyExport = f
 
-    local sf = CreateFrame("ScrollFrame", "SavedInstancesKeyExportScroll", f, "UIPanelScrollFrameTemplate")
+    local sf = CreateFrame("ScrollFrame", nil, f, "UIPanelScrollFrameTemplate")
     sf:SetPoint("TOP", 0, -16)
     sf:SetPoint("BOTTOM", f, "BOTTOM", 0, 50)
     sf:SetPoint("LEFT", 16, 0)
     sf:SetPoint("RIGHT", -36, 0)
     self.SavedInstancesKeyExportScroll = sf
 
-    local st = CreateFrame("EditBox", "SavedInstancesKeyExportScrollText", sf)
+    local st = CreateFrame("EditBox", nil, sf)
     st:SetSize(sf:GetSize())
     st:SetMultiLine(true)
     st:SetFontObject("ChatFontNormal")
