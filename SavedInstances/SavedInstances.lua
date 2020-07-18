@@ -4579,7 +4579,7 @@ local function DeleteCharacter(toon)
 end
 
 StaticPopupDialogs["SAVEDINSTANCES_DELETE_CHARACTER"] = {
-  preferredIndex = 3, -- reduce the chance of UI taint
+  preferredIndex = STATICPOPUPS_NUMDIALOGS, -- reduce the chance of UI taint
   text = string.format(L["Are you sure you want to remove %s from the SavedInstances character database?"],"\n\n%s%s\n\n").."\n\n"..
   L["This should only be used for characters who have been renamed or deleted, as characters will be re-populated when you log into them."],
   button1 = OKAY,
