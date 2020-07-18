@@ -4594,7 +4594,7 @@ StaticPopupDialogs["SAVEDINSTANCES_DELETE_CHARACTER"] = {
 
 StaticPopupDialogs["SAVEDINSTANCES_REPORT_KEYS"] = {
   preferredIndex = 3, -- reduce the chance of UI taint
-  text = string.format(L["Are you sure you want to report all your keys to %s?"], "%s"),
+  text = L["Are you sure you want to report all your keys to %s?"],
   button1 = OKAY,
   button2 = CANCEL,
   OnAccept = function(self, target) core:GetModule("MythicPlus"):ReportKeys(target) end,
