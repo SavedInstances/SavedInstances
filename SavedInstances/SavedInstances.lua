@@ -2608,6 +2608,12 @@ hoverTooltip.ShowNZothAssaultTooltip = function (cell, arg, ...)
   finishIndicator()
 end
 
+hoverTooltip.ShowKeyReportTarget = function (cell, arg, ...)
+  openIndicator(2, "LEFT", "RIGHT")
+  indicatortip:AddHeader(GOLDFONT..L["Keystone report target"]..FONTEND, addon.db.Tooltip.KeystoneReportTarget)
+  finishIndicator()
+end
+
 -- global addon code below
 function core:toonInit()
   local ti = db.Toons[thisToon] or { }
@@ -4056,6 +4062,11 @@ function core:ShowTooltip(anchorframe)
         addsep()
       end
       show = tooltip:AddLine(YELLOWFONT .. L["Mythic Keystone"] .. FONTEND)
+      tooltip:SetCellScript(show, 1, "OnEnter", hoverTooltip.ShowKeyReportTarget)
+      tooltip:SetCellScript(show, 1, "OnLeave", CloseTooltips)
+      tooltip:SetCellScript(show, 1, "OnMouseDown", function()
+        core:GetModule("MythicPlus"):Keys()
+      end, nil)
     end
     for toon, t in cpairs(addon.db.Toons, true) do
       if t.MythicKey and t.MythicKey.link then
@@ -4568,12 +4579,25 @@ local function DeleteCharacter(toon)
 end
 
 StaticPopupDialogs["SAVEDINSTANCES_DELETE_CHARACTER"] = {
-  preferredIndex = 3, -- reduce the chance of UI taint
+  preferredIndex = STATICPOPUPS_NUMDIALOGS, -- reduce the chance of UI taint
   text = string.format(L["Are you sure you want to remove %s from the SavedInstances character database?"],"\n\n%s%s\n\n").."\n\n"..
   L["This should only be used for characters who have been renamed or deleted, as characters will be re-populated when you log into them."],
   button1 = OKAY,
   button2 = CANCEL,
   OnAccept = function(self,data) DeleteCharacter(data) end,
+  timeout = 0,
+  whileDead = true,
+  hideOnEscape = true,
+  enterClicksFirstButton = false,
+  showAlert = true,
+}
+
+StaticPopupDialogs["SAVEDINSTANCES_REPORT_KEYS"] = {
+  preferredIndex = STATICPOPUPS_NUMDIALOGS, -- reduce the chance of UI taint
+  text = L["Are you sure you want to report all your keys to %s?"],
+  button1 = OKAY,
+  button2 = CANCEL,
+  OnAccept = function(self, target) core:GetModule("MythicPlus"):ReportKeys(target) end,
   timeout = 0,
   whileDead = true,
   hideOnEscape = true,

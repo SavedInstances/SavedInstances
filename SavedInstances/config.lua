@@ -254,6 +254,16 @@ function Config:BuildOptions()
             desc = L["Abbreviate Mythic keystone dungeon names"],
             order = 4.85
           },
+          KeystoneReportTarget = {
+            type = "select",
+            name = L["Keystone report target"],
+            values = {
+              ["PARTY"] = L["Party"],
+              ["GUILD"] = L["Guild"],
+              ["EXPORT"] = L["Export"]
+            },
+            order = 4.86
+          },
           DebugMode = {
             type = "toggle",
             name = L["Debug Mode"],
