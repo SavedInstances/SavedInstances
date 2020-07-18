@@ -4593,7 +4593,7 @@ StaticPopupDialogs["SAVEDINSTANCES_DELETE_CHARACTER"] = {
 }
 
 StaticPopupDialogs["SAVEDINSTANCES_REPORT_KEYS"] = {
-  preferredIndex = 3, -- reduce the chance of UI taint
+  preferredIndex = STATICPOPUPS_NUMDIALOGS, -- reduce the chance of UI taint
   text = L["Are you sure you want to report all your keys to %s?"],
   button1 = OKAY,
   button2 = CANCEL,
