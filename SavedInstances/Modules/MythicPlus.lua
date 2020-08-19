@@ -117,11 +117,7 @@ function MythicPlusModule:ReportKeys(target)
 end
 
 function MythicPlusModule:ExportKeys()
-  local keys = ""
-
-  self:KeyData(function(toon, key) keys = keys .. toon .. ' - ' .. key .. '\n' end)
-
-  if not self.SavedInstancesKeyExport then
+  if not self.KeyExportWindow then
     local f = CreateFrame("Frame", nil, UIParent, "DialogBoxFrame")
     f:SetSize(700, 450)
     f:SetPoint("CENTER")
@@ -132,14 +128,13 @@ function MythicPlusModule:ExportKeys()
     f:RegisterForDrag("LeftButton")
     f:SetScript("OnDragStart", f.StartMoving)
     f:SetScript("OnDragStop", f.StopMovingOrSizing)
-    self.SavedInstancesKeyExport = f
+    self.KeyExportWindow = f
 
     local sf = CreateFrame("ScrollFrame", nil, f, "UIPanelScrollFrameTemplate")
     sf:SetPoint("TOP", 0, -16)
     sf:SetPoint("BOTTOM", f, "BOTTOM", 0, 50)
     sf:SetPoint("LEFT", 16, 0)
     sf:SetPoint("RIGHT", -36, 0)
-    self.SavedInstancesKeyExportScroll = sf
 
     local st = CreateFrame("EditBox", nil, sf)
     st:SetSize(sf:GetSize())
@@ -149,15 +144,16 @@ function MythicPlusModule:ExportKeys()
       f:Hide()
     end)
     sf:SetScrollChild(st)
-    self.SavedInstancesKeyExportScrollText = st
+    self.KeyExportText = st
   end
 
-  self.SavedInstancesKeyExportScrollText:SetText(keys)
-  self.SavedInstancesKeyExportScrollText:HighlightText()
+  local keys = ""
+  self:KeyData(function(toon, key) keys = keys .. toon .. ' - ' .. key .. '\n' end)
 
-  self.SavedInstancesKeyExport:Show()
-  self.SavedInstancesKeyExportScroll:Show()
-  self.SavedInstancesKeyExportScrollText:Show()
+  self.KeyExportText:SetText(keys)
+  self.KeyExportText:HighlightText()
+
+  self.KeyExportWindow:Show()
 end
 
 StaticPopupDialogs["SAVEDINSTANCES_REPORT_KEYS"] = {
