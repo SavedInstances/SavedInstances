@@ -1002,7 +1002,7 @@ function SI:UpdateInstanceData()
     if not info.name then
       info.name = select(2,EJ_GetCreatureInfo(1,eid))
     end
-    info.name = info.name or "UNKNOWN"..eid
+    info.name = info.name or ("UNKNOWN" .. eid)
     local instance = SI.db.Instances[info.name]
     if info.remove then -- cleanup hook
       SI.db.Instances[info.name] = nil
@@ -4268,81 +4268,3 @@ function SI:ShowTooltip(anchorframe)
   starttime = debugprofilestop()-starttime
   SI:Debug("ShowTooltip(): completed in %.3fms", starttime)
 end
-
-local function ResetConfirmed()
-  SI:Debug("Resetting characters")
-  if SI:IsDetached() then
-    SI:HideDetached()
-  end
-  -- clear saves
-  for instance, i in pairs(SI.db.Instances) do
-    for toon, t in pairs(SI.db.Toons) do
-      i[toon] = nil
-    end
-  end
-  wipe(SI.db.Toons) -- clear toon db
-  SI.PlayedTime = nil -- reset played cache
-  SI:toonInit() -- rebuild SI.thisToon
-  SI:Refresh()
-  SI.config:BuildOptions() -- refresh config table
-  SI.config:ReopenConfigDisplay(SI.config.ftoon)
-end
-
-
-StaticPopupDialogs["SAVEDINSTANCES_RESET"] = {
-  preferredIndex = 3, -- reduce the chance of UI taint
-  text = L["Are you sure you want to reset the SavedInstances character database? Characters will be re-populated as you log into them."],
-  button1 = OKAY,
-  button2 = CANCEL,
-  OnAccept = ResetConfirmed,
-  timeout = 0,
-  whileDead = true,
-  hideOnEscape = true,
-  enterClicksFirstButton = false,
-  showAlert = true,
-}
-
-local function DeleteCharacter(toon)
-  if toon == SI.thisToon or not SI.db.Toons[toon] then
-    SI:ChatMsg("ERROR: Failed to delete "..toon..". Character is active or does not exist.")
-    return
-  end
-  SI:Debug("Deleting character: "..toon)
-  if SI:IsDetached() then
-    SI:HideDetached()
-  end
-  -- clear saves
-  for instance, i in pairs(SI.db.Instances) do
-    i[toon] = nil
-  end
-  SI.db.Toons[toon] = nil
-  SI.config:BuildOptions() -- refresh config table
-  SI.config:ReopenConfigDisplay(SI.config.ftoon)
-end
-
-StaticPopupDialogs["SAVEDINSTANCES_DELETE_CHARACTER"] = {
-  preferredIndex = STATICPOPUPS_NUMDIALOGS, -- reduce the chance of UI taint
-  text = string.format(L["Are you sure you want to remove %s from the SavedInstances character database?"],"\n\n%s%s\n\n").."\n\n"..
-  L["This should only be used for characters who have been renamed or deleted, as characters will be re-populated when you log into them."],
-  button1 = OKAY,
-  button2 = CANCEL,
-  OnAccept = function(self,data) DeleteCharacter(data) end,
-  timeout = 0,
-  whileDead = true,
-  hideOnEscape = true,
-  enterClicksFirstButton = false,
-  showAlert = true,
-}
-
-StaticPopupDialogs["SAVEDINSTANCES_REPORT_KEYS"] = {
-  preferredIndex = STATICPOPUPS_NUMDIALOGS, -- reduce the chance of UI taint
-  text = L["Are you sure you want to report all your keys to %s?"],
-  button1 = OKAY,
-  button2 = CANCEL,
-  OnAccept = function(self, target) core:GetModule("MythicPlus"):ReportKeys(target) end,
-  timeout = 0,
-  whileDead = true,
-  hideOnEscape = true,
-  enterClicksFirstButton = false,
-  showAlert = true,
-}

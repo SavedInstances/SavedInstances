@@ -159,3 +159,16 @@ function MythicPlusModule:ExportKeys()
   self.SavedInstancesKeyExportScroll:Show()
   self.SavedInstancesKeyExportScrollText:Show()
 end
+
+StaticPopupDialogs["SAVEDINSTANCES_REPORT_KEYS"] = {
+  preferredIndex = STATICPOPUPS_NUMDIALOGS, -- reduce the chance of UI taint
+  text = L["Are you sure you want to report all your keys to %s?"],
+  button1 = OKAY,
+  button2 = CANCEL,
+  OnAccept = function(self, target) MP:ReportKeys(target) end,
+  timeout = 0,
+  whileDead = true,
+  hideOnEscape = true,
+  enterClicksFirstButton = false,
+  showAlert = true,
+}
