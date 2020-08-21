@@ -83,9 +83,9 @@ function MP:RefreshMythicKeyInfo(event)
   t.MythicKeyBest.WeeklyReward = C_MythicPlus_IsWeeklyRewardAvailable()
 end
 
-function MythicPlusModule:Keys()
-  local target = addon.db.Tooltip.KeystoneReportTarget
-  addon.debug("Key report target: %s", target)
+function MP:Keys()
+  local target = SI.db.Tooltip.KeystoneReportTarget
+  SI:Debug("Key report target: %s", target)
 
   if target == 'EXPORT' then
     self:ExportKeys()
@@ -94,13 +94,13 @@ function MythicPlusModule:Keys()
   end
 end
 
-function MythicPlusModule:KeyData(action)
-  local cpairs = addon.cpairs
+function MP:KeyData(action)
+  local cpairs = SI.cpairs
 
-  for toon, t in cpairs(addon.db.Toons, true) do
+  for toon, t in cpairs(SI.db.Toons, true) do
     if t.MythicKey and t.MythicKey.link then
       local toonname
-      if addon.db.Tooltip.ShowServer then
+      if SI.db.Tooltip.ShowServer then
         toonname = toon
       else
         local tname, tserver = toon:match('^(.*) [-] (.*)$')
@@ -112,11 +112,11 @@ function MythicPlusModule:KeyData(action)
   end
 end
 
-function MythicPlusModule:ReportKeys(target)
+function MP:ReportKeys(target)
   self:KeyData(function(toon, key) SendChatMessage(toon .. ' - '.. key, target) end)
 end
 
-function MythicPlusModule:ExportKeys()
+function MP:ExportKeys()
   if not self.KeyExportWindow then
     local f = CreateFrame("Frame", nil, UIParent, "DialogBoxFrame")
     f:SetSize(700, 450)

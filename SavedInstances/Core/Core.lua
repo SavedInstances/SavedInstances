@@ -2352,7 +2352,7 @@ end
 
 hoverTooltip.ShowKeyReportTarget = function (cell, arg, ...)
   openIndicator(2, "LEFT", "RIGHT")
-  indicatortip:AddHeader(GOLDFONT..L["Keystone report target"]..FONTEND, addon.db.Tooltip.KeystoneReportTarget)
+  indicatortip:AddHeader(GOLDFONT..L["Keystone report target"]..FONTEND, SI.db.Tooltip.KeystoneReportTarget)
   finishIndicator()
 end
 
@@ -3807,7 +3807,7 @@ function SI:ShowTooltip(anchorframe)
       tooltip:SetCellScript(show, 1, "OnEnter", hoverTooltip.ShowKeyReportTarget)
       tooltip:SetCellScript(show, 1, "OnLeave", CloseTooltips)
       tooltip:SetCellScript(show, 1, "OnMouseDown", function()
-        core:GetModule("MythicPlus"):Keys()
+        SI:GetModule("MythicPlus"):Keys()
       end, nil)
     end
     for toon, t in cpairs(SI.db.Toons, true) do
