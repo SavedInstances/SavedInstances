@@ -104,6 +104,12 @@ local LFRInstances = {
   [2037] = { total=4, base=4,  parent=2035, minLvl=50, remap={ 1, 2, 3, 4 } }, -- Ny'alotha: Halls of Devotion
   [2038] = { total=3, base=8,  parent=2035, minLvl=50, remap={ 1, 2, 3 } }, -- Ny'alotha: Gift of Flesh
   [2039] = { total=2, base=11, parent=2035, minLvl=50, remap={ 1, 2 } }, -- Ny'alotha: The Waking Dream
+
+  -- Shadowlands
+  [2090] = { total=3, base=1,  parent=2095, minLvl=60, remap={ 1, 2, 3 } }, -- Castle Nathria: The Leeching Vaults
+  [2091] = { total=3, base=4,  parent=2095, minLvl=60, remap={ 1, 2, 3 } }, -- Castle Nathria: Reliquary of Opulence
+  [2092] = { total=3, base=7,  parent=2095, minLvl=60, remap={ 1, 2, 3 } }, -- Castle Nathria: Blood from Stone
+  [2096] = { total=1, base=10, parent=2095, minLvl=60, remap={ 1 } }, -- Castle Nathria: An Audience with Arrogance
 }
 
 local tbl = {}
@@ -122,7 +128,13 @@ for id, info in pairs(LFRInstances) do
     elseif id == 985 then -- Hellfire4: Destructor's Rise
       info.remap = { 9, 10, 12 }
     elseif (id == 1945 or id == 1948) and (info.faction and locFaction ~= info.faction) then -- Battle of Dazar'alor: Wing 1
-      info.remap = {1, 3, 2}
+      info.remap = { 1, 3, 2 }
+    elseif id == 2090 then -- Castle Nathria: The Leeching Vaults
+      info.remap = { 2, 4, 6 }
+    elseif id == 2091 then -- Castle Nathria: Reliquary of Opulence
+      info.remap = { 3, 5, 7 }
+    elseif id == 2092 then -- Castle Nathria: Blood from Stone
+      info.remap = { 1, 8, 9 }
     end
   end
 
