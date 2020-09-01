@@ -62,6 +62,13 @@ local currency = {
   1719, -- Corrupted Memento
   1755, -- Coalescing Visions
   1803, -- Echoes of Ny'alotha
+
+  -- Shadowlands
+  1754, -- Argent Commendation
+  1767, -- Stygia
+  1792, -- Honor
+  1822, -- Renown
+  1828, -- Soul Ash
 }
 SI.currency = currency
 
