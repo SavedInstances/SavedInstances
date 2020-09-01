@@ -1822,7 +1822,8 @@ hoverTooltip.ShowEmissaryTooltip = function (cell, arg, ...)
     elseif info.questReward.money then
       text = GetMoneyString(info.questReward.money)
     elseif info.questReward.currencyID then
-      text = "\124T" .. select(3, GetCurrencyInfo(info.questReward.currencyID)) .. ":0\124t " .. info.questReward.quantity
+      local data = C_CurrencyInfo.GetCurrencyInfo(info.questReward.currencyID)
+      text = "\124T" .. data.iconFileID .. ":0\124t " .. info.questReward.quantity
     end
     indicatortip:AddLine()
     indicatortip:SetCell(3, 1, text, "RIGHT", 2)
@@ -1862,7 +1863,7 @@ hoverTooltip.ShowBonusTooltip = function (cell, arg, ...)
   for i,roll in ipairs(t.BonusRoll) do
     if i > 10 then break end
     local line = indicatortip:AddLine()
-    local icon = roll.costCurrencyID and select(3,GetCurrencyInfo(roll.costCurrencyID))
+    local icon = roll.costCurrencyID and C_CurrencyInfo.GetCurrencyInfo(roll.costCurrencyID).iconFileID
     if icon then
       indicatortip:SetCell(line,1, " \124T"..icon..":0\124t ")
     end
@@ -1872,12 +1873,13 @@ hoverTooltip.ShowBonusTooltip = function (cell, arg, ...)
     if roll.item then
       indicatortip:SetCell(line,3,roll.item)
     elseif roll.currencyID then
-      local currencyIcon = select(3, GetCurrencyInfo(roll.currencyID))
+      local data = C_CurrencyInfo.GetCurrencyInfo(roll.currencyID)
+      local currencyIcon = data.iconFileID
       local str = "\124T" .. currencyIcon .. ":0\124t "
       if roll.money then
         str = str .. roll.money
       else
-        str = str .. GetCurrencyInfo(roll.currencyID)
+        str = str .. data.name
       end
       indicatortip:SetCell(line,3,str)
     elseif roll.money then
@@ -2171,7 +2173,8 @@ local seasonTotalPatten = gsub(CURRENCY_SEASON_TOTAL, "%%s%%s", "(.+)")
 hoverTooltip.ShowCurrencyTooltip = function (cell, arg, ...)
   local toon, idx, ci = unpack(arg)
   if not toon or not idx or not ci then return end
-  local name,_,tex = GetCurrencyInfo(idx)
+  local data = C_CurrencyInfo.GetCurrencyInfo(idx)
+  local name, tex = data.name, data.iconFileID
   tex = " \124T"..tex..":0\124t"
   openIndicator(2, "LEFT","RIGHT")
   indicatortip:AddHeader(ClassColorise(SI.db.Toons[toon].Class, strsplit(' ', toon)), CurrencyColor(ci.amount or 0,ci.totalMax)..tex)
@@ -2234,7 +2237,8 @@ end
 hoverTooltip.ShowCurrencySummary = function (cell, arg, ...)
   local idx = arg
   if not idx then return end
-  local name,_,tex = GetCurrencyInfo(idx)
+  local data = C_CurrencyInfo.GetCurrencyInfo(idx)
+  local name, tex = data.name, data.iconFileID
   tex = " \124T"..tex..":0\124t"
   local itemFlag, itemIcon
   if SI.specialCurrency[idx] and SI.specialCurrency[idx].relatedItem then
@@ -4060,7 +4064,8 @@ function SI:ShowTooltip(anchorframe)
             addColumns(columns, toon, tooltip)
           end
           if not show and (gotThisWeek or gotSome) and columns[toon .. 1] then
-            local name, _, tex = GetCurrencyInfo(idx)
+            local data = C_CurrencyInfo.GetCurrencyInfo(idx)
+            local name, tex = data.name, data.iconFileID
             show = format(" \124T%s:0\124t%s", tex, name)
           end
         end

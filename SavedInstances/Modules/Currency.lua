@@ -70,8 +70,8 @@ for _, idx in ipairs(currency) do
   table.insert(currencySorted, idx)
 end
 table.sort(currencySorted, function (c1, c2)
-  local c1_name = GetCurrencyInfo(c1)
-  local c2_name = GetCurrencyInfo(c2)
+  local c1_name = C_CurrencyInfo.GetCurrencyInfo(c1).name
+  local c2_name = C_CurrencyInfo.GetCurrencyInfo(c2).name
   return c1_name < c2_name
 end)
 SI.currencySorted = currencySorted
@@ -160,7 +160,9 @@ function CU:UpdateCurrency()
   t.Money = GetMoney()
   t.currency = wipe(t.currency or {})
   for _,idx in ipairs(currency) do
-    local _, amount, _, earnedThisWeek, weeklyMax, totalMax, discovered = GetCurrencyInfo(idx)
+    local data = C_CurrencyInfo.GetCurrencyInfo(idx)
+    local amount, earnedThisWeek, weeklyMax, totalMax, discovered =
+      data.quantity, data.quantityEarnedThisWeek, data.maxWeeklyQuantity, data.maxQuantity, data.discovered
     if not discovered then
       t.currency[idx] = nil
     else
