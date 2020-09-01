@@ -63,7 +63,7 @@ for i = 0,10 do
 end
 
 local tooltip, indicatortip = nil, nil
-local maxlvl = MAX_PLAYER_LEVEL_TABLE[#MAX_PLAYER_LEVEL_TABLE]
+local maxlvl = GetMaxLevelForPlayerExpansion()
 
 function SI:QuestInfo(questid)
   if not questid or questid == 0 then return nil end
