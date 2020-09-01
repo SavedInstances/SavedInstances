@@ -43,37 +43,8 @@ end
 
 SI.GetNextDailySkillResetTime = SI.GetNextDailyResetTime
 
-do
-  local resetDays = {}
-  function SI:GetNextWeeklyResetTime()
-    if not resetDays then
-      local region = SI:GetRegion()
-      if not region then return end
-
-      resetDays.DLHoffset = 0
-      if region == 'US' then
-        resetDays['2'] = true -- tuesday
-        -- ensure oceanic servers over the dateline still reset on tues UTC (wed 1/2 AM server)
-        resetDays.DLHoffset = -3
-      elseif region == 'EU' then
-        resetDays['3'] = true -- wednesday
-      elseif region == 'CN' or region == 'KR' or region == 'TW' then
-        resetDays['4'] = true -- thursday
-      else
-        resetDays['2'] = true -- tuesday?
-      end
-    end
-
-    local offset = (SI:GetServerOffset() + resetDays.DLHoffset) * 3600
-    local nightlyReset = SI:GetNextDailyResetTime()
-    if not nightlyReset then return end
-
-    while not resetDays[date('%w', nightlyReset + offset)] do
-      nightlyReset = nightlyReset + 24 * 3600
-    end
-
-    return nightlyReset
-  end
+function SI:GetNextWeeklyResetTime()
+  return time() + C_DateAndTime.GetSecondsUntilWeeklyReset()
 end
 
 do
