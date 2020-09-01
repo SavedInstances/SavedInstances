@@ -5,15 +5,14 @@ local E = SI:NewModule('Emissary', 'AceEvent-3.0')
 local time, pairs, ipairs, tonumber, floor = time, pairs, ipairs, tonumber, floor
 
 -- WoW API / Variables
+local C_QuestLog_GetBountiesForMapID = C_QuestLog.GetBountiesForMapID
+local C_QuestLog_GetTitleForQuestID = C_QuestLog.GetTitleForQuestID
 local C_TaskQuest_GetQuestTimeLeftMinutes = C_TaskQuest.GetQuestTimeLeftMinutes
 local GetNumQuestLogRewardCurrencies = GetNumQuestLogRewardCurrencies
 local GetNumQuestLogRewards = GetNumQuestLogRewards
-local GetQuestBountyInfoForMapID = GetQuestBountyInfoForMapID
-local GetQuestLogIndexByID = GetQuestLogIndexByID
 local GetQuestLogRewardCurrencyInfo = GetQuestLogRewardCurrencyInfo
 local GetQuestLogRewardInfo = GetQuestLogRewardInfo
 local GetQuestLogRewardMoney = GetQuestLogRewardMoney
-local GetQuestLogTitle = GetQuestLogTitle
 local GetQuestObjectiveInfo = GetQuestObjectiveInfo
 local IsQuestFlaggedCompleted = C_QuestLog and C_QuestLog.IsQuestFlaggedCompleted or IsQuestFlaggedCompleted
 local QuestUtils_GetBestQualityItemRewardIndex = QuestUtils_GetBestQualityItemRewardIndex
@@ -67,13 +66,13 @@ function E:QUEST_LOG_UPDATE()
     if IsQuestFlaggedCompleted(tbl.questID) then
       t.Emissary[expansionLevel].unlocked = true
       if not t.Emissary[expansionLevel].days then t.Emissary[expansionLevel].days = {} end
-      local BountyQuest = C_QuestLog.GetBountiesForMapID(tbl.UiMapID)
+      local BountyQuest = C_QuestLog_GetBountiesForMapID(tbl.UiMapID)
       for i = 1, 3 do
         if not t.Emissary[expansionLevel].days[i] then t.Emissary[expansionLevel].days[i] = {} end
         t.Emissary[expansionLevel].days[i].isComplete = true
       end
       for i, info in ipairs(BountyQuest) do
-        local title = C_QuestLog.GetTitleForQuestID(info.questID)
+        local title = C_QuestLog_GetTitleForQuestID(info.questID)
         local timeleft = C_TaskQuest_GetQuestTimeLeftMinutes(info.questID)
         local _, _, isFinish, questDone, questNeed = GetQuestObjectiveInfo(info.questID, 1, false)
         local money = GetQuestLogRewardMoney(info.questID)

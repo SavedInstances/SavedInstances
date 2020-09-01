@@ -8,7 +8,7 @@ local ipairs, pairs, strfind, wipe = ipairs, pairs, strfind, wipe
 local _G = _G
 
 -- WoW API / Variables
-local GetCurrencyInfo = GetCurrencyInfo
+local C_CurrencyInfo_GetCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo
 local GetItemCount = GetItemCount
 local GetMoney = GetMoney
 local IsQuestFlaggedCompleted = C_QuestLog and C_QuestLog.IsQuestFlaggedCompleted or IsQuestFlaggedCompleted
@@ -70,8 +70,8 @@ for _, idx in ipairs(currency) do
   table.insert(currencySorted, idx)
 end
 table.sort(currencySorted, function (c1, c2)
-  local c1_name = C_CurrencyInfo.GetCurrencyInfo(c1).name
-  local c2_name = C_CurrencyInfo.GetCurrencyInfo(c2).name
+  local c1_name = C_CurrencyInfo_GetCurrencyInfo(c1).name
+  local c2_name = C_CurrencyInfo_GetCurrencyInfo(c2).name
   return c1_name < c2_name
 end)
 SI.currencySorted = currencySorted
@@ -160,7 +160,7 @@ function CU:UpdateCurrency()
   t.Money = GetMoney()
   t.currency = wipe(t.currency or {})
   for _,idx in ipairs(currency) do
-    local data = C_CurrencyInfo.GetCurrencyInfo(idx)
+    local data = C_CurrencyInfo_GetCurrencyInfo(idx)
     local amount, earnedThisWeek, weeklyMax, totalMax, discovered =
       data.quantity, data.quantityEarnedThisWeek, data.maxWeeklyQuantity, data.maxQuantity, data.discovered
     if not discovered then

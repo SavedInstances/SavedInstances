@@ -1,5 +1,14 @@
 local SI, L = unpack(select(2, ...))
 
+-- Lua functions
+local date, floor, time, tonumber = date, floor, time, tonumber
+
+-- WoW API / Variables
+local C_DateAndTime_GetCurrentCalendarTime = C_DateAndTime.GetCurrentCalendarTime
+local C_DateAndTime_GetSecondsUntilWeeklyReset = C_DateAndTime.GetSecondsUntilWeeklyReset
+local C_Calendar_GetMonthInfo = C_Calendar.GetMonthInfo
+local GetQuestResetTime = GetQuestResetTime
+
 do
   local GTToffset = time() - GetTime()
   function SI:GetTimeToTime(val)
@@ -12,7 +21,7 @@ end
 -- convert local time -> server time: add this value
 -- convert server time -> local time: subtract this value
 function SI:GetServerOffset()
-  local serverDate = C_DateAndTime.GetCurrentCalendarTime() -- 1-based starts on Sun
+  local serverDate = C_DateAndTime_GetCurrentCalendarTime() -- 1-based starts on Sun
   local serverWeekday, serverMinute, serverHour = serverDate.weekday - 1, serverDate.minute, serverDate.hour
   -- #211: date('%w') is 0-based starts on Sun
   local localWeekday = tonumber(date('%w'))
@@ -44,7 +53,7 @@ end
 SI.GetNextDailySkillResetTime = SI.GetNextDailyResetTime
 
 function SI:GetNextWeeklyResetTime()
-  return time() + C_DateAndTime.GetSecondsUntilWeeklyReset()
+  return time() + C_DateAndTime_GetSecondsUntilWeeklyReset()
 end
 
 do
@@ -52,7 +61,7 @@ do
   function SI:GetNextDarkmoonResetTime()
     -- Darkmoon faire runs from first Sunday of each month to following Saturday
     -- this function returns an approximate time after the end of the current month's faire
-    local monthInfo = C_Calendar.GetMonthInfo()
+    local monthInfo = C_Calendar_GetMonthInfo()
     local firstWeekday = monthInfo.firstWeekday
     local firstSunday = ((firstWeekday == 1) and 1) or (9 - firstWeekday)
     darkmoonEnd.year = monthInfo.year

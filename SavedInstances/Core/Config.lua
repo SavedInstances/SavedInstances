@@ -9,8 +9,8 @@ local unpack, date, type, tinsert, sort = unpack, date, type, tinsert, sort
 local _G = _G
 
 -- WoW API / Variables
+local C_CurrencyInfo_GetCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo
 local GetBindingKey = GetBindingKey
-local GetCurrencyInfo = GetCurrencyInfo
 local GetCurrentBindingSet = GetCurrentBindingSet
 local GetRealmName = GetRealmName
 local InterfaceOptionsFrame_OpenToCategory = InterfaceOptionsFrame_OpenToCategory
@@ -883,7 +883,7 @@ function Config:BuildOptions()
   end
   local hdroffset = SI.Options.args.Currency.args.CurrencyHeader.order
   for i, curr in ipairs(SI.currency) do
-    local data = C_CurrencyInfo.GetCurrencyInfo(curr)
+    local data = C_CurrencyInfo_GetCurrencyInfo(curr)
     local name, tex = data.name, data.iconFileID
     tex = "\124T"..tex..":0\124t "
     SI.Options.args.Currency.args["Currency"..curr] = {
