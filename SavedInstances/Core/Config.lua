@@ -883,7 +883,8 @@ function Config:BuildOptions()
   end
   local hdroffset = SI.Options.args.Currency.args.CurrencyHeader.order
   for i, curr in ipairs(SI.currency) do
-    local name,_,tex = GetCurrencyInfo(curr)
+    local data = C_CurrencyInfo.GetCurrencyInfo(curr)
+    local name, tex = data.name, data.iconFileID
     tex = "\124T"..tex..":0\124t "
     SI.Options.args.Currency.args["Currency"..curr] = {
       type = "toggle",
