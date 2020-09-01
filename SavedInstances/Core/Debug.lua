@@ -49,11 +49,14 @@ function SI:TimeDebug()
 end
 
 do
-  local function questTableToString(t)
-    local ret = ""
-    local lvl = UnitLevel("player")
-    for k,v in pairs(t) do
-      ret = string.format("%s%s\124cffffff00\124Hquest:%s:%s\124h[%s]\124h\124r", ret, (#ret == 0 and "" or ", "),k,lvl,k)
+  local function questTableToString(data)
+    local level = UnitLevel('player')
+    local ret = ''
+    for index, questID in ipairs(data) do
+      ret = ret .. format(
+        "%s\124cffffff00\124Hquest:%s:%s\124h[%s]\124h\124r",
+        (index == 1) and "" or ", ", questID, level, questID
+      )
     end
     return ret
   end
@@ -91,24 +94,24 @@ do
       while true do
         if not SI.completedquests[prev] then
           while ql[curr] do
-            add[ql[curr]] = true
+            tinsert(add, ql[curr])
             curr = curr + 1
           end
           break
         elseif not ql[curr] then
           while SI.completedquests[prev] do
-            remove[SI.completedquests[prev]] = true
+            tinsert(remove, SI.completedquests[prev])
             prev = prev + 1
           end
           break
         elseif SI.completedquests[prev] > ql[curr] then
           while ql[curr] and SI.completedquests[prev] > ql[curr] do
-            add[ql[curr]] = true
+            tinsert(add, ql[curr])
             curr = curr + 1
           end
         elseif SI.completedquests[prev] < ql[curr] then
           while SI.completedquests[prev] and SI.completedquests[prev] < ql[curr] do
-            remove[SI.completedquests[prev]] = true
+            tinsert(remove, SI.completedquests[prev])
             prev = prev + 1
           end
         else -- SI.completedquests[prev] == ql[curr]
@@ -116,8 +119,12 @@ do
           curr = curr + 1
         end
       end
-      if next(add) then SI:ChatMsg("Added IDs:   "..questTableToString(add)) end
-      if next(remove) then SI:ChatMsg("Removed IDs: "..questTableToString(remove)) end
+      if #add > 0 then
+        SI:ChatMsg("Added IDs:   " .. questTableToString(add))
+      end
+      if #remove > 0 then
+        SI:ChatMsg("Removed IDs: " .. questTableToString(remove))
+      end
     end
     SI.completedquests = ql
   end
