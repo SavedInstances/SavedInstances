@@ -1,5 +1,16 @@
 local SI, L = unpack(select(2, ...))
 
+-- Lua functions
+local _G = _G
+local format, strmatch, strupper = format, strmatch, strupper
+
+-- WoW API / Variables
+local C_Map_GetBestMapForUnit = C_Map.GetBestMapForUnit
+local GetCurrentRegion = GetCurrentRegion
+local GetCVar = GetCVar
+local GetTime = GetTime
+local UnitAura = UnitAura
+
 -- UnitAura/UnitBuff/UnitDebuff fix for Patch 8.0
 -- Get these functions from WeakAuras 2
 function SI:GetUnitAura(unit, spell, filter)
@@ -72,5 +83,5 @@ end
 
 -- Get Current uiMapID
 function SI:GetCurrentMapAreaID()
-  return C_Map.GetBestMapForUnit('player')
+  return C_Map_GetBestMapForUnit('player')
 end

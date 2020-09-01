@@ -1,5 +1,20 @@
 local SI, L = unpack(select(2, ...))
 
+-- Lua functions
+local date, format, ipairs, strtrim, tinsert, time = date, format, ipairs, strtrim, tinsert, time
+
+-- WoW API / Variables
+local C_DateAndTime_GetCurrentCalendarTime = C_DateAndTime.GetCurrentCalendarTime
+local C_QuestLog_GetAllCompletedQuestIDs = C_QuestLog.GetAllCompletedQuestIDs
+local GetGameTime = GetGameTime
+local GetQuestResetTime = GetQuestResetTime
+local GetRealmName = GetRealmName
+local GetRealZoneText = GetRealZoneText
+local GetTime = GetTime
+local UnitLevel = UnitLevel
+
+local SecondsToTime = SecondsToTime
+
 function SI:Debug(...)
   if not SI or not SI.db or SI.db.Tooltip.DebugMode then
     SI:ChatMsg(...)
@@ -14,7 +29,7 @@ function SI:TimeDebug()
   SI:ChatMsg("Local time: %s local", date("%Y/%m/%d %H:%M:%S"))
   SI:ChatMsg("GetGameTime: %s:%s server", GetGameTime())
 
-  local t = C_DateAndTime.GetCurrentCalendarTime()
+  local t = C_DateAndTime_GetCurrentCalendarTime()
   SI:ChatMsg("C_DateAndTime.GetCurrentCalendarTime: %s/%s/%s server", t.year, t.month, t.monthDay)
   SI:ChatMsg("GetQuestResetTime: %s", SecondsToTime(GetQuestResetTime()))
   SI:ChatMsg(date("Daily reset: %Y/%m/%d %H:%M:%S local (based on GetQuestResetTime)", time() + GetQuestResetTime()))
@@ -63,7 +78,7 @@ do
 
   function SI:QuestDebug(info)
     local t = SI.db.Toons[SI.thisToon]
-    local ql = C_QuestLog.GetAllCompletedQuestIDs()
+    local ql = C_QuestLog_GetAllCompletedQuestIDs()
 
     local cmd = info.input
     cmd = cmd and strtrim(cmd:gsub("^%s*(%w+)%s*","")):lower()

@@ -2,6 +2,7 @@ local SI, L = unpack(select(2, ...))
 local MP = SI:NewModule('MythicPlus', 'AceEvent-3.0')
 
 -- Lua functions
+local _G = _G
 local strsplit, tonumber, select, time = strsplit, tonumber, select, time
 
 -- WoW API / Variables
@@ -9,10 +10,14 @@ local C_ChallengeMode_GetMapUIInfo = C_ChallengeMode.GetMapUIInfo
 local C_MythicPlus_GetWeeklyChestRewardLevel = C_MythicPlus.GetWeeklyChestRewardLevel
 local C_MythicPlus_IsWeeklyRewardAvailable = C_MythicPlus.IsWeeklyRewardAvailable
 local C_MythicPlus_RequestRewards = C_MythicPlus.RequestRewards
+local CreateFrame = CreateFrame
 local GetContainerItemID = GetContainerItemID
 local GetContainerItemLink = GetContainerItemLink
 local GetContainerNumSlots = GetContainerNumSlots
 local GetItemQualityColor = GetItemQualityColor
+local SendChatMessage = SendChatMessage
+
+local StaticPopup_Show = StaticPopup_Show
 
 local KeystoneAbbrev = {
   [244] = L["AD"],    -- Atal'Dazar
@@ -118,7 +123,7 @@ end
 
 function MP:ExportKeys()
   if not self.KeyExportWindow then
-    local f = CreateFrame("Frame", nil, UIParent, "DialogBoxFrame")
+    local f = CreateFrame("Frame", nil, _G.UIParent, "DialogBoxFrame")
     f:SetSize(700, 450)
     f:SetPoint("CENTER")
     f:SetFrameStrata("HIGH")
