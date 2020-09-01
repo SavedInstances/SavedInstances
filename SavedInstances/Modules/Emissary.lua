@@ -67,14 +67,13 @@ function E:QUEST_LOG_UPDATE()
     if IsQuestFlaggedCompleted(tbl.questID) then
       t.Emissary[expansionLevel].unlocked = true
       if not t.Emissary[expansionLevel].days then t.Emissary[expansionLevel].days = {} end
-      local BountyQuest = GetQuestBountyInfoForMapID(tbl.UiMapID)
-      local i, info
+      local BountyQuest = C_QuestLog.GetBountiesForMapID(tbl.UiMapID)
       for i = 1, 3 do
         if not t.Emissary[expansionLevel].days[i] then t.Emissary[expansionLevel].days[i] = {} end
         t.Emissary[expansionLevel].days[i].isComplete = true
       end
       for i, info in ipairs(BountyQuest) do
-        local title = GetQuestLogTitle(GetQuestLogIndexByID(info.questID))
+        local title = C_QuestLog.GetTitleForQuestID(info.questID)
         local timeleft = C_TaskQuest_GetQuestTimeLeftMinutes(info.questID)
         local _, _, isFinish, questDone, questNeed = GetQuestObjectiveInfo(info.questID, 1, false)
         local money = GetQuestLogRewardMoney(info.questID)
