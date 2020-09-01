@@ -76,7 +76,7 @@ end
 
 function WF:UpdateQuest()
   local t = SI.db.Toons[SI.thisToon]
-  if not t or UnitLevel("player") < 120 then return end
+  if not t or UnitLevel("player") < 50 then return end
   if not t.Warfront then t.Warfront = {} end
   for index, tbl in pairs(warfronts) do
     if not t.Warfront[index] then t.Warfront[index] = {} end
