@@ -1493,16 +1493,12 @@ local function SI_GetQuestReward()
   if not t then return end
   local id = GetQuestID() or -1
   local title = GetTitleText() or ""
-  local link = nil
   local isMonthly = SI:QuestIsDarkmoonMonthly()
   local isWeekly = QuestIsWeekly()
   local isDaily = QuestIsDaily()
-  local isAccount
+  local isAccount = C_QuestLog.IsAccountQuest(id)
 
-  local index = GetQuestLogIndexByID(id)
-  if index and index > 0 then
-    link = GetQuestLink(index)
-  end
+  local link = GetQuestLink(id)
   if id > 1 then -- try harder to fetch names
     local t,l = SI:QuestInfo(id)
     if not (link and #link > 0) then
@@ -1511,13 +1507,6 @@ local function SI_GetQuestReward()
     if not (title and #title > 0) then
       title = t or "<unknown>"
     end
-  end
-  local questTagID, tagName = GetQuestTagInfo(id)
-  if questTagID and tagName then
-    isAccount = (questTagID == Enum.QuestTag.Account)
-  else
-    isAccount = db.QuestDB.AccountDaily[id] or db.QuestDB.AccountWeekly[id]
-    SI:Debug("Fetched isAccount")
   end
   if QuestExceptions[id] then
     local qe = QuestExceptions[id]
@@ -2872,7 +2861,7 @@ function SI:QuestRefresh(recoverdaily, questcomplete, nextreset, weeklyreset)
 
   for _, qinfo in pairs(SI:specialQuests()) do
     local qid = qinfo.quest
-    if IsQuestFlaggedCompleted(qid) or (questcomplete and questcomplete[qid]) then
+    if IsQuestFlaggedCompleted(qid) or (questcomplete and tContains(questcomplete, qid)) then
       local q = tiq[qid] or {}
       tiq[qid] = q
       q.Title = qinfo.name
@@ -2899,7 +2888,7 @@ function SI:QuestRefresh(recoverdaily, questcomplete, nextreset, weeklyreset)
     if recoverdaily or (scope ~= "Daily") then
       for qid, mapid in pairs(list) do
         if tonumber(qid) and (IsQuestFlaggedCompleted(qid) or
-          (questcomplete and questcomplete[qid])) and not questlist[qid] and -- recovering a lost quest
+          (questcomplete and tContains(questcomplete, qid))) and not questlist[qid] and -- recovering a lost quest
           (list.expires == nil or list.expires > now) then -- don't repop darkmoon quests from last faire
           local title, link = SI:QuestInfo(qid)
           if title then
@@ -2997,7 +2986,7 @@ function SI:Refresh(recoverdaily)
     end
   end
 
-  local questcomplete = GetQuestsCompleted(localarr("QuestCompleteTemp"))
+  local questcomplete = C_QuestLog.GetAllCompletedQuestIDs()
   local wbsave = localarr("wbsave")
   if GetNumSavedWorldBosses and GetSavedWorldBossInfo then -- 5.4
     for i=1,GetNumSavedWorldBosses() do
@@ -3008,7 +2997,7 @@ function SI:Refresh(recoverdaily)
   for _,einfo in pairs(SI.WorldBosses) do
     if weeklyreset and (
       (einfo.quest and IsQuestFlaggedCompleted(einfo.quest)) or
-      (questcomplete and einfo.quest and questcomplete[einfo.quest]) or
+      (questcomplete and einfo.quest and tContains(questcomplete, einfo.quest)) or
       wbsave[einfo.savename or einfo.name]
       ) then
       local truename = einfo.name

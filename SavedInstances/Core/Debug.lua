@@ -60,7 +60,7 @@ do
 
   function SI:QuestDebug(info)
     local t = SI.db.Toons[SI.thisToon]
-    local ql = GetQuestsCompleted()
+    local ql = C_QuestLog.GetAllCompletedQuestIDs()
 
     local cmd = info.input
     cmd = cmd and strtrim(cmd:gsub("^%s*(%w+)%s*","")):lower()
@@ -82,22 +82,38 @@ do
       SI:ChatMsg("/si quest ([save|load|clear])")
       return
     end
-    local cnt = 0
+    local cnt = #ql
     local add = {}
     local remove = {}
-    for id,_ in pairs(ql) do
-      cnt = cnt + 1
-    end
     SI:ChatMsg("Completed quests: "..cnt)
     if SI.completedquests then
-      for id,_ in pairs(ql) do
-        if not SI.completedquests[id] then
-          add[id] = true
-        end
-      end
-      for id,_ in pairs(SI.completedquests) do
-        if not ql[id] then
-          remove[id] = true
+      local prev, curr = 1, 1
+      while true do
+        if not SI.completedquests[prev] then
+          while ql[curr] do
+            add[ql[curr]] = true
+            curr = curr + 1
+          end
+          break
+        elseif not ql[curr] then
+          while SI.completedquests[prev] do
+            remove[SI.completedquests[prev]] = true
+            prev = prev + 1
+          end
+          break
+        elseif SI.completedquests[prev] > ql[curr] then
+          while ql[curr] and SI.completedquests[prev] > ql[curr] do
+            add[ql[curr]] = true
+            curr = curr + 1
+          end
+        elseif SI.completedquests[prev] < ql[curr] then
+          while SI.completedquests[prev] and SI.completedquests[prev] < ql[curr] do
+            remove[SI.completedquests[prev]] = true
+            prev = prev + 1
+          end
+        else -- SI.completedquests[prev] == ql[curr]
+          prev = prev + 1
+          curr = curr + 1
         end
       end
       if next(add) then SI:ChatMsg("Added IDs:   "..questTableToString(add)) end
