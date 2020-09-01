@@ -163,7 +163,7 @@ function Config:BuildOptions()
       return SI.db.Tooltip[info[#info]]
     end,
     set = function(info, value)
-      SI.debug(info[#info].." set to: "..tostring(value))
+      SI:Debug(info[#info].." set to: "..tostring(value))
       SI.db.Tooltip[info[#info]] = value
       wipe(SI.scaleCache)
       wipe(SI.oi_cache)
@@ -510,7 +510,7 @@ function Config:BuildOptions()
           return SI.db.Tooltip[info[#info]]
         end,
         set = function(info, value)
-          SI.debug(info[#info].." set to: "..tostring(value))
+          SI:Debug(info[#info].." set to: "..tostring(value))
           SI.db.Tooltip[info[#info]] = value
           wipe(SI.scaleCache)
           wipe(SI.oi_cache)
@@ -561,7 +561,7 @@ function Config:BuildOptions()
           end
         end,
         set = function(info, value)
-          SI.debug("Config set: "..info[#info].." = "..(value and "true" or "false"))
+          SI:Debug("Config set: "..info[#info].." = "..(value and "true" or "false"))
           SI.db.Indicators[info[#info]] = value
         end,
         args = IndicatorOptions(),
@@ -929,7 +929,7 @@ function Config:SetupOptions()
   local fgen = AceConfigDialog:AddToBlizOptions(namespace, nil, nil, "General")
   firstoptiongroup = fgen
   fgen.default = function()
-    SI.debug("RESET: General")
+    SI:Debug("RESET: General")
     SI.db.Tooltip = Config:table_clone(SI.defaultDB.Tooltip)
     SI.db.MinimapIcon = Config:table_clone(SI.defaultDB.MinimapIcon)
     Config:ReopenConfigDisplay(fgen)
@@ -938,13 +938,13 @@ function Config:SetupOptions()
   fcur.default = fgen.default
   local find = AceConfigDialog:AddToBlizOptions(namespace, L["Indicators"], namespace, "Indicators")
   find.default = function()
-    SI.debug("RESET: Indicators")
+    SI:Debug("RESET: Indicators")
     SI.db.Indicators = Config:table_clone(SI.defaultDB.Indicators)
     Config:ReopenConfigDisplay(find)
   end
   local finst = AceConfigDialog:AddToBlizOptions(namespace, L["Instances"], namespace, "Instances")
   finst.default = function()
-    SI.debug("RESET: Instances")
+    SI:Debug("RESET: Instances")
     for _,i in pairs(SI.db.Instances) do
       i.Show = "saved"
     end
@@ -954,7 +954,7 @@ function Config:SetupOptions()
   lastoptiongroup = ftoon
   Config.ftoon = ftoon
   ftoon.default = function()
-    SI.debug("RESET: Toons")
+    SI:Debug("RESET: Toons")
     for _,i in pairs(SI.db.Toons) do
       i.Show = "saved"
     end
