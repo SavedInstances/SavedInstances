@@ -1311,7 +1311,7 @@ function SI:UpdateToonData()
   end
   local rating = (GetPersonalRatedInfo and GetPersonalRatedInfo(4))
   t.RBGrating = tonumber(rating) or t.RBGrating
-  SI:GetModule("Tradeskills"):ScanItemCDs()
+  SI:GetModule("TradeSkill"):ScanItemCDs()
   local Progress = SI:GetModule("Progress")
   -- Daily Reset
   if nextreset and nextreset > time() then
@@ -2837,7 +2837,6 @@ function SI:HistoryUpdate(forcereset, forcemesg)
     SI.resetDetect:SetScript("OnUpdate", nil)
   end
 end
-function SI:HistoryUpdate(...) return SI:HistoryUpdate(...) end
 function SI.histTextUpdate(self, elap)
   SI.histTextthrottle = SI.histTextthrottle - elap
   if SI.histTextthrottle > 0 then return end
