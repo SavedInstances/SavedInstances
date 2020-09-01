@@ -352,6 +352,7 @@ SI.defaultDB = {
     Progress5 = true, -- Lesser Visions of N'Zoth
     Warfront1 = true, -- Arathi Highlands
     Warfront2 = true, -- Darkshores
+    KeystoneReportTarget = "EXPORT",
   },
   Instances = { }, 	-- table key: "Instance name"; value:
   -- Show: boolean
