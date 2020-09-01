@@ -19,12 +19,14 @@ Locales\Locale.lua
 # core files
 Core\Functions.lua
 Core\Time.lua
-Core\Core.lua
 
 Core\Debug.lua
 Core\Config.lua
 
 # modules
+# load Quest.lua first, required by Currency.lua
+Modules\Quest.lua
+
 Modules\BonusRoll.lua
 Modules\Currency.lua
 Modules\Emissary.lua
@@ -32,7 +34,8 @@ Modules\LFR.lua
 Modules\MythicPlus.lua
 Modules\Paragon.lua
 Modules\Progress.lua
-Modules\Quest.lua
 Modules\TradeSkill.lua
 Modules\Warfront.lua
 Modules\WorldBoss.lua
+
+Core\Core.lua
