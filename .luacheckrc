@@ -2321,6 +2321,7 @@ globals = {
 	"GetPetitionInfo",
 	"GetPetitionNameInfo",
 	"GetPhysicalScreenSize",
+	"GetPlayerAuraBySpellID",
 	"GetPlayerFacing",
 	"GetPlayerInfoByGUID",
 	"GetPlayerMapAreaID",

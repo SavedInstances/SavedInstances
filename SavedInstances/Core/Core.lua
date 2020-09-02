@@ -1287,14 +1287,10 @@ function SI:UpdateToonData()
     RequestTimePlayed()
   end
   t.LFG1 = SI:GetTimeToTime(GetLFGRandomCooldownExpiration()) or t.LFG1
-  t.LFG2 = SI:GetTimeToTime(select(6, SI:GetUnitDebuff('player', 71041))) or t.LFG2 -- GetLFGDeserterExpiration()
+  t.LFG2 = SI:GetTimeToTime(select(6, GetPlayerAuraBySpellID(71041))) or t.LFG2 -- GetLFGDeserterExpiration()
   if t.LFG2 then SI:updateSpellTip(71041) end
-  SI.pvpdesertids = SI.pvpdesertids or { 26013,   -- BG queue
-    194958 } -- Ashran
-  for _,id in ipairs(SI.pvpdesertids) do
-    t.pvpdesert = SI:GetTimeToTime(select(6, SI:GetUnitDebuff('player', id))) or t.pvpdesert
-    if t.pvpdesert then SI:updateSpellTip(id) end
-  end
+  t.pvpdesert = SI:GetTimeToTime(select(6, GetPlayerAuraBySpellID(26013))) or t.pvpdesert
+  if t.pvpdesert then SI:updateSpellTip(26013) end
   for toon, ti in pairs(SI.db.Toons) do
     if ti.LFG1 and (ti.LFG1 < now) then ti.LFG1 = nil end
     if ti.LFG2 and (ti.LFG2 < now) then ti.LFG2 = nil end
