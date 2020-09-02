@@ -36,6 +36,12 @@ local factionID = {
   2400, -- Waveblade Ankoan
   2415, -- Rajani
   2417, -- Uldum Accord
+
+  -- Shadowlands
+  2407, -- The Ascended
+  2410, -- The Undying Army
+  2413, -- Court of Harvesters
+  2422, -- The Wild Hunt
 }
 
 function P:OnEnable()
