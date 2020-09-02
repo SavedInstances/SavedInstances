@@ -141,8 +141,8 @@ SI.defaultDB = {
   -- Money: integer
   -- Zone: string
   -- Warmode: boolean
-  -- Artifact: string
-  -- Cloak: string
+  -- Artifact: string REMOVED
+  -- Cloak: string REMOVED
   -- Paragon: table
   -- oRace: string
   -- isResting: boolean
@@ -1438,30 +1438,6 @@ function SI:UpdateToonData()
     end
   end
   t.Warmode = C_PvP.IsWarModeDesired()
-  local azeriteItemLocation = C_AzeriteItem.FindActiveAzeriteItem()
-  if azeriteItemLocation and azeriteItemLocation:IsEquipmentSlot() then
-    local xp, totalLevelXP = C_AzeriteItem.GetAzeriteItemXPInfo(azeriteItemLocation)
-    local currentLevel = C_AzeriteItem.GetPowerLevel(azeriteItemLocation)
-    t.Artifact = format("%d (%d%%)", currentLevel, xp / totalLevelXP  * 100)
-  end
-  local cloakItemLocation = ItemLocation:CreateFromEquipmentSlot(15)
-  if cloakItemLocation and cloakItemLocation:IsValid() then
-    local itemID = C_Item.GetItemID(cloakItemLocation)
-    if itemID == 169223 then
-      local cloakIlvl = C_Item.GetCurrentItemLevel(cloakItemLocation)
-      local cloakRank = min(15, (cloakIlvl - 468) / 2)
-      local cloakResist = GetCorruptionResistance()
-      local essenceResist = 0
-      local milestones = {119, 117, 116, 115} -- neck essence slots
-      for _, milestone in ipairs(milestones) do
-        local essence = C_AzeriteEssence.GetMilestoneEssence(milestone)
-        if essence and (essence >= 33 or essence == 16 or essence == 24) then
-          essenceResist = 10
-        end
-      end
-      t.Cloak = format(AZERITE_ESSENCE_RANK.." (|cffffdf00+%d|r)", cloakRank, cloakResist - essenceResist)
-    end
-  end
 
   t.LastSeen = time()
 end
@@ -1593,12 +1569,6 @@ hoverTooltip.ShowToonTooltip = function (cell, arg, ...)
     indicatortip:AddLine(COMBAT_XP_GAIN, format("%.0f%% + %.0f%%", t.XP / t.MaxXP * 100, percent))
   end
   indicatortip:AddLine(STAT_AVERAGE_ITEM_LEVEL,("%d "):format(t.IL or 0)..STAT_AVERAGE_ITEM_LEVEL_EQUIPPED:format(t.ILe or 0))
-  if t.Artifact then
-    indicatortip:AddLine(ARTIFACT_POWER, t.Artifact)
-  end
-  if t.Cloak then
-    indicatortip:AddLine(AUCTION_SUBCATEGORY_CLOAK, t.Cloak)
-  end
   if t.RBGrating and t.RBGrating > 0 then
     indicatortip:AddLine(BATTLEGROUND_RATING, t.RBGrating)
   end
@@ -2352,6 +2322,8 @@ function SI:toonInit()
   ti.Quests = ti.Quests or {}
   ti.Skills = ti.Skills or {}
   ti.DailyWorldQuest = nil -- REMOVED
+  ti.Artifact = nil -- REMOVED
+  ti.Cloak = nil -- REMOVED
   -- try to get a reset time, but don't overwrite existing, which could break quest list
   -- real update comes later in UpdateToonData
   ti.DailyResetTime = ti.DailyResetTime or SI:GetNextDailyResetTime()
