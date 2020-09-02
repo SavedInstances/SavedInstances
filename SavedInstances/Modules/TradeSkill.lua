@@ -188,6 +188,7 @@ local trade_spells = {
   [250796] = "item", -- Wormhole Generator: Argus
   [299083] = "item", -- Wormhole Generator: Kul Tiras
   [299084] = "item", -- Wormhole Generator: Zandalar
+  [324031] = "item", -- Wormhole Generator: Shadowlands
   -- Transporter
   [23453]  = "item", -- Ultrasafe Transporter: Gadgetzhan
   [36941]  = "item", -- Ultrasafe Transporter: Toshley's Station
@@ -208,6 +209,7 @@ local itemcds = { -- [itemid] = spellid
   [151652] = 250796, -- Wormhole Generator: Argus
   [168807] = 299083, -- Wormhole Generator: Kul Tiras
   [168808] = 299084, -- Wormhole Generator: Zandalar
+  [172924] = 324031, -- Wormhole Generator: Shadowlands
   -- Transporter
   [18986]  = 23453,  -- Ultrasafe Transporter: Gadgetzhan
   [30544]  = 36941,  -- Ultrasafe Transporter: Toshley's Station
