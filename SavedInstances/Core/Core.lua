@@ -1592,8 +1592,8 @@ hoverTooltip.ShowToonTooltip = function (cell, arg, ...)
   indicatortip:SetCell(indicatortip:AddHeader(),1,ftex..ClassColorise(t.Class, toon))
   indicatortip:SetCell(1,2,ClassColorise(t.Class, LEVEL.." "..t.Level.." "..(t.LClass or "")))
   if t.Level < maxlvl and t.XP then
-    local restXP = (t.RestXP or 0) + t.MaxXP / 20 * ((time() - t.LastSeen) / (60 * (t.isResting and 8 or 32)))
-    local percent = min(floor(restXP / t.MaxXP * 100), t.oRace == "Pandaren" and 300 or 150)
+    local restXP = (t.RestXP or 0) + (t.MaxXP / 20) * ((time() - t.LastSeen) / (3600 * (t.isResting and 8 or 32)))
+    local percent = min(floor(restXP / t.MaxXP * 100), 150) * (t.oRace == "Pandaren" and 2 or 1)
     indicatortip:AddLine(COMBAT_XP_GAIN, format("%.0f%% + %.0f%%", t.XP / t.MaxXP * 100, percent))
   end
   indicatortip:AddLine(STAT_AVERAGE_ITEM_LEVEL,("%d "):format(t.IL or 0)..STAT_AVERAGE_ITEM_LEVEL_EQUIPPED:format(t.ILe or 0))
