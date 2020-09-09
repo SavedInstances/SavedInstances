@@ -1,0 +1,18 @@
+name: PR-CI
+
+on: [pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install and run Luacheck
+      run: |
+        sudo apt-get install luarocks
+        luarocks install --local luacheck
+        /home/runner/.luarocks/bin/luacheck . --no-color -q
+    - uses: actions/upload-artifact@v2
+      with:
+        name: SavedInstances-PR
+        path: .release/

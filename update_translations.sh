@@ -1,5 +1,14 @@
 #!/bin/bash
 
+cf_token=
+
+# Load secrets
+if [ -f ".env" ]; then
+	. ".env"
+fi
+
+[ -z "$cf_token" ] && cf_token=$CF_API_KEY
+
 declare -A locale_files=(
   ["Base Namespace"]="SavedInstances_Main.lua"
 )
@@ -13,8 +22,8 @@ do_import() {
   : > "$tempfile"
 
   echo -n "Importing $namespace..."
-  result=$( curl -sS -X POST -w "%{http_code}" -o "$tempfile" \
-    -H "X-Api-Token: $CF_API_TOKEN" \
+  result=$( curl -sS -0 -X POST -w "%{http_code}" -o "$tempfile" \
+    -H "X-Api-Token: $CF_API_KEY" \
     -F "metadata={ language: \"enUS\", namespace: \"$namespace\", \"missing-phrase-handling\": \"DeletePhrase\" }" \
     -F "localizations=<$file" \
     "https://www.wowace.com/api/projects/13998/localization/import"
@@ -23,7 +32,7 @@ do_import() {
     200) echo "done." ;;
     *)
       echo "error! ($result)"
-      [ -s "$tempfile" ] && grep -q "errorMessage" "$tempfile" && cat "$tempfile" | jq --raw-output '.errorMessage'
+      [ -s "$tempfile" ] && grep -q "errorMessage" "$tempfile" | jq --raw-output '.errorMessage' "$tempfile"
       exit 1
       ;;
   esac
