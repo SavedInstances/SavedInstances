@@ -1,5 +1,5 @@
 local SI, L = unpack(select(2, ...))
-local WF = SI:NewModule('Warfront', 'AceEvent-3.0', 'AceTimer-3.0')
+local Module = SI:NewModule('Warfront', 'AceEvent-3.0', 'AceTimer-3.0')
 
 -- Lua functions
 local pairs, type = pairs, type
@@ -46,13 +46,13 @@ local warfronts = {
   },
 }
 
-function WF:OnEnable()
+function Module:OnEnable()
   self:CONTRIBUTION_CHANGED()
   self:UpdateQuest()
   self:RegisterEvent("CONTRIBUTION_CHANGED")
 end
 
-function WF:CONTRIBUTION_CHANGED()
+function Module:CONTRIBUTION_CHANGED()
   local globalInfo = SI.db.Warfront
   for index, tbl in pairs(warfronts) do
     local captureSide = "Horde"
@@ -74,7 +74,7 @@ function WF:CONTRIBUTION_CHANGED()
   end
 end
 
-function WF:UpdateQuest()
+function Module:UpdateQuest()
   local t = SI.db.Toons[SI.thisToon]
   if not t or UnitLevel("player") < 50 then return end
   if not t.Warfront then t.Warfront = {} end
@@ -94,7 +94,7 @@ function WF:UpdateQuest()
   end
 end
 
-function WF:OnReset(index, captureSide)
+function Module:OnReset(index, captureSide)
   for toon, ti in pairs(SI.db.Toons) do
     local t = SI.db.Toons[toon]
     if not t or not t.Warfront or not t.Warfront[index] then return end
@@ -108,7 +108,7 @@ function WF:OnReset(index, captureSide)
   self:UpdateQuest()
 end
 
-function WF:BuildOptions(order)
+function Module:BuildOptions(order)
   local option = {}
   for index, tbl in pairs(warfronts) do
     option["Warfront" .. index] = {
@@ -120,7 +120,7 @@ function WF:BuildOptions(order)
   return option
 end
 
-function WF:ShowTooltip(tooltip, columns, showall, preshow)
+function Module:ShowTooltip(tooltip, columns, showall, preshow)
   local cpairs = SI.cpairs
   local first = true
   for index, tbl in pairs(warfronts) do
@@ -187,5 +187,5 @@ function WF:ShowTooltip(tooltip, columns, showall, preshow)
 end
 
 hooksecurefunc("GetQuestReward", function()
-  WF:ScheduleTimer("UpdateQuest", 1)
+  Module:ScheduleTimer("UpdateQuest", 1)
 end)

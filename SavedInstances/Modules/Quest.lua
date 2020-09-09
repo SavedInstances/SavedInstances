@@ -1,5 +1,5 @@
 local SI, L = unpack(select(2, ...))
-local Q = SI:NewModule('Quest')
+local Module = SI:NewModule('Quest')
 
 -- Lua functions
 local pairs, strtrim = pairs, strtrim

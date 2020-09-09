@@ -1,5 +1,5 @@
 local SI, L = unpack(select(2, ...))
-local P = SI:NewModule('Paragon', 'AceEvent-3.0', 'AceTimer-3.0')
+local Module = SI:NewModule('Paragon', 'AceEvent-3.0', 'AceTimer-3.0')
 
 -- Lua functions
 local pairs, tinsert = pairs, tinsert
@@ -44,12 +44,12 @@ local factionID = {
   2422, -- The Wild Hunt
 }
 
-function P:OnEnable()
+function Module:OnEnable()
   self:RegisterEvent("UPDATE_FACTION")
   self:UPDATE_FACTION()
 end
 
-function P:UPDATE_FACTION()
+function Module:UPDATE_FACTION()
   local t = SI.db.Toons[SI.thisToon]
   t.Paragon = {}
   for _, faction in pairs(factionID) do
@@ -62,5 +62,5 @@ function P:UPDATE_FACTION()
 end
 
 hooksecurefunc("GetQuestReward", function()
-  P:ScheduleTimer("UPDATE_FACTION", 1)
+  Module:ScheduleTimer("UPDATE_FACTION", 1)
 end)

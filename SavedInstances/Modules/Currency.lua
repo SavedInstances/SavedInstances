@@ -1,5 +1,5 @@
 local SI, L = unpack(select(2, ...))
-local CU = SI:NewModule('Currency', 'AceEvent-3.0', 'AceTimer-3.0', 'AceBucket-3.0')
+local Module = SI:NewModule('Currency', 'AceEvent-3.0', 'AceTimer-3.0', 'AceBucket-3.0')
 
 local seasonTotalPatten = gsub(CURRENCY_SEASON_TOTAL, "%%s%%s", "(.+)")
 
@@ -156,12 +156,12 @@ local function GetSeasonCurrency(idx)
   end
 end
 
-function CU:OnEnable()
+function Module:OnEnable()
   self:RegisterBucketEvent("CURRENCY_DISPLAY_UPDATE", 0.25, "UpdateCurrency")
   self:RegisterEvent("BAG_UPDATE", "UpdateCurrencyItem")
 end
 
-function CU:UpdateCurrency()
+function Module:UpdateCurrency()
   if SI.logout then return end -- currency is unreliable during logout
   local t = SI.db.Toons[SI.thisToon]
   t.Money = GetMoney()
@@ -200,7 +200,7 @@ function CU:UpdateCurrency()
   end
 end
 
-function CU:UpdateCurrencyItem()
+function Module:UpdateCurrencyItem()
   if not SI.db.Toons[SI.thisToon].currency then return end
 
   for currencyID, tbl in pairs(specialCurrency) do

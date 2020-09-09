@@ -1,5 +1,5 @@
 local SI, L = unpack(select(2, ...))
-local BR = SI:NewModule('BonusRoll', 'AceEvent-3.0')
+local Module = SI:NewModule('BonusRoll', 'AceEvent-3.0')
 
 local BonusFrame -- Frame attached to BonusRollFrame
 local MAX_BONUS_ROLL_RECORD_LIMIT = 25 -- the max cap of bonus roll records
@@ -53,13 +53,13 @@ local function BonusRollShow()
 end
 hooksecurefunc("BonusRollFrame_StartBonusRoll", BonusRollShow)
 
-function BR:OnEnable()
+function Module:OnEnable()
   BonusRollShow() -- catch roll-on-load
   self:RegisterEvent("BONUS_ROLL_RESULT")
   self:RegisterEvent("CHAT_MSG_MONSTER_YELL")
 end
 
-function BR:CHAT_MSG_MONSTER_YELL(event, msg, bossname)
+function Module:CHAT_MSG_MONSTER_YELL(event, msg, bossname)
   -- cheapest possible outdoor boss detection for players lacking a proper boss mod
   -- should work for sha and nalak, oon and gal report a related mob
   local t = SI.db.Toons[SI.thisToon]
@@ -74,7 +74,7 @@ function BR:CHAT_MSG_MONSTER_YELL(event, msg, bossname)
   end
 end
 
-function BR:BONUS_ROLL_RESULT(event, rewardType, rewardLink, rewardQuantity, rewardSpecID, _, _, currencyID)
+function Module:BONUS_ROLL_RESULT(event, rewardType, rewardLink, rewardQuantity, rewardSpecID, _, _, currencyID)
   local t = SI.db.Toons[SI.thisToon]
   SI:Debug("BONUS_ROLL_RESULT:%s:%s:%s:%s (boss=%s|%s)",
     tostring(rewardType), tostring(rewardLink), tostring(rewardQuantity), tostring(rewardSpecID),

@@ -1,5 +1,5 @@
 local SI, L = unpack(select(2, ...))
-local MP = SI:NewModule('MythicPlus', 'AceEvent-3.0')
+local Module = SI:NewModule('MythicPlus', 'AceEvent-3.0')
 
 -- Lua functions
 local _G = _G
@@ -35,13 +35,13 @@ local KeystoneAbbrev = {
 }
 SI.KeystoneAbbrev = KeystoneAbbrev
 
-function MP:OnEnable()
+function Module:OnEnable()
   self:RegisterEvent("BAG_UPDATE_DELAYED", "RefreshMythicKeyInfo")
   self:RegisterEvent("CHALLENGE_MODE_MAPS_UPDATE", "RefreshMythicKeyInfo")
   self:RefreshMythicKeyInfo()
 end
 
-function MP:RefreshMythicKeyInfo(event)
+function Module:RefreshMythicKeyInfo(event)
   -- This event is fired after the rewards data was requested, causing yet another refresh if not checked for
   if (event ~= "CHALLENGE_MODE_MAPS_UPDATE") then C_MythicPlus_RequestRewards() end
 
@@ -88,7 +88,7 @@ function MP:RefreshMythicKeyInfo(event)
   t.MythicKeyBest.WeeklyReward = C_MythicPlus_IsWeeklyRewardAvailable()
 end
 
-function MP:Keys()
+function Module:Keys()
   local target = SI.db.Tooltip.KeystoneReportTarget
   SI:Debug("Key report target: %s", target)
 
@@ -99,7 +99,7 @@ function MP:Keys()
   end
 end
 
-function MP:KeyData(action)
+function Module:KeyData(action)
   local cpairs = SI.cpairs
 
   for toon, t in cpairs(SI.db.Toons, true) do
@@ -117,11 +117,11 @@ function MP:KeyData(action)
   end
 end
 
-function MP:ReportKeys(target)
+function Module:ReportKeys(target)
   self:KeyData(function(toon, key) SendChatMessage(toon .. ' - '.. key, target) end)
 end
 
-function MP:ExportKeys()
+function Module:ExportKeys()
   if not self.KeyExportWindow then
     local f = CreateFrame("Frame", nil, _G.UIParent, "DialogBoxFrame")
     f:SetSize(700, 450)
@@ -166,7 +166,7 @@ StaticPopupDialogs["SAVEDINSTANCES_REPORT_KEYS"] = {
   text = L["Are you sure you want to report all your keys to %s?"],
   button1 = OKAY,
   button2 = CANCEL,
-  OnAccept = function(self, target) MP:ReportKeys(target) end,
+  OnAccept = function(self, target) Module:ReportKeys(target) end,
   timeout = 0,
   whileDead = true,
   hideOnEscape = true,
