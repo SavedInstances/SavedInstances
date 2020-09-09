@@ -58,7 +58,6 @@ for i = 0,10 do
 end
 
 local tooltip, indicatortip = nil, nil
-local maxlvl = GetMaxLevelForPlayerExpansion()
 
 function SI:QuestInfo(questid)
   if not questid or questid == 0 then return nil end
@@ -1429,7 +1428,7 @@ function SI:UpdateToonData()
   if not SI.logout then
     t.isResting = IsResting()
     t.MaxXP = UnitXPMax("player")
-    if t.Level < maxlvl then
+    if t.Level < SI.maxLevel then
       t.XP = UnitXP("player")
       t.RestXP = GetXPExhaustion()
     else
@@ -1563,7 +1562,7 @@ hoverTooltip.ShowToonTooltip = function (cell, arg, ...)
   end
   indicatortip:SetCell(indicatortip:AddHeader(),1,ftex..ClassColorise(t.Class, toon))
   indicatortip:SetCell(1,2,ClassColorise(t.Class, LEVEL.." "..t.Level.." "..(t.LClass or "")))
-  if t.Level < maxlvl and t.XP then
+  if t.Level < SI.maxLevel and t.XP then
     local restXP = (t.RestXP or 0) + (t.MaxXP / 20) * ((time() - t.LastSeen) / (3600 * (t.isResting and 8 or 32)))
     local percent = min(floor(restXP / t.MaxXP * 100), 150) * (t.oRace == "Pandaren" and 2 or 1)
     indicatortip:AddLine(COMBAT_XP_GAIN, format("%.0f%% + %.0f%%", t.XP / t.MaxXP * 100, percent))
@@ -1873,12 +1872,12 @@ hoverTooltip.ShowAccountSummary = function (cell, arg, ...)
     r[realm] = ri
     ttime = ttime + (t.PlayedTotal or 0)
     ttoons = ttoons + 1
-    if t.Level == maxlvl then
+    if t.Level == SI.maxLevel then
       tmaxtoons = tmaxtoons + 1
     end
   end
   indicatortip:AddLine(L["Characters"], ttoons)
-  indicatortip:AddLine(string.format(L["Level %d Characters"],maxlvl), tmaxtoons)
+  indicatortip:AddLine(string.format(L["Level %d Characters"], SI.maxLevel), tmaxtoons)
   if SI.db.Tooltip.TrackPlayed then
     indicatortip:AddLine((TIME_PLAYED_TOTAL):format(""),SecondsToTime(ttime))
   end
