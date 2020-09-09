@@ -1,5 +1,4 @@
 SavedInstances_Main.lua
 SavedInstances/Libs/*
-!SavedInstances/Libs/LibDataBroker-1.1
 .env
 .DS_Store
