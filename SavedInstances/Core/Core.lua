@@ -1239,10 +1239,8 @@ function SI:UpdateToonData()
       GetLFGDungeonInfo(id) -- forces update
       local donetoday, money = GetLFGDungeonRewards(id)
       if donetoday and i.Random and (
-        (i.LFDID == 258) or  -- random classic dungeon
-        (i.LFDID == 995 or i.LFDID == 744) or  -- timewalking dungeons
-        (UnitLevel("player") == 85 and
-        (i.LFDID == 300 or i.LFDID == 301 or i.LFDID == 434)) -- reg/her cata and HoT at 85
+          id == 301 or -- Cata heroic
+          id == 434    -- Hour of Twilight
         ) then -- donetoday flag is falsely set for some level/dungeon combos where no daily incentive is available
         donetoday = false
       end
