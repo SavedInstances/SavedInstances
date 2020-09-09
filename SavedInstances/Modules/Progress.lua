@@ -20,7 +20,6 @@ local READY_CHECK_READY_TEXTURE = READY_CHECK_READY_TEXTURE
 local READY_CHECK_WAITING_TEXTURE = READY_CHECK_WAITING_TEXTURE
 
 local CONQUEST_QUESTLINE_ID = 782
-local maxLvl = GetMaxLevelForPlayerExpansion()
 
 -- GLOBAL
 
@@ -42,7 +41,7 @@ end
 
 local function ConquestUpdate(index)
   local data
-  if UnitLevel("player") >= maxLvl then
+  if UnitLevel("player") >= SI.maxLevel then
     local currentQuestID = QuestUtils_GetCurrentQuestLineQuest(CONQUEST_QUESTLINE_ID)
     local rewardAchieved, lastWeekRewardAchieved, lastWeekRewardClaimed = C_PvP_GetWeeklyChestInfo()
     local rewardWaiting = lastWeekRewardAchieved and not lastWeekRewardClaimed
