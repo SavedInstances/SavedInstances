@@ -1,5 +1,5 @@
 local SI, L = unpack(select(2, ...))
-local TS = SI:NewModule('TradeSkill', 'AceEvent-3.0', 'AceTimer-3.0', 'AceBucket-3.0')
+local Module = SI:NewModule('TradeSkill', 'AceEvent-3.0', 'AceTimer-3.0', 'AceBucket-3.0')
 
 -- Lua functions
 local pairs, type, floor, abs, format = pairs, type, floor, abs, format
@@ -224,12 +224,12 @@ local cdname = {
   ["magni"] = GetSpellInfo(2108).. ": "..GetSpellInfo(140040)
 }
 
-function TS:OnEnable()
+function Module:OnEnable()
   self:RegisterBucketEvent("TRADE_SKILL_LIST_UPDATE", 1)
   self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
 end
 
-function TS:ScanItemCDs()
+function Module:ScanItemCDs()
   for itemid, spellid in pairs(itemcds) do
     local start, duration = GetItemCooldown(itemid)
     if start and duration and start > 0 then
@@ -238,7 +238,7 @@ function TS:ScanItemCDs()
   end
 end
 
-function TS:RecordSkill(spellID, expires)
+function Module:RecordSkill(spellID, expires)
   if not spellID then return end
   local cdinfo = trade_spells[spellID]
   if not cdinfo then
@@ -314,7 +314,7 @@ function TS:RecordSkill(spellID, expires)
   return true
 end
 
-function TS:TradeSkillRescan(spellid)
+function Module:TradeSkillRescan(spellid)
   local scan = self:TRADE_SKILL_LIST_UPDATE()
   if _G.TradeSkillFrame and _G.TradeSkillFrame.filterTbl and
     (scan == 0 or not self.seencds or not self.seencds[spellid]) then
@@ -335,7 +335,7 @@ function TS:TradeSkillRescan(spellid)
   end
 end
 
-function TS:TRADE_SKILL_LIST_UPDATE()
+function Module:TRADE_SKILL_LIST_UPDATE()
   local cnt = 0
   if C_TradeSkillUI_IsTradeSkillLinked() or C_TradeSkillUI_IsTradeSkillGuild() then return end
   local recipeids = C_TradeSkillUI_GetFilteredRecipeIDs()
@@ -360,7 +360,7 @@ function TS:TRADE_SKILL_LIST_UPDATE()
   return cnt
 end
 
-function TS:UNIT_SPELLCAST_SUCCEEDED(_, unit, _, spellID)
+function Module:UNIT_SPELLCAST_SUCCEEDED(_, unit, _, spellID)
   if unit ~= "player" then return end
   if trade_spells[spellID] then
     SI:Debug("UNIT_SPELLCAST_SUCCEEDED: %s (%s)",GetSpellLink(spellID),spellID)

@@ -1,5 +1,5 @@
 local SI, L = unpack(select(2, ...))
-local LFR = SI:NewModule('LFR')
+local Module = SI:NewModule('LFR')
 
 local locLevel = UnitLevel("player")
 local locFaction = UnitFactionGroup("player")

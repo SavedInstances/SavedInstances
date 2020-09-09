@@ -1,5 +1,5 @@
 local SI, L = unpack(select(2, ...))
-local E = SI:NewModule('Emissary', 'AceEvent-3.0')
+local Module = SI:NewModule('Emissary', 'AceEvent-3.0')
 
 -- Lua functions
 local time, pairs, ipairs, tonumber, floor = time, pairs, ipairs, tonumber, floor
@@ -50,11 +50,11 @@ for k, v in pairs(_switching) do
   switching[v] = tbl
 end
 
-function E:OnEnable()
+function Module:OnEnable()
   self:RegisterEvent("QUEST_LOG_UPDATE")
 end
 
-function E:QUEST_LOG_UPDATE()
+function Module:QUEST_LOG_UPDATE()
   if SI.db.DailyResetTime < time() then return end -- daliy reset not run yet
   local t = SI.db.Toons[SI.thisToon]
   if not t.Emissary then t.Emissary = {} end

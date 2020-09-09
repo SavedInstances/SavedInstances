@@ -1,5 +1,5 @@
 local SI, L = unpack(select(2, ...))
-local P = SI:NewModule('Progress', 'AceEvent-3.0')
+local Module = SI:NewModule('Progress', 'AceEvent-3.0')
 
 -- Lua functions
 local _G = _G
@@ -109,7 +109,7 @@ end
 
 local function HorrificVisionUpdate(index)
   SI.db.Toons[SI.thisToon].Progress[index] = wipe(SI.db.Toons[SI.thisToon].Progress[index] or {})
-  for i, questID in ipairs(P.TrackedQuest[index].rewardQuestID) do
+  for i, questID in ipairs(Module.TrackedQuest[index].rewardQuestID) do
     SI.db.Toons[SI.thisToon].Progress[index][i] = IsQuestFlaggedCompleted(questID)
   end
   SI.db.Toons[SI.thisToon].Progress[index].unlocked = IsQuestFlaggedCompleted(58634) -- Opening the Gateway
@@ -121,7 +121,7 @@ local function HorrificVisionShow(toon, index)
 
   if t.Progress[index].unlocked then
     local text = "-"
-    for i, descText in ipairs(P.TrackedQuest[index].rewardDesc) do
+    for i, descText in ipairs(Module.TrackedQuest[index].rewardDesc) do
       if t.Progress[index][i] then
         text = descText[1]
       end
@@ -143,7 +143,7 @@ end
 
 local function NZothAssaultUpdate(index)
   SI.db.Toons[SI.thisToon].Progress[index] = wipe(SI.db.Toons[SI.thisToon].Progress[index] or {})
-  for _, questID in ipairs(P.TrackedQuest[index].relatedQuest) do
+  for _, questID in ipairs(Module.TrackedQuest[index].relatedQuest) do
     SI.db.Toons[SI.thisToon].Progress[index][questID] = C_TaskQuest_IsActive(questID)
   end
   SI.db.Toons[SI.thisToon].Progress[index].unlocked = IsQuestFlaggedCompleted(57362) -- Deeper Into the Darkness
@@ -156,7 +156,7 @@ local function NZothAssaultShow(toon, index)
 
   if t.Progress[index].unlocked then
     local count = 0
-    for _, questID in ipairs(P.TrackedQuest[index].relatedQuest) do
+    for _, questID in ipairs(Module.TrackedQuest[index].relatedQuest) do
       if t.Quests[questID] then
         count = count + 1
       end
@@ -184,7 +184,7 @@ local function LesserVisionShow(toon, index)
   local t = SI.db.Toons[toon]
   if not t or not t.Quests then return end
 
-  for _, questID in ipairs(P.TrackedQuest[index].relatedQuest) do
+  for _, questID in ipairs(Module.TrackedQuest[index].relatedQuest) do
     if t.Quests[questID] then
       return "\124T" .. READY_CHECK_READY_TEXTURE .. ":0|t"
     end
@@ -195,7 +195,7 @@ local function LesserVisionReset(toon, index)
   -- do nothing
 end
 
-P.TrackedQuest = {
+Module.TrackedQuest = {
   -- Conquest
   {
     name = PVP_CONQUEST,
@@ -291,12 +291,12 @@ P.TrackedQuest = {
   },
 }
 
-function P:OnEnable()
+function Module:OnEnable()
   self:QUEST_LOG_UPDATE()
   self:RegisterEvent("QUEST_LOG_UPDATE")
 end
 
-function P:QUEST_LOG_UPDATE()
+function Module:QUEST_LOG_UPDATE()
   local t = SI.db.Toons[SI.thisToon]
   if not t.Progress then t.Progress = {} end
   for i, tbl in ipairs(self.TrackedQuest) do
@@ -328,7 +328,7 @@ function P:QUEST_LOG_UPDATE()
   end
 end
 
-function P:OnDailyReset(toon)
+function Module:OnDailyReset(toon)
   local t = SI.db.Toons[toon]
   if not t or not t.Progress then return end
   for i, tbl in ipairs(self.TrackedQuest) do
@@ -349,7 +349,7 @@ function P:OnDailyReset(toon)
   end
 end
 
-function P:OnWeeklyReset(toon)
+function Module:OnWeeklyReset(toon)
   local t = SI.db.Toons[toon]
   if not t or not t.Progress then return end
   for i, tbl in ipairs(self.TrackedQuest) do
@@ -370,7 +370,7 @@ function P:OnWeeklyReset(toon)
   end
 end
 
-function P:BuildOptions(order)
+function Module:BuildOptions(order)
   local option = {}
   for index, tbl in ipairs(self.TrackedQuest) do
     option["Progress" .. index] = {
@@ -382,7 +382,7 @@ function P:BuildOptions(order)
   return option
 end
 
-function P:QuestEnabled(questID)
+function Module:QuestEnabled(questID)
   if not self.questMap then
     self.questMap = {}
     for index, tbl in ipairs(self.TrackedQuest) do
@@ -406,7 +406,7 @@ local function CloseTooltips()
   end
 end
 
-function P:ShowTooltip(tooltip, columns, showall, preshow)
+function Module:ShowTooltip(tooltip, columns, showall, preshow)
   local cpairs = SI.cpairs
   local first = true
   for index, tbl in ipairs(self.TrackedQuest) do

@@ -1,5 +1,5 @@
 local SI, L = unpack(select(2, ...))
-local WB = SI:NewModule('WorldBoss')
+local Module = SI:NewModule('WorldBoss')
 
 -- encounter index is embedded in the Hjournal hyperlink
 SI.WorldBosses = {
