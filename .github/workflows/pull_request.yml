@@ -5,14 +5,29 @@ on: [pull_request]
 jobs:
   build:
     runs-on: ubuntu-latest
+
+    env:
+      CF_API_KEY: ${{ secrets.CF_API_KEY }}
+      GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
+
     steps:
-    - uses: actions/checkout@v2
-    - name: Install and run Luacheck
-      run: |
-        sudo apt-get install luarocks
-        luarocks install --local luacheck
-        /home/runner/.luarocks/bin/luacheck . --no-color -q
-    - uses: actions/upload-artifact@v2
-      with:
-        name: SavedInstances-PR
-        path: .release/
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 50
+
+      - name: Install and run Luacheck
+        run: |
+          sudo apt-get install luarocks
+          luarocks install --local luacheck
+          /home/runner/.luarocks/bin/luacheck . --no-color -q
+
+      - name: Package
+        uses: BigWigsMods/packager@master
+        with:
+          args: -d
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: SavedInstances-PR${{ github.event.number }}
+          path: .release/*.zip
