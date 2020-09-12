@@ -407,6 +407,8 @@ SI.defaultDB = {
 --   hooksecurefunc(SavedInstances,"SkinFrame",function(self,frame,name) frame:SetWhatever() end)
 function SI:SkinFrame(frame,name)
   -- default behavior (ticket 81)
+  if frame.isSkinned then return end
+
   if IsAddOnLoaded("ElvUI") or IsAddOnLoaded("Tukui") then
     if frame.StripTextures then
       frame:StripTextures()
@@ -3133,7 +3135,7 @@ end
 
 function SI:ShowDetached()
   if not SI.detachframe then
-    local f = CreateFrame("Frame","SavedInstancesDetachHeader",UIParent,"BasicFrameTemplate")
+    local f = CreateFrame("Frame", "SavedInstancesDetachHeader", UIParent, "BasicFrameTemplate, BackdropTemplate")
     f:SetMovable(true)
     f:SetFrameStrata("TOOLTIP")
     f:SetFrameLevel(100) -- prevent weird interlacings with other tooltips
@@ -3170,11 +3172,11 @@ function SI:ShowDetached()
       end
     end)
     f:EnableKeyboard(true)
+    SI:SkinFrame(f, f:GetName())
     SI.detachframe = f
   end
   local f = SI.detachframe
   f:Show()
-  SI:SkinFrame(f,f:GetName())
   f:SetPropagateKeyboardInput(true)
   if tooltip then tooltip:Hide() end
   SI:ShowTooltip(f)
