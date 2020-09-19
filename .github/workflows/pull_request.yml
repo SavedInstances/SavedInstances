@@ -11,17 +11,16 @@ jobs:
       GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v1
         with:
-          fetch-depth: 50
+          fetch-depth: 150
 
       - name: Install and run Luacheck
-        run: |
-          sudo apt-get install luarocks
-          luarocks install --local luacheck
-          /home/runner/.luarocks/bin/luacheck . --no-color -q
+        uses: nebularg/actions-luacheck@v1
+        with:
+          args: "--no-color -q"
 
-      - name: Package
+      - name: Create Package
         uses: BigWigsMods/packager@master
         with:
           args: -d
