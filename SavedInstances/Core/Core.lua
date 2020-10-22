@@ -1629,7 +1629,7 @@ hoverTooltip.ShowQuestTooltip = function (cell, arg, ...)
     local line = indicatortip:AddLine()
     local link = qi.Link
     if not link then -- sometimes missing the actual link due to races, fake it for display to prevent confusion
-      if qi.Title:find("("..LOOT..")") then
+      if qi.Title and qi.Title:find("("..LOOT..")") then
         link = qi.Title
       else
         link = "\124cffffff00["..(qi.Title or "???").."]\124r"
