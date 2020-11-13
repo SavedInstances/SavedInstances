@@ -71,5 +71,5 @@ SI.WorldBosses = {
   [9003] = { quest=47462, name=L["Azuregos"],            expansion=8, level=60, remove=true }, -- Azuregos
   [9004] = { quest=47463, name=L["Dragon of Nightmare"], expansion=8, level=60, remove=true }, -- Dragon of Nightmare
   -- Eastern Plaguelands (Shadowlands pre-patch event)
-  [2381] = { quest=60542, name=L["Nathanos Blightcaller"], expansion=7, level=50 }, -- Nathanos Blightcaller 
+  [2381] = { quest=60542, name=L["Nathanos Blightcaller"], expansion=7, level=50 }, -- Nathanos Blightcaller
 }
