@@ -65,10 +65,14 @@ local currency = {
 
   -- Shadowlands
   1754, -- Argent Commendation
-  1767, -- Stygia
   1792, -- Honor
   1822, -- Renown
+  1813, -- Reservoir Anima
+  1885, -- Grateful Offering
   1828, -- Soul Ash
+  1767, -- Stygia
+  1816, -- Sinstone Fragments
+  1820, -- Infused Ruby
 }
 SI.currency = currency
 
