@@ -68,6 +68,7 @@ local currency = {
   1792, -- Honor
   1822, -- Renown
   1813, -- Reservoir Anima
+  1810, -- Redeemed Soul
   1885, -- Grateful Offering
   1828, -- Soul Ash
   1767, -- Stygia
