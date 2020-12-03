@@ -20,18 +20,14 @@ local SendChatMessage = SendChatMessage
 local StaticPopup_Show = StaticPopup_Show
 
 local KeystoneAbbrev = {
-  [244] = L["AD"],    -- Atal'Dazar
-  [245] = L["FH"],    -- Freehold
-  [246] = L["TD"],    -- Tol Dagor
-  [247] = L["ML"],    -- The MOTHERLODE!!
-  [248] = L["WM"],    -- Waycrest Manor
-  [249] = L["KR"],    -- Kings' Rest
-  [250] = L["TOS"],   -- Temple of Sethraliss
-  [251] = L["UNDR"],  -- The Underrot
-  [252] = L["SOTS"],  -- Shrine of the Storm
-  [353] = L["SIEGE"], -- Siege of Boralus
-  [369] = L["YARD"],  -- Operation: Mechagon - Junkyard
-  [370] = L["WORK"],  -- Operation: Mechagon - Workshop
+  [375] = L["MISTS"], -- Mists of Tirna Scithe
+  [376] = L["NW"],    -- The Necrotic Wake
+  [377] = L["DOS"],   -- De Other Side
+  [378] = L["HOA"],   -- Halls of Atonement
+  [379] = L["PF"],    -- Plaguefall
+  [380] = L["SD"],    -- Sanguine Depths
+  [381] = L["SOA"],   -- Spires of Ascension
+  [382] = L["TOP"],   -- Theater of Pain
 }
 SI.KeystoneAbbrev = KeystoneAbbrev
 
@@ -50,7 +46,7 @@ function Module:RefreshMythicKeyInfo(event)
   for bagID = 0, 4 do
     for invID = 1, GetContainerNumSlots(bagID) do
       local itemID = GetContainerItemID(bagID, invID)
-      if itemID and itemID == 158923 then
+      if itemID and itemID == 180653 then
         local keyLink = GetContainerItemLink(bagID, invID)
         local KeyInfo = {strsplit(':', keyLink)}
         local mapID = tonumber(KeyInfo[3])
