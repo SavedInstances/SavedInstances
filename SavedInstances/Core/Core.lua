@@ -2810,7 +2810,7 @@ end
 
 -- Lightweight refresh of just quest flag information
 -- all may be nil if not instantiataed
-function SI:QuestRefresh(recoverdaily, questcomplete, nextreset, weeklyreset)
+function SI:QuestRefresh(recoverdaily, nextreset, weeklyreset)
   local tiq = SI.db.Toons[SI.thisToon]
   tiq = tiq and tiq.Quests
   if not tiq then return end
@@ -2820,7 +2820,7 @@ function SI:QuestRefresh(recoverdaily, questcomplete, nextreset, weeklyreset)
 
   for _, qinfo in pairs(SI:specialQuests()) do
     local qid = qinfo.quest
-    if IsQuestFlaggedCompleted(qid) or (questcomplete and tContains(questcomplete, qid)) then
+    if IsQuestFlaggedCompleted(qid) then
       local q = tiq[qid] or {}
       tiq[qid] = q
       q.Title = qinfo.name
@@ -2846,8 +2846,7 @@ function SI:QuestRefresh(recoverdaily, questcomplete, nextreset, weeklyreset)
     end
     if recoverdaily or (scope ~= "Daily") then
       for qid, mapid in pairs(list) do
-        if tonumber(qid) and (IsQuestFlaggedCompleted(qid) or
-          (questcomplete and tContains(questcomplete, qid))) and not questlist[qid] and -- recovering a lost quest
+        if tonumber(qid) and IsQuestFlaggedCompleted(qid) and not questlist[qid] and -- recovering a lost quest
           (list.expires == nil or list.expires > now) then -- don't repop darkmoon quests from last faire
           local title, link = SI:QuestInfo(qid)
           if title then
@@ -2945,7 +2944,6 @@ function SI:Refresh(recoverdaily)
     end
   end
 
-  local questcomplete = C_QuestLog.GetAllCompletedQuestIDs()
   local wbsave = localarr("wbsave")
   if GetNumSavedWorldBosses and GetSavedWorldBossInfo then -- 5.4
     for i=1,GetNumSavedWorldBosses() do
@@ -2956,7 +2954,6 @@ function SI:Refresh(recoverdaily)
   for _,einfo in pairs(SI.WorldBosses) do
     if weeklyreset and (
       (einfo.quest and IsQuestFlaggedCompleted(einfo.quest)) or
-      (questcomplete and einfo.quest and tContains(questcomplete, einfo.quest)) or
       wbsave[einfo.savename or einfo.name]
       ) then
       local truename = einfo.name
@@ -2971,7 +2968,7 @@ function SI:Refresh(recoverdaily)
     end
   end
 
-  SI:QuestRefresh(recoverdaily, questcomplete, nextreset, weeklyreset)
+  SI:QuestRefresh(recoverdaily, nextreset, weeklyreset)
   SI:GetModule('Warfront'):UpdateQuest()
 
   local icnt, dcnt = 0,0
