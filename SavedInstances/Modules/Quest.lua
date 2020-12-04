@@ -185,6 +185,23 @@ local QuestExceptions = {
   [58167] = "Daily", -- Preventative Measures
   [58156] = "Daily", -- Vanquishing the Darkness
 
+  -- SL
+  -- "A Valuable Find" Mythic Dungeon Weekly
+  [60250] = "Weekly", -- A Valuable Find: Theater of Pain
+  [60251] = "Weekly", -- A Valuable Find: Plaguefall
+  [60252] = "Weekly", -- A Valuable Find: Spires of Ascension
+  [60253] = "Weekly", -- A Valuable Find: Necrotic Wake
+  [60254] = "Weekly", -- A Valuable Find: Tirna Scithe
+  [60255] = "Weekly", -- A Valuable Find: The Other Side
+  [60256] = "Weekly", -- A Valuable Find: Halls of Atonement
+  [60257] = "Weekly", -- A Valuable Find: Sanguine Depths
+  -- "Observing" PvP Weekly
+  [62284] = "Weekly", -- Observing Battle
+  [62285] = "Weekly", -- Observing War
+  [62286] = "Weekly", -- Observing Skirmishes
+  [62287] = "Weekly", -- Observing Arenas
+  [62289] = "Weekly", -- Observing Conflict
+
   -- General
   -- Darkmoon Faire
   [7905]  = "Regular", -- Darkmoon Faire referral -- old addon versions misidentified this as monthly
