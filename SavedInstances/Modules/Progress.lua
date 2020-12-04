@@ -41,7 +41,9 @@ end
 
 local function ConquestUpdate(index)
   local data
-  if UnitLevel("player") >= SI.maxLevel then
+  if UnitLevel("player") >= SI.maxLevel and false then
+    -- Note: disable PvP Conquest tracking for now,
+    -- and looking into how to track progress in The Great Vault
     local currentQuestID = QuestUtils_GetCurrentQuestLineQuest(CONQUEST_QUESTLINE_ID)
     local rewardAchieved, lastWeekRewardAchieved, lastWeekRewardClaimed = C_PvP_GetWeeklyChestInfo()
     local rewardWaiting = lastWeekRewardAchieved and not lastWeekRewardClaimed
