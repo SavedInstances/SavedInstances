@@ -186,6 +186,15 @@ local QuestExceptions = {
   [58156] = "Daily", -- Vanquishing the Darkness
 
   -- SL
+  -- "Trading Favors" Heroic Dungeon Weekly
+  [60242] = "Weekly", -- Trading Favors: Necrotic Wake
+  [60243] = "Weekly", -- Trading Favors: Sanguine Depths
+  [60244] = "Weekly", -- Trading Favors: Halls of Atonement
+  [60245] = "Weekly", -- Trading Favors: The Other Side
+  [60246] = "Weekly", -- Trading Favors: Tirna Scithe
+  [60247] = "Weekly", -- Trading Favors: Theater of Pain
+  [60248] = "Weekly", -- Trading Favors: Plaguefall
+  [60249] = "Weekly", -- Trading Favors: Spires of Ascension
   -- "A Valuable Find" Mythic Dungeon Weekly
   [60250] = "Weekly", -- A Valuable Find: Theater of Pain
   [60251] = "Weekly", -- A Valuable Find: Plaguefall
