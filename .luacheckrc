@@ -1172,6 +1172,7 @@ globals = {
 	"C_Trophy.MonumentLoadSelectedTrophyID",
 	"C_Trophy.MonumentRevertAppearanceToSaved",
 	"C_Trophy.MonumentSaveSelection",
+	"C_UIWidgetManager",
 	"C_Vignettes",
 	"C_Vignettes.GetNumVignettes",
 	"C_Vignettes.GetVignetteGUID",
