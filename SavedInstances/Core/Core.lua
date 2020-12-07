@@ -2296,6 +2296,27 @@ hoverTooltip.ShowNZothAssaultTooltip = function (cell, arg, ...)
   finishIndicator()
 end
 
+hoverTooltip.ShowTorghastTooltip = function (cell, arg, ...)
+  -- Should be in Module Progress
+  local toon, index = unpack(arg)
+  local t = SI.db.Toons[toon]
+  if not t or not t.Progress or not t.Progress[index] then return end
+  openIndicator(2, "LEFT", "RIGHT")
+  indicatortip:AddHeader(ClassColorise(t.Class, toon), L["Torghast"])
+
+  local P = SI:GetModule("Progress")
+  for i, data in ipairs(P.TrackedQuest[index].widgetID) do
+    if t.Progress[index]['Available' .. i] then
+      local nameInfo = C_UIWidgetManager.GetTextWithStateWidgetVisualizationInfo(data[1])
+      local nameText = strmatch(nameInfo.text, '|n|cffffffff(.+)|r')
+
+      indicatortip:AddLine(nameText, t.Progress[index]['Level' .. i])
+    end
+  end
+
+  finishIndicator()
+end
+
 hoverTooltip.ShowKeyReportTarget = function (cell, arg, ...)
   openIndicator(2, "LEFT", "RIGHT")
   indicatortip:AddHeader(GOLDFONT..L["Keystone report target"]..FONTEND, SI.db.Tooltip.KeystoneReportTarget)
