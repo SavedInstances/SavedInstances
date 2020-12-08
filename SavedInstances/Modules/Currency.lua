@@ -197,6 +197,10 @@ function Module:UpdateCurrency()
         if tbl.relatedItem then
           ci.relatedItemCount = GetItemCount(tbl.relatedItem.id)
         end
+      elseif idx == 1822 then -- Renown
+        -- plus one to amount and totalMax
+        ci.amount = ci.amount + 1
+        ci.totalMax = ci.totalMax + 1
       end
       ci.season = GetSeasonCurrency(idx)
       if ci.weeklyMax == 0 then ci.weeklyMax = nil end -- don't store useless info
