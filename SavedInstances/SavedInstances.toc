@@ -29,6 +29,7 @@ Core\Config.lua
 Modules\Quest.lua
 
 Modules\BonusRoll.lua
+Modules\Calling.lua
 Modules\Currency.lua
 Modules\Emissary.lua
 Modules\LFR.lua
