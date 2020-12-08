@@ -235,6 +235,21 @@ SI.defaultDB = {
   --   boss = (boolean),
   -- }
 
+  -- Calling
+  -- unlocked = (boolean),
+  -- [Day] = {
+  --   isCompleted = isCompleted,
+  --   expiredTime = expiredTime,
+  --   isOnQuest = isOnQuest,
+  --   questID = questID,
+  --   title = title,
+  --   text = text,
+  --   objectiveType = objectiveType,
+  --   isFinished = isFinished,
+  --   questDone = questDone,
+  --   questNeed = questNeed,
+  -- }
+
   Indicators = {
     D1Indicator = "BLANK", -- indicator: ICON_*, BLANK
     D1Text = "KILLED/TOTAL",
@@ -338,6 +353,7 @@ SI.defaultDB = {
     CombineEmissary = false,
     AbbreviateKeystone = true,
     TrackParagon = true,
+    Calling = true,
     Progress1 = true, -- PvP Conquest
     Progress2 = false, -- Island Weekly
     Progress3 = false, -- Horrific Vision
@@ -1295,6 +1311,7 @@ function SI:UpdateToonData()
   local rating = (GetPersonalRatedInfo and GetPersonalRatedInfo(4))
   t.RBGrating = tonumber(rating) or t.RBGrating
   SI:GetModule("TradeSkill"):ScanItemCDs()
+  local Calling = SI:GetModule("Calling")
   local Progress = SI:GetModule("Progress")
   -- Daily Reset
   if nextreset and nextreset > time() then
@@ -1309,6 +1326,7 @@ function SI:UpdateToonData()
         ti.DailyResetTime = (ti.DailyResetTime and ti.DailyResetTime + 24*3600) or nextreset
       end
     end
+    Calling:OnDailyReset()
     t.DailyResetTime = nextreset
     if not db.DailyResetTime or (db.DailyResetTime < time()) then -- AccountDaily reset
       for id,qi in pairs(db.Quests) do
@@ -1402,6 +1420,7 @@ function SI:UpdateToonData()
       db.Quests[id] = nil
     end
   end
+  Calling:PostRefresh()
   SI:GetModule("Currency"):UpdateCurrency()
   local zone = GetRealZoneText()
   if zone and #zone > 0 then
@@ -3956,6 +3975,53 @@ function SI:ShowTooltip(anchorframe)
                   end
                 end
               end
+            end
+          end
+        end
+      end
+    end
+  end
+
+  if SI.db.Tooltip.Calling or showall then
+    local show
+    for toon, t in cpairs(SI.db.Toons, true) do
+      if t.Calling and t.Calling.unlocked then
+        for day = 1, 3 do
+          if t.Calling[day] and not t.Calling[day].isCompleted then
+            show = true
+            addColumns(columns, toon, tooltip)
+            break
+          end
+        end
+      end
+    end
+    if show then
+      if not firstcategory and SI.db.Tooltip.CategorySpaces then
+        addsep()
+      end
+      show = tooltip:AddLine(YELLOWFONT .. CALLINGS_QUESTS .. FONTEND)
+      for toon, t in cpairs(SI.db.Toons, true) do
+        if t.Calling and t.Calling.unlocked then
+          for day = 1, 3 do
+            local col = columns[toon .. day]
+            local text = ""
+            if t.Calling[day].isCompleted then
+              text = "\124T" .. READY_CHECK_READY_TEXTURE .. ":0|t"
+            elseif not t.Calling[day].isOnQuest then
+              text = "\124cFFFFFF00!\124r"
+            elseif t.Calling[day].isFinished then
+              text = "\124T" .. READY_CHECK_WAITING_TEXTURE .. ":0|t"
+            else
+              if t.Calling[day].objectiveType == 'progressbar' then
+                text = floor(t.Calling[day].questDone / t.Calling[day].questNeed * 100) .. "%"
+              else
+                text = t.Calling[day].questDone .. '/' .. t.Calling[day].questNeed
+              end
+            end
+            if col then
+              -- check if current toon is showing
+              -- don't add columns
+              tooltip:SetCell(show, col, text, "CENTER", 1)
             end
           end
         end
