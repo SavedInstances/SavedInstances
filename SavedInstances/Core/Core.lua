@@ -186,10 +186,10 @@ SI.defaultDB = {
   -- link: string
 
   -- MythicKeyBest
-  -- lastweeklevel: int
   -- ResetTime: expiry
-  -- level: string
-  -- weeklyReward: boolean
+  -- [1-3]: number
+  -- lastCompletedIndex: number
+  -- rewardWaiting: boolean
 
   -- REMOVED
   -- DailyWorldQuest
@@ -1408,11 +1408,11 @@ function SI:UpdateToonData()
   end
   for toon, ti in pairs(SI.db.Toons) do
     if ti.MythicKeyBest and (ti.MythicKeyBest.ResetTime or 0) < time() then
-      if ti.MythicKeyBest.level and ti.MythicKeyBest.level > 0 then
-        ti.MythicKeyBest.LastWeekLevel = ti.MythicKeyBest.level
-        ti.MythicKeyBest.WeeklyReward = true
-      end
-      ti.MythicKeyBest.level = 0
+      ti.MythicKeyBest.rewardWaiting = not not t.MythicKeyBest.lastCompletedIndex
+      ti.MythicKeyBest[1] = nil
+      ti.MythicKeyBest[2] = nil
+      ti.MythicKeyBest[3] = nil
+      ti.MythicKeyBest.lastCompletedIndex = nil
       ti.MythicKeyBest.ResetTime = SI:GetNextWeeklyResetTime()
     end
   end
@@ -3814,11 +3814,7 @@ function SI:ShowTooltip(anchorframe)
     local show = false
     for toon, t in cpairs(SI.db.Toons, true) do
       if t.MythicKeyBest then
-        if t.MythicKeyBest.level and t.MythicKeyBest.level > 0 then
-          show = true
-          addColumns(columns, toon, tooltip)
-        end
-        if t.MythicKeyBest.WeeklyReward then
+        if t.MythicKeyBest.lastCompletedIndex or t.MythicKeyBest.rewardWaiting then
           show = true
           addColumns(columns, toon, tooltip)
         end
@@ -3833,18 +3829,18 @@ function SI:ShowTooltip(anchorframe)
     for toon, t in cpairs(SI.db.Toons, true) do
       if t.MythicKeyBest then
         local keydesc = ""
-        if t.MythicKeyBest.level and t.MythicKeyBest.level > 0 then
-          keydesc = t.MythicKeyBest.level
+        if t.MythicKeyBest.lastCompletedIndex then
+          for index = 1, t.MythicKeyBest.lastCompletedIndex do
+            if t.MythicKeyBest[index] then
+              keydesc = keydesc .. (index > 1 and " / " or "") .. t.MythicKeyBest[index]
+            end
+          end
         end
-        if t.MythicKeyBest.WeeklyReward then
+        if t.MythicKeyBest.rewardWaiting then
           if keydesc == "" then
             keydesc = "0"
           end
-          local lastlevel = ""
-          if t.MythicKeyBest.LastWeekLevel and t.MythicKeyBest.LastWeekLevel > 0 then
-            lastlevel = t.MythicKeyBest.LastWeekLevel
-          end
-          keydesc = keydesc .."(".. lastlevel ..L[" Chest Available"].. ")"
+          keydesc = keydesc .. "(\124T" .. READY_CHECK_WAITING_TEXTURE .. ":0|t)"
         end
         if keydesc ~= "" then
           local col = columns[toon..1]
