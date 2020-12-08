@@ -65,6 +65,7 @@ local currency = {
 
   -- Shadowlands
   1754, -- Argent Commendation
+  1602, -- Conquest
   1792, -- Honor
   1822, -- Renown
   1767, -- Stygia
