@@ -1178,6 +1178,7 @@ globals = {
 	"C_Vignettes.GetNumVignettes",
 	"C_Vignettes.GetVignetteGUID",
 	"C_Vignettes.GetVignetteInfoFromInstanceID",
+	"C_WeeklyRewards",
 	"C_WowTokenPublic",
 	"C_WowTokenPublic.BuyToken",
 	"C_WowTokenPublic.GetCommerceSystemStatus",
