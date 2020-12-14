@@ -1,4 +1,10 @@
+<div align="center">
+  
 # SavedInstances
+
+[![Build Status](https://github.com/SavedInstances/SavedInstances/workflows/CI/badge.svg)](https://github.com/SavedInstances/SavedInstances/actions?workflow=CI)
+
+</div>
 
 An addon that keeps track of the instance/raid lockouts saved against your characters, and related currencies and cooldowns. 
 
@@ -28,6 +34,7 @@ Translators: Apply localization [here](http://www.wowace.com/addons/saved_instan
 Featured in [Hearthcast Podcast #181](http://hearthcast.com/download.php?filename=2013-08-14_ep181.mp3)
 
 ## Known Issues
+
 SavedInstances is pretty good, but it's still not quite perfect. There are currently a few issues:
 
 - When first installed, SavedInstances has no knowledge of your other characters: you'll need to log into each for their information to be recorded
@@ -36,4 +43,5 @@ SavedInstances is pretty good, but it's still not quite perfect. There are curre
 - Tracking for the 10 instance per hour limit uses heuristic detection and hence may occasionally be inaccurate (notably when another player has lead and performs explicit resets), but does a reasonable job for common cases.
 
 ## Usage
+
 SavedInstances will create a new button on the minimap, and you can use it to interact with SavedInstances just fine. The addon can also be displayed using a LibDataBroker-compatible display addon. I personally use Chocolate Bar which works quite well. Finally, you can bind a key or use "/si show" to open a detached window containing the display.
