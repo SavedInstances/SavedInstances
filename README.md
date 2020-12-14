@@ -8,7 +8,8 @@
 
 An addon that keeps track of the instance/raid lockouts saved against your characters, and related currencies and cooldowns. 
 
-SavedInstances has the following features:
+## Features:
+
 - Tooltip display shows current lockouts and data for all your characters, and optionally expired lockouts
 - Secondary tooltip (per-lockout) shows lockout details including bosses available, lock status and time remaining, and can be linked into chat
 - Tracks the honor points and conquest points of all your characters, including weekly caps
@@ -45,3 +46,7 @@ SavedInstances is pretty good, but it's still not quite perfect. There are curre
 ## Usage
 
 SavedInstances will create a new button on the minimap, and you can use it to interact with SavedInstances just fine. The addon can also be displayed using a LibDataBroker-compatible display addon. I personally use Chocolate Bar which works quite well. Finally, you can bind a key or use "/si show" to open a detached window containing the display.
+
+### Multiple Accounts
+
+If you are playing with multiple WoW accounts but want to keep track of all of them, you need to use [Symlinks](https://en.wikipedia.org/wiki/Symbolic_link) on your saved variable files.
