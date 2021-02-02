@@ -236,6 +236,18 @@ local QuestExceptions = {
   [62286] = "Weekly", -- Observing Skirmishes
   [62287] = "Weekly", -- Observing Arenas
   [62289] = "Weekly", -- Observing Conflict
+  -- Ve'nari Weekly
+  [60622] = "Weekly", -- Eye of the Scryer
+  [60646] = "Weekly", -- Misery Business
+  [60762] = "Weekly", -- Death Motes
+  [60775] = "Weekly", -- A Suitable Demise
+  [61075] = "Weekly", -- A Spark of Light
+  [61088] = "Weekly", -- Dust to Dust
+  [61104] = "Weekly", -- Grathalax, the Extractor
+  [61765] = "Weekly", -- Words of Warding
+  [62214] = "Weekly", -- Forces of Perdition
+  [62234] = "Weekly", -- Power of the Colossus
+  [63206] = "Weekly", -- Soulless Husks
 
   -- General
   -- Darkmoon Faire
