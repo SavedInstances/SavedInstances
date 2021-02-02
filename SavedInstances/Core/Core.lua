@@ -1923,6 +1923,9 @@ hoverTooltip.ShowAccountSummary = function (cell, arg, ...)
   indicatortip:SetCell(indicatortip:AddLine(),1,
     string.format(L["These are the instances that count towards the %i instances per hour account limit, and the time until they expire."],
       SI.histLimit),"LEFT",2,nil,nil,nil,250)
+
+  indicatortip:AddLine("")
+  indicatortip:SetCell(indicatortip:AddLine(), 1, L["|cffffff00Click|r to open weekly rewards"], "LEFT", indicatortip:GetColumnCount())
   finishIndicator()
 end
 
@@ -3221,6 +3224,15 @@ end
 -----------------------------------------------------------------------------------------------
 -- tooltip event handlers
 
+local function OpenWeeklyRewards()
+  if WeeklyRewardsFrame and WeeklyRewardsFrame:IsVisible() then return end
+
+  if not IsAddOnLoaded('Blizzard_WeeklyRewards') then
+    LoadAddOn('Blizzard_WeeklyRewards')
+  end
+  WeeklyRewardsFrame:Show()
+end
+
 local function OpenLFD(self, instanceid, button)
   if LFDParentFrame and LFDParentFrame:IsVisible() and LFDQueueFrame.type ~= instanceid then
   -- changing entries
@@ -3252,6 +3264,10 @@ local function OpenLFS(self, instanceid, button)
   if ScenarioFinderFrame and ScenarioFinderFrame:IsVisible() and ScenarioQueueFrame_SetType then
     ScenarioQueueFrame_SetType(instanceid)
   end
+end
+
+local function ReportKeys(self, _, button)
+  SI:GetModule("MythicPlus"):Keys()
 end
 
 local function OpenCurrency(self, _, button)
@@ -3334,6 +3350,7 @@ function SI:ShowTooltip(anchorframe)
   local headLine = tooltip:AddHeader(headText)
   tooltip:SetCellScript(headLine, 1, "OnEnter", hoverTooltip.ShowAccountSummary )
   tooltip:SetCellScript(headLine, 1, "OnLeave", CloseTooltips)
+  tooltip:SetCellScript(headLine, 1, "OnMouseDown", OpenWeeklyRewards)
   SI:UpdateToonData()
   local columns = localarr("columns")
   for toon,_ in cpairs(columnCache[showall]) do
@@ -3791,9 +3808,7 @@ function SI:ShowTooltip(anchorframe)
       show = tooltip:AddLine(YELLOWFONT .. L["Mythic Keystone"] .. FONTEND)
       tooltip:SetCellScript(show, 1, "OnEnter", hoverTooltip.ShowKeyReportTarget)
       tooltip:SetCellScript(show, 1, "OnLeave", CloseTooltips)
-      tooltip:SetCellScript(show, 1, "OnMouseDown", function()
-        SI:GetModule("MythicPlus"):Keys()
-      end, nil)
+      tooltip:SetCellScript(show, 1, "OnMouseDown", ReportKeys)
     end
     for toon, t in cpairs(SI.db.Toons, true) do
       if t.MythicKey and t.MythicKey.link then
