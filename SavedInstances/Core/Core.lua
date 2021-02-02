@@ -1312,9 +1312,9 @@ function SI:UpdateToonData()
   if IL and tonumber(IL) and tonumber(IL) > 0 then -- can fail during logout
     t.IL, t.ILe = tonumber(IL), tonumber(ILe)
   end
-  t.Arena2v2rating = tonumber(GetPersonalRatedInfo(1)) or t.Arena2v2rating
-  t.Arena3v3rating = tonumber(GetPersonalRatedInfo(2)) or t.Arena3v3rating
-  t.RBGrating = tonumber(GetPersonalRatedInfo(4)) or t.RBGrating
+  t.Arena2v2rating = tonumber(GetPersonalRatedInfo(1), 10) or t.Arena2v2rating
+  t.Arena3v3rating = tonumber(GetPersonalRatedInfo(2), 10) or t.Arena3v3rating
+  t.RBGrating = tonumber(GetPersonalRatedInfo(4), 10) or t.RBGrating
   SI:GetModule("TradeSkill"):ScanItemCDs()
   local Calling = SI:GetModule("Calling")
   local Progress = SI:GetModule("Progress")
