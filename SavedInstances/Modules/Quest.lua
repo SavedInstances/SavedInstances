@@ -51,6 +51,13 @@ local _specialQuests = {
   [55901] = { daily=true, zid=1462, }, -- Rustbolt Rebellion
   [56141] = { daily=true, zid=1462, }, -- Security First
 
+  -- Assault Coffers
+  [57628] = { name=L["Cursed Coffer"] },      -- Cursed Coffer
+  [57214] = { name=L["Mogu Strongbox"] },     -- Mogu Strongbox
+  [58137] = { name=L["Infested Strongbox"] }, -- Infested Strongbox
+  [55692] = { name=L["Amathet Reliquary"] },  -- Amathet Reliquary
+  [58770] = { name=L["Ambered Coffer"] },     -- Ambered Coffer
+
   -- Old Vanilla Bosses during Anniversary Event
   [47461] = { daily=true, name=L["Lord Kazzak"] },          -- Lord Kazzak
   [47462] = { daily=true, name=L["Azuregos"] },             -- Azuregos
