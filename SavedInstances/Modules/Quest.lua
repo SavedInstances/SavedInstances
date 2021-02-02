@@ -165,6 +165,19 @@ local QuestExceptions = {
   [59017] = "Weekly", -- Call to Arms: Vale of Eternal Blossoms (Horde)
   [59019] = "Weekly", -- Call to Arms: Uldum (Alliance)
   [59016] = "Weekly", -- Call to Arms: Uldum (Horde)
+  -- BfA Zone Invasions
+  [51982] = "Daily", -- Storm's Rage
+  [53701] = "Daily", -- A Drust Cause
+  [53711] = "Daily", -- A Sound Defense
+  [53883] = "Daily", -- Shores of Zuldazar
+  [53885] = "Daily", -- Isolated Victory
+  [53939] = "Daily", -- Breaching Boralus
+  [54132] = "Daily", -- Horde of Heroes
+  [54134] = "Daily", -- Many Fine Heroes
+  [54135] = "Daily", -- Romp in the Swamp
+  [54136] = "Daily", -- March on the Marsh
+  [54137] = "Daily", -- In Every Dark Corner
+  [54138] = "Daily", -- Ritual Rampage
   -- Nazjatar
   [55121] = "Weekly", -- The Laboratory of Mardivas
   [56969] = "Weekly", -- Ancient Reefwalker Bark
