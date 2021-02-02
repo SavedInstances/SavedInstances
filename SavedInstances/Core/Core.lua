@@ -3225,12 +3225,12 @@ end
 -- tooltip event handlers
 
 local function OpenWeeklyRewards()
-  if WeeklyRewardsFrame and WeeklyRewardsFrame:IsVisible() then return end
+  if _G.WeeklyRewardsFrame and _G.WeeklyRewardsFrame:IsVisible() then return end
 
   if not IsAddOnLoaded('Blizzard_WeeklyRewards') then
     LoadAddOn('Blizzard_WeeklyRewards')
   end
-  WeeklyRewardsFrame:Show()
+  _G.WeeklyRewardsFrame:Show()
 end
 
 local function OpenLFD(self, instanceid, button)
