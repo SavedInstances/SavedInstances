@@ -1447,8 +1447,8 @@ function SI:UpdateToonData()
       t.XP = nil
       t.RestXP = nil
     end
+    t.Warmode = C_PvP.IsWarModeDesired()
   end
-  t.Warmode = C_PvP.IsWarModeDesired()
 
   t.LastSeen = time()
 end
