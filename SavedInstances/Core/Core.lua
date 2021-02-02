@@ -148,6 +148,9 @@ SI.defaultDB = {
   -- MaxXP: integer
   -- XP: integer
   -- RestXP: integer
+  -- Arena2v2rating: integer
+  -- Arena3v3rating: integer
+  -- RBGrating: integer
 
   -- currency: key: currencyID  value:
   -- amount: integer
@@ -1309,8 +1312,9 @@ function SI:UpdateToonData()
   if IL and tonumber(IL) and tonumber(IL) > 0 then -- can fail during logout
     t.IL, t.ILe = tonumber(IL), tonumber(ILe)
   end
-  local rating = (GetPersonalRatedInfo and GetPersonalRatedInfo(4))
-  t.RBGrating = tonumber(rating) or t.RBGrating
+  t.Arena2v2rating = tonumber(GetPersonalRatedInfo(1)) or t.Arena2v2rating
+  t.Arena3v3rating = tonumber(GetPersonalRatedInfo(2)) or t.Arena3v3rating
+  t.RBGrating = tonumber(GetPersonalRatedInfo(4)) or t.RBGrating
   SI:GetModule("TradeSkill"):ScanItemCDs()
   local Calling = SI:GetModule("Calling")
   local Progress = SI:GetModule("Progress")
@@ -1580,8 +1584,14 @@ hoverTooltip.ShowToonTooltip = function (cell, arg, ...)
     indicatortip:AddLine(COMBAT_XP_GAIN, format("%.0f%% + %.0f%%", t.XP / t.MaxXP * 100, percent))
   end
   indicatortip:AddLine(STAT_AVERAGE_ITEM_LEVEL,("%d "):format(t.IL or 0)..STAT_AVERAGE_ITEM_LEVEL_EQUIPPED:format(t.ILe or 0))
+  if t.Arena2v2rating and t.Arena2v2rating > 0 then
+    indicatortip:AddLine(ARENA_2V2 .. ARENA_RATING, t.Arena2v2rating)
+  end
+  if t.Arena3v3rating and t.Arena3v3rating > 0 then
+    indicatortip:AddLine(ARENA_3V3 .. ARENA_RATING, t.Arena3v3rating)
+  end
   if t.RBGrating and t.RBGrating > 0 then
-    indicatortip:AddLine(BATTLEGROUND_RATING, t.RBGrating)
+    indicatortip:AddLine(BG_RATING_ABBR, t.RBGrating)
   end
   if t.Money then
     indicatortip:AddLine(MONEY,SI:formatNumber(t.Money,true))
@@ -2432,6 +2442,7 @@ function SI:OnInitialize()
       db.QuestDB[escope][qid] = val
     end
   end
+  RequestRatedInfo()
   RequestRaidInfo() -- get lockout data
   RequestLFDPlayerLockInfo()
   SI.dataobject = SI.Libs.LDB and SI.Libs.LDB:NewDataObject("SavedInstances", {
@@ -2470,9 +2481,16 @@ function SI:OnEnable()
   self:RegisterEvent("CHAT_MSG_SYSTEM", "CheckSystemMessage")
   self:RegisterEvent("CHAT_MSG_CURRENCY", "CheckSystemMessage")
   self:RegisterEvent("CHAT_MSG_LOOT", "CheckSystemMessage")
-  self:RegisterEvent("CHAT_MSG_COMBAT_XP_GAIN", function() SI:UpdateToonData() end)
-  self:RegisterEvent("PLAYER_UPDATE_RESTING", function() SI:UpdateToonData() end)
-  self:RegisterEvent("PLAYER_ENTERING_WORLD", function() SI:UpdateToonData(); C_Timer.After(1, RequestRaidInfo) end)
+  self:RegisterEvent("CHAT_MSG_COMBAT_XP_GAIN", "UpdateToonData")
+  self:RegisterEvent("PLAYER_UPDATE_RESTING", "UpdateToonData")
+  self:RegisterEvent("PVP_RATED_STATS_UPDATE", "UpdateToonData")
+  self:RegisterEvent("ZONE_CHANGED_NEW_AREA", RequestRatedInfo)
+  self:RegisterEvent("PLAYER_ENTERING_WORLD", function()
+    RequestRatedInfo()
+    C_Timer.After(1, RequestRaidInfo)
+
+    SI:UpdateToonData()
+  end)
   -- self:RegisterBucketEvent("PLAYER_ENTERING_WORLD", 1, RequestRaidInfo)
   self:RegisterBucketEvent("LFG_LOCK_INFO_RECEIVED", 1, RequestRaidInfo)
   self:RegisterEvent("PLAYER_LOGOUT", function() SI.logout = true ; SI:UpdateToonData() end) -- update currency spent
