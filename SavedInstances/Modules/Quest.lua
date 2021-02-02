@@ -213,9 +213,10 @@ local QuestExceptions = {
 
   -- General
   -- Darkmoon Faire
-  [7905]  = "Regular", -- Darkmoon Faire referral -- old addon versions misidentified this as monthly
-  [7926]  = "Regular", -- Darkmoon Faire referral
-  [37819] = "Regular", -- Darkmoon Faire races referral
+  [7905]  = "Regular",  -- Darkmoon Faire referral -- old addon versions misidentified this as monthly
+  [7926]  = "Regular",  -- Darkmoon Faire referral
+  [37819] = "Regular",  -- Darkmoon Faire races referral
+  [47767] = "Darkmoon", -- Death Metal Knight
 
   -- Blingtron
   -- update `ShowQuestTooltip` in SavedInstances.lua when updating Blingtron quest list
