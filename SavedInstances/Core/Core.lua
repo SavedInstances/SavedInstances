@@ -1725,7 +1725,7 @@ hoverTooltip.ShowEmissarySummary = function (cell, arg, ...)
     else
       local globalInfo = SI.db.Emissary.Expansion[expansionLevel][day]
       local merge = (globalInfo.questID.Alliance == globalInfo.questID.Horde) and true or false
-      local header, fac, toon, t = false
+      local header = false
       for fac, _ in pairs(tbl) do
         if merge == false then header = false end
         for toon, t in pairs(SI.db.Toons) do
@@ -3865,7 +3865,7 @@ function SI:ShowTooltip(anchorframe)
     end
   end
 
-  local firstEmissary, expansionLevel = true
+  local firstEmissary = true
   for expansionLevel, _ in pairs(SI.Emissaries) do
     if SI.db.Tooltip["Emissary" .. expansionLevel] or showall then
       local day, tbl, show
@@ -3905,7 +3905,8 @@ function SI:ShowTooltip(anchorframe)
               for day = 1, 3 do
                 tbl = t.Emissary[expansionLevel].days[day]
                 if tbl then
-                  local col, text = columns[toon..day]
+                  local col = columns[toon .. day]
+                  local text = ""
                   if tbl.isComplete == true then
                     text = "\124T"..READY_CHECK_READY_TEXTURE..":0|t"
                   elseif tbl.isFinish == true then
@@ -3963,7 +3964,8 @@ function SI:ShowTooltip(anchorframe)
                 if t.Emissary and t.Emissary[expansionLevel] and t.Emissary[expansionLevel].unlocked then
                   tbl = t.Emissary[expansionLevel].days[day]
                   if tbl then
-                    local col, text = columns[toon..1]
+                    local col = columns[toon .. 1]
+                    local text = ""
                     if tbl.isComplete == true then
                       text = "\124T"..READY_CHECK_READY_TEXTURE..":0|t"
                     elseif tbl.isFinish == true then
