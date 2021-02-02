@@ -58,6 +58,12 @@ local _specialQuests = {
   [55692] = { name=L["Amathet Reliquary"] },  -- Amathet Reliquary
   [58770] = { name=L["Ambered Coffer"] },     -- Ambered Coffer
 
+  -- Beastwarrens Hunts
+  [63180] = { name=L["Hunt: Shadehounds"] },        -- Hunt: Shadehounds
+  [63194] = { name=L["Hunt: Winged Soul Eaters"] }, -- Hunt: Winged Soul Eaters
+  [63198] = { name=L["Hunt: Death Elementals"] },   -- Hunt: Death Elementals
+  [63199] = { name=L["Hunt: Soul Eaters"] },        -- Hunt: Soul Eaters
+
   -- Old Vanilla Bosses during Anniversary Event
   [47461] = { daily=true, name=L["Lord Kazzak"] },          -- Lord Kazzak
   [47462] = { daily=true, name=L["Azuregos"] },             -- Azuregos
