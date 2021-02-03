@@ -357,6 +357,7 @@ SI.defaultDB = {
     AbbreviateKeystone = true,
     TrackParagon = true,
     Calling = true,
+    CallingShowCompleted = true,
     Progress1 = true, -- PvP Conquest
     Progress2 = false, -- Island Weekly
     Progress3 = false, -- Horrific Vision
@@ -4021,7 +4022,7 @@ function SI:ShowTooltip(anchorframe)
     for toon, t in cpairs(SI.db.Toons, true) do
       if t.Calling and t.Calling.unlocked then
         for day = 1, 3 do
-          if t.Calling[day] and not t.Calling[day].isCompleted then
+          if showall or SI.db.Tooltip.CallingShowCompleted or (t.Calling[day] and not t.Calling[day].isCompleted) then
             show = true
             addColumns(columns, toon, tooltip)
             break
