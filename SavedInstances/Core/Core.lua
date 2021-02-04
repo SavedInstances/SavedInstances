@@ -358,6 +358,7 @@ SI.defaultDB = {
     TrackParagon = true,
     Calling = true,
     CallingShowCompleted = true,
+    CombineCalling = true,
     Progress1 = true, -- PvP Conquest
     Progress2 = false, -- Island Weekly
     Progress3 = false, -- Horrific Vision
@@ -4023,9 +4024,10 @@ function SI:ShowTooltip(anchorframe)
       if t.Calling and t.Calling.unlocked then
         for day = 1, 3 do
           if showall or SI.db.Tooltip.CallingShowCompleted or (t.Calling[day] and not t.Calling[day].isCompleted) then
-            show = true
-            addColumns(columns, toon, tooltip)
-            break
+            if not show then show = {} end
+            if not show[day] or show[day] == true then
+              show[day] = t.Calling[day] and t.Calling[day].title or true
+            end
           end
         end
       end
@@ -4034,29 +4036,76 @@ function SI:ShowTooltip(anchorframe)
       if SI.db.Tooltip.CategorySpaces then
         addsep()
       end
-      show = tooltip:AddLine(YELLOWFONT .. CALLINGS_QUESTS .. FONTEND)
-      for toon, t in cpairs(SI.db.Toons, true) do
-        if t.Calling and t.Calling.unlocked then
-          for day = 1, 3 do
-            local col = columns[toon .. day]
-            local text = ""
-            if t.Calling[day].isCompleted then
-              text = "\124T" .. READY_CHECK_READY_TEXTURE .. ":0|t"
-            elseif not t.Calling[day].isOnQuest then
-              text = "\124cFFFFFF00!\124r"
-            elseif t.Calling[day].isFinished then
-              text = "\124T" .. READY_CHECK_WAITING_TEXTURE .. ":0|t"
-            else
-              if t.Calling[day].objectiveType == 'progressbar' then
-                text = floor(t.Calling[day].questDone / t.Calling[day].questNeed * 100) .. "%"
+      if SI.db.Tooltip.CombineCalling then
+        show = tooltip:AddLine(GOLDFONT .. CALLINGS_QUESTS .. FONTEND)
+        for toon, t in cpairs(SI.db.Toons, true) do
+          if t.Calling and t.Calling.unlocked then
+            for day = 1, 3 do
+              local col = columns[toon .. day]
+              local text = ""
+              if t.Calling[day].isCompleted then
+                text = "\124T" .. READY_CHECK_READY_TEXTURE .. ":0|t"
+              elseif not t.Calling[day].isOnQuest then
+                text = "\124cFFFFFF00!\124r"
+              elseif t.Calling[day].isFinished then
+                text = "\124T" .. READY_CHECK_WAITING_TEXTURE .. ":0|t"
               else
-                text = t.Calling[day].questDone .. '/' .. t.Calling[day].questNeed
+                if t.Calling[day].objectiveType == 'progressbar' then
+                  text = floor(t.Calling[day].questDone / t.Calling[day].questNeed * 100) .. "%"
+                else
+                  text = t.Calling[day].questDone .. '/' .. t.Calling[day].questNeed
+                end
+              end
+              if col then
+                -- check if current toon is showing
+                -- don't add columns
+                tooltip:SetCell(show, col, text, "CENTER", 1)
               end
             end
-            if col then
-              -- check if current toon is showing
-              -- don't add columns
-              tooltip:SetCell(show, col, text, "CENTER", 1)
+          end
+        end
+      else
+        if SI.db.Tooltip.ShowCategories then
+          tooltip:AddLine(YELLOWFONT .. CALLINGS_QUESTS .. FONTEND)
+        end
+        for day = 1, 3 do
+          if show[day] then
+            local name = show[day]
+            if name == true then
+              -- fail to fetch quest title
+              name = L["Calling Missing"]
+              for _, t in pairs(SI.db.Toons) do
+                if t.Calling and t.Calling[day] and t.Calling[day].title then
+                  name = t.Calling[day].title
+                  break
+                end
+              end
+            end
+            local line = tooltip:AddLine(GOLDFONT .. name .. " (+" .. (day - 1) .. " " .. L["Day"] .. ")" .. FONTEND)
+
+            for toon, t in cpairs(SI.db.Toons, true) do
+              if t.Calling and t.Calling.unlocked then
+                local col = columns[toon .. 1]
+                local text = ""
+                if t.Calling[day].isCompleted then
+                  text = "\124T" .. READY_CHECK_READY_TEXTURE .. ":0|t"
+                elseif not t.Calling[day].isOnQuest then
+                  text = "\124cFFFFFF00!\124r"
+                elseif t.Calling[day].isFinished then
+                  text = "\124T" .. READY_CHECK_WAITING_TEXTURE .. ":0|t"
+                else
+                  if t.Calling[day].objectiveType == 'progressbar' then
+                    text = floor(t.Calling[day].questDone / t.Calling[day].questNeed * 100) .. "%"
+                  else
+                    text = t.Calling[day].questDone .. '/' .. t.Calling[day].questNeed
+                  end
+                end
+                if col then
+                  -- check if current toon is showing
+                  -- don't add columns
+                  tooltip:SetCell(show, col, text, "CENTER", 1)
+                end
+              end
             end
           end
         end

@@ -490,6 +490,11 @@ function Config:BuildOptions()
             name = L["Show when completed"],
             desc = L["Show calling line when all quests completed"],
           },
+          CombineCalling = {
+            type = "toggle",
+            order = 49.2,
+            name = L["Combine Callings"],
+          },
           BindHeader = {
             order = -0.6,
             type = "header",
