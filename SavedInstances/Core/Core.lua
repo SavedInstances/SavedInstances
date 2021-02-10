@@ -4103,7 +4103,7 @@ function SI:ShowTooltip(anchorframe)
                 if col then
                   -- check if current toon is showing
                   -- don't add columns
-                  tooltip:SetCell(show, col, text, "CENTER", 1)
+                  tooltip:SetCell(line, col, text, "CENTER", maxcol)
                 end
               end
             end
