@@ -4069,7 +4069,7 @@ function SI:ShowTooltip(anchorframe)
         addsep()
       end
       if SI.db.Tooltip.CombineCalling then
-        show = tooltip:AddLine(GOLDFONT .. CALLINGS_QUESTS .. FONTEND)
+        local line = tooltip:AddLine(GOLDFONT .. CALLINGS_QUESTS .. FONTEND)
         for toon, t in cpairs(SI.db.Toons, true) do
           if t.Calling and t.Calling.unlocked then
             for day = 1, 3 do
@@ -4091,7 +4091,9 @@ function SI:ShowTooltip(anchorframe)
               if col then
                 -- check if current toon is showing
                 -- don't add columns
-                tooltip:SetCell(show, col, text, "CENTER", 1)
+                tooltip:SetCell(line, col, text, "CENTER", 1)
+                tooltip:SetCellScript(line, col, "OnEnter", hoverTooltip.ShowCallingTooltip, {day, toon})
+                tooltip:SetCellScript(line, col, "OnLeave", CloseTooltips)
               end
             end
           end
