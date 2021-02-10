@@ -1836,8 +1836,16 @@ hoverTooltip.ShowCallingTooltip = function (cell, arg, ...)
     end
   end
   indicatortip:AddLine(ClassColorise(db.Toons[toon].Class, toon), text)
-  text = info.title
   indicatortip:AddLine()
+  text = info.title
+  if not text then
+    for _, t in pairs(SI.db.Toons) do
+      if t.Calling and t.Calling[day] and t.Calling[day].title then
+        text = t.Calling[day].title
+        break
+      end
+    end
+  end
   indicatortip:SetCell(2, 1, text, "LEFT", 2)
   if info.questReward and info.questReward.itemName then
     text = "|c" .. select(4, GetItemQualityColor(info.questReward.quality)) ..
