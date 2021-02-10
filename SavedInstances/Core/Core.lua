@@ -1816,6 +1816,38 @@ hoverTooltip.ShowEmissaryTooltip = function (cell, arg, ...)
   finishIndicator()
 end
 
+hoverTooltip.ShowCallingTooltip = function (cell, arg, ...)
+  local day, toon = unpack(arg)
+  local info = db.Toons[toon].Calling[day]
+  if not info then return end
+  openIndicator(2, "LEFT", "RIGHT")
+  local text
+  if info.isCompleted == true then
+    text = "\124T"..READY_CHECK_READY_TEXTURE..":0|t"
+  elseif not info.isOnQuest then
+    text = "\124cFFFFFF00!\124r"
+  elseif info.isFinished == true then
+    text = "\124T"..READY_CHECK_WAITING_TEXTURE..":0|t"
+  else
+    if info.objectiveType == 'progressbar' then
+      text = floor(info.questDone / info.questNeed * 100) .. "%"
+    else
+      text = info.questDone .. '/' .. info.questNeed
+    end
+  end
+  indicatortip:AddLine(ClassColorise(db.Toons[toon].Class, toon), text)
+  text = info.title
+  indicatortip:AddLine()
+  indicatortip:SetCell(2, 1, text, "LEFT", 2)
+  if info.questReward and info.questReward.itemName then
+    text = "|c" .. select(4, GetItemQualityColor(info.questReward.quality)) ..
+           "[" .. info.questReward.itemName .. "]" .. FONTEND
+    indicatortip:AddLine()
+    indicatortip:SetCell(3, 1, text, "RIGHT", 2)
+  end
+  finishIndicator()
+end
+
 hoverTooltip.ShowParagonTooltip = function (cell, arg, ...)
   local toon = arg
   local t = SI.db.Toons[toon]
@@ -4104,6 +4136,8 @@ function SI:ShowTooltip(anchorframe)
                   -- check if current toon is showing
                   -- don't add columns
                   tooltip:SetCell(line, col, text, "CENTER", maxcol)
+                  tooltip:SetCellScript(line, col, "OnEnter", hoverTooltip.ShowCallingTooltip, {day, toon})
+                  tooltip:SetCellScript(line, col, "OnLeave", CloseTooltips)
                 end
               end
             end
