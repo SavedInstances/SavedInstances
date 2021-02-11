@@ -251,6 +251,10 @@ SI.defaultDB = {
   --   isFinished = isFinished,
   --   questDone = questDone,
   --   questNeed = questNeed,
+  --   questReward = {
+  --     itemName = itemName,
+  --     quality = quality,
+  --   },
   -- }
 
   Indicators = {
@@ -1846,7 +1850,7 @@ hoverTooltip.ShowCallingTooltip = function (cell, arg, ...)
       end
     end
   end
-  indicatortip:SetCell(2, 1, text, "LEFT", 2)
+  indicatortip:SetCell(2, 1, text or L["Calling Missing"], "LEFT", 2)
   if info.questReward and info.questReward.itemName then
     text = "|c" .. select(4, GetItemQualityColor(info.questReward.quality)) ..
            "[" .. info.questReward.itemName .. "]" .. FONTEND
