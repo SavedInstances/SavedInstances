@@ -78,7 +78,7 @@ function Module:COVENANT_CALLINGS_UPDATED(_, callings)
         if numQuestRewards > 0 then
           local itemName, _, _, quality = GetQuestLogRewardInfo(1, data.questID)
           if itemName then
-            t.Calling[day].questReward = {}
+            t.Calling[day].questReward = t.Calling[day].questReward and wipe(t.Calling[day].questReward) or {}
             t.Calling[day].questReward.itemName = itemName
             t.Calling[day].questReward.quality = quality
           end
