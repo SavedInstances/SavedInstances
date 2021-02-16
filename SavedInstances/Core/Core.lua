@@ -1881,18 +1881,11 @@ hoverTooltip.ShowParagonTooltip = function (cell, arg, ...)
 end
 
 hoverTooltip.ShowMythicPlusTooltip = function (cell, arg, ...)
-  local toon = arg
+  local toon, keydesc = unpack(arg)
   local t = SI.db.Toons[toon]
   if not t or not t.MythicKeyBest then return end
   openIndicator(2, "LEFT", "RIGHT")
-  local text = ""
-  if t.MythicKeyBest.lastCompletedIndex then
-    for index = 1, t.MythicKeyBest.lastCompletedIndex do
-      if t.MythicKeyBest[index] then
-        text = text .. (index > 1 and " / " or "") .. t.MythicKeyBest[index]
-      end
-    end
-  end
+  local text = keydesc or ""
   indicatortip:AddHeader(ClassColorise(t.Class, toon), text)
   if t.MythicKeyBest.runHistory then
     for i = 1, #t.MythicKeyBest.runHistory do
@@ -3958,14 +3951,15 @@ function SI:ShowTooltip(anchorframe)
         end
         if t.MythicKeyBest.rewardWaiting then
           if keydesc == "" then
-            keydesc = "0"
+            keydesc = "\124T" .. READY_CHECK_WAITING_TEXTURE .. ":0|t"
+          else
+            keydesc = keydesc .. "(\124T" .. READY_CHECK_WAITING_TEXTURE .. ":0|t)"
           end
-          keydesc = keydesc .. "(\124T" .. READY_CHECK_WAITING_TEXTURE .. ":0|t)"
         end
         if keydesc ~= "" then
           local col = columns[toon..1]
           tooltip:SetCell(show, col, keydesc, "CENTER", maxcol)
-          tooltip:SetCellScript(show, col, "OnEnter", hoverTooltip.ShowMythicPlusTooltip, toon)
+          tooltip:SetCellScript(show, col, "OnEnter", hoverTooltip.ShowMythicPlusTooltip, {toon, keydesc})
           tooltip:SetCellScript(show, col, "OnLeave", CloseTooltips)
         end
       end
