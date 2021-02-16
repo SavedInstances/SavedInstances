@@ -193,6 +193,11 @@ SI.defaultDB = {
   -- [1-3]: number
   -- lastCompletedIndex: number
   -- rewardWaiting: boolean
+  -- [runHistory]: [
+  --   level,
+  --   name,
+  --   rewardLevel,
+  -- }
 
   -- REMOVED
   -- DailyWorldQuest
@@ -1423,6 +1428,7 @@ function SI:UpdateToonData()
       ti.MythicKeyBest[2] = nil
       ti.MythicKeyBest[3] = nil
       ti.MythicKeyBest.lastCompletedIndex = nil
+      ti.MythicKeyBest.runHistory = nil
       ti.MythicKeyBest.ResetTime = SI:GetNextWeeklyResetTime()
     end
   end
@@ -1870,6 +1876,38 @@ hoverTooltip.ShowParagonTooltip = function (cell, arg, ...)
     local name = GetFactionInfoByID(v)
     indicatortip:AddLine()
     indicatortip:SetCell(k + 1, 1, name, "RIGHT", 2)
+  end
+  finishIndicator()
+end
+
+hoverTooltip.ShowMythicPlusTooltip = function (cell, arg, ...)
+  local toon = arg
+  local t = SI.db.Toons[toon]
+  if not t or not t.MythicKeyBest then return end
+  openIndicator(2, "LEFT", "RIGHT")
+  local text = ""
+  if t.MythicKeyBest.lastCompletedIndex then
+    for index = 1, t.MythicKeyBest.lastCompletedIndex do
+      if t.MythicKeyBest[index] then
+        text = text .. (index > 1 and " / " or "") .. t.MythicKeyBest[index]
+      end
+    end
+  end
+  indicatortip:AddHeader(ClassColorise(t.Class, toon), text)
+  local runHistory = t.MythicKeyBest.runHistory
+  for i = 1, #runHistory do
+    local runInfo = runHistory[i];
+    if runInfo then
+      if runInfo.level and runInfo.name and runInfo.rewardLevel then
+        indicatortip:AddLine()
+        text = string.format("(%3$d) %1$d - %2$s", runInfo.level, runInfo.name, runInfo.rewardLevel)
+        -- these are the thresholds that will populate the great vault
+        if i == 1 or i == 4 or i == 10 then
+          text = GREENFONT..text..FONTEND
+        end
+        indicatortip:SetCell(1 + i, 1, text, "LEFT", 2)
+      end
+    end
   end
   finishIndicator()
 end
@@ -3902,7 +3940,7 @@ function SI:ShowTooltip(anchorframe)
       end
     end
     if show then
-      if SI.db.Tooltip.CategorySpaces then
+      if SI.db.Tooltip.CategorySpaces and not (SI.db.Tooltip.MythicKey or showall) then
         addsep()
       end
       show = tooltip:AddLine(YELLOWFONT .. L["Mythic Key Best"] .. FONTEND)
@@ -3925,7 +3963,9 @@ function SI:ShowTooltip(anchorframe)
         end
         if keydesc ~= "" then
           local col = columns[toon..1]
-          tooltip:SetCell(show, col, keydesc , "CENTER",maxcol)
+          tooltip:SetCell(show, col, keydesc, "CENTER", maxcol)
+          tooltip:SetCellScript(show, col, "OnEnter", hoverTooltip.ShowMythicPlusTooltip, toon)
+          tooltip:SetCellScript(show, col, "OnLeave", CloseTooltips)
         end
       end
     end

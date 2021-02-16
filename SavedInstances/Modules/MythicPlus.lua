@@ -9,6 +9,7 @@ local ipairs, sort, strsplit, tonumber, select, time, wipe = ipairs, sort, strsp
 local C_ChallengeMode_GetMapUIInfo = C_ChallengeMode.GetMapUIInfo
 local C_MythicPlus_GetRunHistory = C_MythicPlus.GetRunHistory
 local C_MythicPlus_RequestMapInfo = C_MythicPlus.RequestMapInfo
+local C_MythicPlus_GetRewardLevelFromKeystoneLevel = C_MythicPlus.GetRewardLevelFromKeystoneLevel
 local C_WeeklyRewards_CanClaimRewards = C_WeeklyRewards.CanClaimRewards
 local C_WeeklyRewards_GetActivities = C_WeeklyRewards.GetActivities
 local C_WeeklyRewards_HasAvailableRewards = C_WeeklyRewards.HasAvailableRewards
@@ -90,7 +91,11 @@ do
   end
 
   local function runCompare(left, right)
-    return left.level > right.level
+    if left.level == right.level then
+      return left.mapChallengeModeID < right.mapChallengeModeID;
+    else
+      return left.level > right.level;
+    end
   end
 
   function Module:RefreshMythicWeeklyBestInfo()
@@ -116,6 +121,21 @@ do
 
     local runHistory = C_MythicPlus_GetRunHistory(false, true)
     sort(runHistory, runCompare)
+    for i = 1, #runHistory do
+      if runHistory[i] then
+        if i <= 10 then
+          runHistory[i] = {
+            level = runHistory[i].level,
+            name = C_ChallengeMode_GetMapUIInfo(runHistory[i].mapChallengeModeID),
+            rewardLevel = C_MythicPlus_GetRewardLevelFromKeystoneLevel(runHistory[i].level),
+          }
+        else
+          -- only care about top 10 runs
+          runHistory[i] = nil
+        end
+      end
+    end
+    t.MythicKeyBest.runHistory = runHistory
 
     for index = 1, lastCompletedIndex do
       if runHistory[activities[index].threshold] then
