@@ -10,7 +10,6 @@ local C_ChallengeMode_GetMapUIInfo = C_ChallengeMode.GetMapUIInfo
 local C_MythicPlus_GetRunHistory = C_MythicPlus.GetRunHistory
 local C_MythicPlus_RequestMapInfo = C_MythicPlus.RequestMapInfo
 local C_MythicPlus_GetRewardLevelFromKeystoneLevel = C_MythicPlus.GetRewardLevelFromKeystoneLevel
-local C_WeeklyRewards_CanClaimRewards = C_WeeklyRewards.CanClaimRewards
 local C_WeeklyRewards_GetActivities = C_WeeklyRewards.GetActivities
 local C_WeeklyRewards_HasAvailableRewards = C_WeeklyRewards.HasAvailableRewards
 local CreateFrame = CreateFrame
@@ -102,7 +101,7 @@ do
     local t = SI.db.Toons[SI.thisToon]
 
     t.MythicKeyBest = wipe(t.MythicKeyBest or {})
-    t.MythicKeyBest.rewardWaiting = C_WeeklyRewards_HasAvailableRewards() and C_WeeklyRewards_CanClaimRewards()
+    t.MythicKeyBest.rewardWaiting = C_WeeklyRewards_HasAvailableRewards()
     t.MythicKeyBest.ResetTime = SI:GetNextWeeklyResetTime()
 
     local activities = C_WeeklyRewards_GetActivities(Enum_WeeklyRewardChestThresholdType_MythicPlus)
