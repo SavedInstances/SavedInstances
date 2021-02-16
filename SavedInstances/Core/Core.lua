@@ -1888,7 +1888,7 @@ hoverTooltip.ShowMythicPlusTooltip = function (cell, arg, ...)
   local text = keydesc or ""
   indicatortip:AddHeader(ClassColorise(t.Class, toon), text)
   if t.MythicKeyBest.runHistory then
-    for i = 1, #t.MythicKeyBest.runHistory do
+    for i = 1, math.min(#t.MythicKeyBest.runHistory, 10) do
       local runInfo = t.MythicKeyBest.runHistory[i]
       if runInfo then
         if runInfo.level and runInfo.name and runInfo.rewardLevel then

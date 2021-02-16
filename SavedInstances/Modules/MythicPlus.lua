@@ -122,16 +122,8 @@ do
     sort(runHistory, runCompare)
     for i = 1, #runHistory do
       if runHistory[i] then
-        if i <= 10 then
-          runHistory[i] = {
-            level = runHistory[i].level,
-            name = C_ChallengeMode_GetMapUIInfo(runHistory[i].mapChallengeModeID),
-            rewardLevel = C_MythicPlus_GetRewardLevelFromKeystoneLevel(runHistory[i].level),
-          }
-        else
-          -- only care about top 10 runs
-          runHistory[i] = nil
-        end
+        runHistory[i].name = C_ChallengeMode_GetMapUIInfo(runHistory[i].mapChallengeModeID)
+        runHistory[i].rewardLevel = C_MythicPlus_GetRewardLevelFromKeystoneLevel(runHistory[i].level)
       end
     end
     t.MythicKeyBest.runHistory = runHistory
