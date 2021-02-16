@@ -1894,18 +1894,19 @@ hoverTooltip.ShowMythicPlusTooltip = function (cell, arg, ...)
     end
   end
   indicatortip:AddHeader(ClassColorise(t.Class, toon), text)
-  local runHistory = t.MythicKeyBest.runHistory
-  for i = 1, #runHistory do
-    local runInfo = runHistory[i];
-    if runInfo then
-      if runInfo.level and runInfo.name and runInfo.rewardLevel then
-        indicatortip:AddLine()
-        text = string.format("(%3$d) %1$d - %2$s", runInfo.level, runInfo.name, runInfo.rewardLevel)
-        -- these are the thresholds that will populate the great vault
-        if i == 1 or i == 4 or i == 10 then
-          text = GREENFONT..text..FONTEND
+  if t.MythicKeyBest.runHistory then
+    for i = 1, #t.MythicKeyBest.runHistory do
+      local runInfo = t.MythicKeyBest.runHistory[i]
+      if runInfo then
+        if runInfo.level and runInfo.name and runInfo.rewardLevel then
+          indicatortip:AddLine()
+          text = string.format("(%3$d) %1$d - %2$s", runInfo.level, runInfo.name, runInfo.rewardLevel)
+          -- these are the thresholds that will populate the great vault
+          if i == 1 or i == 4 or i == 10 then
+            text = GREENFONT..text..FONTEND
+          end
+          indicatortip:SetCell(1 + i, 1, text, "LEFT", 2)
         end
-        indicatortip:SetCell(1 + i, 1, text, "LEFT", 2)
       end
     end
   end
