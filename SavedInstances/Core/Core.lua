@@ -192,8 +192,12 @@ SI.defaultDB = {
   -- ResetTime: expiry
   -- [1-3]: number
   -- lastCompletedIndex: number
+  -- threshold[1-3]: number
   -- rewardWaiting: boolean
   -- [runHistory]: [
+  --   completed,
+  --   thisWeek,
+  --   mapChallengeModeID,
   --   level,
   --   name,
   --   rewardLevel,
@@ -1887,19 +1891,21 @@ hoverTooltip.ShowMythicPlusTooltip = function (cell, arg, ...)
   openIndicator(2, "LEFT", "RIGHT")
   local text = keydesc or ""
   indicatortip:AddHeader(ClassColorise(t.Class, toon), text)
-  if t.MythicKeyBest.runHistory then
-    for i = 1, math.min(#t.MythicKeyBest.runHistory, 10) do
+  if t.MythicKeyBest.runHistory and #t.MythicKeyBest.runHistory > 0 then
+    local maxThreshold = t.MythicKeyBest.threshold and t.MythicKeyBest.threshold[#t.MythicKeyBest.threshold]
+    local displayNumber = min(#t.MythicKeyBest.runHistory, maxThreshold or 10)
+    indicatortip:AddLine()
+    indicatortip:SetCell(2, 1, format(WEEKLY_REWARDS_MYTHIC_TOP_RUNS, displayNumber), "LEFT", 2)
+    for i = 1, displayNumber do
       local runInfo = t.MythicKeyBest.runHistory[i]
-      if runInfo then
-        if runInfo.level and runInfo.name and runInfo.rewardLevel then
-          indicatortip:AddLine()
-          text = string.format("(%3$d) %1$d - %2$s", runInfo.level, runInfo.name, runInfo.rewardLevel)
-          -- these are the thresholds that will populate the great vault
-          if i == 1 or i == 4 or i == 10 then
-            text = GREENFONT..text..FONTEND
-          end
-          indicatortip:SetCell(1 + i, 1, text, "LEFT", 2)
+      if runInfo.level and runInfo.name and runInfo.rewardLevel then
+        indicatortip:AddLine()
+        text = string.format("(%3$d) %1$d - %2$s", runInfo.level, runInfo.name, runInfo.rewardLevel)
+        -- these are the thresholds that will populate the great vault
+        if t.MythicKeyBest.threshold and tContains(t.MythicKeyBest.threshold, i) then
+          text = GREENFONT..text..FONTEND
         end
+        indicatortip:SetCell(2 + i, 1, text, "LEFT", 2)
       end
     end
   end
