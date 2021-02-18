@@ -102,6 +102,7 @@ do
     local t = SI.db.Toons[SI.thisToon]
 
     t.MythicKeyBest = wipe(t.MythicKeyBest or {})
+    t.MythicKeyBest.threshold = wipe(t.MythicKeyBest.threshold or {})
     t.MythicKeyBest.rewardWaiting = C_WeeklyRewards_HasAvailableRewards() or C_WeeklyRewards_CanClaimRewards()
     t.MythicKeyBest.ResetTime = SI:GetNextWeeklyResetTime()
 
@@ -110,6 +111,7 @@ do
 
     local lastCompletedIndex = 0;
     for i, activityInfo in ipairs(activities) do
+      t.MythicKeyBest.threshold[i] = activityInfo.threshold
       if activityInfo.progress >= activityInfo.threshold then
         lastCompletedIndex = i;
       end
@@ -122,10 +124,8 @@ do
     local runHistory = C_MythicPlus_GetRunHistory(false, true)
     sort(runHistory, runCompare)
     for i = 1, #runHistory do
-      if runHistory[i] then
-        runHistory[i].name = C_ChallengeMode_GetMapUIInfo(runHistory[i].mapChallengeModeID)
-        runHistory[i].rewardLevel = C_MythicPlus_GetRewardLevelFromKeystoneLevel(runHistory[i].level)
-      end
+      runHistory[i].name = C_ChallengeMode_GetMapUIInfo(runHistory[i].mapChallengeModeID)
+      runHistory[i].rewardLevel = C_MythicPlus_GetRewardLevelFromKeystoneLevel(runHistory[i].level)
     end
     t.MythicKeyBest.runHistory = runHistory
 
