@@ -1,5 +1,5 @@
 local SI, L = unpack(select(2, ...))
-local Module = SI:NewModule('MythicPlus', 'AceEvent-3.0')
+local Module = SI:NewModule('MythicPlus', 'AceEvent-3.0', 'AceBucket-3.0')
 
 -- Lua functions
 local _G = _G
@@ -41,8 +41,10 @@ function Module:OnEnable()
 
   self:RegisterEvent("CHALLENGE_MODE_COMPLETED", C_MythicPlus_RequestMapInfo)
 
-  self:RegisterEvent("WEEKLY_REWARDS_UPDATE", "RefreshMythicWeeklyBestInfo")
-  self:RegisterEvent("CHALLENGE_MODE_MAPS_UPDATE", "RefreshMythicWeeklyBestInfo")
+  self:RegisterBucketEvent({
+    "WEEKLY_REWARDS_UPDATE",
+    "CHALLENGE_MODE_MAPS_UPDATE",
+  }, 1, "RefreshMythicWeeklyBestInfo")
 
   C_MythicPlus_RequestMapInfo()
 
