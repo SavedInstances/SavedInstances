@@ -94,9 +94,9 @@ do
 
   local function runCompare(left, right)
     if left.level == right.level then
-      return left.mapChallengeModeID < right.mapChallengeModeID;
+      return left.mapChallengeModeID < right.mapChallengeModeID
     else
-      return left.level > right.level;
+      return left.level > right.level
     end
   end
 
@@ -111,11 +111,11 @@ do
     local activities = C_WeeklyRewards_GetActivities(Enum_WeeklyRewardChestThresholdType_MythicPlus)
     sort(activities, activityCompare)
 
-    local lastCompletedIndex = 0;
+    local lastCompletedIndex = 0
     for i, activityInfo in ipairs(activities) do
       t.MythicKeyBest.threshold[i] = activityInfo.threshold
       if activityInfo.progress >= activityInfo.threshold then
-        lastCompletedIndex = i;
+        lastCompletedIndex = i
       end
     end
 
