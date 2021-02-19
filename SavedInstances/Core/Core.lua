@@ -1887,7 +1887,9 @@ end
 hoverTooltip.ShowMythicPlusTooltip = function (cell, arg, ...)
   local toon, keydesc = unpack(arg)
   local t = SI.db.Toons[toon]
-  if not t or not t.MythicKeyBest then return end
+  if not t or not t.MythicKeyBest then
+    return
+  end
   openIndicator(2, "LEFT", "RIGHT")
   local text = keydesc or ""
   indicatortip:AddHeader(ClassColorise(t.Class, toon), text)
