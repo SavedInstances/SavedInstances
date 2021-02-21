@@ -4107,14 +4107,13 @@ function SI:ShowTooltip(anchorframe)
 
   if SI.db.Tooltip.Calling or showall then
     local show
-    for toon, t in cpairs(SI.db.Toons, true) do
-      if t.Calling and t.Calling.unlocked then
-        for day = 1, 3 do
+    for day = 1, 3 do
+      for toon, t in cpairs(SI.db.Toons, true) do
+        if t.Calling and t.Calling.unlocked then
           if showall or SI.db.Tooltip.CallingShowCompleted or (t.Calling[day] and not t.Calling[day].isCompleted) then
             if not show then show = {} end
-            if not show[day] or show[day] == true then
-              show[day] = t.Calling[day] and t.Calling[day].title or true
-            end
+            show[day] = true
+            break
           end
         end
       end
@@ -4159,10 +4158,12 @@ function SI:ShowTooltip(anchorframe)
         end
         for day = 1, 3 do
           if show[day] then
-            local name = show[day]
-            if name == true then
-              -- fail to fetch quest title
-              name = L["Calling Missing"]
+            local name = L["Calling Missing"]
+            -- try current toon first
+            local t = SI.db.Toons[SI.thisToon]
+            if t and t.Calling and t.Calling[day] and t.Calling[day].title then
+              name = t.Calling[day].title
+            else
               for _, t in pairs(SI.db.Toons) do
                 if t.Calling and t.Calling[day] and t.Calling[day].title then
                   name = t.Calling[day].title
