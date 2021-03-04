@@ -505,7 +505,7 @@ local function CurrencyColor(amt, max)
   if SI.db.Tooltip.CurrencyValueColor then
     local pct = amt / max
     local color = GREENFONT
-    if pct == 1 then
+    if pct >= 1 then
       color = REDFONT
     elseif pct > 0.75 then
       color = GOLDFONT
