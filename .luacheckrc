@@ -427,6 +427,7 @@ globals = {
 	"C_Commentator.ZoomIn",
 	"C_Commentator.ZoomOut",
 	"C_ContributionCollector",
+	"C_Covenants",
 	"C_CurrencyInfo",
 	"C_CovenantCallings",
 	"C_DateAndTime",
