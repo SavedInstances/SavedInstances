@@ -1470,8 +1470,8 @@ function SI:UpdateToonData()
       t.RestXP = nil
     end
     t.Warmode = C_PvP.IsWarModeDesired()
+    t.Covenant = C_Covenants.GetActiveCovenantID()
   end
-  t.Covenant = C_Covenants.GetActiveCovenantID()
 
   t.LastSeen = time()
 end
