@@ -350,6 +350,11 @@ Module.TrackedQuest = {
       {2929, 2940}, -- The Upper Reaches
     },
   },
+  {
+    name = L["The World Awaits"],
+    weekly = true,
+    quest = 62631
+  },
 }
 
 function Module:OnEnable()
