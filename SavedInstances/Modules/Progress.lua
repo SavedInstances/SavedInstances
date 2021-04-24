@@ -353,7 +353,8 @@ Module.TrackedQuest = {
   {
     name = L["The World Awaits"],
     weekly = true,
-    quest = 62631
+    quest = 62631,
+    relatedQuest = {62631},
   },
 }
 
