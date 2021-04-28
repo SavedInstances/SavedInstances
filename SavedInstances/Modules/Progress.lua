@@ -427,13 +427,15 @@ function Module:OnWeeklyReset(toon)
         tbl.resetFunc(toon, i)
       else
         local prev = t.Progress[i]
-        t.Progress[i] = {
-          unlocked = prev.unlocked,
-          isComplete = false,
-          isFinish = false,
-          numFulfilled = 0,
-          numRequired = prev.numRequired,
-        }
+        if prev then
+          t.Progress[i] = {
+            unlocked = prev.unlocked,
+            isComplete = false,
+            isFinish = false,
+            numFulfilled = 0,
+            numRequired = prev.numRequired,
+          }
+        end
       end
     end
   end
