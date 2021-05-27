@@ -8,6 +8,7 @@
 ## X-Category: Raid
 ## X-LoadOn-Always: delayed
 ## X-Curse-Project-ID: 13998
+## X-Wago-ID: RaN0W3Gj
 ## OptionalDeps: Ace3, CallbackHandler-1.0, LibDataBroker-1.1, LibDBIcon-1.0, LibQTip-1.0
 ## SavedVariables: SavedInstancesDB
 ## LoadManagers: AddonLoader
