@@ -41,7 +41,7 @@ local factionID = {
   2407, -- The Ascended
   2410, -- The Undying Army
   2413, -- Court of Harvesters
-  2422, -- The Wild Hunt
+  2465, -- The Wild Hunt
 }
 
 function Module:OnEnable()
