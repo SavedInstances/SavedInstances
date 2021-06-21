@@ -74,6 +74,10 @@ local currency = {
   1820, -- Infused Ruby
   1885, -- Grateful Offering
   1889, -- Adventure Campaign Progress
+  1904, -- Tower Knowledge
+  1906, -- Soul Cinders
+  1931, -- Cataloged Research
+  1977, -- Stygian Ember
 }
 SI.currency = currency
 
