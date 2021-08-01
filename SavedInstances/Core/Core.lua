@@ -379,6 +379,7 @@ SI.defaultDB = {
     Progress4 = false, -- N'Zoth Assaults
     Progress5 = false, -- Lesser Visions of N'Zoth
     Progress6 = true, -- Torghast Weekly
+    Progress7 = true, -- Covenant Assaults
     Warfront1 = false, -- Arathi Highlands
     Warfront2 = false, -- Darkshores
     KeystoneReportTarget = "EXPORT",
@@ -2422,6 +2423,29 @@ hoverTooltip.ShowTorghastTooltip = function (cell, arg, ...)
 
       indicatortip:AddLine(nameText, t.Progress[index]['Level' .. i])
     end
+  end
+
+  finishIndicator()
+end
+
+hoverTooltip.ShowCovenantAssaultTooltip = function (cell, arg, ...)
+  -- Should be in Module Progress
+  local toon, index = unpack(arg)
+  local t = SI.db.Toons[toon]
+  if not t or not t.Progress or not t.Progress[index] then return end
+  if not t or not t.Quests then return end
+  openIndicator(2, "LEFT", "RIGHT")
+  indicatortip:AddHeader(ClassColorise(t.Class, toon), L["Covenant Assaults"])
+
+  local P = SI:GetModule("Progress")
+  for _, questID in ipairs(P.TrackedQuest[index].relatedQuest) do
+    indicatortip:AddLine(SI:QuestInfo(questID),
+      t.Quests[questID] and (REDFONT .. CRITERIA_COMPLETED .. FONTEND) or (
+        t.Progress[index][questID] and
+        (GREENFONT .. AVAILABLE .. FONTEND) or
+        (REDFONT .. ADDON_NOT_AVAILABLE .. FONTEND)
+      )
+    )
   end
 
   finishIndicator()
