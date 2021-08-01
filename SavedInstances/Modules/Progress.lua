@@ -399,7 +399,7 @@ Module.TrackedQuest = {
       63824, -- Kyrian Assault
       63543, -- Necrolord Assault
     },
-  }, 
+  },
   {
     name = L["The World Awaits"],
     weekly = true,
