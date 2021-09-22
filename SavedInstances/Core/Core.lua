@@ -2419,9 +2419,9 @@ hoverTooltip.ShowTorghastTooltip = function (cell, arg, ...)
   for i, data in ipairs(P.TrackedQuest[index].widgetID) do
     if t.Progress[index]['Available' .. i] then
       local nameInfo = C_UIWidgetManager.GetTextWithStateWidgetVisualizationInfo(data[1])
-      local nameText = strmatch(nameInfo.text, '|n|cffffffff(.+)|r')
+      local nameText = nameInfo and strmatch(nameInfo.text, '|n|cffffffff(.+)|r')
 
-      indicatortip:AddLine(nameText, t.Progress[index]['Level' .. i])
+      indicatortip:AddLine(nameText or '', t.Progress[index]['Level' .. i])
     end
   end
 
