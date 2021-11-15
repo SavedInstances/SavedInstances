@@ -2068,7 +2068,7 @@ hoverTooltip.ShowLFRTooltip = function (cell, arg, ...)
   local boxname, toon, tbl = unpack(arg)
   local t = SI.db.Toons[toon]
   if not boxname or not t or not tbl then return end
-  openIndicator(3, "LEFT", "LEFT","RIGHT")
+  openIndicator(3, "LEFT", "LEFT", "RIGHT")
   local line = indicatortip:AddHeader()
   local toonstr = (db.Tooltip.ShowServer and toon) or strsplit(' ', toon)
   local reset = t.WeeklyResetTime or SI:GetNextWeeklyResetTime()
@@ -3126,7 +3126,7 @@ function SI:Refresh(recoverdaily)
       local info = instance[SI.thisToon][2] or {}
       wipe(info)
       instance[SI.thisToon][2] = info
-      info.Expires = weeklyreset
+      info.Expires = einfo.daily and nextreset or weeklyreset
       info.ID = -1
       info[1] = true
     end

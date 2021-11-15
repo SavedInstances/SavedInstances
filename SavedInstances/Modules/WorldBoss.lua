@@ -82,4 +82,6 @@ SI.WorldBosses = {
   -- The Maw
   [9006] = { quest=63414, name=L["Wrath of the Jailer"],    expansion=8, level=60 }, -- Wrath of the Jailer
   [9007] = { quest=63854, name=L["Tormentors of Torghast"], expansion=8, level=60 }, -- Tormentors of Torghast
+  -- Anniversary event
+  [9008] = { quest=60214, name=L["Doomwalker"], expansion=7, level=30, daily=true }, -- Doomwalker
 }
