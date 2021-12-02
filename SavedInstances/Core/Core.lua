@@ -1922,6 +1922,8 @@ hoverTooltip.ShowMythicPlusTooltip = function (cell, arg, ...)
     local displayNumber = min(#t.MythicKeyBest.runHistory, maxThreshold or 10)
     indicatortip:AddLine()
     indicatortip:SetCell(2, 1, format(WEEKLY_REWARDS_MYTHIC_TOP_RUNS, displayNumber), "LEFT", 2)
+    indicatortip:AddLine()
+    indicatortip:SetCell(3, 1, format(TOTAL_STACKS, #t.MythicKeyBest.runHistory), "LEFT", 2)
     for i = 1, displayNumber do
       local runInfo = t.MythicKeyBest.runHistory[i]
       if runInfo.level and runInfo.name and runInfo.rewardLevel then
