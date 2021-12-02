@@ -189,6 +189,14 @@ SI.defaultDB = {
   -- color: string
   -- link: string
 
+  -- TimewornMythicKey
+  -- name: string
+  -- ResetTime: expiry
+  -- mapID: int
+  -- level: int
+  -- color: string
+  -- link: string
+
   -- MythicKeyBest
   -- ResetTime: expiry
   -- [1-3]: number
@@ -362,6 +370,7 @@ SI.defaultDB = {
     CurrencyEarned = true,
     CurrencySortName = false,
     MythicKey = true,
+    TimewornMythicKey = true,
     MythicKeyBest = true,
     Emissary6 = false, -- LEG Emissary
     Emissary7 = false, -- BfA Emissary
@@ -1425,6 +1434,11 @@ function SI:UpdateToonData()
   for toon, ti in pairs(SI.db.Toons) do
     if ti.MythicKey and (ti.MythicKey.ResetTime or 0) < time() then
       ti.MythicKey = {}
+    end
+  end
+  for toon, ti in pairs(SI.db.Toons) do
+    if ti.TimewornMythicKey and (ti.TimewornMythicKey.ResetTime or 0) < time() then
+      ti.TimewornMythicKey = {}
     end
   end
   for toon, ti in pairs(SI.db.Toons) do
@@ -3386,8 +3400,8 @@ local function OpenLFS(self, instanceid, button)
   end
 end
 
-local function ReportKeys(self, _, button)
-  SI:GetModule("MythicPlus"):Keys()
+local function ReportKeys(self, index, button)
+  SI:GetModule("MythicPlus"):Keys(index)
 end
 
 local function OpenCurrency(self, _, button)
@@ -3930,7 +3944,7 @@ function SI:ShowTooltip(anchorframe)
       show = tooltip:AddLine(YELLOWFONT .. L["Mythic Keystone"] .. FONTEND)
       tooltip:SetCellScript(show, 1, "OnEnter", hoverTooltip.ShowKeyReportTarget)
       tooltip:SetCellScript(show, 1, "OnLeave", CloseTooltips)
-      tooltip:SetCellScript(show, 1, "OnMouseDown", ReportKeys)
+      tooltip:SetCellScript(show, 1, "OnMouseDown", ReportKeys, 'MythicKey')
     end
     for toon, t in cpairs(SI.db.Toons, true) do
       if t.MythicKey and t.MythicKey.link then
@@ -3947,6 +3961,38 @@ function SI:ShowTooltip(anchorframe)
     end
   end
 
+  if SI.db.Tooltip.TimewornMythicKey or showall then
+    local show = false
+    for toon, t in cpairs(SI.db.Toons, true) do
+      if t.TimewornMythicKey and t.TimewornMythicKey.link then
+        show = true
+        addColumns(columns, toon, tooltip)
+      end
+    end
+    if show then
+      if SI.db.Tooltip.CategorySpaces and not (SI.db.Tooltip.MythicKey or showall) then
+        addsep()
+      end
+      show = tooltip:AddLine(YELLOWFONT .. L["Timeworn Mythic Keystone"] .. FONTEND)
+      tooltip:SetCellScript(show, 1, "OnEnter", hoverTooltip.ShowKeyReportTarget)
+      tooltip:SetCellScript(show, 1, "OnLeave", CloseTooltips)
+      tooltip:SetCellScript(show, 1, "OnMouseDown", ReportKeys, 'TimewornMythicKey')
+    end
+    for toon, t in cpairs(SI.db.Toons, true) do
+      if t.TimewornMythicKey and t.TimewornMythicKey.link then
+        local col = columns[toon..1]
+        local name
+        if SI.db.Tooltip.AbbreviateKeystone then
+          name = SI.KeystoneAbbrev[t.TimewornMythicKey.mapID] or t.TimewornMythicKey.name
+        else
+          name = t.TimewornMythicKey.name
+        end
+        tooltip:SetCell(show, col, "|c" .. t.TimewornMythicKey.color .. name .. " (" .. t.TimewornMythicKey.level .. ")" .. FONTEND, "CENTER", maxcol)
+        tooltip:SetCellScript(show, col, "OnMouseDown", ChatLink, t.TimewornMythicKey.link)
+      end
+    end
+  end
+
   if SI.db.Tooltip.MythicKeyBest or showall then
     local show = false
     for toon, t in cpairs(SI.db.Toons, true) do
@@ -3958,7 +4004,7 @@ function SI:ShowTooltip(anchorframe)
       end
     end
     if show then
-      if SI.db.Tooltip.CategorySpaces and not (SI.db.Tooltip.MythicKey or showall) then
+      if SI.db.Tooltip.CategorySpaces and not (SI.db.Tooltip.MythicKey or SI.db.Tooltip.TimewornMythicKey or showall) then
         addsep()
       end
       show = tooltip:AddLine(YELLOWFONT .. L["Mythic Key Best"] .. FONTEND)
