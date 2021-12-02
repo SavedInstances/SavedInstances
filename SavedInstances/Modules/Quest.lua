@@ -264,6 +264,8 @@ local QuestExceptions = {
   [62449] = "Weekly", -- A Spirit's Duty
   [62450] = "Weekly", -- A Spirit's Heart
   [62452] = "Weekly", -- A Spirit's Might
+  -- Korthia
+  [64522] = "Weekly", -- Stolen Korthian Supplies
 
   -- General
   -- Darkmoon Faire
