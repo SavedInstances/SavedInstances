@@ -26,6 +26,13 @@ local StaticPopup_Show = StaticPopup_Show
 local Enum_WeeklyRewardChestThresholdType_MythicPlus = Enum.WeeklyRewardChestThresholdType.MythicPlus
 
 local KeystoneAbbrev = {
+  [197] = L["EOA"],   -- Eye of Azshara
+  [198] = L["DHT"],   -- Darkheart Thicket
+  [199] = L["BRH"],   -- Black Rook Hold
+  [206] = L["NL"],    -- Neltharion's Lair
+  [207] = L["VOTW"],  -- Vault of the Wardens
+  [210] = L["COS"],   -- Court of Stars
+
   [375] = L["MISTS"], -- Mists of Tirna Scithe
   [376] = L["NW"],    -- The Necrotic Wake
   [377] = L["DOS"],   -- De Other Side
