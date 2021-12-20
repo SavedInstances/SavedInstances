@@ -11,9 +11,7 @@ jobs:
       GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
-      - uses: actions/checkout@v1
-        with:
-          fetch-depth: 150
+      - uses: actions/checkout@v2
 
       - name: Install and run Luacheck
         uses: nebularg/actions-luacheck@v1
