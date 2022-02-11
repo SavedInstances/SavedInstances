@@ -1163,6 +1163,10 @@ function SI:UpdateInstance(id)
     local _
     _, typeID, subtypeID, _, _, recLevel, _, _, expansionLevel, _,
       _,  difficulty, maxPlayers, _, isHoliday, _, _, _, name = GetLFGDungeonInfo(2004)
+  elseif id == 842 then -- Downfall (#308) different name for origin and solo LFG in deDE
+    if SI.locale == 'deDE' then
+      name = "Niedergang"
+    end
   end
   if subtypeID == LFG_SUBTYPEID_SCENARIO and typeID ~= TYPEID_RANDOM_DUNGEON then -- ignore non-random scenarios
     return nil, nil, true
