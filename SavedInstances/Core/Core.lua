@@ -143,6 +143,7 @@ SI.defaultDB = {
   -- Artifact: string REMOVED
   -- Cloak: string REMOVED
   -- Covenant: number
+  -- MythicPlusScore: number
   -- Paragon: table
   -- oRace: string
   -- isResting: boolean
@@ -1486,6 +1487,7 @@ function SI:UpdateToonData()
     end
     t.Warmode = C_PvP.IsWarModeDesired()
     t.Covenant = C_Covenants.GetActiveCovenantID()
+    t.MythicPlusScore = C_ChallengeMode.GetOverallDungeonScore()
   end
 
   t.LastSeen = time()
@@ -1624,6 +1626,9 @@ hoverTooltip.ShowToonTooltip = function (cell, arg, ...)
     if name then
       indicatortip:AddLine(L["Covenant"], name)
     end
+  end
+  if t.MythicPlusScore and t.MythicPlusScore > 0 then
+    indicatortip:AddLine(DUNGEON_SCORE, t.MythicPlusScore)
   end
   if t.Arena2v2rating and t.Arena2v2rating > 0 then
     indicatortip:AddLine(ARENA_2V2 .. ARENA_RATING, t.Arena2v2rating)
@@ -2603,6 +2608,7 @@ function SI:OnEnable()
   self:RegisterEvent("PLAYER_UPDATE_RESTING", "UpdateToonData")
   self:RegisterEvent("PVP_RATED_STATS_UPDATE", "UpdateToonData")
   self:RegisterEvent("COVENANT_CHOSEN", "UpdateToonData")
+  self:RegisterEvent("MYTHIC_PLUS_NEW_WEEKLY_RECORD", "UpdateToonData")
   self:RegisterEvent("ZONE_CHANGED_NEW_AREA", RequestRatedInfo)
   self:RegisterEvent("PLAYER_ENTERING_WORLD", function()
     RequestRatedInfo()
