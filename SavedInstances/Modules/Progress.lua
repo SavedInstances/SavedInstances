@@ -13,6 +13,7 @@ local C_WeeklyRewards_CanClaimRewards = C_WeeklyRewards.CanClaimRewards
 local C_WeeklyRewards_GetConquestWeeklyProgress = C_WeeklyRewards.GetConquestWeeklyProgress
 local C_WeeklyRewards_HasAvailableRewards = C_WeeklyRewards.HasAvailableRewards
 local GetQuestObjectiveInfo = GetQuestObjectiveInfo
+local GetQuestProgressBarPercent = GetQuestProgressBarPercent
 local IsQuestFlaggedCompleted = C_QuestLog and C_QuestLog.IsQuestFlaggedCompleted or IsQuestFlaggedCompleted
 local UnitLevel = UnitLevel
 
@@ -435,7 +436,12 @@ function Module:UpdateAll()
       if questID then
         -- no questID on Neutral Pandaren or first login
         local result = {}
-        local _, _, finished, numFulfilled, numRequired = GetQuestObjectiveInfo(questID, 1, false)
+        local _, objectiveType, finished, numFulfilled, numRequired = GetQuestObjectiveInfo(questID, 1, false)
+        if objectiveType == 'progressbar' then
+          numFulfilled = GetQuestProgressBarPercent(questID)
+          numRequired = 100
+        end
+        result.objectiveType = objectiveType
         result.isFinish = finished
         result.numFulfilled = numFulfilled
         result.numRequired = numRequired
@@ -567,9 +573,13 @@ function Module:ShowTooltip(tooltip, columns, showall, preshow)
             elseif value.isFinish then
               text = "\124T" .. READY_CHECK_WAITING_TEXTURE .. ":0|t"
             else
-              -- Note: no idea why .numRequired is nil rarely (#325)
-              -- protect this now to stop lua error
-              text = (value.numFulfilled or "?") .. "/" .. (value.numRequired or "?")
+              if value.objectiveType == 'progressbar' then
+                text = floor((value.numFulfilled or 0) / value.numRequired * 100) .. "%"
+              else
+                -- Note: no idea why .numRequired is nil rarely (#325)
+                -- protect this now to stop lua error
+                text = (value.numFulfilled or "?") .. "/" .. (value.numRequired or "?")
+              end
             end
           end
           local col = columns[toon .. 1]
