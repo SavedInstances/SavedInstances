@@ -389,8 +389,11 @@ SI.defaultDB = {
     Progress3 = false, -- Horrific Vision
     Progress4 = false, -- N'Zoth Assaults
     Progress5 = false, -- Lesser Visions of N'Zoth
-    Progress6 = true, -- Torghast Weekly
-    Progress7 = true, -- Covenant Assaults
+    Progress6 = false, -- Torghast Weekly
+    Progress7 = false, -- Covenant Assaults
+    Progress8 = false, -- The World Awaits
+    Progress9 = false, -- Emissary of War
+    Progress10 = true, -- Patterns Within Patterns
     Warfront1 = false, -- Arathi Highlands
     Warfront2 = false, -- Darkshores
     KeystoneReportTarget = "EXPORT",
@@ -2486,6 +2489,36 @@ hoverTooltip.ShowCovenantAssaultTooltip = function (cell, arg, ...)
       )
     )
   end
+
+  finishIndicator()
+end
+
+hoverTooltip.ShowPatternsTooltip = function (cell, arg, ...)
+  -- Should be in Module Progress
+  local toon, index = unpack(arg)
+  local t = SI.db.Toons[toon]
+  if not t or not t.Progress or not t.Progress[index] then return end
+  openIndicator(2, "LEFT", "RIGHT")
+  indicatortip:AddHeader(ClassColorise(t.Class, toon), L["Patterns Within Patterns"])
+
+  local text
+  if t.Progress[index].isComplete then
+    text = "\124T" .. READY_CHECK_READY_TEXTURE .. ":0|t"
+  elseif not t.Progress[index].isOnQuest then
+    text = "\124cFFFFFF00!\124r"
+  elseif t.Progress[index].isFinish then
+    text = "\124T" .. READY_CHECK_WAITING_TEXTURE .. ":0|t"
+  else
+    text = floor(t.Progress[index].numFulfilled / t.Progress[index].numRequired * 100) .. "%"
+  end
+
+  local timeText = '?'
+  if t.Progress[index].expiredTime then
+    local timeLeft = max(t.Progress[index].expiredTime - time(), 0)
+    timeText = SecondsToTime(timeLeft)
+  end
+
+  indicatortip:AddLine(text, timeText)
 
   finishIndicator()
 end
