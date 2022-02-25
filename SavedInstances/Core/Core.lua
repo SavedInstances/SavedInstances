@@ -1929,7 +1929,7 @@ hoverTooltip.ShowMythicPlusTooltip = function (cell, arg, ...)
   indicatortip:AddHeader(ClassColorise(t.Class, toon), text)
   if t.MythicKeyBest.runHistory and #t.MythicKeyBest.runHistory > 0 then
     local maxThreshold = t.MythicKeyBest.threshold and t.MythicKeyBest.threshold[#t.MythicKeyBest.threshold]
-    local displayNumber = min(#t.MythicKeyBest.runHistory, maxThreshold or 10)
+    local displayNumber = min(#t.MythicKeyBest.runHistory, maxThreshold or 8)
     indicatortip:AddLine()
     indicatortip:SetCell(2, 1, format(WEEKLY_REWARDS_MYTHIC_TOP_RUNS, displayNumber), "LEFT", 2)
     indicatortip:AddLine()
