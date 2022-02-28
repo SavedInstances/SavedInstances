@@ -2480,36 +2480,6 @@ hoverTooltip.ShowCovenantAssaultTooltip = function (cell, arg, ...)
   finishIndicator()
 end
 
-hoverTooltip.ShowPatternsTooltip = function (cell, arg, ...)
-  -- Should be in Module Progress
-  local toon, index = unpack(arg)
-  local t = SI.db.Toons[toon]
-  if not t or not t.Progress or not t.Progress[index] then return end
-  openIndicator(2, "LEFT", "RIGHT")
-  indicatortip:AddHeader(ClassColorise(t.Class, toon), L["Patterns Within Patterns"])
-
-  local text
-  if t.Progress[index].isComplete then
-    text = "\124T" .. READY_CHECK_READY_TEXTURE .. ":0|t"
-  elseif not t.Progress[index].isOnQuest then
-    text = "\124cFFFFFF00!\124r"
-  elseif t.Progress[index].isFinish then
-    text = "\124T" .. READY_CHECK_WAITING_TEXTURE .. ":0|t"
-  else
-    text = floor(t.Progress[index].numFulfilled / t.Progress[index].numRequired * 100) .. "%"
-  end
-
-  local timeText = '?'
-  if t.Progress[index].expiredTime then
-    local timeLeft = max(t.Progress[index].expiredTime - time(), 0)
-    timeText = SecondsToTime(timeLeft)
-  end
-
-  indicatortip:AddLine(text, timeText)
-
-  finishIndicator()
-end
-
 hoverTooltip.ShowKeyReportTarget = function (cell, arg, ...)
   openIndicator(2, "LEFT", "RIGHT")
   indicatortip:AddHeader(GOLDFONT..L["Keystone report target"]..FONTEND, SI.db.Tooltip.KeystoneReportTarget)
