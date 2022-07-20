@@ -2026,7 +2026,7 @@ hoverTooltip.ShowAccountSummary = function (cell, arg, ...)
   for _,ri in pairs(r) do table.insert(rmoney,ri) end
   table.sort(rmoney,function(a,b) return a.money > b.money end)
   for _,ri in ipairs(rmoney) do
-    if ri.money > 10000*10000 and ri.cnt > 1 then -- show multi-toon servers with over 10k wealth
+    if ri.money > 10000*10000 then -- show servers with over 10k wealth
       indicatortip:AddLine(ri.realm.." "..MONEY,SI:formatNumber(ri.money,true))
     end
   end
