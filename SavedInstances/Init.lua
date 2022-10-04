@@ -6,6 +6,12 @@ Engine[2] = {}
 
 _G.SavedInstances = Engine
 
+local IsClassic = floor(select(4, GetBuildInfo()) / 10000) == 3
+
+function SI.IsClassic()
+  return IsClassic
+end
+
 SI.Libs = {}
 SI.Libs.QTip = LibStub('LibQTip-1.0')
 SI.Libs.LDB = LibStub('LibDataBroker-1.1', true)
@@ -18,7 +24,11 @@ SI.playerName = UnitName('player')
 SI.playerLevel = UnitLevel('player')
 SI.realmName = GetRealmName()
 SI.thisToon = SI.playerName .. ' - ' .. SI.realmName
-SI.maxLevel = GetMaxLevelForPlayerExpansion()
+if IsClassic then
+  SI.maxLevel = 80
+else
+  SI.maxLevel = GetMaxLevelForPlayerExpansion()
+end
 SI.locale = GetLocale()
 
 SI.questCheckMark = '\124A:UI-LFG-ReadyMark:14:14\124a'

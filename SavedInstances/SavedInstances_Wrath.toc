@@ -1,0 +1,35 @@
+## Interface: 30400
+## Title: SavedInstances
+## Notes: Tracks Raid, Instance, World Boss lockouts for all your characters, daily/weekly quests, currencies, trade cooldowns, and more!
+## Author: oscarucb and the Saved Instances Community
+## Version: @project-version@
+## X-ReleaseDate: @project-date-iso@
+## X-License: All Rights Reserved
+## X-Category: Raid
+## X-LoadOn-Always: delayed
+## X-Curse-Project-ID: 13998
+## X-Wago-ID: RaN0W3Gj
+## OptionalDeps: Ace3, CallbackHandler-1.0, LibDataBroker-1.1, LibDBIcon-1.0, LibQTip-1.0
+## SavedVariables: SavedInstancesDB
+## LoadManagers: AddonLoader
+
+# external code + initialization
+embeds.xml
+Init.lua
+Locales\Locale.lua
+
+# core files
+Core\Functions.lua
+Core\Time.lua
+
+Core\Debug.lua
+Core\Config.lua
+
+# modules
+# load Quest.lua first, required by Currency.lua
+Modules\Quest.lua
+Modules\Currency_Wrath.lua
+Modules\Progress.lua
+Modules\TradeSkill.lua
+
+Core\Core.lua
