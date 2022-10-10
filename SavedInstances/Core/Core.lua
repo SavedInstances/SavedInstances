@@ -3410,17 +3410,6 @@ local function OpenLFR(self, instanceid, button)
   end
 end
 
-local function OpenLFS(self, instanceid, button)
-  if ScenarioFinderFrame and ScenarioFinderFrame:IsVisible() and ScenarioQueueFrame.type ~= instanceid then
-  -- changing entries
-  else
-    PVEFrame_ToggleFrame("GroupFinderFrame", ScenarioFinderFrame)
-  end
-  if ScenarioFinderFrame and ScenarioFinderFrame:IsVisible() and ScenarioQueueFrame_SetType then
-    ScenarioQueueFrame_SetType(instanceid)
-  end
-end
-
 local function ReportKeys(self, index, button)
   SI:GetModule("MythicPlus"):Keys(index)
 end
@@ -3778,11 +3767,7 @@ function SI:ShowTooltip(anchorframe)
           end
           local tstr = SecondsToTime(d.Expires - time(), false, false, 1)
           tooltip:SetCell(row, columns[toon..1], ClassColorise(t.Class,tstr), "CENTER",maxcol)
-          if info.Scenario then
-            tooltip:SetLineScript(row, "OnMouseDown", OpenLFS, info.LFDID)
-          else
-            tooltip:SetLineScript(row, "OnMouseDown", OpenLFD, info.LFDID)
-          end
+          tooltip:SetLineScript(row, "OnMouseDown", OpenLFD, info.LFDID)
         end
       end
     end
