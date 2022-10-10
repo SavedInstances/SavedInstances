@@ -23,8 +23,6 @@ local GRAY_COLOR = { 0.5, 0.5, 0.5, 1 }
 local INSTANCE_SAVED, TRANSFER_ABORT_TOO_MANY_INSTANCES, NO_RAID_INSTANCES_SAVED =
   INSTANCE_SAVED, TRANSFER_ABORT_TOO_MANY_INSTANCES, NO_RAID_INSTANCES_SAVED
 
-local IsQuestFlaggedCompleted = C_QuestLog and C_QuestLog.IsQuestFlaggedCompleted or IsQuestFlaggedCompleted
-
 local ALREADY_LOOTED = ERR_LOOT_GONE:gsub("%(.*%)","")
 ALREADY_LOOTED = ALREADY_LOOTED:gsub("（.*）","") -- fix on zhCN and zhTW
 
@@ -3023,7 +3021,7 @@ function SI:QuestRefresh(recoverdaily, nextreset, weeklyreset)
 
   for _, qinfo in pairs(SI:specialQuests()) do
     local qid = qinfo.quest
-    if IsQuestFlaggedCompleted(qid) then
+    if C_QuestLog.IsQuestFlaggedCompleted(qid) then
       local q = tiq[qid] or {}
       tiq[qid] = q
       q.Title = qinfo.name
@@ -3049,7 +3047,7 @@ function SI:QuestRefresh(recoverdaily, nextreset, weeklyreset)
     end
     if recoverdaily or (scope ~= "Daily") then
       for qid, mapid in pairs(list) do
-        if tonumber(qid) and IsQuestFlaggedCompleted(qid) and not questlist[qid] and -- recovering a lost quest
+        if tonumber(qid) and C_QuestLog.IsQuestFlaggedCompleted(qid) and not questlist[qid] and -- recovering a lost quest
           (list.expires == nil or list.expires > now) then -- don't repop darkmoon quests from last faire
           local title, link = SI:QuestInfo(qid)
           if title then
@@ -3154,7 +3152,7 @@ function SI:Refresh(recoverdaily)
   end
   for _,einfo in pairs(SI.WorldBosses) do
     if weeklyreset and (
-      (einfo.quest and IsQuestFlaggedCompleted(einfo.quest)) or
+      (einfo.quest and C_QuestLog.IsQuestFlaggedCompleted(einfo.quest)) or
       wbsave[einfo.savename or einfo.name]
       ) then
       local truename = einfo.name
