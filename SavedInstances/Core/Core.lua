@@ -1324,9 +1324,9 @@ function SI:UpdateToonData()
     RequestTimePlayed()
   end
   t.LFG1 = SI:GetTimeToTime(GetLFGRandomCooldownExpiration()) or t.LFG1
-  t.LFG2 = SI:GetTimeToTime(select(6, GetPlayerAuraBySpellID(71041))) or t.LFG2 -- GetLFGDeserterExpiration()
+  t.LFG2 = SI:GetTimeToTime(SI:GetPlayerAuraExpirationTime(71041)) or t.LFG2 -- GetLFGDeserterExpiration()
   if t.LFG2 then SI:updateSpellTip(71041) end
-  t.pvpdesert = SI:GetTimeToTime(select(6, GetPlayerAuraBySpellID(26013))) or t.pvpdesert
+  t.pvpdesert = SI:GetTimeToTime(SI:GetPlayerAuraExpirationTime(26013)) or t.pvpdesert
   if t.pvpdesert then SI:updateSpellTip(26013) end
   for toon, ti in pairs(SI.db.Toons) do
     if ti.LFG1 and (ti.LFG1 < now) then ti.LFG1 = nil end
