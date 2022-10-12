@@ -98,6 +98,7 @@ globals = {
 	"RaidFinderQueueFrame",
 	"ScenarioFinderFrame",
 	"BonusRollFrame",
+	"SettingsPanel",
 
 	-- HybridScrollFrame
 	"HybridScrollFrame_CreateButtons",
@@ -120,6 +121,8 @@ globals = {
 	"ICON_LIST",
 	"GAME_LOCALE",
 	"SPLASH_LEGION_NEW_7_1_RIGHT_TITLE",
+	"DifficultyUtil",
+	"Settings",
 
 	-- API functions
 	"AbandonQuest",
@@ -426,6 +429,7 @@ globals = {
 	"C_Commentator.UpdatePlayerInfo",
 	"C_Commentator.ZoomIn",
 	"C_Commentator.ZoomOut",
+	"C_Container",
 	"C_ContributionCollector",
 	"C_Covenants",
 	"C_CurrencyInfo",
@@ -1175,6 +1179,7 @@ globals = {
 	"C_Trophy.MonumentRevertAppearanceToSaved",
 	"C_Trophy.MonumentSaveSelection",
 	"C_UIWidgetManager",
+	"C_UnitAuras",
 	"C_Vignettes",
 	"C_Vignettes.GetNumVignettes",
 	"C_Vignettes.GetVignetteGUID",
