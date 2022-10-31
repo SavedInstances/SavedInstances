@@ -362,11 +362,11 @@ SI.defaultDB = {
     TrackPlayed = true,
     AugmentBonus = true,
     CurrencyValueColor = true,
-    Currency2003, -- Dragon Isles Supplies
-    Currency2011, -- Effigy Adornments
-    Currency2045, -- Purified Arcane Energy
-    Currency2118, -- Elemental Overflow
-    Currency2122, -- Storm Sigil
+    Currency2003 = true, -- Dragon Isles Supplies
+    Currency2011 = true, -- Effigy Adornments
+    Currency2045 = true, -- Purified Arcane Energy
+    Currency2118 = true, -- Elemental Overflow
+    Currency2122 = true, -- Storm Sigil
     CurrencyMax = false,
     CurrencyEarned = true,
     CurrencySortName = false,
