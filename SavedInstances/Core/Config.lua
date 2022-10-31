@@ -15,7 +15,11 @@ local GetCurrentBindingSet = GetCurrentBindingSet
 local GetRealmName = GetRealmName
 local SaveBindings = SaveBindings
 local SetBinding = SetBinding
+
+local HideUIPanel = HideUIPanel
+local Settings_OpenToCategory = Settings.OpenToCategory
 local StaticPopup_Show = StaticPopup_Show
+
 local ALL = ALL
 local CALLINGS_QUESTS = CALLINGS_QUESTS
 local COLOR = COLOR
@@ -924,7 +928,7 @@ local configFrameName, configCharactersFrameName
 function Config:ReopenConfigDisplay(frame)
   if _G.SettingsPanel:IsShown() then
     HideUIPanel(_G.SettingsPanel)
-    Settings.OpenToCategory(configFrameName)
+    Settings_OpenToCategory(configFrameName)
     -- Settings.OpenToCategory(frame)
     -- Not possible due to lack of WoW feature
   end
@@ -934,7 +938,7 @@ function Config:ShowConfig()
   if _G.SettingsPanel:IsShown() then
     HideUIPanel(_G.SettingsPanel)
   else
-    Settings.OpenToCategory(configFrameName)
+    Settings_OpenToCategory(configFrameName)
   end
 end
 
