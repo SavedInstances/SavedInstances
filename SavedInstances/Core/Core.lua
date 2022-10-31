@@ -362,12 +362,11 @@ SI.defaultDB = {
     TrackPlayed = true,
     AugmentBonus = true,
     CurrencyValueColor = true,
-    Currency1767 = true, -- Stygia
-    Currency1602 = true, -- Conquest
-    Currency1792 = true, -- Honor
-    Currency1822 = true, -- Renown
-    Currency1979 = true, -- Cyphers of the First Ones
-    Currency2009 = true, -- Cosmic Flux
+    Currency2003, -- Dragon Isles Supplies
+    Currency2011, -- Effigy Adornments
+    Currency2045, -- Purified Arcane Energy
+    Currency2118, -- Elemental Overflow
+    Currency2122, -- Storm Sigil
     CurrencyMax = false,
     CurrencyEarned = true,
     CurrencySortName = false,
