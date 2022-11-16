@@ -8,9 +8,9 @@ local ipairs, sort, strsplit, tonumber, wipe = ipairs, sort, strsplit, tonumber,
 -- WoW API / Variables
 local C_ChallengeMode_GetKeystoneLevelRarityColor = C_ChallengeMode.GetKeystoneLevelRarityColor
 local C_ChallengeMode_GetMapUIInfo = C_ChallengeMode.GetMapUIInfo
-local C_Container_GetContainerItemID = C_Container and C_Container.GetContainerItemID or GetContainerItemID
-local C_Container_GetContainerItemLink = C_Container and C_Container.GetContainerItemLink or GetContainerItemLink
-local C_Container_GetContainerNumSlots = C_Container and C_Container.GetContainerNumSlots or GetContainerNumSlots
+local C_Container_GetContainerItemID = C_Container.GetContainerItemID
+local C_Container_GetContainerItemLink = C_Container.GetContainerItemLink
+local C_Container_GetContainerNumSlots = C_Container.GetContainerNumSlots
 local C_MythicPlus_GetRunHistory = C_MythicPlus.GetRunHistory
 local C_MythicPlus_RequestMapInfo = C_MythicPlus.RequestMapInfo
 local C_MythicPlus_GetRewardLevelFromKeystoneLevel = C_MythicPlus.GetRewardLevelFromKeystoneLevel
