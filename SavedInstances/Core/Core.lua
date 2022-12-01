@@ -615,6 +615,7 @@ SI.transInstance = {
   [585] = 1154, -- Magisters' Terrace: issue #293 frFR
   [2235] = 1911, -- Caverns of Time - Anniversary: issue #315 (fake LFDID used by Escape from Tol Dagor)
   [725] = 1148, -- The Stonecore: issue #328 frFR
+  [2515] = 2335, -- The Azure Vault: issue #630 deDE
 }
 
 -- some instances (like sethekk halls) are named differently by GetSavedInstanceInfo() and LFGGetDungeonInfoByID()
