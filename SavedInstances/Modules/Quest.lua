@@ -43,6 +43,7 @@ local _specialQuests = {
 
   -- Order Hall
   [42481] = { zid=717, daily=true }, -- Warlock: Ritual of Doom
+  [43763] = { zid=695, lid=141069 }, -- Warrior: Skyhold Chest of Riches
   [44707] = { zid=719, daily=true, sid=228651 }, -- Demon Hunter: Twisting Nether
 
   -- Mechagon
