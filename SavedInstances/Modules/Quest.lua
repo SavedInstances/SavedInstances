@@ -71,6 +71,15 @@ local _specialQuests = {
   [63823] = { zid=1543 }, -- Night Fae Assault
   [63824] = { zid=1543 }, -- Kyrian Assault
 
+  -- Dragonflight
+  [66419] = { zid=2022 }, -- Allegiance to One
+  [66133] = { zid=2022 }, -- Keys of Loyalty (Warthion)
+  [66805] = { zid=2022 }, -- Keys of Loyalty (Sabellian)
+  [70866] = { name=L["Siege on Dragonbane Keep"], zid=2022 }, -- Siege on Dragonbane Keep
+  [70906] = { name=L["Grand Hunts: Mythic Reward"] }, -- Grand Hunts: Mythic Reward
+  [71136] = { name=L["Grand Hunts: Rare Reward"] }, -- Grand Hunts: Rare Reward
+  [71137] = { name=L["Grand Hunts: Uncommon Reward"] }, -- Grand Hunts: Uncommon Reward
+
   -- Old Vanilla Bosses during Anniversary Event
   [47461] = { daily=true, name=L["Lord Kazzak"] },          -- Lord Kazzak
   [47462] = { daily=true, name=L["Azuregos"] },             -- Azuregos
