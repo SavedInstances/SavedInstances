@@ -89,6 +89,7 @@ local currency = {
   2045, -- Purified Arcane Energy
   2118, -- Elemental Overflow
   2122, -- Storm Sigil
+  2123, -- Bloody Tokens
 }
 SI.currency = currency
 
