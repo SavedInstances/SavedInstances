@@ -393,7 +393,8 @@ SI.defaultDB = {
     Progress7 = false, -- Covenant Assaults
     Progress8 = false, -- The World Awaits
     Progress9 = false, -- Emissary of War
-    Progress10 = true, -- Patterns Within Patterns
+    Progress10 = false, -- Patterns Within Patterns
+    Progress11 = true, -- Dragonflight Renown
     Warfront1 = false, -- Arathi Highlands
     Warfront2 = false, -- Darkshores
     KeystoneReportTarget = "EXPORT",
@@ -2484,6 +2485,30 @@ hoverTooltip.ShowCovenantAssaultTooltip = function (cell, arg, ...)
         (REDFONT .. ADDON_NOT_AVAILABLE .. FONTEND)
       )
     )
+  end
+
+  finishIndicator()
+end
+
+hoverTooltip.ShowDragonflightRenownTooltip = function (cell, arg, ...)
+  -- Should be in Module Progress
+  local toon, index = unpack(arg)
+  local t = SI.db.Toons[toon]
+  if not t or not t.Progress or not t.Progress[index] then return end
+  if not t or not t.Quests then return end
+  openIndicator(2, "LEFT", "RIGHT")
+  indicatortip:AddHeader(ClassColorise(t.Class, toon), L["Dragonflight Renown"])
+
+  local majorFactionIDs = C_MajorFactions.GetMajorFactionIDs(LE_EXPANSION_DRAGONFLIGHT)
+  for _, factionID in ipairs(majorFactionIDs) do
+    if t.Progress[index][factionID] then
+      indicatortip:AddLine(
+        C_MajorFactions.GetMajorFactionData(factionID).name,
+        format("%s %s (%s/%s)", COVENANT_SANCTUM_TAB_RENOWN, unpack(t.Progress[index][factionID]))
+      )
+    else
+      indicatortip:AddLine(C_MajorFactions.GetMajorFactionData(factionID).name, LOCKED)
+    end
   end
 
   finishIndicator()
