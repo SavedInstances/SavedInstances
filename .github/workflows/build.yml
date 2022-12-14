@@ -17,7 +17,9 @@ jobs:
       WAGO_API_TOKEN: ${{ secrets.WAGO_API_TOKEN }}
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # gets git history for changelogs
 
       - name: Install and run Luacheck
         uses: nebularg/actions-luacheck@v1
