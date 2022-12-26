@@ -95,7 +95,7 @@ local _specialQuests = {
   [74114] = { name=L["Draconic Treatise (Skinning)"] },
   [74115] = { name=L["Draconic Treatise (Tailoring)"] },
   
-  --Professions
+  -- Weekly Professions
   [66373] = { name=L["Disturbed Dirt or Expedition Scout's Pack (Alchemy)"] },
   [66374] = { name=L["Disturbed Dirt or Expedition Scout's Pack (Alchemy)"] },
   [66381] = { name=L["Disturbed Dirt or Expedition Scout's Pack (Blacksmithing)"] },
