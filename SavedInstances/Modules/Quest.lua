@@ -81,7 +81,7 @@ local _specialQuests = {
   [71137] = { name=L["Grand Hunts: Uncommon Reward"] }, -- Grand Hunts: Uncommon Reward
   [71033] = { name=L["Trial of Flood"] }, -- Trial of Flood
   [71995] = { name=L["Trial of Elements"] }, -- Trial of Elements
-  
+
   -- Weekly Treatise
   [74108] = { name=L["Draconic Treatise (Alchemy)"] },
   [74109] = { name=L["Draconic Treatise (Blacksmithing)"] },
@@ -94,7 +94,7 @@ local _specialQuests = {
   [74106] = { name=L["Draconic Treatise (Mining)"] },
   [74114] = { name=L["Draconic Treatise (Skinning)"] },
   [74115] = { name=L["Draconic Treatise (Tailoring)"] },
-  
+
   -- Weekly Professions
   [66373] = { name=L["Disturbed Dirt or Expedition Scout's Pack (Alchemy)"] },
   [66374] = { name=L["Disturbed Dirt or Expedition Scout's Pack (Alchemy)"] },
@@ -146,7 +146,7 @@ local _specialQuests = {
   [70385] = { name=L["Curious Hide (Skinning)"] },
   [70386] = { name=L["Curious Hide (Skinning)"] },
   [70389] = { name=L["Curious Hide (Skinning)"] },
-  
+
   -- Weekly Profession Quests
   [66884] = { zid=2112 },
   [66944] = { zid=2112 },
