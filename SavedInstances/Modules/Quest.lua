@@ -81,133 +81,70 @@ local _specialQuests = {
   [71137] = { name=L["Grand Hunts: Uncommon Reward"] }, -- Grand Hunts: Uncommon Reward
   [71033] = { name=L["Trial of Flood"] }, -- Trial of Flood
   [71995] = { name=L["Trial of Elements"] }, -- Trial of Elements
-
-  -- Weekly Treatise
-  [74108] = { name=L["Draconic Treatise (Alchemy)"] },
-  [74109] = { name=L["Draconic Treatise (Blacksmithing)"] },
-  [74110] = { name=L["Draconic Treatise (Enchanting)"] },
-  [74111] = { name=L["Draconic Treatise (Engineering)"] },
-  [74107] = { name=L["Draconic Treatise (Herbalism)"] },
-  [74105] = { name=L["Draconic Treatise (Inscription)"] },
-  [74112] = { name=L["Draconic Treatise (Jewelcrafting)"] },
-  [74113] = { name=L["Draconic Treatise (Leatherworking)"] },
-  [74106] = { name=L["Draconic Treatise (Mining)"] },
-  [74114] = { name=L["Draconic Treatise (Skinning)"] },
-  [74115] = { name=L["Draconic Treatise (Tailoring)"] },
-
-  -- Weekly Professions
-  [66373] = { name=L["Disturbed Dirt or Expedition Scout's Pack (Alchemy)"] },
-  [66374] = { name=L["Disturbed Dirt or Expedition Scout's Pack (Alchemy)"] },
-  [66381] = { name=L["Disturbed Dirt or Expedition Scout's Pack (Blacksmithing)"] },
-  [66382] = { name=L["Disturbed Dirt or Expedition Scout's Pack (Blacksmithing)"] },
-  [66377] = { name=L["Disturbed Dirt or Expedition Scout's Pack (Enchanting)"] },
-  [66378] = { name=L["Disturbed Dirt or Expedition Scout's Pack (Enchanting)"] },
-  [66379] = { name=L["Disturbed Dirt or Expedition Scout's Pack (Engineering)"] },
-  [66380] = { name=L["Disturbed Dirt or Expedition Scout's Pack (Engineering)"] },
-  [66375] = { name=L["Disturbed Dirt or Expedition Scout's Pack (Inscription)"] },
-  [66376] = { name=L["Disturbed Dirt or Expedition Scout's Pack (Inscription)"] },
-  [66388] = { name=L["Disturbed Dirt or Expedition Scout's Pack (Jewelcrafting)"] },
-  [66389] = { name=L["Disturbed Dirt or Expedition Scout's Pack (Jewelcrafting)"] },
-  [66384] = { name=L["Disturbed Dirt or Expedition Scout's Pack (Leatherworking)"] },
-  [66385] = { name=L["Disturbed Dirt or Expedition Scout's Pack (Leatherworking)"] },
-  [66386] = { name=L["Disturbed Dirt or Expedition Scout's Pack (Tailoring)"] },
-  [66387] = { name=L["Disturbed Dirt or Expedition Scout's Pack (Tailoring)"] },
-  [70511] = { name=L["Elementious Splinter - Elemental Enemies (Alchemy)"] },
-  [70504] = { name=L["Decaying Phlegm - Rousing Decay Enemies (Alchemy)"] },
-  [70513] = { name=L["Molten Globule - Rousing Fire Enemies (Blacksmithing)"] },
-  [70512] = { name=L["Primeval Earth Fragment - Rousing Earth Enemies (Blacksmithing)"] },
-  [70515] = { name=L["Primalist Charm - Humanoid Primalist Enemies (Enchanting)"] },
-  [70514] = { name=L["Primordial Aether - Arcane Enemies (Enchanting)"] },
-  [70517] = { name=L["Infinitely Attachable Pair o' Docks - Dragonkin Enemies (Engineering)"] },
-  [70516] = { name=L["Keeper's Mark - Titan Enemies (Engineering)"] },
-  [70519] = { name=L["Draconic Glamour - Dragonkin Enemies (Inscription)"] },
-  [70518] = { name=L["Curious Djaradin Rune - Djaradin Enemies (Inscription)"] },
-  [70521] = { name=L["Elegantly Engraved Embellishment - Nokhud/Sundered Flame Enemies (Jewelcrafting)"] },
-  [70520] = { name=L["Incandescent Curio - Elemental Enemies (Jewelcrafting)"] },
-  [70523] = { name=L["Exceedingly Soft Skin - Slyvern/Vorquin Enemies (Leatherworking)"] },
-  [70522] = { name=L["Ossified Hide - Proto-drake or Proto-dragon Enemies (Leatherworking)"] },
-  [70524] = { name=L["Ohn'arhan Weave - Nokhud Enemies (Tailoring)"] },
-  [70525] = { name=L["Stupidly Effective Stitchery - Gnoll Enemies (Tailoring)"] },
-  [71857] = { name=L["Dreambloom (Herbalism)"] },
-  [71858] = { name=L["Dreambloom (Herbalism)"] },
-  [71859] = { name=L["Dreambloom (Herbalism)"] },
-  [71860] = { name=L["Dreambloom (Herbalism)"] },
-  [71861] = { name=L["Dreambloom (Herbalism)"] },
-  [71864] = { name=L["Dreambloom (Herbalism)"] },
-  [72160] = { name=L["Iridescent Ore (Mining)"] },
-  [72161] = { name=L["Iridescent Ore (Mining)"] },
-  [72162] = { name=L["Iridescent Ore (Mining)"] },
-  [72163] = { name=L["Iridescent Ore (Mining)"] },
-  [72164] = { name=L["Iridescent Ore (Mining)"] },
-  [72165] = { name=L["Iridescent Ore (Mining)"] },
-  [70381] = { name=L["Curious Hide (Skinning)"] },
-  [70383] = { name=L["Curious Hide (Skinning)"] },
-  [70384] = { name=L["Curious Hide (Skinning)"] },
-  [70385] = { name=L["Curious Hide (Skinning)"] },
-  [70386] = { name=L["Curious Hide (Skinning)"] },
-  [70389] = { name=L["Curious Hide (Skinning)"] },
-
-  -- Weekly Profession Quests
-  [66884] = { zid=2112 },
-  [66944] = { zid=2112 },
-  [66937] = { zid=2112 },
-  [66517] = { zid=2112 },
-  [72407] = { zid=2112 },
-  [70595] = { zid=2112 },
-  [70594] = { zid=2112 },
-  [72410] = { zid=2112 },
-  [70530] = { zid=2112 },
-  [66950] = { zid=2112 },
-  [66942] = { zid=2112 },
-  [70589] = { zid=2112 },
-  [70591] = { zid=2112 },
-  [70593] = { zid=2112 },
-  [72173] = { zid=2112 },
-  [70540] = { zid=2112 },
-  [72159] = { zid=2112 },
-  [70592] = { zid=2112 },
-  [72157] = { zid=2112 },
-  [72428] = { zid=2112 },
-  [70587] = { zid=2112 },
-  [70563] = { zid=2112 },
-  [66891] = { zid=2112 },
-  [70613] = { zid=2112 },
-  [70235] = { zid=2112 },
-  [70616] = { zid=2112 },
-  [66943] = { zid=2112 },
-  [72427] = { zid=2112 },
-  [66363] = { zid=2112 },
-  [70617] = { zid=2112 },
-  [72172] = { zid=2112 },
-  [70618] = { zid=2112 },
-  [70571] = { zid=2112 },
-  [70561] = { zid=2112 },
-  [66364] = { zid=2112 },
-  [70586] = { zid=2112 },
-  [70569] = { zid=2112 },
-  [66516] = { zid=2112 },
-  [70620] = { zid=2112 },
-  [72423] = { zid=2112 },
-  [70531] = { zid=2112 },
-  [66952] = { zid=2112 },
-  [66890] = { zid=2112 },
-  [70533] = { zid=2112 },
-  [72175] = { zid=2112 },
-  [66897] = { zid=2112 },
-  [66940] = { zid=2112 },
-  [66900] = { zid=2112 },
-  [70532] = { zid=2112 },
-  [66951] = { zid=2112 },
-  [70568] = { zid=2112 },
-  [70557] = { zid=2112 },
-  [70233] = { zid=2112 },
-  [70233] = { zid=2112 },
-  [70565] = { zid=2112 },
-  [70582] = { zid=2112 },
-  [70559] = { zid=2112 },
-  [70564] = { zid=2112 },
-  [70558] = { zid=2112 },
-  [70560] = { zid=2112 },
+  -- Draconic Treatise
+  [74105] = { lid=194699 }, -- Draconic Treatise on Inscription
+  [74106] = { lid=194708 }, -- Draconic Treatise on Mining
+  [74107] = { lid=194704 }, -- Draconic Treatise on Herbalism
+  [74108] = { lid=194697 }, -- Draconic Treatise on Alchemy
+  [74109] = { lid=198454 }, -- Draconic Treatise on Blacksmithing
+  [74110] = { lid=194702 }, -- Draconic Treatise on Enchanting
+  [74111] = { lid=198510 }, -- Draconic Treatise on Engineering
+  [74112] = { lid=194703 }, -- Draconic Treatise on Jewelcrafting
+  [74113] = { lid=194700 }, -- Draconic Treatise on Leatherworking
+  [74114] = { lid=201023 }, -- Draconic Treatise on Skinning
+  [74115] = { lid=194698 }, -- Draconic Treatise on Tailoring
+  -- Dropping Profession Knowledge Items
+  [70381] = { lid=198837 }, -- Curious Hide Scraps
+  [70383] = { lid=198837 }, -- Curious Hide Scraps
+  [70384] = { lid=198837 }, -- Curious Hide Scraps
+  [70385] = { lid=198837 }, -- Curious Hide Scraps
+  [70386] = { lid=198837 }, -- Curious Hide Scraps
+  [70389] = { lid=198837 }, -- Curious Hide Scraps
+  [70504] = { lid=198963 }, -- Decaying Phlegm
+  [70511] = { lid=198964 }, -- Elementious Splinter
+  [70512] = { lid=198965 }, -- Primeval Earth Fragment
+  [70513] = { lid=198966 }, -- Molten Globule
+  [70514] = { lid=198967 }, -- Primordial Aether
+  [70515] = { lid=198968 }, -- Primalist Charm
+  [70516] = { lid=198969 }, -- Keeper's Mark
+  [70517] = { lid=198970 }, -- Infinitely Attachable Pair o' Docks
+  [70518] = { lid=198971 }, -- Curious Djaradin Rune
+  [70519] = { lid=198972 }, -- Draconic Glamour
+  [70520] = { lid=198973 }, -- Incandescent Curio
+  [70521] = { lid=198974 }, -- Elegantly Engraved Embellishment
+  [70522] = { lid=198975 }, -- Ossified Hide
+  [70523] = { lid=198976 }, -- Exceedingly Soft Skin
+  [70524] = { lid=198977 }, -- Ohn'arhan Weave
+  [70525] = { lid=198978 }, -- Stupidly Effective Stitchery
+  [71857] = { lid=200678 }, -- Dreambloom
+  [71858] = { lid=200678 }, -- Dreambloom
+  [71859] = { lid=200678 }, -- Dreambloom
+  [71860] = { lid=200678 }, -- Dreambloom
+  [71861] = { lid=200678 }, -- Dreambloom
+  [71864] = { lid=200678 }, -- Dreambloom
+  [72160] = { lid=201301 }, -- Iridescent Ore
+  [72161] = { lid=201301 }, -- Iridescent Ore
+  [72162] = { lid=201301 }, -- Iridescent Ore
+  [72163] = { lid=201301 }, -- Iridescent Ore
+  [72164] = { lid=201301 }, -- Iridescent Ore
+  [72165] = { lid=201301 }, -- Iridescent Ore
+  -- Disturbed Dirt / Expedition Scout's Pack
+  [66373] = { name=L["Disturbed Dirt / Expedition Scout's Pack"] .. ' - ' .. GetSpellInfo(2259) }, -- Alchemy
+  [66374] = { name=L["Disturbed Dirt / Expedition Scout's Pack"] .. ' - ' .. GetSpellInfo(2259) }, -- Alchemy
+  [66375] = { name=L["Disturbed Dirt / Expedition Scout's Pack"] .. ' - ' .. GetSpellInfo(45357) }, -- Inscription
+  [66376] = { name=L["Disturbed Dirt / Expedition Scout's Pack"] .. ' - ' .. GetSpellInfo(45357) }, -- Inscription
+  [66377] = { name=L["Disturbed Dirt / Expedition Scout's Pack"] .. ' - ' .. GetSpellInfo(7411) }, -- Enchanting
+  [66378] = { name=L["Disturbed Dirt / Expedition Scout's Pack"] .. ' - ' .. GetSpellInfo(7411) }, -- Enchanting
+  [66379] = { name=L["Disturbed Dirt / Expedition Scout's Pack"] .. ' - ' .. GetSpellInfo(4036) }, -- Engineering
+  [66380] = { name=L["Disturbed Dirt / Expedition Scout's Pack"] .. ' - ' .. GetSpellInfo(4036) }, -- Engineering
+  [66381] = { name=L["Disturbed Dirt / Expedition Scout's Pack"] .. ' - ' .. GetSpellInfo(2018) }, -- Blacksmithing
+  [66382] = { name=L["Disturbed Dirt / Expedition Scout's Pack"] .. ' - ' .. GetSpellInfo(2018) }, -- Blacksmithing
+  [66384] = { name=L["Disturbed Dirt / Expedition Scout's Pack"] .. ' - ' .. GetSpellInfo(2108) }, -- Leatherworking
+  [66385] = { name=L["Disturbed Dirt / Expedition Scout's Pack"] .. ' - ' .. GetSpellInfo(2108) }, -- Leatherworking
+  [66386] = { name=L["Disturbed Dirt / Expedition Scout's Pack"] .. ' - ' .. GetSpellInfo(3908) }, -- Tailoring
+  [66387] = { name=L["Disturbed Dirt / Expedition Scout's Pack"] .. ' - ' .. GetSpellInfo(3908) }, -- Tailoring
+  [66388] = { name=L["Disturbed Dirt / Expedition Scout's Pack"] .. ' - ' .. GetSpellInfo(25229) }, -- Jewelcrafting
+  [66389] = { name=L["Disturbed Dirt / Expedition Scout's Pack"] .. ' - ' .. GetSpellInfo(25229) }, -- Jewelcrafting
 
   -- Old Vanilla Bosses during Anniversary Event
   [47461] = { daily=true, name=L["Lord Kazzak"] },          -- Lord Kazzak
@@ -417,6 +354,66 @@ local QuestExceptions = {
   [70202] = "Weekly", -- Catch and Release: Cerulean Spinefish
   [70203] = "Weekly", -- Catch and Release: Temporal Dragonhead
   [70935] = "Weekly", -- Catch and Release: Islefin Dorado
+  -- Professions Weeklies
+  [66363] = "Weekly", -- Basilisk Bucklers
+  [66364] = "Weekly", -- To Fly a Kite
+  [66516] = "Weekly", -- Mundane Gems, I Think Not!
+  [66517] = "Weekly", -- A New Source of Weapons
+  [66884] = "Weekly", -- Fireproof Gear
+  [66890] = "Weekly", -- Stolen Tools
+  [66891] = "Weekly", -- Explosive Ash
+  [66897] = "Weekly", -- Fuel for the Forge
+  [66900] = "Weekly", -- Enchanted Relics
+  [66937] = "Weekly", -- Decaying News
+  [66940] = "Weekly", -- Elixir Experiment
+  [66942] = "Weekly", -- Enemy Engineering
+  [66943] = "Weekly", -- Wood for Writing
+  [66944] = "Weekly", -- Peacock Pigments
+  [66950] = "Weekly", -- Heart of a Giant
+  [66951] = "Weekly", -- Population Control
+  [66952] = "Weekly", -- The Gnoll's Clothes
+  [70233] = "Weekly", -- Axe Shortage
+  [70235] = "Weekly", -- Repair Bill
+  [70530] = "Weekly", -- Examination Week
+  [70531] = "Weekly", -- Mana Markets
+  [70532] = "Weekly", -- Aiding the Raiding
+  [70533] = "Weekly", -- Draught, Oiled Again
+  [70540] = "Weekly", -- An Engineer's Best Friend
+  [70557] = "Weekly", -- No Scopes
+  [70558] = "Weekly", -- Disillusioned Illusions
+  [70559] = "Weekly", -- Quill You Help?
+  [70560] = "Weekly", -- The Most Powerful Tool: Good Documentation
+  [70561] = "Weekly", -- A Scribe's Tragedy
+  [70563] = "Weekly", -- The Exhibition
+  [70564] = "Weekly", -- Spectacular
+  [70565] = "Weekly", -- Separation by Saturation
+  [70568] = "Weekly", -- Tipping the Scales
+  [70569] = "Weekly", -- For Trisket, a Task Kit
+  [70571] = "Weekly", -- Drums Here!
+  [70582] = "Weekly", -- Weave Well Enough Alone
+  [70586] = "Weekly", -- Sew Many Cooks
+  [70587] = "Weekly", -- A Knapsack Problem
+  [70589] = "Weekly", -- Blacksmithing Services Requested
+  [70591] = "Weekly", -- Engineering Services Requested
+  [70592] = "Weekly", -- Inscription Services Requested
+  [70593] = "Weekly", -- Jewelcrafting Services Requested
+  [70594] = "Weekly", -- Leatherworking Services Requested
+  [70595] = "Weekly", -- Tailoring Services Requested
+  [70613] = "Weekly", -- Get Their Bark Before They Bite
+  [70616] = "Weekly", -- How Many??
+  [70617] = "Weekly", -- All Mine, Mine, Mine
+  [70618] = "Weekly", -- The Call of the Forge
+  [70620] = "Weekly", -- Scaling Up
+  [72157] = "Weekly", -- The Weight of Earth
+  [72159] = "Weekly", -- Scaling Down
+  [72172] = "Weekly", -- Essence, Shards, and Chromatic Dust
+  [72173] = "Weekly", -- Braced for Enchantment
+  [72175] = "Weekly", -- A Scept-acular Time
+  [72407] = "Weekly", -- Soaked in Success
+  [72410] = "Weekly", -- Pincers and Needles
+  [72423] = "Weekly", -- Weathering the Storm
+  [72427] = "Weekly", -- Animated Infusion
+  [72428] = "Weekly", -- Hornswog Hoarders
 
   -- General
   -- Darkmoon Faire
