@@ -414,6 +414,12 @@ local QuestExceptions = {
   [72423] = "Weekly", -- Weathering the Storm
   [72427] = "Weekly", -- Animated Infusion
   [72428] = "Weekly", -- Hornswog Hoarders
+  -- Primalist Invasions
+  [70723] = "Weekly", -- Shattering the Earth Primalists
+  [70752] = "Weekly", -- Vaporizing the Water Primalists
+  [70754] = "Weekly", -- Extinguishing the Fire Primalists
+  [70753] = "Weekly", -- Dissipating the Air Primalists
+  [72686] = "Weekly", -- Storm Surge
 
   -- General
   -- Darkmoon Faire
