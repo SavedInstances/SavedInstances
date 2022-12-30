@@ -476,6 +476,12 @@ Module.TrackedQuest = {
     quest = 70893,
     relatedQuest = {70893},
   },
+  {
+    name = L["Siege on Dragonbane Keep"],
+    weekly = true,
+    quest = 70866,
+    relatedQuest = {70866},
+  },
 }
 
 function Module:OnEnable()
