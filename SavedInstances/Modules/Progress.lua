@@ -500,6 +500,30 @@ Module.TrackedQuest = {
     quest = 71033,
     relatedQuest = {71033},
   },
+  {
+    name = L["Fire Core"],
+    weekly = true,
+    quest = 70754,
+    relatedQuest = {70754},
+  },
+  {
+    name = L["Water Core"],
+    weekly = true,
+    quest = 70752,
+    relatedQuest = {70752},
+  },
+  {
+    name = L["Earth Core"],
+    weekly = true,
+    quest = 70723,
+    relatedQuest = {70723},
+  },
+  {
+    name = L["Air Core"],
+    weekly = true,
+    quest = 70753,
+    relatedQuest = {70753},
+  },
 }
 
 function Module:OnEnable()
