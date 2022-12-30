@@ -488,6 +488,18 @@ Module.TrackedQuest = {
     quest = 70906,
     relatedQuest = {70906},
   },
+  {
+    name = L["Trial of the Elements"],
+    weekly = true,
+    quest = 71995,
+    relatedQuest = {71995},
+  },
+  {
+    name = L["Trial of the Flood"],
+    weekly = true,
+    quest = 71033,
+    relatedQuest = {71033},
+  },
 }
 
 function Module:OnEnable()
