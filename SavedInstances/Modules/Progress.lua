@@ -464,6 +464,18 @@ Module.TrackedQuest = {
     resetFunc = DragonflightRenownReset,
     tooltipKey = 'ShowDragonflightRenownTooltip',
   },
+  {
+    name = L["Aiding the Accord"],
+    weekly = true,
+    quest = 70750,
+    relatedQuest = {70750},
+  },
+  {
+    name = L["Community Feast"],
+    weekly = true,
+    quest = 70893,
+    relatedQuest = {70893},
+  },
 }
 
 function Module:OnEnable()
