@@ -482,6 +482,12 @@ Module.TrackedQuest = {
     quest = 70866,
     relatedQuest = {70866},
   },
+  {
+    name = L["Grand Hunt"],
+    weekly = true,
+    quest = 70906,
+    relatedQuest = {70906},
+  },
 }
 
 function Module:OnEnable()
