@@ -153,6 +153,14 @@ SI.defaultDB = {
   -- Arena2v2rating: integer
   -- Arena3v3rating: integer
   -- RBGrating: integer
+  -- SoloShuffleSpec1rating: integer
+  -- SoloShuffleSpec2rating: integer
+  -- SoloShuffleSpec3rating: integer
+  -- SoloShuffleSpec4rating: integer
+  -- Spec1Name: string
+  -- Spec2Name: string
+  -- Spec3Name: string
+  -- Spec4Name: string
 
   -- currency: key: currencyID  value:
   -- amount: integer
@@ -1344,6 +1352,19 @@ function SI:UpdateToonData()
   t.Arena2v2rating = tonumber(GetPersonalRatedInfo(1), 10) or t.Arena2v2rating
   t.Arena3v3rating = tonumber(GetPersonalRatedInfo(2), 10) or t.Arena3v3rating
   t.RBGrating = tonumber(GetPersonalRatedInfo(4), 10) or t.RBGrating
+
+  -- Solo Shuffle rating is unique to each specialization
+  local currentSpecializationId = tonumber(GetSpecialization(), 10)
+  if (currentSpecializationId==1) then
+    t.SoloShuffleSpec1rating = tonumber(GetPersonalRatedInfo(7), 10) or t.SoloShuffleSpec1rating
+  elseif (currentSpecializationId == 2) then
+    t.SoloShuffleSpec2rating = tonumber(GetPersonalRatedInfo(7), 10) or t.SoloShuffleSpec2rating
+  elseif (currentSpecializationId == 3) then
+    t.SoloShuffleSpec3rating = tonumber(GetPersonalRatedInfo(7), 10) or t.SoloShuffleSpec3rating
+  elseif (currentSpecializationId == 4) then
+    t.SoloShuffleSpec4rating = tonumber(GetPersonalRatedInfo(7), 10) or t.SoloShuffleSpec4rating
+  end
+  
   SI:GetModule("TradeSkill"):ScanItemCDs()
   local Calling = SI:GetModule("Calling")
   local Progress = SI:GetModule("Progress")
@@ -1639,6 +1660,18 @@ hoverTooltip.ShowToonTooltip = function (cell, arg, ...)
   end
   if t.RBGrating and t.RBGrating > 0 then
     indicatortip:AddLine(BG_RATING_ABBR, t.RBGrating)
+  end
+  if t.SoloShuffleSpec1rating and t.SoloShuffleSpec1rating > 0 then
+    indicatortip:AddLine("Solo Shuffle Rating: " .. t.Spec1Name, t.SoloShuffleSpec1rating)
+  end
+  if t.SoloShuffleSpec2rating and t.SoloShuffleSpec2rating > 0 then
+    indicatortip:AddLine("Solo Shuffle Rating: " .. t.Spec2Name, t.SoloShuffleSpec2rating)
+  end
+  if t.SoloShuffleSpec3rating and t.SoloShuffleSpec3rating > 0 then
+    indicatortip:AddLine("Solo Shuffle Rating: " .. t.Spec3Name, t.SoloShuffleSpec3rating)
+  end
+  if t.SoloShuffleSpec4rating and t.SoloShuffleSpec4rating > 0 then
+    indicatortip:AddLine("Solo Shuffle Rating: " .. t.Spec4Name, t.SoloShuffleSpec4rating)
   end
   if t.Money then
     indicatortip:AddLine(MONEY,SI:formatNumber(t.Money,true))
@@ -2537,6 +2570,15 @@ function SI:toonInit()
   -- real update comes later in UpdateToonData
   ti.DailyResetTime = ti.DailyResetTime or SI:GetNextDailyResetTime()
   ti.WeeklyResetTime = ti.WeeklyResetTime or SI:GetNextWeeklyResetTime()
+
+  local _, specName1 = GetSpecializationInfo(1)
+  ti.Spec1Name = specName1 or ti.Spec1Name
+  local _, specName2 = GetSpecializationInfo(2)
+  ti.Spec2Name = specName2 or ti.Spec2Name
+  local _, specName3 = GetSpecializationInfo(3)
+  ti.Spec3Name = specName3 or ti.Spec3Name
+  local _, specName4 = GetSpecializationInfo(4)
+  ti.Spec4Name = specName4 or ti.Spec4Name
 end
 
 function SI:OnInitialize()
@@ -2652,6 +2694,15 @@ function SI:OnEnable()
   self:RegisterEvent("MYTHIC_PLUS_NEW_WEEKLY_RECORD", "UpdateToonData")
   self:RegisterEvent("ZONE_CHANGED_NEW_AREA", RequestRatedInfo)
   self:RegisterEvent("PLAYER_ENTERING_WORLD", function()
+    C_Timer.After(1, function()
+      RequestRatedInfo()
+      RequestRaidInfo()
+    end)
+
+    SI:UpdateToonData()
+  end)
+  -- Update rating on spec change because Solo Shuffle is unique to each spec
+  self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED", function()
     C_Timer.After(1, function()
       RequestRatedInfo()
       RequestRaidInfo()
