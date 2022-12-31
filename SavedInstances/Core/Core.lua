@@ -1367,7 +1367,7 @@ function SI:UpdateToonData()
   elseif (currentSpecializationId == 4) then
     t.SoloShuffleSpec4rating = tonumber(GetPersonalRatedInfo(7), 10) or t.SoloShuffleSpec4rating
   end
-  
+
   SI:GetModule("TradeSkill"):ScanItemCDs()
   local Calling = SI:GetModule("Calling")
   local Progress = SI:GetModule("Progress")
