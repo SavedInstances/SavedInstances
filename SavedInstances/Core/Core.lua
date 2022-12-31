@@ -1337,9 +1337,12 @@ function SI:UpdateToonData()
     if ti.pvpdesert and (ti.pvpdesert < now) then ti.pvpdesert = nil end
     ti.Quests = ti.Quests or {}
   end
-  local IL,ILe = GetAverageItemLevel()
+  local IL,ILe,ILPvp = GetAverageItemLevel()
   if IL and tonumber(IL) and tonumber(IL) > 0 then -- can fail during logout
     t.IL, t.ILe = tonumber(IL), tonumber(ILe)
+  end
+  if ILPvp and tonumber(ILPvp) > 0 then
+    t.ILPvp = tonumber(ILPvp)
   end
   t.Arena2v2rating = tonumber(GetPersonalRatedInfo(1), 10) or t.Arena2v2rating
   t.Arena3v3rating = tonumber(GetPersonalRatedInfo(2), 10) or t.Arena3v3rating
@@ -1621,6 +1624,7 @@ hoverTooltip.ShowToonTooltip = function (cell, arg, ...)
     indicatortip:AddLine(COMBAT_XP_GAIN, format("%.0f%% + %.0f%%", t.XP / t.MaxXP * 100, percent))
   end
   indicatortip:AddLine(STAT_AVERAGE_ITEM_LEVEL,("%d "):format(t.IL or 0)..STAT_AVERAGE_ITEM_LEVEL_EQUIPPED:format(t.ILe or 0))
+  indicatortip:AddLine("PvP Item Level",("%d"):format(t.ILPvp or 0))
   if t.Covenant and t.Covenant > 0 then
     local data = C_Covenants.GetCovenantData(t.Covenant)
     local name = data and data.name
