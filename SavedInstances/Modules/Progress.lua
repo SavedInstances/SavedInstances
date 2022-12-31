@@ -524,6 +524,24 @@ Module.TrackedQuest = {
     quest = 70753,
     relatedQuest = {70753},
   },
+  {
+    name = L["Sparks of Life: Ohn'ahran Plains"],
+    weekly = true,
+    quest = 72647,
+    relatedQuest = {72647},
+  },
+  {
+    name = L["Sparks of Life: The Azure Span"],
+    weekly = true,
+    quest = 72648,
+    relatedQuest = {72648},
+  },
+  {
+    name = L["Sparks of Life: Thaldraszus"],
+    weekly = true,
+    quest = 72649,
+    relatedQuest = {72649},
+  }
 }
 
 function Module:OnEnable()
