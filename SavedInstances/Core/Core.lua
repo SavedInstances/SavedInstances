@@ -1356,16 +1356,23 @@ function SI:UpdateToonData()
   t.Arena3v3rating = tonumber(GetPersonalRatedInfo(2), 10) or t.Arena3v3rating
   t.RBGrating = tonumber(GetPersonalRatedInfo(4), 10) or t.RBGrating
 
+  t.SpecializationIDs = t.SpecializationIDs or {}
+  t.SpecializationIDs[1] = GetSpecializationInfo(1) or t.SpecializationIDs[1] or nil
+  t.SpecializationIDs[2] = GetSpecializationInfo(2) or t.SpecializationIDs[2] or nil
+  t.SpecializationIDs[3] = GetSpecializationInfo(3) or t.SpecializationIDs[3] or nil
+  t.SpecializationIDs[4] = GetSpecializationInfo(4) or t.SpecializationIDs[4] or nil
+
   -- Solo Shuffle rating is unique to each specialization
-  local currentSpecializationId = tonumber(GetSpecialization(), 10)
+  t.SoloShuffleRating = t.SoloShuffleRating or {}
+  local currentSpecializationId = GetSpecialization()
   if (currentSpecializationId==1) then
-    t.SoloShuffleSpec1rating = tonumber(GetPersonalRatedInfo(7), 10) or t.SoloShuffleSpec1rating
+    t.SoloShuffleRating[1] = GetPersonalRatedInfo(7) or t.SoloShuffleRating[1]
   elseif (currentSpecializationId == 2) then
-    t.SoloShuffleSpec2rating = tonumber(GetPersonalRatedInfo(7), 10) or t.SoloShuffleSpec2rating
+    t.SoloShuffleRating[2] = GetPersonalRatedInfo(7) or t.SoloShuffleRating[2]
   elseif (currentSpecializationId == 3) then
-    t.SoloShuffleSpec3rating = tonumber(GetPersonalRatedInfo(7), 10) or t.SoloShuffleSpec3rating
+    t.SoloShuffleRating[3] = GetPersonalRatedInfo(7) or t.SoloShuffleRating[3]
   elseif (currentSpecializationId == 4) then
-    t.SoloShuffleSpec4rating = tonumber(GetPersonalRatedInfo(7), 10) or t.SoloShuffleSpec4rating
+    t.SoloShuffleRating[4] = GetPersonalRatedInfo(7) or t.SoloShuffleRating[4]
   end
 
   SI:GetModule("TradeSkill"):ScanItemCDs()
@@ -1665,17 +1672,23 @@ hoverTooltip.ShowToonTooltip = function (cell, arg, ...)
   if t.RBGrating and t.RBGrating > 0 then
     indicatortip:AddLine(BG_RATING_ABBR, t.RBGrating)
   end
-  if t.SoloShuffleSpec1rating and t.SoloShuffleSpec1rating > 0 then
-    indicatortip:AddLine("Solo Shuffle Rating: " .. t.Spec1Name, t.SoloShuffleSpec1rating)
-  end
-  if t.SoloShuffleSpec2rating and t.SoloShuffleSpec2rating > 0 then
-    indicatortip:AddLine("Solo Shuffle Rating: " .. t.Spec2Name, t.SoloShuffleSpec2rating)
-  end
-  if t.SoloShuffleSpec3rating and t.SoloShuffleSpec3rating > 0 then
-    indicatortip:AddLine("Solo Shuffle Rating: " .. t.Spec3Name, t.SoloShuffleSpec3rating)
-  end
-  if t.SoloShuffleSpec4rating and t.SoloShuffleSpec4rating > 0 then
-    indicatortip:AddLine("Solo Shuffle Rating: " .. t.Spec4Name, t.SoloShuffleSpec4rating)
+  if t.SoloShuffleRating then
+    if t.SoloShuffleRating[1] and t.SoloShuffleRating[1] > 0 then
+      local _, spec1Name = GetSpecializationInfoForSpecID(t.SpecializationIDs[1])
+      indicatortip:AddLine(PVP_RATED_SOLO_SHUFFLE .. " " .. RATING .. ": " .. spec1Name, t.SoloShuffleRating[1])
+    end
+    if t.SoloShuffleRating[2] and t.SoloShuffleRating[2] > 0 then
+      local _, spec2Name = GetSpecializationInfoForSpecID(t.SpecializationIDs[2])
+      indicatortip:AddLine(PVP_RATED_SOLO_SHUFFLE .. " " .. RATING .. ": " .. spec2Name, t.SoloShuffleRating[2])
+    end
+    if t.SoloShuffleRating[3] and t.SoloShuffleRating[3] > 0 then
+      local _, spec3Name = GetSpecializationInfoForSpecID(t.SpecializationIDs[3])
+      indicatortip:AddLine(PVP_RATED_SOLO_SHUFFLE .. " " .. RATING .. ": " .. spec3Name, t.SoloShuffleRating[3])
+    end
+    if t.SoloShuffleRating[4] and t.SoloShuffleRating[4] > 0 then
+      local _, spec4Name = GetSpecializationInfoForSpecID(t.SpecializationIDs[4])
+      indicatortip:AddLine(PVP_RATED_SOLO_SHUFFLE .. " " .. RATING .. ": " .. spec4Name, t.SoloShuffleRating[4])
+    end
   end
   if t.Money then
     indicatortip:AddLine(MONEY,SI:formatNumber(t.Money,true))
@@ -2649,15 +2662,6 @@ function SI:toonInit()
   -- real update comes later in UpdateToonData
   ti.DailyResetTime = ti.DailyResetTime or SI:GetNextDailyResetTime()
   ti.WeeklyResetTime = ti.WeeklyResetTime or SI:GetNextWeeklyResetTime()
-
-  local _, specName1 = GetSpecializationInfo(1)
-  ti.Spec1Name = specName1 or ti.Spec1Name
-  local _, specName2 = GetSpecializationInfo(2)
-  ti.Spec2Name = specName2 or ti.Spec2Name
-  local _, specName3 = GetSpecializationInfo(3)
-  ti.Spec3Name = specName3 or ti.Spec3Name
-  local _, specName4 = GetSpecializationInfo(4)
-  ti.Spec4Name = specName4 or ti.Spec4Name
 end
 
 function SI:OnInitialize()
