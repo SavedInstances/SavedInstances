@@ -310,6 +310,35 @@ local function DragonflightRenownReset(toon, index)
   -- do nothing
 end
 
+-- Grand Hunt
+local function GrandHuntUpdate(index)
+  SI.db.Toons[SI.thisToon].Progress[index] = wipe(SI.db.Toons[SI.thisToon].Progress[index] or {})
+  for _, questID in ipairs(Module.TrackedQuest[index].relatedQuest) do
+    SI.db.Toons[SI.thisToon].Progress[index][questID] = C_QuestLog_IsQuestFlaggedCompleted(questID)
+  end
+end
+
+local function GrandHuntShow(toon, index)
+  local t = SI.db.Toons[toon]
+  if not t or not t.Quests then return end
+  if not t or not t.Progress or not t.Progress[index] then return end
+
+  local totalDone = 0
+  for _, questID in ipairs(Module.TrackedQuest[index].relatedQuest) do
+    if t.Progress[index][questID] then
+      totalDone = totalDone + 1
+    end
+  end
+  return string.format("%d/%d", totalDone, #Module.TrackedQuest[index].relatedQuest)
+end
+
+local function GrandHuntReset(toon, index)
+  local t = SI.db.Toons[toon]
+  if not t or not t.Progress or not t.Progress[index] then return end
+
+  wipe(t.Progress[index])
+end
+
 Module.TrackedQuest = {
   -- Conquest
   {
@@ -485,8 +514,15 @@ Module.TrackedQuest = {
   {
     name = L["Grand Hunt"],
     weekly = true,
-    quest = 70906,
-    relatedQuest = {70906},
+    func = GrandHuntUpdate,
+    showFunc = GrandHuntShow,
+    resetFunc = GrandHuntReset,
+    relatedQuest = {
+      70906, -- Epic
+      71136, -- Rare
+      71137, -- Uncommon
+    },
+    tooltipKey = 'ShowGrandHuntTooltip',
   },
   {
     name = L["Trial of the Elements"],
