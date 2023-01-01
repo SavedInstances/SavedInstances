@@ -2514,6 +2514,43 @@ hoverTooltip.ShowDragonflightRenownTooltip = function (cell, arg, ...)
   finishIndicator()
 end
 
+hoverTooltip.ShowGrandHuntTooltip = function (cell, arg, ...)
+  -- Should be in Module Progress
+  local toon, index = unpack(arg)
+  local t = SI.db.Toons[toon]
+  if not t or not t.Progress or not t.Progress[index] then return end
+  if not t or not t.Quests then return end
+  openIndicator(2, "LEFT", "RIGHT")
+
+  local P = SI:GetModule("Progress")
+  local totalDone = 0
+  for _, questID in ipairs(P.TrackedQuest[index].relatedQuest) do
+    if t.Progress[index][questID] then
+      totalDone = totalDone + 1
+    end
+  end
+
+  local toonstr = (db.Tooltip.ShowServer and toon) or strsplit(' ', toon)
+
+  indicatortip:AddHeader(ClassColorise(t.Class, toonstr), string.format("%d/%d", totalDone, #P.TrackedQuest[index].relatedQuest))
+
+  local naming = {
+    MAW_BUFF_QUALITY_STRING_EPIC,
+    MAW_BUFF_QUALITY_STRING_RARE,
+    MAW_BUFF_QUALITY_STRING_UNCOMMON,
+  }
+  local IDs = P.TrackedQuest[index].relatedQuest
+
+  for i, questID in ipairs(IDs) do
+    indicatortip:AddLine(
+      naming[i],
+      t.Progress[index][questID] and REDFONT .. ALREADY_LOOTED .. FONTEND or GREENFONT .. AVAILABLE .. FONTEND
+    )
+  end
+
+  finishIndicator()
+end
+
 hoverTooltip.ShowKeyReportTarget = function (cell, arg, ...)
   openIndicator(2, "LEFT", "RIGHT")
   indicatortip:AddHeader(GOLDFONT..L["Keystone report target"]..FONTEND, SI.db.Tooltip.KeystoneReportTarget)
