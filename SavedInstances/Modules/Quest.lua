@@ -414,6 +414,7 @@ local QuestExceptions = {
   [72423] = "Weekly", -- Weathering the Storm
   [72427] = "Weekly", -- Animated Infusion
   [72428] = "Weekly", -- Hornswog Hoarders
+  [66938] = "Weekly", -- Mammoth Marrow
   -- Primalist Invasions
   [70723] = "Weekly", -- Shattering the Earth Primalists
   [70752] = "Weekly", -- Vaporizing the Water Primalists
