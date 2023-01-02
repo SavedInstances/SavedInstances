@@ -153,14 +153,8 @@ SI.defaultDB = {
   -- Arena2v2rating: integer
   -- Arena3v3rating: integer
   -- RBGrating: integer
-  -- SoloShuffleSpec1rating: integer
-  -- SoloShuffleSpec2rating: integer
-  -- SoloShuffleSpec3rating: integer
-  -- SoloShuffleSpec4rating: integer
-  -- Spec1Name: string
-  -- Spec2Name: string
-  -- Spec3Name: string
-  -- Spec4Name: string
+  -- SoloShuffleRating: table
+  -- SpecializationIDs: table
 
   -- currency: key: currencyID  value:
   -- amount: integer
@@ -1357,24 +1351,16 @@ function SI:UpdateToonData()
   t.RBGrating = tonumber(GetPersonalRatedInfo(4), 10) or t.RBGrating
 
   t.SpecializationIDs = t.SpecializationIDs or {}
-  t.SpecializationIDs[1] = GetSpecializationInfo(1) or t.SpecializationIDs[1] or nil
-  t.SpecializationIDs[2] = GetSpecializationInfo(2) or t.SpecializationIDs[2] or nil
-  t.SpecializationIDs[3] = GetSpecializationInfo(3) or t.SpecializationIDs[3] or nil
-  t.SpecializationIDs[4] = GetSpecializationInfo(4) or t.SpecializationIDs[4] or nil
-
+  for i = 1, GetNumSpecializations() do
+    t.SpecializationIDs[i] = GetSpecializationInfo(i) or t.SpecializationIDs[i]
+  end
   -- Solo Shuffle rating is unique to each specialization
   t.SoloShuffleRating = t.SoloShuffleRating or {}
-  local currentSpecializationId = GetSpecialization()
-  if (currentSpecializationId==1) then
-    t.SoloShuffleRating[1] = GetPersonalRatedInfo(7) or t.SoloShuffleRating[1]
-  elseif (currentSpecializationId == 2) then
-    t.SoloShuffleRating[2] = GetPersonalRatedInfo(7) or t.SoloShuffleRating[2]
-  elseif (currentSpecializationId == 3) then
-    t.SoloShuffleRating[3] = GetPersonalRatedInfo(7) or t.SoloShuffleRating[3]
-  elseif (currentSpecializationId == 4) then
-    t.SoloShuffleRating[4] = GetPersonalRatedInfo(7) or t.SoloShuffleRating[4]
+  local currentSpecID = GetSpecialization()
+  if currentSpecID then
+    t.SoloShuffleRating[currentSpecID] = GetPersonalRatedInfo(7) or t.SoloShuffleRating[currentSpecID]
   end
-
+  
   SI:GetModule("TradeSkill"):ScanItemCDs()
   local Calling = SI:GetModule("Calling")
   local Progress = SI:GetModule("Progress")
@@ -1672,22 +1658,12 @@ hoverTooltip.ShowToonTooltip = function (cell, arg, ...)
   if t.RBGrating and t.RBGrating > 0 then
     indicatortip:AddLine(BG_RATING_ABBR, t.RBGrating)
   end
-  if t.SoloShuffleRating then
-    if t.SoloShuffleRating[1] and t.SoloShuffleRating[1] > 0 then
-      local _, spec1Name = GetSpecializationInfoForSpecID(t.SpecializationIDs[1])
-      indicatortip:AddLine(PVP_RATED_SOLO_SHUFFLE .. " " .. RATING .. ": " .. spec1Name, t.SoloShuffleRating[1])
-    end
-    if t.SoloShuffleRating[2] and t.SoloShuffleRating[2] > 0 then
-      local _, spec2Name = GetSpecializationInfoForSpecID(t.SpecializationIDs[2])
-      indicatortip:AddLine(PVP_RATED_SOLO_SHUFFLE .. " " .. RATING .. ": " .. spec2Name, t.SoloShuffleRating[2])
-    end
-    if t.SoloShuffleRating[3] and t.SoloShuffleRating[3] > 0 then
-      local _, spec3Name = GetSpecializationInfoForSpecID(t.SpecializationIDs[3])
-      indicatortip:AddLine(PVP_RATED_SOLO_SHUFFLE .. " " .. RATING .. ": " .. spec3Name, t.SoloShuffleRating[3])
-    end
-    if t.SoloShuffleRating[4] and t.SoloShuffleRating[4] > 0 then
-      local _, spec4Name = GetSpecializationInfoForSpecID(t.SpecializationIDs[4])
-      indicatortip:AddLine(PVP_RATED_SOLO_SHUFFLE .. " " .. RATING .. ": " .. spec4Name, t.SoloShuffleRating[4])
+  if t.SoloShuffleRating and t.SpecializationIDs then
+    for i, specID in ipairs(t.SpecializationIDs) do
+      if t.SoloShuffleRating[i] and t.SoloShuffleRating[i] > 0 then
+        local _, specName = GetSpecializationInfoForSpecID(specID)
+        indicatortip:AddLine(PVP_RATED_SOLO_SHUFFLE .. " " .. RATING .. ": " .. specName, t.SoloShuffleRating[i])
+      end
     end
   end
   if t.Money then
