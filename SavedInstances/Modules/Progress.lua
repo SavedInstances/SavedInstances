@@ -368,6 +368,38 @@ local function PrimalStormsCoreReset(toon, index)
   wipe(t.Progress[index])
 end
 
+local function SparksOfLifeUpdate(index)
+  SI.db.Toons[SI.thisToon].Progress[index] = wipe(SI.db.Toons[SI.thisToon].Progress[index] or {})
+  for _, questID in ipairs(Module.TrackedQuest[index].relatedQuest) do
+    SI.db.Toons[SI.thisToon].Progress[index][questID] = C_TaskQuest_IsActive(questID)
+    -- Is active
+    if SI.db.Toons[SI.thisToon].Progress[index][questID] then
+      local result = {}
+      local _, objectiveType, finished, numFulfilled, numRequired = GetQuestObjectiveInfo(questID, 1, false)
+      result.objectiveType = objectiveType
+      result.isFinish = finished
+      result.numFulfilled = numFulfilled
+      result.numRequired = numRequired
+      if C_QuestLog_IsQuestFlaggedCompleted(questID) then
+        result.unlocked = true
+        result.isComplete = true
+      else
+        local isOnQuest = C_QuestLog_IsOnQuest(questID)
+        result.unlocked = isOnQuest
+        result.isComplete = false
+      end
+      SI.db.Toons[SI.thisToon].Progress[index] = result
+    end
+  end
+end
+
+local function SparksOfLifeReset(toon, index)
+  local t = SI.db.Toons[toon]
+  if not t or not t.Progress or not t.Progress[index] then return end
+
+  wipe(t.Progress[index])
+end
+
 Module.TrackedQuest = {
   -- Conquest
   {
@@ -580,23 +612,17 @@ Module.TrackedQuest = {
     tooltipKey = 'ShowPrimalStormsCoreTooltip',
   },
   {
-    name = L["Sparks of Life: Ohn'ahran Plains"],
+    name = L["Sparks of Life"],
     weekly = true,
-    quest = 72647,
-    relatedQuest = {72647},
+    func = SparksOfLifeUpdate,
+    resetFunc = SparksOfLifeReset,
+    relatedQuest = {
+      72646, -- The Waking Shores
+      72647, -- Ohn'ahran Plains
+      72648, -- The Azure Span
+      72649, -- Thaldraszus
+    },
   },
-  {
-    name = L["Sparks of Life: The Azure Span"],
-    weekly = true,
-    quest = 72648,
-    relatedQuest = {72648},
-  },
-  {
-    name = L["Sparks of Life: Thaldraszus"],
-    weekly = true,
-    quest = 72649,
-    relatedQuest = {72649},
-  }
 }
 
 function Module:OnEnable()
