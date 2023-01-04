@@ -153,6 +153,8 @@ SI.defaultDB = {
   -- Arena2v2rating: integer
   -- Arena3v3rating: integer
   -- RBGrating: integer
+  -- SoloShuffleRating: table
+  -- SpecializationIDs: table
 
   -- currency: key: currencyID  value:
   -- amount: integer
@@ -1355,6 +1357,17 @@ function SI:UpdateToonData()
   t.Arena2v2rating = tonumber(GetPersonalRatedInfo(1), 10) or t.Arena2v2rating
   t.Arena3v3rating = tonumber(GetPersonalRatedInfo(2), 10) or t.Arena3v3rating
   t.RBGrating = tonumber(GetPersonalRatedInfo(4), 10) or t.RBGrating
+
+  t.SpecializationIDs = t.SpecializationIDs or {}
+  for i = 1, GetNumSpecializations() do
+    t.SpecializationIDs[i] = GetSpecializationInfo(i) or t.SpecializationIDs[i]
+  end
+  -- Solo Shuffle rating is unique to each specialization
+  t.SoloShuffleRating = t.SoloShuffleRating or {}
+  local currentSpecID = GetSpecialization()
+  if currentSpecID then
+    t.SoloShuffleRating[currentSpecID] = GetPersonalRatedInfo(7) or t.SoloShuffleRating[currentSpecID]
+  end
   SI:GetModule("TradeSkill"):ScanItemCDs()
   local Calling = SI:GetModule("Calling")
   local Progress = SI:GetModule("Progress")
@@ -1651,6 +1664,14 @@ hoverTooltip.ShowToonTooltip = function (cell, arg, ...)
   end
   if t.RBGrating and t.RBGrating > 0 then
     indicatortip:AddLine(BG_RATING_ABBR, t.RBGrating)
+  end
+  if t.SoloShuffleRating and t.SpecializationIDs then
+    for i, specID in ipairs(t.SpecializationIDs) do
+      if t.SoloShuffleRating[i] and t.SoloShuffleRating[i] > 0 then
+        local _, specName = GetSpecializationInfoForSpecID(specID)
+        indicatortip:AddLine(PVP_RATED_SOLO_SHUFFLE .. " " .. RATING .. ": " .. specName, t.SoloShuffleRating[i])
+      end
+    end
   end
   if t.Money then
     indicatortip:AddLine(MONEY,SI:formatNumber(t.Money,true))
@@ -2739,6 +2760,15 @@ function SI:OnEnable()
   self:RegisterEvent("MYTHIC_PLUS_NEW_WEEKLY_RECORD", "UpdateToonData")
   self:RegisterEvent("ZONE_CHANGED_NEW_AREA", RequestRatedInfo)
   self:RegisterEvent("PLAYER_ENTERING_WORLD", function()
+    C_Timer.After(1, function()
+      RequestRatedInfo()
+      RequestRaidInfo()
+    end)
+
+    SI:UpdateToonData()
+  end)
+  -- Update rating on spec change because Solo Shuffle is unique to each spec
+  self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED", function()
     C_Timer.After(1, function()
       RequestRatedInfo()
       RequestRaidInfo()
