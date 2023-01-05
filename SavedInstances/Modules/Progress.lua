@@ -368,6 +368,41 @@ local function PrimalStormsCoreReset(toon, index)
   wipe(t.Progress[index])
 end
 
+local function SparksOfLifeUpdate(index)
+  SI.db.Toons[SI.thisToon].Progress[index] = wipe(SI.db.Toons[SI.thisToon].Progress[index] or {})
+  local result = SI.db.Toons[SI.thisToon].Progress[index]
+  for _, questID in ipairs(Module.TrackedQuest[index].relatedQuest) do
+    if C_TaskQuest_IsActive(questID) then
+      local _, objectiveType, finished, numFulfilled, numRequired = GetQuestObjectiveInfo(questID, 1, false)
+      result.objectiveType = objectiveType
+      result.isFinish = finished
+      result.numFulfilled = numFulfilled
+      result.numRequired = numRequired
+      if C_QuestLog_IsQuestFlaggedCompleted(questID) then
+        result.unlocked = true
+        result.isComplete = true
+      else
+        local isOnQuest = C_QuestLog_IsOnQuest(questID)
+        result.unlocked = isOnQuest
+        result.isComplete = false
+      end
+      break
+    end
+    if C_QuestLog_IsQuestFlaggedCompleted(questID) then
+      result.unlocked = true
+      result.isComplete = true
+      break
+    end
+  end
+end
+
+local function SparksOfLifeReset(toon, index)
+  local t = SI.db.Toons[toon]
+  if not t or not t.Progress or not t.Progress[index] then return end
+
+  wipe(t.Progress[index])
+end
+
 Module.TrackedQuest = {
   -- Conquest
   {
@@ -578,7 +613,19 @@ Module.TrackedQuest = {
       70754, -- Fire
     },
     tooltipKey = 'ShowPrimalStormsCoreTooltip',
-  }
+  },
+  {
+    name = L["Sparks of Life"],
+    weekly = true,
+    func = SparksOfLifeUpdate,
+    resetFunc = SparksOfLifeReset,
+    relatedQuest = {
+      72646, -- The Waking Shores
+      72647, -- Ohn'ahran Plains
+      72648, -- The Azure Span
+      72649, -- Thaldraszus
+    },
+  },
 }
 
 function Module:OnEnable()
