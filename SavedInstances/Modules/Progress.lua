@@ -370,9 +370,9 @@ end
 
 local function SparksOfLifeUpdate(index)
   SI.db.Toons[SI.thisToon].Progress[index] = wipe(SI.db.Toons[SI.thisToon].Progress[index] or {})
+  local result = SI.db.Toons[SI.thisToon].Progress[index]
   for _, questID in ipairs(Module.TrackedQuest[index].relatedQuest) do
     if C_TaskQuest_IsActive(questID) then
-      local result = SI.db.Toons[SI.thisToon].Progress[index]
       local _, objectiveType, finished, numFulfilled, numRequired = GetQuestObjectiveInfo(questID, 1, false)
       result.objectiveType = objectiveType
       result.isFinish = finished
@@ -386,6 +386,11 @@ local function SparksOfLifeUpdate(index)
         result.unlocked = isOnQuest
         result.isComplete = false
       end
+      break
+    end
+    if C_QuestLog_IsQuestFlaggedCompleted(questID) then
+      result.unlocked = true
+      result.isComplete = true
       break
     end
   end
