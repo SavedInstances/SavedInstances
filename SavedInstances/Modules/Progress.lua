@@ -403,6 +403,35 @@ local function SparksOfLifeReset(toon, index)
   wipe(t.Progress[index])
 end
 
+-- Primal Storms Elementals
+local function PrimalStormsElementalsUpdate(index)
+  SI.db.Toons[SI.thisToon].Progress[index] = wipe(SI.db.Toons[SI.thisToon].Progress[index] or {})
+  for _, questID in ipairs(Module.TrackedQuest[index].relatedQuest) do
+    SI.db.Toons[SI.thisToon].Progress[index][questID] = C_QuestLog_IsQuestFlaggedCompleted(questID)
+  end
+end
+
+local function PrimalStormsElementalsShow(toon, index)
+  local t = SI.db.Toons[toon]
+  if not t or not t.Quests then return end
+  if not t or not t.Progress or not t.Progress[index] then return end
+
+  local totalDone = 0
+  for _, questID in ipairs(Module.TrackedQuest[index].relatedQuest) do
+    if t.Progress[index][questID] then
+      totalDone = totalDone + 1
+    end
+  end
+  return string.format("%d/%d", totalDone, #Module.TrackedQuest[index].relatedQuest)
+end
+
+local function PrimalStormsElementalsReset(toon, index)
+  local t = SI.db.Toons[toon]
+  if not t or not t.Progress or not t.Progress[index] then return end
+
+  wipe(t.Progress[index])
+end
+
 Module.TrackedQuest = {
   -- Conquest
   {
@@ -626,6 +655,32 @@ Module.TrackedQuest = {
       72649, -- Thaldraszus
     },
   },
+  {
+    name = L["Primal Storms Elementals"],
+    daily = true,
+    func = PrimalStormsElementalsUpdate,
+    showFunc = PrimalStormsElementalsShow,
+    resetFunc = PrimalStormsElementalsReset,
+    relatedQuest = {
+      73991, --Emblazion -- Fire
+      74005, --Infernum
+      74006, --Kain Firebrand
+      74016, --Neela Firebane
+      73989, --Crystalus -- Water
+      73993, --Frozion
+      74027, --Rouen Icewind
+      74009, --Iceblade Trio
+      73986, --Bouldron -- Earth
+      73998, --Gravlion
+      73999, --Grizzlerock
+      74039, --Zurgaz Corebreaker
+      73995, --Gaelzion -- Air
+      74007, --Karantun
+      74022, --Pipspark Thundersnap
+      74038, --Voraazka
+    },
+    tooltipKey = 'ShowPrimalStormsElementalsTooltip',
+  }
 }
 
 function Module:OnEnable()
