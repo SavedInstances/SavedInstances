@@ -644,18 +644,6 @@ Module.TrackedQuest = {
     tooltipKey = 'ShowPrimalStormsCoreTooltip',
   },
   {
-    name = L["Sparks of Life"],
-    weekly = true,
-    func = SparksOfLifeUpdate,
-    resetFunc = SparksOfLifeReset,
-    relatedQuest = {
-      72646, -- The Waking Shores
-      72647, -- Ohn'ahran Plains
-      72648, -- The Azure Span
-      72649, -- Thaldraszus
-    },
-  },
-  {
     name = L["Primal Storms Elementals"],
     daily = true,
     func = PrimalStormsElementalsUpdate,
@@ -680,6 +668,18 @@ Module.TrackedQuest = {
       74038, --Voraazka
     },
     tooltipKey = 'ShowPrimalStormsElementalsTooltip',
+  },
+  {
+    name = L["Sparks of Life"],
+    weekly = true,
+    func = SparksOfLifeUpdate,
+    resetFunc = SparksOfLifeReset,
+    relatedQuest = {
+      72646, -- The Waking Shores
+      72647, -- Ohn'ahran Plains
+      72648, -- The Azure Span
+      72649, -- Thaldraszus
+    },
   }
 }
 
