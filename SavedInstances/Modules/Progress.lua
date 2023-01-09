@@ -295,6 +295,34 @@ local function DragonflightRenownShow(toon, index)
 
   local text
   local majorFactionIDs = C_MajorFactions.GetMajorFactionIDs(LE_EXPANSION_DRAGONFLIGHT)
+
+  local favoredOrder = {
+    2507, -- Dragonscale Expedition
+    2503, -- Maruuk Centaur
+    2511, -- Iskaara Tuskarr
+    2510, -- Valdrakken Accord
+  }
+  -- Concatenate the two table and then remove duplicate,
+  -- so it will still work if id change or new are added
+  for i=1,#majorFactionIDs do
+    favoredOrder[#favoredOrder+1] = majorFactionIDs[i]
+  end
+  majorFactionIDs = favoredOrder
+
+  local function removeDuplicates(arr)
+    local newArray = {}
+    local checkerTbl = {}
+    for _, element in ipairs(arr) do
+        if not checkerTbl[element] then -- if there is not yet a value at the index of element, then it will be nil, which will operate like false in an if statement
+            checkerTbl[element] = true
+            table.insert(newArray, element)
+        end
+    end
+    return newArray
+  end
+
+  majorFactionIDs = removeDuplicates(majorFactionIDs)
+
   for i, factionID in ipairs(majorFactionIDs) do
     if i == 1 then
       text = t.Progress[index][factionID] and t.Progress[index][factionID][1] or '0'
