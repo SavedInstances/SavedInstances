@@ -322,6 +322,69 @@ local function DragonflightRenownReset(toon, index)
   -- do nothing
 end
 
+-- Aiding the Accord
+local function AidingTheAccordUpdate(index)
+  SI.db.Toons[SI.thisToon].Progress[index] = wipe(SI.db.Toons[SI.thisToon].Progress[index] or {})
+  local result = SI.db.Toons[SI.thisToon].Progress[index]
+
+  for _, questID in ipairs(Module.TrackedQuest[index].relatedQuest) do
+    if C_QuestLog_IsQuestFlaggedCompleted(questID) then
+      result.unlocked = true
+      result.isComplete = true
+
+      break
+    elseif C_QuestLog_IsOnQuest(questID) then
+      result.unlocked = true
+      result.isComplete = false
+
+      local showText
+      local allFinished = true
+      local leaderboardCount = C_QuestLog.GetNumQuestObjectives(questID)
+      for i = 1, leaderboardCount do
+        local text, objectiveType, finished, numFulfilled, numRequired = GetQuestObjectiveInfo(questID, i, false)
+        result[i] = text
+        allFinished = allFinished and finished
+
+        local objectiveText
+        if objectiveType == 'progressbar' then
+          objectiveText = floor((numFulfilled or 0) / numRequired * 100) .. "%"
+        else
+          objectiveText = numFulfilled .. "/" .. numRequired
+        end
+
+        if i == 1 then
+          showText = objectiveText
+        else
+          showText = showText .. ' ' .. objectiveText
+        end
+      end
+
+      result.leaderboardCount = leaderboardCount
+      result.isFinish = allFinished
+      result.text = showText
+      break
+    end
+  end
+end
+
+local function AidingTheAccordShow(toon, index)
+  local t = SI.db.Toons[toon]
+  if not t or not t.Quests then return end
+  if not t or not t.Progress or not t.Progress[index] then return end
+
+  return t.Progress[index].text
+end
+
+local function AidingTheAccordReset(toon, index)
+  local t = SI.db.Toons[toon]
+  if not t or not t.Quests then return end
+  if not t or not t.Progress or not t.Progress[index] then return end
+
+  if t.Progress[index].isComplete then
+    wipe(t.Progress[index])
+  end
+end
+
 -- Grand Hunt
 local function GrandHuntUpdate(index)
   SI.db.Toons[SI.thisToon].Progress[index] = wipe(SI.db.Toons[SI.thisToon].Progress[index] or {})
@@ -607,8 +670,17 @@ Module.TrackedQuest = {
   {
     name = L["Aiding the Accord"],
     weekly = true,
-    quest = 70750,
-    relatedQuest = {70750},
+    func = AidingTheAccordUpdate,
+    showFunc = AidingTheAccordShow,
+    resetFunc = AidingTheAccordReset,
+    tooltipKey = 'ShowAidingTheAccordTooltip',
+    relatedQuest = {
+      70750, -- Aiding the Accord
+      72068, -- Aiding the Accord: A Feast For All
+      72373, -- Aiding the Accord: The Hunt is On
+      72374, -- Aiding the Accord: Dragonbane Keep
+      72375, -- Aiding the Accord: The Isles Call
+    },
   },
   {
     name = L["Community Feast"],

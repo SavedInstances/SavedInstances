@@ -347,6 +347,12 @@ local QuestExceptions = {
   [64522] = "Weekly", -- Stolen Korthian Supplies
 
   -- DF
+  -- Aiding the Accord
+  [70750] = "Weekly", -- Aiding the Accord
+  [72068] = "Weekly", -- Aiding the Accord: A Feast For All
+  [72373] = "Weekly", -- Aiding the Accord: The Hunt is On
+  [72374] = "Weekly", -- Aiding the Accord: Dragonbane Keep
+  [72375] = "Weekly", -- Aiding the Accord: The Isles Call
   -- Fishing Weeklies
   [70199] = "Weekly", -- Catch and Release: Scalebelly Mackerel
   [70200] = "Weekly", -- Catch and Release: Thousandbite Piranha
