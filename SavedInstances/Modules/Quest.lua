@@ -419,6 +419,7 @@ local QuestExceptions = {
   [66941] = "Weekly", -- Tremendous Tools
   [66935] = "Weekly", -- Crystal Quill Pens
   [70619] = "Weekly", -- A Study of Leather
+  [70614] = "Weekly", -- Bubble Craze
   -- Primalist Invasions
   [70723] = "Weekly", -- Shattering the Earth Primalists
   [70752] = "Weekly", -- Vaporizing the Water Primalists
