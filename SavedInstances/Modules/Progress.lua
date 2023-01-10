@@ -295,11 +295,23 @@ local function DragonflightRenownShow(toon, index)
 
   local text
   local majorFactionIDs = C_MajorFactions.GetMajorFactionIDs(LE_EXPANSION_DRAGONFLIGHT)
-  for i, factionID in ipairs(majorFactionIDs) do
-    if i == 1 then
+
+  local factionIDs = Module.TrackedQuest[index].factionIDs
+  for _, factionID in ipairs(factionIDs) do
+    if not text then
       text = t.Progress[index][factionID] and t.Progress[index][factionID][1] or '0'
     else
       text = text .. ' / ' .. (t.Progress[index][factionID] and t.Progress[index][factionID][1] or '0')
+    end
+  end
+
+  for _, factionID in ipairs(majorFactionIDs) do
+    if not tContains(factionIDs, factionID) then
+      if not text then
+        text = t.Progress[index][factionID] and t.Progress[index][factionID][1] or '0'
+      else
+        text = text .. ' / ' .. (t.Progress[index][factionID] and t.Progress[index][factionID][1] or '0')
+      end
     end
   end
 
@@ -585,6 +597,12 @@ Module.TrackedQuest = {
     showFunc = DragonflightRenownShow,
     resetFunc = DragonflightRenownReset,
     tooltipKey = 'ShowDragonflightRenownTooltip',
+    factionIDs = {
+      2507, -- Dragonscale Expedition
+      2503, -- Maruuk Centaur
+      2511, -- Iskaara Tuskarr
+      2510, -- Valdrakken Accord
+    },
   },
   {
     name = L["Aiding the Accord"],
