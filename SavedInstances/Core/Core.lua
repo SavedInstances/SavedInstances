@@ -2563,6 +2563,25 @@ hoverTooltip.ShowDragonflightRenownTooltip = function (cell, arg, ...)
   finishIndicator()
 end
 
+hoverTooltip.ShowAidingTheAccordTooltip = function (cell, arg, ...)
+  -- Should be in Module Progress
+  local toon, index = unpack(arg)
+  local t = SI.db.Toons[toon]
+  if not t or not t.Progress or not t.Progress[index] then return end
+  if not t or not t.Quests then return end
+  openIndicator(2, "LEFT", "RIGHT")
+  indicatortip:AddHeader(ClassColorise(t.Class, toon), L["Aiding the Accord"])
+
+  if t.Progress[index].leaderboardCount and t.Progress[index].leaderboardCount > 0 then
+    for i = 1, t.Progress[index].leaderboardCount do
+      indicatortip:AddLine("")
+      indicatortip:SetCell(i + 1, 1, t.Progress[index][i], nil, "LEFT", 2)
+    end
+  end
+
+  finishIndicator()
+end
+
 hoverTooltip.ShowGrandHuntTooltip = function (cell, arg, ...)
   -- Should be in Module Progress
   local toon, index = unpack(arg)
