@@ -636,13 +636,13 @@ Module.TrackedQuest = {
     tooltipKey = 'ShowGrandHuntTooltip',
   },
   {
-    name = L["Trial of the Elements"],
+    name = L["Trial of Elements"],
     weekly = true,
     quest = 71995,
     relatedQuest = {71995},
   },
   {
-    name = L["Trial of the Flood"],
+    name = L["Trial of Flood"],
     weekly = true,
     quest = 71033,
     relatedQuest = {71033},
