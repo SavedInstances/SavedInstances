@@ -2534,7 +2534,9 @@ hoverTooltip.ShowDragonflightRenownTooltip = function (cell, arg, ...)
   indicatortip:AddHeader(ClassColorise(t.Class, toon), L["Dragonflight Renown"])
 
   local majorFactionIDs = C_MajorFactions.GetMajorFactionIDs(LE_EXPANSION_DRAGONFLIGHT)
-  for _, factionID in ipairs(majorFactionIDs) do
+
+  local factionIDs = SI:GetModule("Progress").TrackedQuest[index].factionIDs
+  for _, factionID in ipairs(factionIDs) do
     if t.Progress[index][factionID] then
       indicatortip:AddLine(
         C_MajorFactions.GetMajorFactionData(factionID).name,
@@ -2542,6 +2544,19 @@ hoverTooltip.ShowDragonflightRenownTooltip = function (cell, arg, ...)
       )
     else
       indicatortip:AddLine(C_MajorFactions.GetMajorFactionData(factionID).name, LOCKED)
+    end
+  end
+
+  for _, factionID in ipairs(majorFactionIDs) do
+    if not tContains(factionIDs, factionID) then
+      if t.Progress[index][factionID] then
+        indicatortip:AddLine(
+          C_MajorFactions.GetMajorFactionData(factionID).name,
+          format("%s %s (%s/%s)", COVENANT_SANCTUM_TAB_RENOWN, unpack(t.Progress[index][factionID]))
+        )
+      else
+        indicatortip:AddLine(C_MajorFactions.GetMajorFactionData(factionID).name, LOCKED)
+      end
     end
   end
 
