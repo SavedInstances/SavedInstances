@@ -2572,7 +2572,11 @@ hoverTooltip.ShowAidingTheAccordTooltip = function (cell, arg, ...)
   openIndicator(2, "LEFT", "RIGHT")
   indicatortip:AddHeader(ClassColorise(t.Class, toon), L["Aiding the Accord"])
 
-  if t.Progress[index].leaderboardCount and t.Progress[index].leaderboardCount > 0 then
+  if t.Progress[index].isComplete then
+    indicatortip:AddLine("\124T" .. READY_CHECK_READY_TEXTURE .. ":0|t")
+  elseif t.Progress[index].isFinish then
+    indicatortip:AddLine("\124T" .. READY_CHECK_WAITING_TEXTURE .. ":0|t")
+  elseif t.Progress[index].leaderboardCount and t.Progress[index].leaderboardCount > 0 then
     for i = 1, t.Progress[index].leaderboardCount do
       indicatortip:AddLine("")
       indicatortip:SetCell(i + 1, 1, t.Progress[index][i], nil, "LEFT", 2)
