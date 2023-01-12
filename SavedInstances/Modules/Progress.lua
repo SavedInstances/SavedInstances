@@ -372,6 +372,12 @@ local function AidingTheAccordShow(toon, index)
   if not t or not t.Quests then return end
   if not t or not t.Progress or not t.Progress[index] then return end
 
+  if t.Progress[index].isComplete then
+    return "\124T" .. READY_CHECK_READY_TEXTURE .. ":0|t"
+  elseif t.Progress[index].isFinish then
+    return "\124T" .. READY_CHECK_WAITING_TEXTURE .. ":0|t"
+  end
+
   return t.Progress[index].text
 end
 
