@@ -428,6 +428,8 @@ local QuestExceptions = {
   [70614] = "Weekly", -- Bubble Craze
   [72438] = "Weekly", -- Tarasek Intentions
   [70562] = "Weekly", -- The Plumbers, Mason
+  [66953] = "Weekly", -- All Things Fluffy
+  [70234] = "Weekly", -- All this Hammering
   -- Primalist Invasions
   [70723] = "Weekly", -- Shattering the Earth Primalists
   [70752] = "Weekly", -- Vaporizing the Water Primalists
