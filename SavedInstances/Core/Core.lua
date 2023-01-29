@@ -3609,7 +3609,7 @@ function SI:ShowDetached()
     f:SetScript("OnUpdate", function(self)
       if not tooltip then f:Hide(); return end
       local w,h = tooltip:GetSize()
-      self:SetSize(w*tooltip:GetScale(),(h+20)*tooltip:GetScale())
+	  self:SetSize(w*tooltip:GetEffectiveScale()/UIParent:GetEffectiveScale(),h*tooltip:GetEffectiveScale()/UIParent:GetEffectiveScale()+20*tooltip:GetScale())
     end)
     f:SetScript("OnKeyDown", function(self,key)
       if key == "ESCAPE" then
