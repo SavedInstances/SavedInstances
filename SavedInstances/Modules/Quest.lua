@@ -466,9 +466,10 @@ local QuestExceptions = {
   -- [62634] = "Weekly", -- A Shattered Path Through Time - CTM Timewalking
   [72725] = "Weekly", -- A Shrouded Path Through Time - MOP Timewalking
   [72724] = "Weekly", -- A Savage Path Through Time - WOD Timewalking
+  [72719] = "Weekly", -- A Fel Path Through Time - LEG Timewalking
   [72723] = "Weekly", -- A Call to Battle - Battlegrounds
   [72722] = "Weekly", -- Emissary of War - Mythic Dungeons
-  -- [62639] = "AccountWeekly", -- The Very Best - PvP Pet Battles
+  [72721] = "AccountWeekly", -- The Very Best - PvP Pet Battles
   [72720] = "Weekly", -- The Arena Calls - Arena Skirmishes
 }
 SI.QuestExceptions = QuestExceptions
