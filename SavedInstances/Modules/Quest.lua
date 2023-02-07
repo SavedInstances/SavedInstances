@@ -431,6 +431,9 @@ local QuestExceptions = {
   [66953] = "Weekly", -- All Things Fluffy
   [70234] = "Weekly", -- All this Hammering
   [66945] = "Weekly", -- Icy Ink
+  [72158] = "Weekly", -- A Dense Delivery
+  [72156] = "Weekly", -- A Fiery Flight
+  [66949] = "Weekly", -- Trinket Bandits
   -- Primalist Invasions
   [70723] = "Weekly", -- Shattering the Earth Primalists
   [70752] = "Weekly", -- Vaporizing the Water Primalists
