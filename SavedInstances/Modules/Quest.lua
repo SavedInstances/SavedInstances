@@ -434,6 +434,7 @@ local QuestExceptions = {
   [72158] = "Weekly", -- A Dense Delivery
   [72156] = "Weekly", -- A Fiery Flight
   [66949] = "Weekly", -- Trinket Bandits
+  [70211] = "Weekly", -- Stomping Explorers
   -- Primalist Invasions
   [70723] = "Weekly", -- Shattering the Earth Primalists
   [70752] = "Weekly", -- Vaporizing the Water Primalists
