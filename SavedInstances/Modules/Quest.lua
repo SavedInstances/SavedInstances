@@ -441,6 +441,8 @@ local QuestExceptions = {
   [70754] = "Weekly", -- Extinguishing the Fire Primalists
   [70753] = "Weekly", -- Dissipating the Air Primalists
   [72686] = "Weekly", -- Storm Surge
+  -- Revival Catalyst
+  [72528] = "AccountWeekly", -- Revival Catalyst
 
   -- General
   -- Darkmoon Faire
