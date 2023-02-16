@@ -911,6 +911,7 @@ function Module:ShowTooltip(tooltip, columns, showall, preshow)
       local show
       for toon, t in cpairs(SI.db.Toons, true) do
         if (
+          showall or
           (t.Progress and t.Progress[index] and t.Progress[index].unlocked) or
           (tbl.showFunc and tbl.showFunc(toon, index))
         ) then
