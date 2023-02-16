@@ -370,6 +370,7 @@ SI.defaultDB = {
     Currency2118 = true, -- Elemental Overflow
     Currency2122 = true, -- Storm Sigil
     Currency2123 = true, -- Bloody Tokens
+    Currency2167 = true, -- Catalyst Charges
     CurrencyMax = false,
     CurrencyEarned = true,
     CurrencySortName = false,
