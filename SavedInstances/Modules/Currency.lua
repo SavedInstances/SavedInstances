@@ -90,6 +90,7 @@ local currency = {
   2118, -- Elemental Overflow
   2122, -- Storm Sigil
   2123, -- Bloody Tokens
+  2167, -- Catalyst Charges
 }
 SI.currency = currency
 
