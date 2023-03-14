@@ -435,6 +435,10 @@ local QuestExceptions = {
   [72156] = "Weekly", -- A Fiery Flight
   [66949] = "Weekly", -- Trinket Bandits
   [70211] = "Weekly", -- Stomping Explorers
+  [70567] = "Weekly", -- When You Give Bakar a Bone
+  [70615] = "Weekly", -- The Case of the Missing Herbs
+  [70545] = "Weekly", -- Blingtron 8000...?
+  [72155] = "Weekly", -- Spread the Enchantment
   -- Primalist Invasions
   [70723] = "Weekly", -- Shattering the Earth Primalists
   [70752] = "Weekly", -- Vaporizing the Water Primalists
