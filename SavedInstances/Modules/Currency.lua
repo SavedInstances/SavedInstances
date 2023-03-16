@@ -105,6 +105,10 @@ table.sort(currencySorted, function (c1, c2)
 end)
 SI.currencySorted = currencySorted
 
+local hiddenCurrency = {
+  [2167] = true, -- Catalyst Charges
+}
+
 local specialCurrency = {
   [1129] = { -- WoD - Seal of Tempered Fate
     weeklyMax = 3,
@@ -183,7 +187,7 @@ function Module:UpdateCurrency()
   local covenantID = C_Covenants_GetActiveCovenantID()
   for _,idx in ipairs(currency) do
     local data = C_CurrencyInfo_GetCurrencyInfo(idx)
-    if not data.discovered then
+    if not data.discovered and not hiddenCurrency[idx] then
       t.currency[idx] = nil
     else
       local ci = t.currency[idx] or {}
