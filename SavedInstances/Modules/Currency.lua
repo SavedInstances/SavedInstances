@@ -175,9 +175,12 @@ end
 
 function Module:UpdateCurrency()
   if SI.logout then return end -- currency is unreliable during logout
+
   local t = SI.db.Toons[SI.thisToon]
   t.Money = GetMoney()
   t.currency = t.currency or {}
+
+  local covenantID = C_Covenants_GetActiveCovenantID()
   for _,idx in ipairs(currency) do
     local data = C_CurrencyInfo_GetCurrencyInfo(idx)
     if not data.discovered then
@@ -192,7 +195,6 @@ function Module:UpdateCurrency()
         ci.totalEarned = data.totalEarned
       end
       -- handle special currency
-      local covenantID = C_Covenants_GetActiveCovenantID()
       if specialCurrency[idx] then
         local tbl = specialCurrency[idx]
         if tbl.weeklyMax then ci.weeklyMax = tbl.weeklyMax end
