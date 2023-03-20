@@ -1,4 +1,4 @@
-local SI, L = unpack(select(2, ...))
+local SI, L = unpack((select(2, ...)))
 
 -- Lua functions
 local date, floor, time, tonumber = date, floor, time, tonumber
