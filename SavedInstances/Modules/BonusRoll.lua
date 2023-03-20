@@ -1,4 +1,4 @@
-local SI, L = unpack(select(2, ...))
+local SI, L = unpack((select(2, ...)))
 local Module = SI:NewModule('BonusRoll', 'AceEvent-3.0')
 
 local BonusFrame -- Frame attached to BonusRollFrame

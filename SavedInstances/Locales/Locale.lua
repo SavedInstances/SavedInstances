@@ -3,7 +3,7 @@
 -- To help with missing translations please go here:
 local url = "http://www.wowace.com/addons/saved_instances/localization/"
 
-local SI, L = unpack(select(2, ...))
+local SI, L = unpack((select(2, ...)))
 
 -- Lua functions
 local print, format, rawget = print, format, rawget

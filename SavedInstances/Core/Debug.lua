@@ -1,4 +1,4 @@
-local SI, L = unpack(select(2, ...))
+local SI, L = unpack((select(2, ...)))
 
 -- Lua functions
 local date, format, ipairs, strtrim, tinsert, time = date, format, ipairs, strtrim, tinsert, time

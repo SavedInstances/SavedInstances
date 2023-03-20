@@ -1,4 +1,4 @@
-local SI, L = unpack(select(2, ...))
+local SI, L = unpack((select(2, ...)))
 local Config = SI:NewModule('Config')
 
 SI.config = Config

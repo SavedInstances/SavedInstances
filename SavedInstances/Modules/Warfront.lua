@@ -1,4 +1,4 @@
-local SI, L = unpack(select(2, ...))
+local SI, L = unpack((select(2, ...)))
 local Module = SI:NewModule('Warfront', 'AceEvent-3.0', 'AceTimer-3.0')
 
 -- Lua functions
