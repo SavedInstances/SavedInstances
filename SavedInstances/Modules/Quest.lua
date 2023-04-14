@@ -354,6 +354,7 @@ local QuestExceptions = {
   [72373] = "Weekly", -- Aiding the Accord: The Hunt is On
   [72374] = "Weekly", -- Aiding the Accord: Dragonbane Keep
   [72375] = "Weekly", -- Aiding the Accord: The Isles Call
+  [75259] = "Weekly", -- Aiding the Accord: Zskera Vault
   -- Fishing Weeklies
   [70199] = "Weekly", -- Catch and Release: Scalebelly Mackerel
   [70200] = "Weekly", -- Catch and Release: Thousandbite Piranha

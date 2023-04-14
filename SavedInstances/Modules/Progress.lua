@@ -686,6 +686,7 @@ Module.TrackedQuest = {
       72373, -- Aiding the Accord: The Hunt is On
       72374, -- Aiding the Accord: Dragonbane Keep
       72375, -- Aiding the Accord: The Isles Call
+      75259, -- Aiding the Accord: Zskera Vault
     },
   },
   {
