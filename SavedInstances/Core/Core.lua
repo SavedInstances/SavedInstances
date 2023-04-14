@@ -2645,6 +2645,8 @@ hoverTooltip.ShowPrimalStormsCoreTooltip = function (cell, arg, ...)
   indicatortip:AddHeader(ClassColorise(t.Class, toonstr), string.format("%d/%d", totalDone, #P.TrackedQuest[index].relatedQuest))
 
   local stringTypeCore = {
+    L["Storm's Fury"],
+    L["Storm Surge"],
     YELLOW_FONT_COLOR_CODE .. L["Earth Core"] .. FONT_COLOR_CODE_CLOSE,
     "|cff42a4f5" .. L["Water Core"] .. FONT_COLOR_CODE_CLOSE,
     "|cffe4f2f5" .. L["Air Core"] .. FONT_COLOR_CODE_CLOSE,
