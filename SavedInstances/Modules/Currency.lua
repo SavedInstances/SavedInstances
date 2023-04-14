@@ -226,6 +226,9 @@ function Module:UpdateCurrency()
           ci.covenant = ci.covenant or {}
           ci.covenant[covenantID] = ci.amount
         end
+      elseif idx == 2167 then -- Catalyst Charges
+        ci.weeklyMax = nil
+        ci.earnedThisWeek = nil
       end
       -- don't store useless info
       if ci.weeklyMax == 0 then ci.weeklyMax = nil end
