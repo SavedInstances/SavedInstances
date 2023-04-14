@@ -732,6 +732,8 @@ Module.TrackedQuest = {
     showFunc = PrimalStormsCoreShow,
     resetFunc = PrimalStormsCoreReset,
     relatedQuest = {
+      73162, -- Storm's Fury
+      72686, -- Storm Surge
       70723, -- Earth
       70752, -- Water
       70753, -- Air
