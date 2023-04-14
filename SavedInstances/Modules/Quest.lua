@@ -60,7 +60,7 @@ local _specialQuests = {
   [58770] = { name=L["Ambered Coffer"] },     -- Ambered Coffer
 
   -- Beastwarrens Hunts
-  [63180] = { name=L["Hunt: Shadehounds"] },        -- Hunt: Shadehounds
+  [63433] = { name=L["Hunt: Shadehounds"] },        -- Hunt: Shadehounds (63180 -> 63433 which tracks mount droping)
   [63194] = { name=L["Hunt: Winged Soul Eaters"] }, -- Hunt: Winged Soul Eaters
   [63198] = { name=L["Hunt: Death Elementals"] },   -- Hunt: Death Elementals
   [63199] = { name=L["Hunt: Soul Eaters"] },        -- Hunt: Soul Eaters
