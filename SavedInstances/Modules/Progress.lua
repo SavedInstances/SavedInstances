@@ -276,6 +276,272 @@ local function CovenantAssaultReset(toon, index)
   t.Progress[index].unlocked = unlocked
 end
 
+-- Profession Treatise
+local function ProfessionTreatiseUpdate(index)
+  SI.db.Toons[SI.thisToon].Progress[index] = wipe(SI.db.Toons[SI.thisToon].Progress[index] or {})
+  for _, questID in ipairs(Module.TrackedQuest[index].relatedQuest) do
+    SI.db.Toons[SI.thisToon].Progress[index][questID] = C_QuestLog_IsQuestFlaggedCompleted(questID)
+  end
+end
+
+local function ProfessionTreatiseShow(toon, index)
+  local t = SI.db.Toons[toon]
+  if not t or not t.Quests then return end
+  if not t or not t.Progress or not t.Progress[index] then return end
+
+  local totalDone = 0
+  for _, questID in ipairs(Module.TrackedQuest[index].relatedQuest) do
+    if t.Progress[index][questID] then
+      totalDone = totalDone + 1
+    end
+  end
+  if totalDone >= 2 then 
+   return "\124T" .. READY_CHECK_READY_TEXTURE .. ":0|t"
+   else
+   return string.format("%d/%d", totalDone, "2")
+   end
+end
+
+local function ProfessionTreatiseReset(toon, index)
+  local t = SI.db.Toons[toon]
+  if not t or not t.Progress or not t.Progress[index] then return end
+
+  wipe(t.Progress[index])
+end
+
+-- Profession Quests
+local function ProfessionQuestsUpdate(index)
+  SI.db.Toons[SI.thisToon].Progress[index] = wipe(SI.db.Toons[SI.thisToon].Progress[index] or {})
+  for _, questID in ipairs(Module.TrackedQuest[index].relatedQuest) do
+    SI.db.Toons[SI.thisToon].Progress[index][questID] = C_QuestLog_IsQuestFlaggedCompleted(questID)
+  end
+end
+
+local function ProfessionQuestsShow(toon, index)
+  local t = SI.db.Toons[toon]
+  if not t or not t.Quests then return end
+  if not t or not t.Progress or not t.Progress[index] then return end
+
+  local totalDone = 0
+  for _, questID in ipairs(Module.TrackedQuest[index].relatedQuest) do
+    if t.Progress[index][questID] then
+      totalDone = totalDone + 1
+    end
+  end
+  
+  local totalToDo = 0
+  if t.Profession1Name == "Alchemy" or t.Profession1Name == "Enchanting" then
+   totalToDo = totalToDo + 2
+  elseif t.Profession1Name == "Herbalism" or t.Profession1Name == "Mining" or t.Profession1Name == "Skinning" then
+   totalToDo = totalToDo + 1
+  else totalToDo = totalToDo + 3
+  end
+  if t.Profession2Name == "Alchemy" or t.Profession2Name == "Enchanting" then
+   totalToDo = totalToDo + 2
+  elseif t.Profession2Name == "Herbalism" or t.Profession2Name == "Mining" or t.Profession2Name == "Skinning" then
+   totalToDo = totalToDo + 1
+  else totalToDo = totalToDo + 3
+  end
+  totalToDo = totalToDo + 1 --Add 1 for "Show Your Mettle" quest that every profession gets
+  
+  if totalDone >= totalToDo then 
+   return "\124T" .. READY_CHECK_READY_TEXTURE .. ":0|t"
+   else
+   return string.format("%d/%d", totalDone, totalToDo)
+   end
+end
+
+local function ProfessionQuestsReset(toon, index)
+  local t = SI.db.Toons[toon]
+  if not t or not t.Progress or not t.Progress[index] then return end
+
+  wipe(t.Progress[index])
+end
+
+-- Profession Lootables
+local function ProfessionLootablesUpdate(index)
+  SI.db.Toons[SI.thisToon].Progress[index] = wipe(SI.db.Toons[SI.thisToon].Progress[index] or {})
+  for _, questID in ipairs(Module.TrackedQuest[index].relatedQuest) do
+    SI.db.Toons[SI.thisToon].Progress[index][questID] = C_QuestLog_IsQuestFlaggedCompleted(questID)
+  end
+end
+
+local function ProfessionLootablesShow(toon, index)
+  local t = SI.db.Toons[toon]
+  if not t or not t.Quests then return end
+  if not t or not t.Progress or not t.Progress[index] then return end
+  
+  local profIndex = {
+    "Alchemy",
+    "Alchemy",
+    "Alchemy",
+    "Alchemy",
+    "Alchemy",
+    "Blacksmithing",
+    "Blacksmithing",
+    "Blacksmithing",
+    "Blacksmithing",
+    "Blacksmithing",
+    "Enchanting",
+    "Enchanting",
+    "Enchanting",
+    "Enchanting",
+    "Enchanting",
+    "Engineering",
+    "Engineering",
+    "Engineering",
+    "Engineering",
+    "Engineering",
+    "Herbalism",
+    "Herbalism",
+    "Herbalism",
+    "Herbalism",
+    "Herbalism",
+    "Herbalism",
+    "Herbalism",
+    "Inscription",
+    "Inscription",
+    "Inscription",
+    "Inscription",
+    "Inscription",
+    "Jewelcrafting",
+    "Jewelcrafting",
+    "Jewelcrafting",
+    "Jewelcrafting",
+    "Jewelcrafting",
+    "Leatherworking",
+    "Leatherworking",
+    "Leatherworking",
+    "Leatherworking",
+    "Leatherworking",
+    "Mining",
+    "Mining",
+    "Mining",
+    "Mining",
+    "Mining",
+    "Mining",
+    "Mining",
+    "Skinning",
+    "Skinning",
+    "Skinning",
+    "Skinning",
+    "Skinning",
+    "Skinning",
+    "Skinning",
+    "Tailoring",
+    "Tailoring",
+    "Tailoring",
+    "Tailoring",
+    "Tailoring",
+  }
+  
+  local totalDone1 = 0
+  for i, questID in ipairs(Module.TrackedQuest[index].relatedQuest) do
+    if t.Profession1Name == profIndex[i] and t.Progress[index][questID] then
+      totalDone1 = totalDone1 + 1
+    end
+  end
+  local totalDone2 = 0
+  for i, questID in ipairs(Module.TrackedQuest[index].relatedQuest) do
+    if t.Profession2Name == profIndex[i] and t.Progress[index][questID] then
+      totalDone2 = totalDone2 + 1
+    end
+  end
+  
+  local totalDone = totalDone1 + totalDone2
+  
+  local totalToDo = 0
+  if t.Profession1Name == "Herbalism" or t.Profession1Name == "Mining" or t.Profession1Name == "Skinning" then
+   totalToDo = totalToDo + 7
+  else totalToDo = totalToDo + 5
+  end
+  if t.Profession2Name == "Herbalism" or t.Profession2Name == "Mining" or t.Profession2Name == "Skinning" then
+   totalToDo = totalToDo + 7
+  else totalToDo = totalToDo + 5
+  end
+  if totalDone >= totalToDo then 
+   return "\124T" .. READY_CHECK_READY_TEXTURE .. ":0|t"
+   else
+   return string.format("%d/%d", totalDone, totalToDo)
+   end
+end
+
+local function ProfessionLootablesReset(toon, index)
+  local t = SI.db.Toons[toon]
+  if not t or not t.Progress or not t.Progress[index] then return end
+
+  wipe(t.Progress[index])
+end
+
+-- Timewalking
+local function TimewalkingUpdate(index)
+  SI.db.Toons[SI.thisToon].Progress[index] = wipe(SI.db.Toons[SI.thisToon].Progress[index] or {})
+  local result = SI.db.Toons[SI.thisToon].Progress[index]
+
+  for _, questID in ipairs(Module.TrackedQuest[index].relatedQuest) do
+    if C_QuestLog_IsQuestFlaggedCompleted(questID) then
+      result.unlocked = true
+      result.isComplete = true
+
+      break
+    elseif C_QuestLog_IsOnQuest(questID) then
+      result.unlocked = true
+      result.isComplete = false
+
+      local showText
+      local allFinished = true
+      local leaderboardCount = C_QuestLog.GetNumQuestObjectives(questID)
+      for i = 1, leaderboardCount do
+        local text, objectiveType, finished, numFulfilled, numRequired = GetQuestObjectiveInfo(questID, i, false)
+        result[i] = text
+        allFinished = allFinished and finished
+
+        local objectiveText
+        if objectiveType == 'progressbar' then
+          objectiveText = floor((numFulfilled or 0) / numRequired * 100) .. "%"
+        else
+          objectiveText = numFulfilled .. "/" .. numRequired
+        end
+
+        if i == 1 then
+          showText = objectiveText
+        else
+          showText = showText .. ' ' .. objectiveText
+        end
+      end
+
+      result.leaderboardCount = leaderboardCount
+      result.isFinish = allFinished
+      result.text = showText
+      break
+    end
+  end
+end
+
+local function TimewalkingShow(toon, index)
+  local t = SI.db.Toons[toon]
+  if not t or not t.Quests then return end
+  if not t or not t.Progress or not t.Progress[index] then return end
+
+  if t.Progress[index].isComplete then
+    return "\124T" .. READY_CHECK_READY_TEXTURE .. ":0|t"
+  elseif t.Progress[index].isFinish then
+    return "\124T" .. READY_CHECK_WAITING_TEXTURE .. ":0|t"
+  end
+
+  return t.Progress[index].text
+end
+
+local function TimewalkingReset(toon, index)
+  local t = SI.db.Toons[toon]
+  if not t or not t.Quests then return end
+  if not t or not t.Progress or not t.Progress[index] then return end
+
+  if t.Progress[index].isComplete then
+    wipe(t.Progress[index])
+  end
+end
+
 -- Dragonflight Renown (index 11)
 local function DragonflightRenownUpdate(index)
   SI.db.Toons[SI.thisToon].Progress[index] = wipe(SI.db.Toons[SI.thisToon].Progress[index] or {})
@@ -449,6 +715,7 @@ local function PrimalStormsCoreReset(toon, index)
   wipe(t.Progress[index])
 end
 
+-- Sparks of Life
 local function SparksOfLifeUpdate(index)
   SI.db.Toons[SI.thisToon].Progress[index] = wipe(SI.db.Toons[SI.thisToon].Progress[index] or {})
   local result = SI.db.Toons[SI.thisToon].Progress[index]
@@ -639,17 +906,306 @@ Module.TrackedQuest = {
       63543, -- Necrolord Assault
     },
   },
+  -- Profession Treatise
+  {
+    name = L["Profession Treatise"],
+    weekly = true,
+    func = ProfessionTreatiseUpdate,
+    showFunc = ProfessionTreatiseShow,
+    resetFunc = ProfessionTreatiseReset,
+    relatedQuest = {
+      74108, -- Alchemy
+      74109, -- Blacksmithing
+      74110, -- Enchanting
+      74111, -- Engineering
+      74107, -- Herbalism
+      74105, -- Inscription
+      74112, -- Jewelcrafting
+      74113, -- Leatherworking
+      74106, -- Mining
+      74114, -- Skinning
+      74115, -- Tailoring
+    },
+    tooltipKey = 'ShowProfessionTreatiseTooltip',
+  },
+  -- Profession Quests
+  {
+    name = L["Profession Quests"],
+    weekly = true,
+    func = ProfessionQuestsUpdate,
+    showFunc = ProfessionQuestsShow,
+    resetFunc = ProfessionQuestsReset,
+    relatedQuest = {
+      --Show Your Mettle
+       70221,
+
+      -- Alchemy
+       -- Trainer
+       70530, -- Examination Week
+       70531, -- Mana Markets
+       70532, -- Aiding the Raiding
+       70533, -- Draught, Oiled Again
+       -- Consortium
+       66937, -- Decaying News
+       66938, -- Mammoth Marrow
+       66940, -- Elixir Experiment
+       72427, -- Animated Infusion
+
+      -- Blacksmithing
+       70589, -- Blacksmithing Services Requested
+       -- Trainer
+       70211, -- Stomping Explorers
+       70233, -- Axe Shortage
+       70234, -- All this Hammering
+       70235, -- Repair Bill
+       -- Consortium
+       66517, -- A New Source of Weapons
+       66897, -- Fuel for the Forge
+       66941, -- Tremendous Tools
+       72398, -- Rock and Stone
+
+      -- Enchanting
+       -- Trainer
+       72155, -- Spread the Enchantment
+       72172, -- Essence, Shards, and Chromatic Dust
+       72173, -- Braced for Enchantment
+       72175, -- A Scept-acular Time
+       -- Consortium
+       66884, -- Fireproof Gear
+       66900, -- Enchanted Relics
+       66935, -- Crystal Quill Pens
+       72423, -- Weathering the Storm
+
+      -- Engineering
+       70591, -- Engineering Services Requested
+       -- Trainer
+       70539, -- And You Thought They Did Nothing
+       70540, -- An Engineer's Best Friend
+       70545, -- Blingtron 8000...?
+       70557, -- No Scopes
+       -- Consortium
+       66890, -- Stolen Tools
+       66891, -- Explosive Ash
+       66942, -- Enemy Engineering
+       72396, -- Horns of Plenty
+
+      -- Herbalism
+       -- Trainer
+       70613, -- Get Their Bark Before They Bite
+       70614, -- Bubble Craze
+       70615, -- The Case of the Missing Herbs
+       70616, -- How Many??
+
+      -- Inscription
+       70592, -- Inscription Services Requested
+       -- Trainer
+       70558, -- Disillusioned Illusions
+       70559, -- Quill You Help?
+       70560, -- The Most Powerful Tool: Good Documentation
+       70561, -- A Scribe's Tragedy
+       -- Consortium
+       66943, -- Wood for Writing
+       66944, -- Peacock Pigments
+       66945, -- Icy Ink
+       72438, -- Tarasek Intentions
+
+      -- Jewelcrafting
+       70593, -- Jewelcrafting Services Requested
+       -- Trainer
+       70562, -- The Plumbers, Mason
+       70563, -- The Exhibition
+       70564, -- Spectacular
+       70565, -- Separation by Saturation
+       -- Consortium
+       66516, -- Mundane Gems, I Think Not!
+       66949, -- Trinket Bandits
+       66950, -- Heart of a Giant
+       72428, -- Hornswog Hoarders
+
+      -- Leatherworking
+       70594, -- Leatherworking Services Requested
+       -- Trainer
+       70567, -- When You Give Bakar a Bone
+       70568, -- Tipping the Scales
+       70569, -- For Trisket, a Task Kit
+       70571, -- Drums Here!
+       -- Consortium
+       66363, -- Basilisk Bucklers
+       66364, -- To Fly a Kite
+       66951, -- Population Control
+       72407, -- Soaked in Success
+
+      -- Mining
+       -- Trainer
+       70617, -- All Mine, Mine, Mine
+       70618, -- The Call of the Forge
+       72156, -- A Fiery Flight
+       72157, -- The Weight of Earth
+
+      -- Skinning
+       -- Trainer
+       70619, -- A Study of Leather
+       70620, -- Scaling Up
+       72158, -- A Dense Delivery
+       72159, -- Scaling Down
+
+      --Tailoring
+       70595, -- Tailoring Services Requested
+       -- Trainer
+       70572, -- The Cold Does Bother Them, Actually
+       70582, -- Weave Well Enough Alone
+       70586, -- Sew Many Cooks
+       70587, -- A Knapsack Problem
+       -- Consortium
+       66899, -- Fuzzy Legs
+       66952, -- The Gnoll's Clothes
+       66953, -- All Things Fluffy
+       72410, -- Pincers and Needles
+    },
+    tooltipKey = 'ShowProfessionQuestsTooltip',
+  },
+  -- Profession Lootables
+  {
+    name = L["Profession Lootables"],
+    weekly = true,
+    func = ProfessionLootablesUpdate,
+    showFunc = ProfessionLootablesShow,
+    resetFunc = ProfessionLootablesReset,
+    relatedQuest = {
+      -- Alchemy
+       -- Pack/Dirt
+       66373, -- Experimental Substance
+       66374, -- Reawakened Catalyst
+       -- Drops
+       70511, -- Elementious Splinter
+       70504, -- Decaying Phlegm
+       74935, -- Blazehoof Ashes
+
+      -- Blacksmithing
+       -- Pack/Dirt
+       66381, -- Valdrakken Weapon Chain
+       66382, -- Draconium Blade Sharpener
+       -- Drops
+       70512, -- Primeval Earth Fragment
+       70513, -- Molten Globule
+       74931, -- Dense Seaforged Javelin
+
+      -- Enchanting
+       -- Pack/Dirt
+       66377, -- Prismatic Focusing Shard
+       66378, -- Primal Dust
+       -- Drops
+       70514, -- Primordial Aether
+       70515, -- Primalist Charm
+       74927, -- Speck of Arcane Awareness
+
+      -- Engineering
+       -- Pack/Dirt
+       66379, -- Eroded Titan Gizmo
+       66380, -- Watcher Power Core
+       -- Drops
+       70516, -- Keeper's Mark
+       70517, -- Infinitely Attachable Pair o' Docks
+       74934, -- Everflowing Antifreeze
+
+      -- Herbalism
+       -- Drops
+       71857, -- Dreambloom
+       71858, -- Dreambloom
+       71859, -- Dreambloom
+       71860, -- Dreambloom
+       71861, -- Dreambloom
+       71864, -- Dreambloom
+       74933, -- Undigested Hochenblume Petal
+
+      -- Inscription
+       -- Pack/Dirt
+       66375, -- Phoenix Feather Quill
+       66376, -- Iskaaran Trading Ledger
+       -- Drops
+       70518, -- Curious Djaradin Rune
+       70519, -- Draconic Glamour
+       74932, -- Glimmering Rune of Arcantrix
+
+      -- Jewelcrafting
+       -- Pack/Dirt
+       66388, -- Ancient Gem Fragments
+       66389, -- Chipped Tyrstone
+       -- Drops
+       70520, -- Incandescent Curio
+       70521, -- Elegantly Engraved Embellishment
+       74936, -- Conductive Ametrine Shard
+
+      -- Leatherworking
+       -- Pack/Dirt
+       66384, -- Molted Dragon Scales
+       66385, -- Preserved Animal Parts
+       -- Drops
+       70522, -- Ossified Hide
+       70523, -- Exceedingly Soft Skin
+       74928, -- Slyvern Alpha Claw
+
+      -- Mining
+       -- Drops
+       72160, -- Iridescent Ore Fragments
+       72161, -- Iridescent Ore Fragments
+       72162, -- Iridescent Ore Fragments
+       72163, -- Iridescent Ore Fragments
+       72164, -- Iridescent Ore Fragments
+       72165, -- Iridescent Ore
+       74926, -- Impenetrable Elemental Core
+
+      -- Skinning
+       -- Drops
+       70381, -- Curious Hide Scraps
+       70383, -- Curious Hide Scraps
+       70384, -- Curious Hide Scraps
+       70385, -- Curious Hide Scraps
+       70386, -- Curious Hide Scraps
+       70389, -- Large Sample of Curious Hide
+       74930, -- Kingly Sheepskin Pelt
+
+      --Tailoring
+       -- Pack/Dirt
+       66386, -- Umbral Bone Needle
+       66387, -- Primvalweave Spindle
+       -- Drops
+       70524, -- Ohn'arhan Weave
+       70525, -- Stupidly Effective Stitchery
+       74929, -- Perfect Wildfeather
+    },
+    tooltipKey = 'ShowProfessionLootablesTooltip',
+  },
+  -- The World Awaits
   {
     name = L["The World Awaits"],
     weekly = true,
     quest = 72728,
     relatedQuest = {72728},
   },
+  -- Emissary of War
   {
     name = L["Emissary of War"],
     weekly = true,
     quest = 72722,
     relatedQuest = {72722},
+  },
+  -- Timewalking
+  {
+    name = L["Timewalking"],
+    weekly = true,
+	func = TimewalkingUpdate,
+    showFunc = TimewalkingShow,
+	resetFunc = TimewalkingReset,
+	tooltipKey = 'ShowTimewalkingTooltip',
+    relatedQuest = {
+     72810, -- TBC
+     72726, -- Wrath
+     72810, -- Cata
+     72725, -- MoP
+     72724, -- WoD
+     72719, -- Legion
+	},
   },
   -- Patterns Within Patterns
   {
@@ -673,6 +1229,7 @@ Module.TrackedQuest = {
       2510, -- Valdrakken Accord
     },
   },
+  -- Aiding the Accord
   {
     name = L["Aiding the Accord"],
     weekly = true,
@@ -689,18 +1246,21 @@ Module.TrackedQuest = {
       75259, -- Aiding the Accord: Zskera Vault
     },
   },
+  -- Community Feast
   {
     name = L["Community Feast"],
     weekly = true,
     quest = 70893,
     relatedQuest = {70893},
   },
+  -- Siege on Dragonbane Keep
   {
     name = L["Siege on Dragonbane Keep"],
     weekly = true,
     quest = 70866,
     relatedQuest = {70866},
   },
+  -- Grand Hunt
   {
     name = L["Grand Hunt"],
     weekly = true,
@@ -714,18 +1274,21 @@ Module.TrackedQuest = {
     },
     tooltipKey = 'ShowGrandHuntTooltip',
   },
+  -- Trial of Elements
   {
     name = L["Trial of Elements"],
     weekly = true,
     quest = 71995,
     relatedQuest = {71995},
   },
+  -- Trial of Flood
   {
     name = L["Trial of Flood"],
     weekly = true,
     quest = 71033,
     relatedQuest = {71033},
   },
+  -- Primal Storms Core
   {
     name = L["Primal Storms Core"],
     weekly = true,
@@ -742,6 +1305,7 @@ Module.TrackedQuest = {
     },
     tooltipKey = 'ShowPrimalStormsCoreTooltip',
   },
+  -- Primal Storms Elementals
   {
     name = L["Primal Storms Elementals"],
     daily = true,
@@ -768,6 +1332,7 @@ Module.TrackedQuest = {
     },
     tooltipKey = 'ShowPrimalStormsElementalsTooltip',
   },
+  -- Sparks of Life
   {
     name = L["Sparks of Life"],
     weekly = true,
