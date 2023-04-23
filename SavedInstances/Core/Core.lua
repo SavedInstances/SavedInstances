@@ -394,19 +394,23 @@ SI.defaultDB = {
     Progress5 = false, -- Lesser Visions of N'Zoth
     Progress6 = false, -- Torghast Weekly
     Progress7 = false, -- Covenant Assaults
-    Progress8 = false, -- The World Awaits
-    Progress9 = false, -- Emissary of War
-    Progress10 = false, -- Patterns Within Patterns
-    Progress11 = true, -- Dragonflight Renown
-    Progress12 = false, -- Aiding the Accord
-    Progress13 = false, -- Community Feast
-    Progress14 = false, -- Siege on Dragonbane Keep
-    Progress15 = false, -- Grand Hunt
-    Progress16 = false, -- Trial of the Elements
-    Progress17 = false, -- Trial of the Flood
-    Progress18 = false, -- Primal Storms Core
-    Progress19 = false, -- Primal Storms Elementals
-    Progress20 = false, -- Sparks of Life
+    Progress8 = true, -- Profession Treatise
+    Progress9 = true, -- Profession Quests
+    Progress10 = true, -- Profession Lootables
+    Progress11 = true, -- The World Awaits
+    Progress12 = true, -- Emissary of War
+    Progress13 = true, -- Timewalking
+    Progress14 = false, -- Patterns Within Patterns
+    Progress15 = true, -- Dragonflight Renown
+    Progress16 = true, -- Aiding the Accord
+    Progress17 = true, -- Community Feast
+    Progress18 = false, -- Siege on Dragonbane Keep
+    Progress19 = false, -- Grand Hunt
+    Progress20 = false, -- Trial of the Elements
+    Progress21 = false, -- Trial of the Flood
+    Progress22 = false, -- Primal Storms Core
+    Progress23 = false, -- Primal Storms Elementals
+    Progress24 = false, -- Sparks of Life
     Warfront1 = false, -- Arathi Highlands
     Warfront2 = false, -- Darkshores
     KeystoneReportTarget = "EXPORT",
@@ -1515,6 +1519,21 @@ function SI:UpdateToonData()
     t.Warmode = C_PvP.IsWarModeDesired()
     t.Covenant = C_Covenants.GetActiveCovenantID()
     t.MythicPlusScore = C_ChallengeMode.GetOverallDungeonScore()
+  local prof1, prof2, _, _, _ = GetProfessions()
+   local prof_name1 = ""
+   local prof_skill_level1 = 0
+   local prof_name2 = ""
+   local prof_skill_level2 = 0
+   if (prof1) then
+	prof_name1, _, prof_skill_level1 = GetProfessionInfo(prof1)
+	end
+   if (prof2) then
+    prof_name2, _, prof_skill_level2 = GetProfessionInfo(prof2)
+    end
+   t.Profession1Name = prof_name1
+   t.Profession1Skill = prof_skill_level1
+   t.Profession2Name = prof_name2
+   t.Profession2Skill = prof_skill_level2
   end
 
   t.LastSeen = time()
@@ -1648,6 +1667,12 @@ hoverTooltip.ShowToonTooltip = function (cell, arg, ...)
   end
   indicatortip:AddLine(STAT_AVERAGE_ITEM_LEVEL,("%d "):format(t.IL or 0)..STAT_AVERAGE_ITEM_LEVEL_EQUIPPED:format(t.ILe or 0))
   indicatortip:AddLine(LFG_LIST_ITEM_LEVEL_INSTR_PVP_SHORT,("%d"):format(t.ILPvp or 0))
+  if t.Profession1Name and t.Profession1Skill > 0 then
+    indicatortip:AddLine(t.Profession1Name, t.Profession1Skill)
+  end
+  if t.Profession2Name and t.Profession2Skill > 0 then
+    indicatortip:AddLine(t.Profession2Name, t.Profession2Skill)
+  end
   if t.Covenant and t.Covenant > 0 then
     local data = C_Covenants.GetCovenantData(t.Covenant)
     local name = data and data.name
@@ -2520,6 +2545,523 @@ hoverTooltip.ShowCovenantAssaultTooltip = function (cell, arg, ...)
         (REDFONT .. ADDON_NOT_AVAILABLE .. FONTEND)
       )
     )
+  end
+
+  finishIndicator()
+end
+
+hoverTooltip.ShowProfessionTreatiseTooltip = function (cell, arg, ...)
+  -- Should be in Module Progress
+  local toon, index = unpack(arg)
+  local t = SI.db.Toons[toon]
+  if not t or not t.Progress or not t.Progress[index] then return end
+  if not t or not t.Quests then return end
+  openIndicator(2, "LEFT", "RIGHT")
+
+  local P = SI:GetModule("Progress")
+  local totalDone = 0
+  for _, questID in ipairs(P.TrackedQuest[index].relatedQuest) do
+    if t.Progress[index][questID] then
+      totalDone = totalDone + 1
+    end
+  end
+
+  local toonstr = (db.Tooltip.ShowServer and toon) or strsplit(' ', toon)
+
+  indicatortip:AddHeader(ClassColorise(t.Class, toonstr), string.format("%d/%d", totalDone, "2"))
+
+  local profIndex = {
+    "Alchemy",
+    "Blacksmithing",
+    "Enchanting",
+    "Engineering",
+    "Herbalism",
+    "Inscription",
+    "Jewelcrafting",
+    "Leatherworking",
+    "Mining",
+    "Skinning",
+    "Tailoring",
+  }
+  local IDs = P.TrackedQuest[index].relatedQuest
+
+  for i, questID in ipairs(IDs) do
+    if t.Profession1Name == profIndex[i] or t.Profession2Name == profIndex[i] then
+    indicatortip:AddLine(
+      profIndex[i],
+      t.Progress[index][questID] and REDFONT .. ALREADY_LOOTED .. FONTEND or GREENFONT .. AVAILABLE .. FONTEND
+    )
+    end
+  end
+
+  finishIndicator()
+end
+
+hoverTooltip.ShowProfessionQuestsTooltip = function (cell, arg, ...)
+  -- Should be in Module Progress
+  local toon, index = unpack(arg)
+  local t = SI.db.Toons[toon]
+  if not t or not t.Progress or not t.Progress[index] then return end
+  if not t or not t.Quests then return end
+  openIndicator(2, "LEFT", "RIGHT")
+  
+  local P = SI:GetModule("Progress")
+  local profIndex = {
+    "All",
+    "Alchemy",
+    "Alchemy",
+    "Alchemy",
+    "Alchemy",
+    "Alchemy",
+    "Alchemy",
+    "Alchemy",
+    "Alchemy",
+    "Blacksmithing",
+    "Blacksmithing",
+    "Blacksmithing",
+    "Blacksmithing",
+    "Blacksmithing",
+    "Blacksmithing",
+    "Blacksmithing",
+    "Blacksmithing",
+    "Blacksmithing",
+    "Enchanting",
+    "Enchanting",
+    "Enchanting",
+    "Enchanting",
+    "Enchanting",
+    "Enchanting",
+    "Enchanting",
+    "Enchanting",
+    "Engineering",
+    "Engineering",
+    "Engineering",
+    "Engineering",
+    "Engineering",
+    "Engineering",
+    "Engineering",
+    "Engineering",
+    "Engineering",
+    "Herbalism",
+    "Herbalism",
+    "Herbalism",
+    "Herbalism",
+    "Inscription",
+    "Inscription",
+    "Inscription",
+    "Inscription",
+    "Inscription",
+    "Inscription",
+    "Inscription",
+    "Inscription",
+    "Inscription",
+    "Jewelcrafting",
+    "Jewelcrafting",
+    "Jewelcrafting",
+    "Jewelcrafting",
+    "Jewelcrafting",
+    "Jewelcrafting",
+    "Jewelcrafting",
+    "Jewelcrafting",
+    "Jewelcrafting",
+    "Leatherworking",
+    "Leatherworking",
+    "Leatherworking",
+    "Leatherworking",
+    "Leatherworking",
+    "Leatherworking",
+    "Leatherworking",
+    "Leatherworking",
+    "Leatherworking",
+    "Mining",
+    "Mining",
+    "Mining",
+    "Mining",
+    "Skinning",
+    "Skinning",
+    "Skinning",
+    "Skinning",
+    "Tailoring",
+    "Tailoring",
+    "Tailoring",
+    "Tailoring",
+    "Tailoring",
+    "Tailoring",
+    "Tailoring",
+    "Tailoring",
+    "Tailoring",
+  }
+  
+  local naming = {
+    "Show Your Mettle",
+    "Trainer",
+    "Trainer",
+    "Trainer",
+    "Trainer",
+    "Consortium",
+    "Consortium",
+    "Consortium",
+    "Consortium",
+    "Work Orders",
+    "Trainer",
+    "Trainer",
+    "Trainer",
+    "Trainer",
+    "Consortium",
+    "Consortium",
+    "Consortium",
+    "Consortium",
+    "Trainer",
+    "Trainer",
+    "Trainer",
+    "Trainer",
+    "Consortium",
+    "Consortium",
+    "Consortium",
+    "Consortium",
+    "Work Orders",
+    "Trainer",
+    "Trainer",
+    "Trainer",
+    "Trainer",
+    "Consortium",
+    "Consortium",
+    "Consortium",
+    "Consortium",
+    "Trainer",
+    "Trainer",
+    "Trainer",
+    "Trainer",
+    "Work Orders",
+    "Trainer",
+    "Trainer",
+    "Trainer",
+    "Trainer",
+    "Consortium",
+    "Consortium",
+    "Consortium",
+    "Consortium",
+    "Work Orders",
+    "Trainer",
+    "Trainer",
+    "Trainer",
+    "Trainer",
+    "Consortium",
+    "Consortium",
+    "Consortium",
+    "Consortium",
+    "Work Orders",
+    "Trainer",
+    "Trainer",
+    "Trainer",
+    "Trainer",
+    "Consortium",
+    "Consortium",
+    "Consortium",
+    "Consortium",
+    "Trainer",
+    "Trainer",
+    "Trainer",
+    "Trainer",
+    "Trainer",
+    "Trainer",
+    "Trainer",
+    "Trainer",
+    "Work Orders",
+    "Trainer",
+    "Trainer",
+    "Trainer",
+    "Trainer",
+    "Consortium",
+    "Consortium",
+    "Consortium",
+    "Consortium",
+  }
+  
+  local totalDone1 = 0
+  for i, questID in ipairs(P.TrackedQuest[index].relatedQuest) do
+    if t.Profession1Name == profIndex[i] and t.Progress[index][questID] then
+      totalDone1 = totalDone1 + 1
+    end
+  end
+  local totalDone2 = 0
+  for i, questID in ipairs(P.TrackedQuest[index].relatedQuest) do
+    if t.Profession2Name == profIndex[i] and t.Progress[index][questID] then
+      totalDone2 = totalDone2 + 1
+    end
+  end
+  local totalDone3 = 0
+  for i, questID in ipairs(P.TrackedQuest[index].relatedQuest) do
+    if naming[i] == "Show Your Mettle" and t.Progress[index][questID] then
+      totalDone3 = totalDone3 + 1
+    end
+  end
+  
+  local totalDone = totalDone1 + totalDone2 + totalDone3
+  
+  local totalToDo1 = 0
+  if t.Profession1Name == "Alchemy" or t.Profession1Name == "Enchanting" then
+   totalToDo1 = totalToDo1 + 2
+  elseif t.Profession1Name == "Herbalism" or t.Profession1Name == "Mining" or t.Profession1Name == "Skinning" then
+   totalToDo1 = totalToDo1 + 1
+  else totalToDo1 = totalToDo1 + 3
+  end
+  local totalToDo2 = 0
+  if t.Profession2Name == "Alchemy" or t.Profession2Name == "Enchanting" then
+   totalToDo2 = totalToDo2 + 2
+  elseif t.Profession2Name == "Herbalism" or t.Profession2Name == "Mining" or t.Profession2Name == "Skinning" then
+   totalToDo2 = totalToDo2 + 1
+  else totalToDo2 = totalToDo2 + 3
+  end 
+  
+  local totalToDo = totalToDo1 + totalToDo2 + 1
+  
+  local toonstr = (db.Tooltip.ShowServer and toon) or strsplit(' ', toon)
+
+  indicatortip:AddHeader(ClassColorise(t.Class, toonstr), string.format("%d/%d", totalDone, totalToDo))
+
+  local IDs = P.TrackedQuest[index].relatedQuest
+  
+  indicatortip:AddLine()
+  indicatortip:AddLine("Show Your Mettle", string.format("%d/%d", totalDone3, 1))
+  
+  indicatortip:AddLine()
+  indicatortip:AddLine(YELLOWFONT .. t.Profession1Name .. FONTEND, string.format("%d/%d", totalDone1, totalToDo1))
+  for i, questID in ipairs(IDs) do
+   if t.Profession1Name == profIndex[i] then
+    indicatortip:AddLine(
+      naming[i],
+      t.Progress[index][questID] and REDFONT .. CRITERIA_COMPLETED .. FONTEND or GREENFONT .. AVAILABLE .. FONTEND
+    )
+   end
+  end
+  indicatortip:AddLine()
+  indicatortip:AddLine(YELLOWFONT .. t.Profession2Name .. FONTEND, string.format("%d/%d", totalDone2, totalToDo2))
+  for i, questID in ipairs(IDs) do
+   if t.Profession2Name == profIndex[i] then
+    indicatortip:AddLine(
+      naming[i],
+      t.Progress[index][questID] and REDFONT .. CRITERIA_COMPLETED .. FONTEND or GREENFONT .. AVAILABLE .. FONTEND
+    )
+   end
+  end
+
+  finishIndicator()
+end
+
+hoverTooltip.ShowProfessionLootablesTooltip = function (cell, arg, ...)
+  -- Should be in Module Progress
+  local toon, index = unpack(arg)
+  local t = SI.db.Toons[toon]
+  if not t or not t.Progress or not t.Progress[index] then return end
+  if not t or not t.Quests then return end
+  openIndicator(2, "LEFT", "RIGHT")
+
+  local P = SI:GetModule("Progress")
+  local profIndex = {
+    "Alchemy",
+    "Alchemy",
+    "Alchemy",
+    "Alchemy",
+    "Alchemy",
+    "Blacksmithing",
+    "Blacksmithing",
+    "Blacksmithing",
+    "Blacksmithing",
+    "Blacksmithing",
+    "Enchanting",
+    "Enchanting",
+    "Enchanting",
+    "Enchanting",
+    "Enchanting",
+    "Engineering",
+    "Engineering",
+    "Engineering",
+    "Engineering",
+    "Engineering",
+    "Herbalism",
+    "Herbalism",
+    "Herbalism",
+    "Herbalism",
+    "Herbalism",
+    "Herbalism",
+    "Herbalism",
+    "Inscription",
+    "Inscription",
+    "Inscription",
+    "Inscription",
+    "Inscription",
+    "Jewelcrafting",
+    "Jewelcrafting",
+    "Jewelcrafting",
+    "Jewelcrafting",
+    "Jewelcrafting",
+    "Leatherworking",
+    "Leatherworking",
+    "Leatherworking",
+    "Leatherworking",
+    "Leatherworking",
+    "Mining",
+    "Mining",
+    "Mining",
+    "Mining",
+    "Mining",
+    "Mining",
+    "Mining",
+    "Skinning",
+    "Skinning",
+    "Skinning",
+    "Skinning",
+    "Skinning",
+    "Skinning",
+    "Skinning",
+    "Tailoring",
+    "Tailoring",
+    "Tailoring",
+    "Tailoring",
+    "Tailoring",
+  }
+  
+  local naming = {
+    "Experimental Substance - Pack/Dirt",
+    "Reawakened Catalyst - Pack/Dirt",
+    "Elementious Splinter - Elemental enemies",
+    "Decaying Phlegm - Decay enemies",
+    "Blazehoof Ashes - Draconic Supression Powder",
+    "Valdrakken Weapon Chain - Pack/Dirt",
+    "Draconium Blade Sharpener - Pack/Dirt",
+    "Primeval Earth Fragment - Earth enemies",
+    "Molten Globule - Fire enemies",
+    "Dense Seaforged Javelin - Ancient Ceremonial Trident",
+    "Prismatic Focusing Shard - Pack/Dirt",
+    "Primal Dust - Pack/Dirt",
+    "Primordial Aether - Arcane enemies",
+    "Primalist Charm - Humanoid primalists",
+    "Speck of Arcane Awareness - Glowing Crystal Bookmark",
+    "Eroded Titan Gizmo - Pack/Dirt",
+    "Watcher Power Core - Pack/Dirt",
+    "Keeper's Mark - Titan/Tyrhold",
+    "Infinitely Attachable Pair o' Docks - Dragonkin",
+    "Everflowing Antifreeze - Gnomish Voicebox",
+    "Dreambloom Petal",
+    "Dreambloom Petal",
+    "Dreambloom Petal",
+    "Dreambloom Petal",
+    "Dreambloom Petal",
+    "Dreambloom",
+    "Undigested Hochenblume Petal - Dormant Lifebloom Seeds",
+    "Phoenix Feather Quill - Pack/Dirt",
+    "Iskaaran Trading Ledger - Pack/Dirt",
+    "Curious Djaradin Rune - Djaradin",
+    "Draconic Glamour - Dragonkin",
+    "Glimmering Rune of Arcantrix - Arcane Dispelling Rune",
+    "Ancient Gem Fragments - Pack/Dirt",
+    "Chipped Tyrstone - Pack/Dirt",
+    "Incandescent Curio - Elementals",
+    "Elegantly Engraved Embellishment - Nokhud / Sundered Flame",
+    "Conductive Ametrine Shard - Crystal Tuning Fork",
+    "Molted Dragon Scales - Pack/Dirt",
+    "Preserved Animal Parts - Pack/Dirt",
+    "Ossified Hide - Proto-drakes",
+    "Exceedingly Soft Skin - Slyvern / Vorquin",
+    "Slyvern Alpha Claw - Reinforced Pristine Leather",
+    "Iridescent Ore Fragments",
+    "Iridescent Ore Fragments",
+    "Iridescent Ore Fragments",
+    "Iridescent Ore Fragments",
+    "Iridescent Ore Fragments",
+    "Iridescent Ore",
+    "Impenetrable Elemental Core - Amplified Quaking Stone",
+    "Curious Hide Scraps",
+    "Curious Hide Scraps",
+    "Curious Hide Scraps",
+    "Curious Hide Scraps",
+    "Curious Hide Scraps",
+    "Large Sample of Curious Hide",
+    "Kingly Sheepskin Pelt - Razor-Sharp Animal Bone",
+    "Umbral Bone Needle - Pack/Dirt",
+    "Primvalweave Spindle - Pack/Dirt",
+    "Ohn'arhan Weave - Nokhud",
+    "Stupidly Effective Stitchery - Gnolls",
+    "Perfect Wildfeather - Traditional Morqut Kite",
+  }
+  
+  local totalDone1 = 0
+  for i, questID in ipairs(P.TrackedQuest[index].relatedQuest) do
+    if t.Profession1Name == profIndex[i] and t.Progress[index][questID] then
+      totalDone1 = totalDone1 + 1
+    end
+  end
+  local totalDone2 = 0
+  for i, questID in ipairs(P.TrackedQuest[index].relatedQuest) do
+    if t.Profession2Name == profIndex[i] and t.Progress[index][questID] then
+      totalDone2 = totalDone2 + 1
+    end
+  end
+  
+  local totalDone = totalDone1 + totalDone2
+  
+  local totalToDo1 = 0
+  if t.Profession1Name == "Herbalism" or t.Profession1Name == "Mining" or t.Profession1Name == "Skinning" then
+   totalToDo1 = totalToDo1 + 7
+  else totalToDo1 = totalToDo1 + 5
+  end
+  local totalToDo2 = 0
+  if t.Profession2Name == "Herbalism" or t.Profession2Name == "Mining" or t.Profession2Name == "Skinning" then
+   totalToDo2 = totalToDo2 + 7
+  else totalToDo2 = totalToDo2 + 5
+  end
+  
+  local totalToDo = totalToDo1 + totalToDo2
+  
+  local toonstr = (db.Tooltip.ShowServer and toon) or strsplit(' ', toon)
+
+  indicatortip:AddHeader(ClassColorise(t.Class, toonstr), string.format("%d/%d", totalDone, totalToDo))
+
+  local IDs = P.TrackedQuest[index].relatedQuest
+  
+  indicatortip:AddLine()
+  indicatortip:AddLine(YELLOWFONT .. t.Profession1Name .. FONTEND, string.format("%d/%d", totalDone1, totalToDo1))
+  for i, questID in ipairs(IDs) do
+   if t.Profession1Name == profIndex[i] then
+    indicatortip:AddLine(
+      naming[i],
+      t.Progress[index][questID] and REDFONT .. ALREADY_LOOTED .. FONTEND or GREENFONT .. AVAILABLE .. FONTEND
+    )
+   end
+  end
+  indicatortip:AddLine()
+  indicatortip:AddLine(YELLOWFONT .. t.Profession2Name .. FONTEND, string.format("%d/%d", totalDone2, totalToDo2))
+  for i, questID in ipairs(IDs) do
+   if t.Profession2Name == profIndex[i] then
+    indicatortip:AddLine(
+      naming[i],
+      t.Progress[index][questID] and REDFONT .. ALREADY_LOOTED .. FONTEND or GREENFONT .. AVAILABLE .. FONTEND
+    )
+   end
+  end
+
+  finishIndicator()
+end
+
+hoverTooltip.ShowTimewalkingTooltip = function (cell, arg, ...)
+  -- Should be in Module Progress
+  local toon, index = unpack(arg)
+  local t = SI.db.Toons[toon]
+  if not t or not t.Progress or not t.Progress[index] then return end
+  if not t or not t.Quests then return end
+  openIndicator(2, "LEFT", "RIGHT")
+  indicatortip:AddHeader(ClassColorise(t.Class, toon), L["Timewalking"])
+
+  if t.Progress[index].isComplete then
+    indicatortip:AddLine("\124T" .. READY_CHECK_READY_TEXTURE .. ":0|t")
+  elseif t.Progress[index].isFinish then
+    indicatortip:AddLine("\124T" .. READY_CHECK_WAITING_TEXTURE .. ":0|t")
+  elseif t.Progress[index].leaderboardCount and t.Progress[index].leaderboardCount > 0 then
+    for i = 1, t.Progress[index].leaderboardCount do
+      indicatortip:AddLine("")
+      indicatortip:SetCell(i + 1, 1, t.Progress[index][i], nil, "LEFT", 2)
+    end
   end
 
   finishIndicator()
