@@ -295,7 +295,7 @@ local function ProfessionTreatiseShow(toon, index)
       totalDone = totalDone + 1
     end
   end
-  if totalDone >= 2 then 
+  if totalDone >= 2 then
    return "\124T" .. READY_CHECK_READY_TEXTURE .. ":0|t"
    else
    return string.format("%d/%d", totalDone, "2")
@@ -328,7 +328,7 @@ local function ProfessionQuestsShow(toon, index)
       totalDone = totalDone + 1
     end
   end
-  
+
   local totalToDo = 0
   if t.Profession1Name == "Alchemy" or t.Profession1Name == "Enchanting" then
    totalToDo = totalToDo + 2
@@ -343,8 +343,8 @@ local function ProfessionQuestsShow(toon, index)
   else totalToDo = totalToDo + 3
   end
   totalToDo = totalToDo + 1 --Add 1 for "Show Your Mettle" quest that every profession gets
-  
-  if totalDone >= totalToDo then 
+
+  if totalDone >= totalToDo then
    return "\124T" .. READY_CHECK_READY_TEXTURE .. ":0|t"
    else
    return string.format("%d/%d", totalDone, totalToDo)
@@ -370,7 +370,7 @@ local function ProfessionLootablesShow(toon, index)
   local t = SI.db.Toons[toon]
   if not t or not t.Quests then return end
   if not t or not t.Progress or not t.Progress[index] then return end
-  
+
   local profIndex = {
     "Alchemy",
     "Alchemy",
@@ -434,7 +434,7 @@ local function ProfessionLootablesShow(toon, index)
     "Tailoring",
     "Tailoring",
   }
-  
+
   local totalDone1 = 0
   for i, questID in ipairs(Module.TrackedQuest[index].relatedQuest) do
     if t.Profession1Name == profIndex[i] and t.Progress[index][questID] then
@@ -447,9 +447,9 @@ local function ProfessionLootablesShow(toon, index)
       totalDone2 = totalDone2 + 1
     end
   end
-  
+
   local totalDone = totalDone1 + totalDone2
-  
+
   local totalToDo = 0
   if t.Profession1Name == "Herbalism" or t.Profession1Name == "Mining" or t.Profession1Name == "Skinning" then
    totalToDo = totalToDo + 7
@@ -459,7 +459,7 @@ local function ProfessionLootablesShow(toon, index)
    totalToDo = totalToDo + 7
   else totalToDo = totalToDo + 5
   end
-  if totalDone >= totalToDo then 
+  if totalDone >= totalToDo then
    return "\124T" .. READY_CHECK_READY_TEXTURE .. ":0|t"
    else
    return string.format("%d/%d", totalDone, totalToDo)
