@@ -1519,21 +1519,21 @@ function SI:UpdateToonData()
     t.Warmode = C_PvP.IsWarModeDesired()
     t.Covenant = C_Covenants.GetActiveCovenantID()
     t.MythicPlusScore = C_ChallengeMode.GetOverallDungeonScore()
-  local prof1, prof2, _, _, _ = GetProfessions()
-   local prof_name1 = ""
-   local prof_skill_level1 = 0
-   local prof_name2 = ""
-   local prof_skill_level2 = 0
-   if (prof1) then
-	prof_name1, _, prof_skill_level1 = GetProfessionInfo(prof1)
-	end
-   if (prof2) then
-    prof_name2, _, prof_skill_level2 = GetProfessionInfo(prof2)
+    local prof1, prof2, _, _, _ = GetProfessions()
+    local prof_name1 = ""
+    local prof_skill_level1 = 0
+    local prof_name2 = ""
+    local prof_skill_level2 = 0
+    if (prof1) then
+     prof_name1, _, prof_skill_level1 = GetProfessionInfo(prof1)
     end
-   t.Profession1Name = prof_name1
-   t.Profession1Skill = prof_skill_level1
-   t.Profession2Name = prof_name2
-   t.Profession2Skill = prof_skill_level2
+    if (prof2) then
+     prof_name2, _, prof_skill_level2 = GetProfessionInfo(prof2)
+    end
+    t.Profession1Name = prof_name1
+    t.Profession1Skill = prof_skill_level1
+    t.Profession2Name = prof_name2
+    t.Profession2Skill = prof_skill_level2
   end
 
   t.LastSeen = time()
@@ -2604,7 +2604,7 @@ hoverTooltip.ShowProfessionQuestsTooltip = function (cell, arg, ...)
   if not t or not t.Progress or not t.Progress[index] then return end
   if not t or not t.Quests then return end
   openIndicator(2, "LEFT", "RIGHT")
-  
+
   local P = SI:GetModule("Progress")
   local profIndex = {
     "All",
@@ -2691,7 +2691,7 @@ hoverTooltip.ShowProfessionQuestsTooltip = function (cell, arg, ...)
     "Tailoring",
     "Tailoring",
   }
-  
+
   local naming = {
     "Show Your Mettle",
     "Trainer",
@@ -2777,7 +2777,7 @@ hoverTooltip.ShowProfessionQuestsTooltip = function (cell, arg, ...)
     "Consortium",
     "Consortium",
   }
-  
+
   local totalDone1 = 0
   for i, questID in ipairs(P.TrackedQuest[index].relatedQuest) do
     if t.Profession1Name == profIndex[i] and t.Progress[index][questID] then
@@ -2796,9 +2796,9 @@ hoverTooltip.ShowProfessionQuestsTooltip = function (cell, arg, ...)
       totalDone3 = totalDone3 + 1
     end
   end
-  
+
   local totalDone = totalDone1 + totalDone2 + totalDone3
-  
+
   local totalToDo1 = 0
   if t.Profession1Name == "Alchemy" or t.Profession1Name == "Enchanting" then
    totalToDo1 = totalToDo1 + 2
@@ -2812,19 +2812,19 @@ hoverTooltip.ShowProfessionQuestsTooltip = function (cell, arg, ...)
   elseif t.Profession2Name == "Herbalism" or t.Profession2Name == "Mining" or t.Profession2Name == "Skinning" then
    totalToDo2 = totalToDo2 + 1
   else totalToDo2 = totalToDo2 + 3
-  end 
-  
+  end
+
   local totalToDo = totalToDo1 + totalToDo2 + 1
-  
+
   local toonstr = (db.Tooltip.ShowServer and toon) or strsplit(' ', toon)
 
   indicatortip:AddHeader(ClassColorise(t.Class, toonstr), string.format("%d/%d", totalDone, totalToDo))
 
   local IDs = P.TrackedQuest[index].relatedQuest
-  
+
   indicatortip:AddLine()
   indicatortip:AddLine("Show Your Mettle", string.format("%d/%d", totalDone3, 1))
-  
+
   indicatortip:AddLine()
   indicatortip:AddLine(YELLOWFONT .. t.Profession1Name .. FONTEND, string.format("%d/%d", totalDone1, totalToDo1))
   for i, questID in ipairs(IDs) do
@@ -2921,7 +2921,7 @@ hoverTooltip.ShowProfessionLootablesTooltip = function (cell, arg, ...)
     "Tailoring",
     "Tailoring",
   }
-  
+
   local naming = {
     "Experimental Substance - Pack/Dirt",
     "Reawakened Catalyst - Pack/Dirt",
@@ -2985,7 +2985,7 @@ hoverTooltip.ShowProfessionLootablesTooltip = function (cell, arg, ...)
     "Stupidly Effective Stitchery - Gnolls",
     "Perfect Wildfeather - Traditional Morqut Kite",
   }
-  
+
   local totalDone1 = 0
   for i, questID in ipairs(P.TrackedQuest[index].relatedQuest) do
     if t.Profession1Name == profIndex[i] and t.Progress[index][questID] then
@@ -2998,9 +2998,9 @@ hoverTooltip.ShowProfessionLootablesTooltip = function (cell, arg, ...)
       totalDone2 = totalDone2 + 1
     end
   end
-  
+
   local totalDone = totalDone1 + totalDone2
-  
+
   local totalToDo1 = 0
   if t.Profession1Name == "Herbalism" or t.Profession1Name == "Mining" or t.Profession1Name == "Skinning" then
    totalToDo1 = totalToDo1 + 7
@@ -3011,15 +3011,15 @@ hoverTooltip.ShowProfessionLootablesTooltip = function (cell, arg, ...)
    totalToDo2 = totalToDo2 + 7
   else totalToDo2 = totalToDo2 + 5
   end
-  
+
   local totalToDo = totalToDo1 + totalToDo2
-  
+
   local toonstr = (db.Tooltip.ShowServer and toon) or strsplit(' ', toon)
 
   indicatortip:AddHeader(ClassColorise(t.Class, toonstr), string.format("%d/%d", totalDone, totalToDo))
 
   local IDs = P.TrackedQuest[index].relatedQuest
-  
+
   indicatortip:AddLine()
   indicatortip:AddLine(YELLOWFONT .. t.Profession1Name .. FONTEND, string.format("%d/%d", totalDone1, totalToDo1))
   for i, questID in ipairs(IDs) do
