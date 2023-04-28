@@ -2559,17 +2559,6 @@ hoverTooltip.ShowProfessionTreatiseTooltip = function (cell, arg, ...)
   openIndicator(2, "LEFT", "RIGHT")
 
   local P = SI:GetModule("Progress")
-  local totalDone = 0
-  for _, questID in ipairs(P.TrackedQuest[index].relatedQuest) do
-    if t.Progress[index][questID] then
-      totalDone = totalDone + 1
-    end
-  end
-
-  local toonstr = (db.Tooltip.ShowServer and toon) or strsplit(' ', toon)
-
-  indicatortip:AddHeader(ClassColorise(t.Class, toonstr), string.format("%d/%d", totalDone, "2"))
-
   local profIndex = {
     "Alchemy",
     "Blacksmithing",
@@ -2583,6 +2572,26 @@ hoverTooltip.ShowProfessionTreatiseTooltip = function (cell, arg, ...)
     "Skinning",
     "Tailoring",
   }
+
+  local totalDone1 = 0
+  for i, questID in ipairs(P.TrackedQuest[index].relatedQuest) do
+    if t.Profession1Name == profIndex[i] and t.Progress[index][questID] then
+      totalDone1 = totalDone1 + 1
+    end
+  end
+  local totalDone2 = 0
+  for i, questID in ipairs(P.TrackedQuest[index].relatedQuest) do
+    if t.Profession2Name == profIndex[i] and t.Progress[index][questID] then
+      totalDone2 = totalDone2 + 1
+    end
+  end
+
+  local totalDone = totalDone1 + totalDone2
+
+  local toonstr = (db.Tooltip.ShowServer and toon) or strsplit(' ', toon)
+
+  indicatortip:AddHeader(ClassColorise(t.Class, toonstr), string.format("%d/%d", totalDone, "2"))
+
   local IDs = P.TrackedQuest[index].relatedQuest
 
   for i, questID in ipairs(IDs) do
