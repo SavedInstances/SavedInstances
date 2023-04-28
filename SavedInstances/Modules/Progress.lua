@@ -289,12 +289,34 @@ local function ProfessionTreatiseShow(toon, index)
   if not t or not t.Quests then return end
   if not t or not t.Progress or not t.Progress[index] then return end
 
-  local totalDone = 0
-  for _, questID in ipairs(Module.TrackedQuest[index].relatedQuest) do
-    if t.Progress[index][questID] then
-      totalDone = totalDone + 1
+  local profIndex = {
+    "Alchemy",
+    "Blacksmithing",
+    "Enchanting",
+    "Engineering",
+    "Herbalism",
+    "Inscription",
+    "Jewelcrafting",
+    "Leatherworking",
+    "Mining",
+    "Skinning",
+    "Tailoring",
+  }
+
+  local totalDone1 = 0
+  for i, questID in ipairs(Module.TrackedQuest[index].relatedQuest) do
+    if t.Profession1Name == profIndex[i] and t.Progress[index][questID] then
+      totalDone1 = totalDone1 + 1
     end
   end
+  local totalDone2 = 0
+  for i, questID in ipairs(Module.TrackedQuest[index].relatedQuest) do
+    if t.Profession2Name == profIndex[i] and t.Progress[index][questID] then
+      totalDone2 = totalDone2 + 1
+    end
+  end
+
+  local totalDone = totalDone1 + totalDone2
   if totalDone >= 2 then
    return "\124T" .. READY_CHECK_READY_TEXTURE .. ":0|t"
    else
@@ -322,12 +344,112 @@ local function ProfessionQuestsShow(toon, index)
   if not t or not t.Quests then return end
   if not t or not t.Progress or not t.Progress[index] then return end
 
-  local totalDone = 0
-  for _, questID in ipairs(Module.TrackedQuest[index].relatedQuest) do
-    if t.Progress[index][questID] then
-      totalDone = totalDone + 1
+  local profIndex = {
+    "All",
+    "Alchemy",
+    "Alchemy",
+    "Alchemy",
+    "Alchemy",
+    "Alchemy",
+    "Alchemy",
+    "Alchemy",
+    "Alchemy",
+    "Blacksmithing",
+    "Blacksmithing",
+    "Blacksmithing",
+    "Blacksmithing",
+    "Blacksmithing",
+    "Blacksmithing",
+    "Blacksmithing",
+    "Blacksmithing",
+    "Blacksmithing",
+    "Enchanting",
+    "Enchanting",
+    "Enchanting",
+    "Enchanting",
+    "Enchanting",
+    "Enchanting",
+    "Enchanting",
+    "Enchanting",
+    "Engineering",
+    "Engineering",
+    "Engineering",
+    "Engineering",
+    "Engineering",
+    "Engineering",
+    "Engineering",
+    "Engineering",
+    "Engineering",
+    "Herbalism",
+    "Herbalism",
+    "Herbalism",
+    "Herbalism",
+    "Inscription",
+    "Inscription",
+    "Inscription",
+    "Inscription",
+    "Inscription",
+    "Inscription",
+    "Inscription",
+    "Inscription",
+    "Inscription",
+    "Jewelcrafting",
+    "Jewelcrafting",
+    "Jewelcrafting",
+    "Jewelcrafting",
+    "Jewelcrafting",
+    "Jewelcrafting",
+    "Jewelcrafting",
+    "Jewelcrafting",
+    "Jewelcrafting",
+    "Leatherworking",
+    "Leatherworking",
+    "Leatherworking",
+    "Leatherworking",
+    "Leatherworking",
+    "Leatherworking",
+    "Leatherworking",
+    "Leatherworking",
+    "Leatherworking",
+    "Mining",
+    "Mining",
+    "Mining",
+    "Mining",
+    "Skinning",
+    "Skinning",
+    "Skinning",
+    "Skinning",
+    "Tailoring",
+    "Tailoring",
+    "Tailoring",
+    "Tailoring",
+    "Tailoring",
+    "Tailoring",
+    "Tailoring",
+    "Tailoring",
+    "Tailoring",
+  }
+
+  local totalDone1 = 0
+  for i, questID in ipairs(Module.TrackedQuest[index].relatedQuest) do
+    if t.Profession1Name == profIndex[i] and t.Progress[index][questID] then
+      totalDone1 = totalDone1 + 1
     end
   end
+  local totalDone2 = 0
+  for i, questID in ipairs(Module.TrackedQuest[index].relatedQuest) do
+    if t.Profession2Name == profIndex[i] and t.Progress[index][questID] then
+      totalDone2 = totalDone2 + 1
+    end
+  end
+  local totalDone3 = 0
+  for i, questID in ipairs(Module.TrackedQuest[index].relatedQuest) do
+    if "All" == profIndex[i] and t.Progress[index][questID] then
+      totalDone3 = totalDone3 + 1
+    end
+  end
+
+  local totalDone = totalDone1 + totalDone2 + totalDone3
 
   local totalToDo = 0
   if t.Profession1Name == "Alchemy" or t.Profession1Name == "Enchanting" then
@@ -1199,7 +1321,7 @@ Module.TrackedQuest = {
 	resetFunc = TimewalkingReset,
 	tooltipKey = 'ShowTimewalkingTooltip',
     relatedQuest = {
-     72810, -- TBC
+     72727, -- TBC
      72726, -- Wrath
      72810, -- Cata
      72725, -- MoP
