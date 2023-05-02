@@ -50,8 +50,9 @@ local factionID = {
   -- Dragonflight
   2503, -- Maruuk Centaur
   2507, -- Dragonscale Expedition
-  2510, -- Iskaara Tuskarr
-  2511, -- Valdrakken Accord
+  2510, -- Valdrakken Accord
+  2511, -- Iskaara Tuskarr
+  2564, -- Loamm Niffen
 }
 
 function Module:OnEnable()

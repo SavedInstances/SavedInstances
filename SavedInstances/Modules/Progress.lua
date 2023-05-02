@@ -671,6 +671,7 @@ Module.TrackedQuest = {
       2503, -- Maruuk Centaur
       2511, -- Iskaara Tuskarr
       2510, -- Valdrakken Accord
+      2564, -- Loamm Niffen
     },
   },
   {
