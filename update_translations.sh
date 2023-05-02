@@ -26,7 +26,7 @@ do_import() {
     -H "X-Api-Token: $CF_API_KEY" \
     -F "metadata={ language: \"enUS\", namespace: \"$namespace\", \"missing-phrase-handling\": \"DeletePhrase\" }" \
     -F "localizations=<$file" \
-    "https://www.curseforge.com/api/projects/13998/localization/import"
+    "https://legacy.curseforge.com/api/projects/13998/localization/import"
   ) || exit 1
   case $result in
     200) echo "done." ;;
