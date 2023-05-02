@@ -91,6 +91,8 @@ local currency = {
   2122, -- Storm Sigil
   2123, -- Bloody Tokens
   2167, -- Catalyst Charges
+  2245, -- Flightstones
+  2533, -- Renascent Shadowflame
 }
 SI.currency = currency
 
