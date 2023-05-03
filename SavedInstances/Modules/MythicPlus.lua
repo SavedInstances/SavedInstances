@@ -25,6 +25,9 @@ local StaticPopup_Show = StaticPopup_Show
 local Enum_WeeklyRewardChestThresholdType_MythicPlus = Enum.WeeklyRewardChestThresholdType.MythicPlus
 
 local KeystoneAbbrev = {
+  -- Cataclysm
+  [438] = L["VP"], -- The Vortex Pinnacle
+
   -- Mists of Pandaria
   [2]   = L["TJS"],  -- Temple of the Jade Serpent
 

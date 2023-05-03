@@ -1,8 +1,9 @@
-## Interface: 100005
+## Interface: 100100
 ## Title: SavedInstances
 ## Notes: Tracks Raid, Instance, World Boss lockouts for all your characters, daily/weekly quests, currencies, trade cooldowns, and more!
 ## Author: oscarucb and the Saved Instances Community
 ## Version: @project-version@
+## IconTexTure: Interface\AddOns\SavedInstances\Media\Icon.tga
 ## X-ReleaseDate: @project-date-iso@
 ## X-License: All Rights Reserved
 ## X-Category: Raid
