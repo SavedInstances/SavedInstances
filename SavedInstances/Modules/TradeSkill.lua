@@ -118,6 +118,7 @@ local tradeSpells = {
   [370711] = "dragonflightxmute", -- Transmute: Awakened Air
   [370714] = "dragonflightxmute", -- Transmute: Decay to Elements
   [370715] = "dragonflightxmute", -- Transmute: Order to Elements
+  [405847] = "dragonflightxmute", -- Transmute: Dracothyst
   [370743] = "dragonflightexper", -- Basic Potion Experimentation
   [370745] = "dragonflightexper", -- Advanced Potion Experimentation
   [370746] = "dragonflightexper", -- Basic Phial Experimentation
