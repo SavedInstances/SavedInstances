@@ -688,6 +688,9 @@ Module.TrackedQuest = {
       72374, -- Aiding the Accord: Dragonbane Keep
       72375, -- Aiding the Accord: The Isles Call
       75259, -- Aiding the Accord: Zskera Vault
+      75859, -- Aiding the Accord: Sniffenseeking
+      75860, -- Aiding the Accord: Researchers Under Fire
+      75861, -- Aiding the Accord: Suffusion Camp
     },
   },
   {
@@ -780,7 +783,19 @@ Module.TrackedQuest = {
       72648, -- The Azure Span
       72649, -- Thaldraszus
     },
-  }
+  },
+  {
+    name = L["A Worthy Ally: Loamm Niffen"],
+    weekly = true,
+    quest = 75665,
+    relatedQuest = {75665},
+  },
+  {
+    name = L["Fighting is Its Own Reward"],
+    weekly = true,
+    quest = 76122,
+    relatedQuest = {76122},
+  },
 }
 
 function Module:OnEnable()
