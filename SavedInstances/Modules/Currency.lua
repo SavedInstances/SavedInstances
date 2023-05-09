@@ -90,7 +90,6 @@ local currency = {
   2118, -- Elemental Overflow
   2122, -- Storm Sigil
   2123, -- Bloody Tokens
-  2167, -- Catalyst Charges
   2245, -- Flightstones
   2533, -- Renascent Shadowflame
 }
@@ -108,7 +107,6 @@ end)
 SI.currencySorted = currencySorted
 
 local hiddenCurrency = {
-  [2167] = true, -- Catalyst Charges
 }
 
 local specialCurrency = {
@@ -228,9 +226,6 @@ function Module:UpdateCurrency()
           ci.covenant = ci.covenant or {}
           ci.covenant[covenantID] = ci.amount
         end
-      elseif idx == 2167 then -- Catalyst Charges
-        ci.weeklyMax = nil
-        ci.earnedThisWeek = nil
       end
       -- don't store useless info
       if ci.weeklyMax == 0 then ci.weeklyMax = nil end
