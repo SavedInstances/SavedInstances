@@ -473,9 +473,9 @@ local QuestExceptions = {
 
   -- Weekend Event
   [72728] = "Weekly", -- The World Awaits - World Quests
-  -- [62632] = "Weekly", -- A Burning Path Through Time - TBC Timewalking
-  -- [62633] = "Weekly", -- A Frozen Path Through Time - WLK Timewalking
-  -- [62634] = "Weekly", -- A Shattered Path Through Time - CTM Timewalking
+  [72727] = "Weekly", -- A Burning Path Through Time - TBC Timewalking
+  [72726] = "Weekly", -- A Frozen Path Through Time - WLK Timewalking
+  [72810] = "Weekly", -- A Shattered Path Through Time - CTM Timewalking
   [72725] = "Weekly", -- A Shrouded Path Through Time - MOP Timewalking
   [72724] = "Weekly", -- A Savage Path Through Time - WOD Timewalking
   [72719] = "Weekly", -- A Fel Path Through Time - LEG Timewalking
