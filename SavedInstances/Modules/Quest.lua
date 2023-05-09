@@ -355,6 +355,9 @@ local QuestExceptions = {
   [72374] = "Weekly", -- Aiding the Accord: Dragonbane Keep
   [72375] = "Weekly", -- Aiding the Accord: The Isles Call
   [75259] = "Weekly", -- Aiding the Accord: Zskera Vault
+  [75859] = "Weekly", -- Aiding the Accord: Sniffenseeking
+  [75860] = "Weekly", -- Aiding the Accord: Researchers Under Fire
+  [75861] = "Weekly", -- Aiding the Accord: Suffusion Camp
   -- Fishing Weeklies
   [70199] = "Weekly", -- Catch and Release: Scalebelly Mackerel
   [70200] = "Weekly", -- Catch and Release: Thousandbite Piranha
@@ -449,6 +452,9 @@ local QuestExceptions = {
   [72686] = "Weekly", -- Storm Surge
   -- Revival Catalyst
   [72528] = "AccountWeekly", -- Revival Catalyst
+  -- Other Weeklies
+  [75665] = "Weekly", -- A Worthy Ally: Loamm Niffen
+  [76122] = "Weekly", -- Fighting is Its Own Reward
 
   -- General
   -- Darkmoon Faire
