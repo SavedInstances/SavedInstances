@@ -788,6 +788,7 @@ Module.TrackedQuest = {
     name = L["A Worthy Ally: Loamm Niffen"],
     weekly = true,
     quest = 75665,
+    resetFunc = KeepProgress,
     relatedQuest = {75665},
   },
   {
