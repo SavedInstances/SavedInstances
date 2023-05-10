@@ -625,7 +625,7 @@ SI.transInstance = {
   [1530] = 1353, -- The Nighthold: issue #186 frFR
   [585] = 1154, -- Magisters' Terrace: issue #293 frFR
   [2235] = 1911, -- Caverns of Time - Anniversary: issue #315 (fake LFDID used by Escape from Tol Dagor)
-  [725] = 1148, -- The Stonecore: issue #328 frFR
+  [725] = 320, -- The Stonecore: issue #328 frFR
   [2515] = 2335, -- The Azure Vault: issue #630 deDE
   [550] = 193, -- Tempest Keep: issue #612 ruRU
 }
