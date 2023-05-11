@@ -913,8 +913,8 @@ function Config:BuildOptions()
   local CurrencyModule = SI:GetModule('Currency')
   for i, curr in ipairs(SI.currency) do
     local data = C_CurrencyInfo_GetCurrencyInfo(curr)
-    local name = CurrencyModule.OverrideName[idx] or data.name
-    local tex = CurrencyModule.OverrideTexture[idx] or data.iconFileID
+    local name = CurrencyModule.OverrideName[curr] or data.name
+    local tex = CurrencyModule.OverrideTexture[curr] or data.iconFileID
     tex = "\124T"..tex..":0\124t "
     SI.Options.args.Currency.args["Currency"..curr] = {
       type = "toggle",
