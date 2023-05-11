@@ -910,9 +910,11 @@ function Config:BuildOptions()
     }
   end
   local hdroffset = SI.Options.args.Currency.args.CurrencyHeader.order
+  local CurrencyModule = SI:GetModule('Currency')
   for i, curr in ipairs(SI.currency) do
     local data = C_CurrencyInfo_GetCurrencyInfo(curr)
-    local name, tex = data.name, data.iconFileID
+    local name = CurrencyModule.OverrideName[idx] or data.name
+    local tex = CurrencyModule.OverrideTexture[idx] or data.iconFileID
     tex = "\124T"..tex..":0\124t "
     SI.Options.args.Currency.args["Currency"..curr] = {
       type = "toggle",
