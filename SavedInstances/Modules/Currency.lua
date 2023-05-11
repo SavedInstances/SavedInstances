@@ -91,6 +91,11 @@ local currency = {
   2122, -- Storm Sigil
   2123, -- Bloody Tokens
   2245, -- Flightstones
+  2409, -- Whelpling Crest Fragment Tracker [DNT]
+  2410, -- Drake Crest Fragment Tracker [DNT]
+  2411, -- Wyrm Crest Fragment Tracker [DNT]
+  2412, -- Aspect Crest Fragment Tracker [DNT]
+  2413, -- 10.1 Professions - Personal Tracker - S2 Spark Drops (Hidden)
   2533, -- Renascent Shadowflame
 }
 SI.currency = currency
@@ -170,6 +175,18 @@ for _, tbl in pairs(specialCurrency) do
     end
   end
 end
+
+Module.OverrideName = {
+  [2409] = L["Loot Whelpling Crest Fragment"], -- Whelpling Crest Fragment Tracker [DNT]
+  [2410] = L["Loot Drake Crest Fragment"], -- Drake Crest Fragment Tracker [DNT]
+  [2411] = L["Loot Wyrm Crest Fragment"], -- Wyrm Crest Fragment Tracker [DNT]
+  [2412] = L["Loot Aspect Crest Fragment"], -- Aspect Crest Fragment Tracker [DNT]
+  [2413] = L["Loot Spark of Shadowflame"], -- 10.1 Professions - Personal Tracker - S2 Spark Drops (Hidden)
+}
+
+Module.OverrideTexture = {
+  [2413] = 5088829, -- 10.1 Professions - Personal Tracker - S2 Spark Drops (Hidden)
+}
 
 function Module:OnEnable()
   self:RegisterEvent("PLAYER_MONEY", "UpdateCurrency")
