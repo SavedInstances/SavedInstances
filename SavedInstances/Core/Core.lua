@@ -2851,6 +2851,7 @@ function SI:OnInitialize()
   })
   if SI.Libs.LDBI then
     SI.Libs.LDBI:Register("SavedInstances", SI.dataobject, db.MinimapIcon)
+    SI.Libs.LDBI:AddButtonToCompartment("SavedInstances")
     SI.Libs.LDBI:Refresh("SavedInstances")
   end
 end
