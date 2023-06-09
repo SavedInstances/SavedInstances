@@ -146,6 +146,16 @@ local _specialQuests = {
   [66387] = { name=L["Disturbed Dirt / Expedition Scout's Pack"] .. ' - ' .. GetSpellInfo(3908) }, -- Tailoring
   [66388] = { name=L["Disturbed Dirt / Expedition Scout's Pack"] .. ' - ' .. GetSpellInfo(25229) }, -- Jewelcrafting
   [66389] = { name=L["Disturbed Dirt / Expedition Scout's Pack"] .. ' - ' .. GetSpellInfo(25229) }, -- Jewelcrafting
+    -- Barter Quests
+  [75286] = { zid=2133 }, -- Blacksmith's Back
+  [75288] = { zid=2133 }, -- Enchanted Tales with Topuiz
+  [75289] = { zid=2133 }, -- Ink Master
+  [75301] = { zid=2133 }, -- Mistie's Mix Magic
+  [75304] = { zid=2133 }, -- I Need... a Tailor
+  [75307] = { zid=2133 }, -- Road to Season City
+  [75308] = { zid=2133 }, -- Scrybbil Engineering
+  [75309] = { zid=2133 }, -- If a Gem Isn't Pretty
+  [75351] = { zid=2133 }, -- Keep a Leather Eye Open
 
   -- Old Vanilla Bosses during Anniversary Event
   [47461] = { daily=true, name=L["Lord Kazzak"] },          -- Lord Kazzak
