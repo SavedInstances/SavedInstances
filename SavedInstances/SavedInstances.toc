@@ -23,6 +23,7 @@ Locales\Locale.lua
 # core files
 Core\Functions.lua
 Core\Time.lua
+Core\Tooltip.lua
 
 Core\Debug.lua
 
