@@ -25,7 +25,6 @@ Core\Functions.lua
 Core\Time.lua
 
 Core\Debug.lua
-Core\Config.lua
 
 # modules
 # load Quest.lua first, required by Currency.lua
@@ -42,5 +41,7 @@ Modules\Progress.lua
 Modules\TradeSkill.lua
 Modules\Warfront.lua
 Modules\WorldBoss.lua
+
+Core\Config.lua
 
 Core\Core.lua
