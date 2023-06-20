@@ -198,7 +198,7 @@ function Config:BuildOptions()
         name = L["Show/Hide the SavedInstances tooltip"],
         guiHidden = true,
         type = "execute",
-        func = function() SI:ToggleDetached() end,
+        func = function() SI:GetModule('Tooltip'):ToggleDetached() end,
       },
       General = {
         order = 1,
@@ -387,11 +387,6 @@ function Config:BuildOptions()
             desc = L["Combine LFR"],
             order = 23.95,
           },
-          ProgressHeader = {
-            order = 31,
-            type = "header",
-            name = L["Quest progresses"],
-          },
           WarfrontHeader = {
             order = 33,
             type = "header",
@@ -531,7 +526,7 @@ function Config:BuildOptions()
         },
       },
       Currency = {
-        order = 2,
+        order = 3,
         type = "group",
         name = L["Currency settings"],
         get = function(info)
@@ -578,7 +573,7 @@ function Config:BuildOptions()
         },
       },
       Indicators = {
-        order = 3,
+        order = 4,
         type = "group",
         name = L["Indicators"],
         get = function(info)
@@ -595,7 +590,7 @@ function Config:BuildOptions()
         args = IndicatorOptions(),
       },
       Instances = {
-        order = 4,
+        order = 5,
         type = "group",
         name = L["Instances"],
         childGroups = "select",
@@ -654,7 +649,7 @@ function Config:BuildOptions()
         end)(),
       },
       Characters = {
-        order = 5,
+        order = 6,
         type = "group",
         name = L["Characters"],
         args = {
@@ -824,7 +819,7 @@ function Config:BuildOptions()
                       end
                       tret[tn.."_desc"] = {
                         order = function(info) return t.Order*1000 + ord*10 + 0 end,
-                        name = SI.ColoredToon(toon),
+                        name = SI:ClassColorToon(toon),
                         desc = tn, -- unfortunately does nothing in dialog
                         descStyle = "tooltip",
                         type = "description",
@@ -894,10 +889,7 @@ function Config:BuildOptions()
   for k,v in pairs(opts) do
     SI.Options[k] = v
   end
-  local progress = SI:GetModule("Progress"):BuildOptions(32)
-  for k, v in pairs(progress) do
-    SI.Options.args.General.args[k] = v
-  end
+  SI.Options.args.Progress = SI:GetModule('Progress'):BuildOptions(2)
   local warfront = SI:GetModule("Warfront"):BuildOptions(34)
   for k, v in pairs(warfront) do
     SI.Options.args.General.args[k] = v
@@ -910,11 +902,11 @@ function Config:BuildOptions()
     }
   end
   local hdroffset = SI.Options.args.Currency.args.CurrencyHeader.order
-  local CurrencyModule = SI:GetModule('Currency')
+  local Currency = SI:GetModule('Currency')
   for i, curr in ipairs(SI.currency) do
     local data = C_CurrencyInfo_GetCurrencyInfo(curr)
-    local name = CurrencyModule.OverrideName[curr] or data.name
-    local tex = CurrencyModule.OverrideTexture[curr] or data.iconFileID
+    local name = Currency.OverrideName[curr] or data.name
+    local tex = Currency.OverrideTexture[curr] or data.iconFileID
     tex = "\124T"..tex..":0\124t "
     SI.Options.args.Currency.args["Currency"..curr] = {
       type = "toggle",
@@ -952,6 +944,7 @@ function Config:SetupOptions()
 
   local AceConfigDialog = LibStub("AceConfigDialog-3.0")
   local _, genernalFrameName = AceConfigDialog:AddToBlizOptions(namespace, nil, nil, "General")
+  AceConfigDialog:AddToBlizOptions(namespace, L["Quest progresses"], namespace, "Progress")
   AceConfigDialog:AddToBlizOptions(namespace, CURRENCY, namespace, "Currency")
   AceConfigDialog:AddToBlizOptions(namespace, L["Indicators"], namespace, "Indicators")
   AceConfigDialog:AddToBlizOptions(namespace, L["Instances"], namespace, "Instances")
@@ -963,9 +956,7 @@ end
 
 local function ResetConfirmed()
   SI:Debug("Resetting characters")
-  if SI:IsDetached() then
-    SI:HideDetached()
-  end
+  SI:GetModule('Tooltip'):HideDetached()
   -- clear saves
   for instance, i in pairs(SI.db.Instances) do
     for toon, t in pairs(SI.db.Toons) do
@@ -986,9 +977,7 @@ local function DeleteCharacter(toon)
     return
   end
   SI:Debug("Deleting character: " .. toon)
-  if SI:IsDetached() then
-    SI:HideDetached()
-  end
+  SI:GetModule('Tooltip'):HideDetached()
   -- clear saves
   for instance, i in pairs(SI.db.Instances) do
     i[toon] = nil

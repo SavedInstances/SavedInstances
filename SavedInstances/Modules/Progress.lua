@@ -1,577 +1,297 @@
 local SI, L = unpack((select(2, ...)))
 local Module = SI:NewModule('Progress', 'AceEvent-3.0')
+local Tooltip = SI:GetModule('Tooltip')
 
--- Lua functions
-local _G = _G
-local floor, ipairs, strmatch, type, tostring, wipe = floor, ipairs, strmatch, type, tostring, wipe
+---@class SingleQuestEntry
+---@field type "single"
+---@field expansion number?
+---@field index number
+---@field name string
+---@field questID number
+---@field reset "none" | "daily" | "weekly"
+---@field persists boolean
+---@field fullObjective boolean
 
--- WoW API / Variables
-local C_QuestLog_IsOnQuest = C_QuestLog.IsOnQuest
-local C_QuestLog_IsQuestFlaggedCompleted = C_QuestLog.IsQuestFlaggedCompleted
-local C_TaskQuest_IsActive = C_TaskQuest.IsActive
-local C_UIWidgetManager_GetTextWithStateWidgetVisualizationInfo = C_UIWidgetManager.GetTextWithStateWidgetVisualizationInfo
-local C_WeeklyRewards_CanClaimRewards = C_WeeklyRewards.CanClaimRewards
-local C_WeeklyRewards_GetConquestWeeklyProgress = C_WeeklyRewards.GetConquestWeeklyProgress
-local C_WeeklyRewards_HasAvailableRewards = C_WeeklyRewards.HasAvailableRewards
-local GetQuestObjectiveInfo = GetQuestObjectiveInfo
-local GetQuestProgressBarPercent = GetQuestProgressBarPercent
-local UnitLevel = UnitLevel
+---@class AnyQuestEntry
+---@field type "any"
+---@field expansion number?
+---@field index number
+---@field name string
+---@field questID number[]
+---@field reset "none" | "daily" | "weekly"
+---@field persists boolean
+---@field fullObjective boolean
 
-local FONT_COLOR_CODE_CLOSE = FONT_COLOR_CODE_CLOSE
-local NORMAL_FONT_COLOR_CODE = NORMAL_FONT_COLOR_CODE
-local READY_CHECK_READY_TEXTURE = READY_CHECK_READY_TEXTURE
-local READY_CHECK_WAITING_TEXTURE = READY_CHECK_WAITING_TEXTURE
+---@class QuestListEntry
+---@field type "list"
+---@field expansion number?
+---@field index number
+---@field name string
+---@field questID number[]
+---@field unlockQuest number?
+---@field reset "none" | "daily" | "weekly"
+---@field persists boolean
+---@field threshold number?
+---@field questAbbr table<number, string>?
+---@field progress boolean
+---@field onlyOnOrCompleted boolean
+---@field questName table<number, string>?
+---@field separateLines string[]?
 
-local function KeepProgress(toon, index)
-  local t = SI.db.Toons[toon]
-  if not t or not t.Progress or not t.Progress[index] then return end
-  local prev = t.Progress[index]
-  t.Progress[index] = {
-    unlocked = prev.unlocked,
-    isComplete = false,
-    isFinish = prev.isFinish and not prev.isComplete,
-    objectiveType = prev.objectiveType,
-    numFulfilled = prev.isComplete and 0 or prev.numFulfilled,
-    numRequired = prev.numRequired,
-  }
-end
+---@class CustomEntry
+---@field type "custom"
+---@field expansion number?
+---@field index number
+---@field name string
+---@field reset "none" | "daily" | "weekly"
+---@field func fun(store: table, entry: CustomEntry): nil
+---@field showFunc fun(store: table, entry: CustomEntry): string?
+---@field resetFunc nil | fun(store: table, entry: CustomEntry): nil
+---@field tooltipFunc nil | fun(store: table, entry: CustomEntry, toon: string): nil
+---@field relatedQuest number[]?
 
--- PvP Conquest (index 1)
+---@alias ProgressEntry SingleQuestEntry | AnyQuestEntry | QuestListEntry | CustomEntry
 
-local function ConquestUpdate(index)
-  local data
-  if UnitLevel("player") >= SI.maxLevel then
-    local weeklyProgress = C_WeeklyRewards_GetConquestWeeklyProgress()
-    if not weeklyProgress then return end
+---@class QuestStore
+---@field show boolean?
+---@field objectiveType string?
+---@field isComplete boolean?
+---@field isFinish boolean?
+---@field numFulfilled number?
+---@field numRequired number?
+---@field leaderboardCount number?
+---@field text string?
+---@field [number] string?
 
-    local rewardWaiting = C_WeeklyRewards_HasAvailableRewards() and C_WeeklyRewards_CanClaimRewards()
-    data = {
-      unlocked = true,
-      isComplete = weeklyProgress.progress >= weeklyProgress.maxProgress,
-      isFinish = false,
-      numFulfilled = weeklyProgress.progress,
-      numRequired = weeklyProgress.maxProgress,
-      unlocksCompleted = weeklyProgress.unlocksCompleted,
-      maxUnlocks = weeklyProgress.maxUnlocks,
-      rewardWaiting = rewardWaiting,
-    }
-  else
-    data = {
-      unlocked = false,
-      isComplete = false,
-      isFinish = false,
-    }
-  end
-  SI.db.Toons[SI.thisToon].Progress[index] = data
-end
+---@class QuestListStore
+---@field show boolean?
+---@field [number] QuestStore?
 
-local function ConquestShow(toon, index)
-  local t = SI.db.Toons[toon]
-  if not t or not t.Progress or not t.Progress[index] then return end
-  local data = t.Progress[index]
-  local text
-  if not data.unlocked then
-    text = ""
-  elseif data.isComplete then
-    text = "\124T" .. READY_CHECK_READY_TEXTURE .. ":0|t"
-  elseif data.isFinish then
-    text = "\124T" .. READY_CHECK_WAITING_TEXTURE .. ":0|t"
-  else
-    text = data.numFulfilled .. "/" .. data.numRequired
-  end
-  if data.unlocksCompleted and data.maxUnlocks then
-    text = text .. "(" .. data.unlocksCompleted .. "/" .. data.maxUnlocks .. ")"
-  end
-  if data.rewardWaiting then
-    text = text .. "(\124T" .. READY_CHECK_WAITING_TEXTURE .. ":0|t)"
-  end
-  return text
-end
+---@type table<string, ProgressEntry>
+local presets = {
+  -- Great Vault (Raid)
+  ['great-vault-raid'] = {
+    type = 'custom',
+    index = 1,
+    name = RAIDS,
+    reset = 'weekly',
+    func = function(store, entry)
+      wipe(store)
 
-local function ConquestReset(toon, index)
-  local t = SI.db.Toons[toon]
-  if not t or not t.Progress or not t.Progress[index] then return end
-
-  local prev = t.Progress[index]
-  t.Progress[index] = {
-    unlocked = prev.unlocked,
-    isComplete = false,
-    isFinish = false,
-    numFulfilled = 0,
-    numRequired = prev.numRequired,
-    unlocksCompleted = 0,
-    maxUnlocks = prev.maxUnlocks,
-    rewardWaiting = prev.unlocksCompleted and prev.unlocksCompleted > 0,
-  }
-end
-
--- Horrific Vision (index 3)
-
-local function HorrificVisionUpdate(index)
-  SI.db.Toons[SI.thisToon].Progress[index] = wipe(SI.db.Toons[SI.thisToon].Progress[index] or {})
-  for i, questID in ipairs(Module.TrackedQuest[index].rewardQuestID) do
-    SI.db.Toons[SI.thisToon].Progress[index][i] = C_QuestLog_IsQuestFlaggedCompleted(questID)
-  end
-  SI.db.Toons[SI.thisToon].Progress[index].unlocked = C_QuestLog_IsQuestFlaggedCompleted(58634) -- Opening the Gateway
-end
-
-local function HorrificVisionShow(toon, index)
-  local t = SI.db.Toons[toon]
-  if not t or not t.Progress or not t.Progress[index] then return end
-
-  if t.Progress[index].unlocked then
-    local text = "-"
-    for i, descText in ipairs(Module.TrackedQuest[index].rewardDesc) do
-      if t.Progress[index][i] then
-        text = descText[1]
-      end
-    end
-    return text
-  end
-end
-
-local function HorrificVisionReset(toon, index)
-  local t = SI.db.Toons[toon]
-  if not t or not t.Progress or not t.Progress[index] then return end
-
-  local unlocked = t.Progress[index].unlocked
-  wipe(t.Progress[index])
-  t.Progress[index].unlocked = unlocked
-end
-
--- N'Zoth Assaults (index 4)
-
-local function NZothAssaultUpdate(index)
-  SI.db.Toons[SI.thisToon].Progress[index] = wipe(SI.db.Toons[SI.thisToon].Progress[index] or {})
-  for _, questID in ipairs(Module.TrackedQuest[index].relatedQuest) do
-    SI.db.Toons[SI.thisToon].Progress[index][questID] = C_TaskQuest_IsActive(questID)
-  end
-  SI.db.Toons[SI.thisToon].Progress[index].unlocked = C_QuestLog_IsQuestFlaggedCompleted(57362) -- Deeper Into the Darkness
-end
-
-local function NZothAssaultShow(toon, index)
-  local t = SI.db.Toons[toon]
-  if not t or not t.Quests then return end
-  if not t or not t.Progress or not t.Progress[index] then return end
-
-  if t.Progress[index].unlocked then
-    local count = 0
-    for _, questID in ipairs(Module.TrackedQuest[index].relatedQuest) do
-      if t.Quests[questID] then
-        count = count + 1
-      end
-    end
-    return count == 0 and "" or tostring(count)
-  end
-end
-
-local function NZothAssaultReset(toon, index)
-  local t = SI.db.Toons[toon]
-  if not t or not t.Progress or not t.Progress[index] then return end
-
-  local unlocked = t.Progress[index].unlocked
-  wipe(t.Progress[index])
-  t.Progress[index].unlocked = unlocked
-end
-
--- Lesser Visions of N'Zoth (index 5)
-
-local function LesserVisionUpdate(index)
-  -- do nothing
-end
-
-local function LesserVisionShow(toon, index)
-  local t = SI.db.Toons[toon]
-  if not t or not t.Quests then return end
-
-  for _, questID in ipairs(Module.TrackedQuest[index].relatedQuest) do
-    if t.Quests[questID] then
-      return "\124T" .. READY_CHECK_READY_TEXTURE .. ":0|t"
-    end
-  end
-end
-
-local function LesserVisionReset(toon, index)
-  -- do nothing
-end
-
--- Torghast Weekly (index 6)
-
-local function TorghastUpdate(index)
-  SI.db.Toons[SI.thisToon].Progress[index] = wipe(SI.db.Toons[SI.thisToon].Progress[index] or {})
-  SI.db.Toons[SI.thisToon].Progress[index].unlocked = C_QuestLog_IsQuestFlaggedCompleted(60136) -- Into Torghast
-
-  for i, data in ipairs(Module.TrackedQuest[index].widgetID) do
-    local nameInfo = C_UIWidgetManager_GetTextWithStateWidgetVisualizationInfo(data[1])
-    local levelInfo = C_UIWidgetManager_GetTextWithStateWidgetVisualizationInfo(data[2])
-
-    if nameInfo and levelInfo then
-      local available = nameInfo.shownState == 1
-      local levelText = strmatch(levelInfo.text, '|cFF00FF00.-(%d+).+|r')
-
-      SI.db.Toons[SI.thisToon].Progress[index]['Available' .. i] = available
-      SI.db.Toons[SI.thisToon].Progress[index]['Level' .. i] = levelText
-    end
-  end
-end
-
-local function TorghastShow(toon, index)
-  local t = SI.db.Toons[toon]
-  if not t or not t.Quests then return end
-  if not t or not t.Progress or not t.Progress[index] then return end
-
-  if t.Progress[index].unlocked then
-    local result = ""
-    for i in ipairs(Module.TrackedQuest[index].widgetID) do
-      if t.Progress[index]['Available' .. i] then
-        local first = (#result == 0)
-        result = result .. (first and '' or ' / ') .. t.Progress[index]['Level' .. i]
-      end
-    end
-    return result
-  end
-end
-
-local function TorghastReset(toon, index)
-  local t = SI.db.Toons[toon]
-  if not t or not t.Progress or not t.Progress[index] then return end
-
-  local unlocked = t.Progress[index].unlocked
-  wipe(t.Progress[index])
-  t.Progress[index].unlocked = unlocked
-end
-
--- Covenant Assaults (index 7)
-
-local function CovenantAssaultUpdate(index)
-  SI.db.Toons[SI.thisToon].Progress[index] = wipe(SI.db.Toons[SI.thisToon].Progress[index] or {})
-  for _, questID in ipairs(Module.TrackedQuest[index].relatedQuest) do
-    SI.db.Toons[SI.thisToon].Progress[index][questID] = C_TaskQuest_IsActive(questID)
-  end
-  SI.db.Toons[SI.thisToon].Progress[index].unlocked = C_QuestLog_IsQuestFlaggedCompleted(64556) -- In Need of Assistance
-end
-
-local function CovenantAssaultShow(toon, index)
-  local t = SI.db.Toons[toon]
-  if not t or not t.Quests then return end
-  if not t or not t.Progress or not t.Progress[index] then return end
-
-  if t.Progress[index].unlocked then
-    local count = 0
-    for _, questID in ipairs(Module.TrackedQuest[index].relatedQuest) do
-      if t.Quests[questID] then
-        count = count + 1
-      end
-    end
-    return count == 0 and "" or tostring(count)
-  end
-end
-
-local function CovenantAssaultReset(toon, index)
-  local t = SI.db.Toons[toon]
-  if not t or not t.Progress or not t.Progress[index] then return end
-
-  local unlocked = t.Progress[index].unlocked
-  wipe(t.Progress[index])
-  t.Progress[index].unlocked = unlocked
-end
-
--- Dragonflight Renown (index 11)
-local function DragonflightRenownUpdate(index)
-  SI.db.Toons[SI.thisToon].Progress[index] = wipe(SI.db.Toons[SI.thisToon].Progress[index] or {})
-
-  local majorFactionIDs = C_MajorFactions.GetMajorFactionIDs(LE_EXPANSION_DRAGONFLIGHT)
-  for _, factionID in ipairs(majorFactionIDs) do
-    local data = C_MajorFactions.GetMajorFactionData(factionID)
-    SI.db.Toons[SI.thisToon].Progress[index][factionID] =
-      data and {data.renownLevel, data.renownReputationEarned, data.renownLevelThreshold}
-  end
-end
-
-local function DragonflightRenownShow(toon, index)
-  local t = SI.db.Toons[toon]
-  if not t or not t.Quests then return end
-  if not t or not t.Progress or not t.Progress[index] then return end
-
-  local text
-  local majorFactionIDs = C_MajorFactions.GetMajorFactionIDs(LE_EXPANSION_DRAGONFLIGHT)
-
-  local factionIDs = Module.TrackedQuest[index].factionIDs
-  for _, factionID in ipairs(factionIDs) do
-    if not text then
-      text = t.Progress[index][factionID] and t.Progress[index][factionID][1] or '0'
-    else
-      text = text .. ' / ' .. (t.Progress[index][factionID] and t.Progress[index][factionID][1] or '0')
-    end
-  end
-
-  for _, factionID in ipairs(majorFactionIDs) do
-    if not tContains(factionIDs, factionID) then
-      if not text then
-        text = t.Progress[index][factionID] and t.Progress[index][factionID][1] or '0'
+      if SI.playerLevel < SI.maxLevel then
+        store.unlocked = false
       else
-        text = text .. ' / ' .. (t.Progress[index][factionID] and t.Progress[index][factionID][1] or '0')
-      end
-    end
-  end
+        store.unlocked = true
 
-  return text
-end
+        local activities = C_WeeklyRewards.GetActivities(Enum.WeeklyRewardChestThresholdType.Raid)
+        sort(activities, entry.activityCompare)
 
-local function DragonflightRenownReset(toon, index)
-  -- do nothing
-end
-
--- Aiding the Accord
-local function AidingTheAccordUpdate(index)
-  SI.db.Toons[SI.thisToon].Progress[index] = wipe(SI.db.Toons[SI.thisToon].Progress[index] or {})
-  local result = SI.db.Toons[SI.thisToon].Progress[index]
-
-  for _, questID in ipairs(Module.TrackedQuest[index].relatedQuest) do
-    if C_QuestLog_IsQuestFlaggedCompleted(questID) then
-      result.unlocked = true
-      result.isComplete = true
-
-      break
-    elseif C_QuestLog_IsOnQuest(questID) then
-      result.unlocked = true
-      result.isComplete = false
-
-      local showText
-      local allFinished = true
-      local leaderboardCount = C_QuestLog.GetNumQuestObjectives(questID)
-      for i = 1, leaderboardCount do
-        local text, objectiveType, finished, numFulfilled, numRequired = GetQuestObjectiveInfo(questID, i, false)
-        result[i] = text
-        allFinished = allFinished and finished
-
-        local objectiveText
-        if objectiveType == 'progressbar' then
-          objectiveText = floor((numFulfilled or 0) / numRequired * 100) .. "%"
-        else
-          objectiveText = numFulfilled .. "/" .. numRequired
+        for i, activityInfo in ipairs(activities) do
+          if activityInfo.progress >= activityInfo.threshold then
+            store[i] = activityInfo.level
+          end
         end
 
-        if i == 1 then
-          showText = objectiveText
-        else
-          showText = showText .. ' ' .. objectiveText
+        local rewardWaiting = C_WeeklyRewards.HasAvailableRewards() and C_WeeklyRewards.CanClaimRewards()
+        store.rewardWaiting = rewardWaiting
+      end
+    end,
+    showFunc = function(store, entry)
+      if not store.unlocked then
+        return
+      end
+      local text
+      for index = 1, #store do
+        if store[index] then
+          text = (index > 1 and (text .. " / ") or "") .. (entry.difficultyNames[store[index]] or GetDifficultyInfo(store[index]))
         end
       end
-
-      result.leaderboardCount = leaderboardCount
-      result.isFinish = allFinished
-      result.text = showText
-      break
-    end
-  end
-end
-
-local function AidingTheAccordShow(toon, index)
-  local t = SI.db.Toons[toon]
-  if not t or not t.Quests then return end
-  if not t or not t.Progress or not t.Progress[index] then return end
-
-  if t.Progress[index].isComplete then
-    return "\124T" .. READY_CHECK_READY_TEXTURE .. ":0|t"
-  elseif t.Progress[index].isFinish then
-    return "\124T" .. READY_CHECK_WAITING_TEXTURE .. ":0|t"
-  end
-
-  return t.Progress[index].text
-end
-
-local function AidingTheAccordReset(toon, index)
-  local t = SI.db.Toons[toon]
-  if not t or not t.Quests then return end
-  if not t or not t.Progress or not t.Progress[index] then return end
-
-  if t.Progress[index].isComplete then
-    wipe(t.Progress[index])
-  end
-end
-
--- Grand Hunt
-local function GrandHuntUpdate(index)
-  SI.db.Toons[SI.thisToon].Progress[index] = wipe(SI.db.Toons[SI.thisToon].Progress[index] or {})
-  for _, questID in ipairs(Module.TrackedQuest[index].relatedQuest) do
-    SI.db.Toons[SI.thisToon].Progress[index][questID] = C_QuestLog_IsQuestFlaggedCompleted(questID)
-  end
-end
-
-local function GrandHuntShow(toon, index)
-  local t = SI.db.Toons[toon]
-  if not t or not t.Quests then return end
-  if not t or not t.Progress or not t.Progress[index] then return end
-
-  local totalDone = 0
-  for _, questID in ipairs(Module.TrackedQuest[index].relatedQuest) do
-    if t.Progress[index][questID] then
-      totalDone = totalDone + 1
-    end
-  end
-  return string.format("%d/%d", totalDone, #Module.TrackedQuest[index].relatedQuest)
-end
-
-local function GrandHuntReset(toon, index)
-  local t = SI.db.Toons[toon]
-  if not t or not t.Progress or not t.Progress[index] then return end
-
-  wipe(t.Progress[index])
-end
-
--- Primal Storms Core
-local function PrimalStormsCoreUpdate(index)
-  SI.db.Toons[SI.thisToon].Progress[index] = wipe(SI.db.Toons[SI.thisToon].Progress[index] or {})
-  for _, questID in ipairs(Module.TrackedQuest[index].relatedQuest) do
-    SI.db.Toons[SI.thisToon].Progress[index][questID] = C_QuestLog_IsQuestFlaggedCompleted(questID)
-  end
-end
-
-local function PrimalStormsCoreShow(toon, index)
-  local t = SI.db.Toons[toon]
-  if not t or not t.Quests then return end
-  if not t or not t.Progress or not t.Progress[index] then return end
-
-  local totalDone = 0
-  for _, questID in ipairs(Module.TrackedQuest[index].relatedQuest) do
-    if t.Progress[index][questID] then
-      totalDone = totalDone + 1
-    end
-  end
-  return string.format("%d/%d", totalDone, #Module.TrackedQuest[index].relatedQuest)
-end
-
-local function PrimalStormsCoreReset(toon, index)
-  local t = SI.db.Toons[toon]
-  if not t or not t.Progress or not t.Progress[index] then return end
-
-  wipe(t.Progress[index])
-end
-
-local function SparksOfLifeUpdate(index)
-  SI.db.Toons[SI.thisToon].Progress[index] = wipe(SI.db.Toons[SI.thisToon].Progress[index] or {})
-  local result = SI.db.Toons[SI.thisToon].Progress[index]
-  for _, questID in ipairs(Module.TrackedQuest[index].relatedQuest) do
-    if C_TaskQuest_IsActive(questID) then
-      local _, objectiveType, finished, numFulfilled, numRequired = GetQuestObjectiveInfo(questID, 1, false)
-      result.objectiveType = objectiveType
-      result.isFinish = finished
-      result.numFulfilled = numFulfilled
-      result.numRequired = numRequired
-      if C_QuestLog_IsQuestFlaggedCompleted(questID) then
-        result.unlocked = true
-        result.isComplete = true
-      else
-        local isOnQuest = C_QuestLog_IsOnQuest(questID)
-        result.unlocked = isOnQuest
-        result.isComplete = false
+      if store.rewardWaiting then
+        if not text then
+          text = "\124T" .. READY_CHECK_WAITING_TEXTURE .. ":0|t"
+        else
+          text = text .. "(\124T" .. READY_CHECK_WAITING_TEXTURE .. ":0|t)"
+        end
       end
-      break
-    end
-    if C_QuestLog_IsQuestFlaggedCompleted(questID) then
-      result.unlocked = true
-      result.isComplete = true
-      break
-    end
-  end
-end
+      return text
+    end,
+    resetFunc = function(store)
+      local unlocked = store.unlocked
+      local rewardWaiting = not not store[1]
+      wipe(store)
 
-local function SparksOfLifeReset(toon, index)
-  local t = SI.db.Toons[toon]
-  if not t or not t.Progress or not t.Progress[index] then return end
+      store.unlocked = unlocked
+      store.rewardWaiting = rewardWaiting
+    end,
+    -- addition info
+    activityCompare = function(left, right)
+      return left.index < right.index
+    end,
+    difficultyNames = {
+      [17] = 'L',
+      [14] = 'N',
+      [15] = 'H',
+      [16] = 'M',
+    },
+  },
+  -- Great Vault (PvP)
+  ['great-vault-pvp'] = {
+    type = 'custom',
+    index = 2,
+    name = PVP,
+    reset = 'weekly',
+    func = function(store)
+      wipe(store)
 
-  wipe(t.Progress[index])
-end
+      if SI.playerLevel < SI.maxLevel then
+        store.unlocked = false
+        store.isComplete = false
+      else
+        local weeklyProgress = C_WeeklyRewards.GetConquestWeeklyProgress()
+        local rewardWaiting = C_WeeklyRewards.HasAvailableRewards() and C_WeeklyRewards.CanClaimRewards()
 
--- Primal Storms Elementals
-local function PrimalStormsElementalsUpdate(index)
-  SI.db.Toons[SI.thisToon].Progress[index] = wipe(SI.db.Toons[SI.thisToon].Progress[index] or {})
-  for _, questID in ipairs(Module.TrackedQuest[index].relatedQuest) do
-    SI.db.Toons[SI.thisToon].Progress[index][questID] = C_QuestLog_IsQuestFlaggedCompleted(questID)
-  end
-end
+        store.unlocked = true
+        store.isComplete = weeklyProgress.progress >= weeklyProgress.maxProgress
+        store.numFulfilled = weeklyProgress.progress
+        store.numRequired = weeklyProgress.maxProgress
+        store.unlocksCompleted = weeklyProgress.unlocksCompleted
+        store.maxUnlocks = weeklyProgress.maxUnlocks
+        store.rewardWaiting = rewardWaiting
+      end
+    end,
+    showFunc = function(store)
+      local text
+      if not store.unlocked then
+        return
+      elseif store.isComplete then
+        text = "\124T" .. READY_CHECK_READY_TEXTURE .. ":0|t"
+      else
+        text = store.numFulfilled .. "/" .. store.numRequired
+      end
+      if store.unlocksCompleted and store.maxUnlocks then
+        text = text .. "(" .. store.unlocksCompleted .. "/" .. store.maxUnlocks .. ")"
+      end
+      if store.rewardWaiting then
+        text = text .. "(\124T" .. READY_CHECK_WAITING_TEXTURE .. ":0|t)"
+      end
+      return text
+    end,
+    resetFunc = function(store)
+      local unlocked = store.unlocked
+      local numRequired = store.numRequired
+      local maxUnlocks = store.maxUnlocks
+      local rewardWaiting = store.unlocksCompleted and store.unlocksCompleted > 0
+      wipe(store)
 
-local function PrimalStormsElementalsShow(toon, index)
-  local t = SI.db.Toons[toon]
-  if not t or not t.Quests then return end
-  if not t or not t.Progress or not t.Progress[index] then return end
-
-  local totalDone = 0
-  for _, questID in ipairs(Module.TrackedQuest[index].relatedQuest) do
-    if t.Progress[index][questID] then
-      totalDone = totalDone + 1
-    end
-  end
-  return string.format("%d/%d", totalDone, #Module.TrackedQuest[index].relatedQuest)
-end
-
-local function PrimalStormsElementalsReset(toon, index)
-  local t = SI.db.Toons[toon]
-  if not t or not t.Progress or not t.Progress[index] then return end
-
-  wipe(t.Progress[index])
-end
-
-Module.TrackedQuest = {
-  -- Conquest
-  {
-    name = PVP_CONQUEST,
-    func = ConquestUpdate,
-    weekly = true,
-    showFunc = ConquestShow,
-    resetFunc = ConquestReset,
+      store.unlocked = unlocked
+      store.isComplete = false
+      store.numFulfilled = 0
+      store.numRequired = numRequired
+      store.unlocksCompleted = 0
+      store.maxUnlocks = maxUnlocks
+      store.rewardWaiting = rewardWaiting
+    end,
+  },
+  -- The World Awaits
+  ['the-world-awaits'] = {
+    type = 'single',
+    index = 3,
+    name = L['The World Awaits'],
+    questID = 72728,
+    reset = 'weekly',
+    persists = false,
+    fullObjective = false,
+  },
+  -- Emissary of War
+  ['emissary-of-war'] = {
+    type = 'single',
+    index = 4,
+    name = L['Emissary of War'],
+    questID = 72722,
+    reset = 'weekly',
+    persists = false,
+    fullObjective = false,
+  },
+  -- Timewalking
+  ['timewalking'] = {
+    type = 'any',
+    index = 5,
+    name = L['Timewalking'],
+    questID = {
+      72727, -- A Burning Path Through Time - TBC Timewalking
+      72726, -- A Frozen Path Through Time - WLK Timewalking
+      72810, -- A Shattered Path Through Time - CTM Timewalking
+      72725, -- A Shrouded Path Through Time - MOP Timewalking
+      72724, -- A Savage Path Through Time - WOD Timewalking
+      72719, -- A Fel Path Through Time - LEG Timewalking
+    },
+    reset = 'weekly',
+    persists = false,
+    fullObjective = false,
   },
   -- Island Expedition
-  {
+  ['bfa-island'] = {
+    type = 'any',
+    expansion = 7,
+    index = 1,
     name = ISLANDS_HEADER,
-    quest = {
-      ["Alliance"] = 53436,
-      ["Horde"]    = 53435,
+    questID = {
+      53436, -- Alliance
+      53435, -- Horde
     },
-    weekly = true,
-    resetFunc = KeepProgress,
-    relatedQuest = {53435, 53436},
+    reset = 'weekly',
+    persists = true,
+    fullObjective = false,
   },
   -- Horrific Vision
-  {
+  ['bfa-horrific-vision'] = {
+    type = 'list',
+    expansion = 7,
+    index = 2,
     name = SPLASH_BATTLEFORAZEROTH_8_3_0_FEATURE1_TITLE,
-    weekly = true,
-    func = HorrificVisionUpdate,
-    showFunc = HorrificVisionShow,
-    resetFunc = HorrificVisionReset,
-    tooltipKey = 'ShowHorrificVisionTooltip',
-    -- addition info
-    rewardQuestID = {
-      57841,
-      57845,
-      57842,
-      57846,
-      57843,
-      57847,
-      57844,
+    questID = {
       57848,
+      57844,
+      57847,
+      57843,
+      57846,
+      57842,
+      57845,
+      57841,
     },
-    rewardDesc = {
-      {"1 + 0", L["Vision Boss Only"]},
-      {"3 + 0", L["Vision Boss + 2 Bonus Objectives"]},
-      {"5 + 0", L["Full Clear No Masks"]},
-      {"5 + 1", L["Full Clear + 1 Mask"]},
-      {"5 + 2", L["Full Clear + 2 Masks"]},
-      {"5 + 3", L["Full Clear + 3 Masks"]},
-      {"5 + 4", L["Full Clear + 4 Masks"]},
-      {"5 + 5", L["Full Clear + 5 Masks"]},
+    unlockQuest = 58634, -- Opening the Gateway
+    reset = 'weekly',
+    persists = false,
+    questAbbr = {
+      [57848] = "5 + 5",
+      [57844] = "5 + 4",
+      [57847] = "5 + 3",
+      [57843] = "5 + 2",
+      [57846] = "5 + 1",
+      [57842] = "5 + 0",
+      [57845] = "3 + 0",
+      [57841] = "1 + 0",
+    },
+    progress = false,
+    onlyOnOrCompleted = false,
+    questName = {
+      [57848] = L["Full Clear + 5 Masks"],
+      [57844] = L["Full Clear + 4 Masks"],
+      [57847] = L["Full Clear + 3 Masks"],
+      [57843] = L["Full Clear + 2 Masks"],
+      [57846] = L["Full Clear + 1 Mask"],
+      [57842] = L["Full Clear No Masks"],
+      [57845] = L["Vision Boss + 2 Bonus Objectives"],
+      [57841] = L["Vision Boss Only"],
     },
   },
   -- N'Zoth Assaults
-  {
+  ['bfa-nzoth-assault'] = {
+    type = 'list',
+    expansion = 7,
+    index = 3,
     name = WORLD_MAP_THREATS,
-    weekly = true,
-    func = NZothAssaultUpdate,
-    showFunc = NZothAssaultShow,
-    resetFunc = NZothAssaultReset,
-    tooltipKey = 'ShowNZothAssaultTooltip',
-    relatedQuest = {
+    questID = {
       -- Uldum
       57157, -- Assault: The Black Empire
       55350, -- Assault: Amathet Advance
@@ -581,107 +301,146 @@ Module.TrackedQuest = {
       57008, -- Assault: The Warring Clans
       57728, -- Assault: The Endless Swarm
     },
-    -- addition info
-    assaultQuest = {
-      [57157] = { -- The Black Empire in Uldum
-        57008, -- Assault: The Warring Clans
-        57728, -- Assault: The Endless Swarm
-      },
-      [56064] = { -- The Black Empire in Vale of Eternal Blossoms
-        55350, -- Assault: Amathet Advance
-        56308, -- Assault: Aqir Unearthed
-      },
-    },
+    unlockQuest = 57362, -- Deeper Into the Darkness
+    reset = 'weekly',
+    persists = false,
+    threshold = 3,
+    progress = true,
+    onlyOnOrCompleted = true,
   },
   -- Lesser Visions of N'Zoth
-  {
+  ['bfa-lesser-vision'] = {
+    type = 'any',
+    expansion = 7,
+    index = 4,
     name = L["Lesser Visions of N'Zoth"],
-    func = LesserVisionUpdate,
-    showFunc = LesserVisionShow,
-    resetFunc = LesserVisionReset,
-    relatedQuest = {
+    questID = {
       58151, -- Minions of N'Zoth
       58155, -- A Hand in the Dark
       58156, -- Vanquishing the Darkness
       58167, -- Preventative Measures
       58168, -- A Dark, Glaring Reality
     },
-  },
-  -- Torghast Weekly
-  {
-    name = L["Torghast"],
-    weekly = true,
-    func = TorghastUpdate,
-    showFunc = TorghastShow,
-    resetFunc = TorghastReset,
-    tooltipKey = 'ShowTorghastTooltip',
-    widgetID = {
-      {2925, 2930}, -- Fracture Chambers
-      {2926, 2932}, -- Skoldus Hall
-      {2924, 2934}, -- Soulforges
-      {2927, 2936}, -- Coldheart Interstitia
-      {2928, 2938}, -- Mort'regar
-      {2929, 2940}, -- The Upper Reaches
-    },
+    reset = 'daily',
+    persists = false,
+    fullObjective = false,
   },
   -- Covenant Assaults
-  {
+  ['sl-covenant-assault'] = {
+    type = 'any',
+    expansion = 8,
+    index = 1,
     name = L["Covenant Assaults"],
-    weekly = true,
-    func = CovenantAssaultUpdate,
-    showFunc = CovenantAssaultShow,
-    resetFunc = CovenantAssaultReset,
-    tooltipKey = 'ShowCovenantAssaultTooltip',
-    relatedQuest = {
+    questID = {
       63823, -- Night Fae Assault
       63822, -- Venthyr Assault
       63824, -- Kyrian Assault
       63543, -- Necrolord Assault
     },
-  },
-  {
-    name = L["The World Awaits"],
-    weekly = true,
-    quest = 72728,
-    relatedQuest = {72728},
-  },
-  {
-    name = L["Emissary of War"],
-    weekly = true,
-    quest = 72722,
-    relatedQuest = {72722},
+    reset = 'weekly',
+    persists = false,
+    fullObjective = false,
   },
   -- Patterns Within Patterns
-  {
-    name = L["Patterns Within Patterns"],
-    weekly = true,
-    quest = 66042,
-    resetFunc = KeepProgress,
-    relatedQuest = {66042},
+  ['sl-patterns-within-patterns'] = {
+    type = 'single',
+    expansion = 8,
+    index = 2,
+    name = L['Patterns Within Patterns'],
+    questID = 66042,
+    reset = 'weekly',
+    persists = true,
+    fullObjective = false,
   },
   -- Dragonflight Renown
-  {
+  ['df-renown'] = {
+    type = 'custom',
+    expansion = 9,
+    index = 1,
     name = L["Dragonflight Renown"],
-    func = DragonflightRenownUpdate,
-    showFunc = DragonflightRenownShow,
-    resetFunc = DragonflightRenownReset,
-    tooltipKey = 'ShowDragonflightRenownTooltip',
+    reset = 'none',
+    func = function(store)
+      wipe(store)
+      local majorFactionIDs = C_MajorFactions.GetMajorFactionIDs(LE_EXPANSION_DRAGONFLIGHT)
+      for _, factionID in ipairs(majorFactionIDs) do
+        local data = C_MajorFactions.GetMajorFactionData(factionID)
+        store[factionID] = data and {data.renownLevel, data.renownReputationEarned, data.renownLevelThreshold}
+      end
+    end,
+    showFunc = function(store, entry)
+      local text
+      local majorFactionIDs = C_MajorFactions.GetMajorFactionIDs(LE_EXPANSION_DRAGONFLIGHT)
+
+      local factionIDs = entry.factionIDs
+      for _, factionID in ipairs(entry.factionIDs) do
+        if not text then
+          text = store[factionID] and store[factionID][1] or '0'
+        else
+          text = text .. ' / ' .. (store[factionID] and store[factionID][1] or '0')
+        end
+      end
+
+      for _, factionID in ipairs(majorFactionIDs) do
+        if not tContains(factionIDs, factionID) then
+          if not text then
+            text = store[factionID] and store[factionID][1] or '0'
+          else
+            text = text .. ' / ' .. (store[factionID] and store[factionID][1] or '0')
+          end
+        end
+      end
+
+      return text
+    end,
+    tooltipFunc = function(store, entry, toon)
+      local tip = Tooltip:AcquireIndicatorTip(2, 'LEFT', 'RIGHT')
+      tip:AddHeader(SI:ClassColorToon(toon), L["Dragonflight Renown"])
+
+      local majorFactionIDs = C_MajorFactions.GetMajorFactionIDs(LE_EXPANSION_DRAGONFLIGHT)
+
+      local factionIDs = entry.factionIDs
+      for _, factionID in ipairs(factionIDs) do
+        if store[factionID] then
+          tip:AddLine(
+            C_MajorFactions.GetMajorFactionData(factionID).name,
+            format("%s %s (%s/%s)", COVENANT_SANCTUM_TAB_RENOWN, unpack(store[factionID]))
+          )
+        else
+          tip:AddLine(C_MajorFactions.GetMajorFactionData(factionID).name, LOCKED)
+        end
+      end
+
+      for _, factionID in ipairs(majorFactionIDs) do
+        if not tContains(factionIDs, factionID) then
+          if store[factionID] then
+            tip:AddLine(
+              C_MajorFactions.GetMajorFactionData(factionID).name,
+              format("%s %s (%s/%s)", COVENANT_SANCTUM_TAB_RENOWN, unpack(store[factionID]))
+            )
+          else
+            tip:AddLine(C_MajorFactions.GetMajorFactionData(factionID).name, LOCKED)
+          end
+        end
+      end
+
+      tip:Show()
+    end,
+    -- addition info
     factionIDs = {
+      2564, -- Loamm Niffen
       2507, -- Dragonscale Expedition
       2503, -- Maruuk Centaur
       2511, -- Iskaara Tuskarr
       2510, -- Valdrakken Accord
-      2564, -- Loamm Niffen
     },
   },
-  {
+  -- Aiding the Accord
+  ['df-aiding-the-accord'] = {
+    type = 'any',
+    expansion = 9,
+    index = 2,
     name = L["Aiding the Accord"],
-    weekly = true,
-    func = AidingTheAccordUpdate,
-    showFunc = AidingTheAccordShow,
-    resetFunc = AidingTheAccordReset,
-    tooltipKey = 'ShowAidingTheAccordTooltip',
-    relatedQuest = {
+    questID = {
       70750, -- Aiding the Accord
       72068, -- Aiding the Accord: A Feast For All
       72373, -- Aiding the Accord: The Hunt is On
@@ -692,51 +451,82 @@ Module.TrackedQuest = {
       75860, -- Aiding the Accord: Researchers Under Fire
       75861, -- Aiding the Accord: Suffusion Camp
     },
+    reset = 'weekly',
+    persists = true,
+    fullObjective = true,
   },
-  {
+  -- Community Feast
+  ['df-community-feast'] = {
+    type = 'single',
+    expansion = 9,
+    index = 3,
     name = L["Community Feast"],
-    weekly = true,
-    quest = 70893,
-    relatedQuest = {70893},
+    questID = 70893,
+    reset = 'weekly',
+    persists = false,
+    fullObjective = false,
   },
-  {
+  -- Siege on Dragonbane Keep
+  ['df-siege-on-dragonbane-keep'] = {
+    type = 'single',
+    expansion = 9,
+    index = 4,
     name = L["Siege on Dragonbane Keep"],
-    weekly = true,
-    quest = 70866,
-    relatedQuest = {70866},
+    questID = 70866,
+    reset = 'weekly',
+    persists = false,
+    fullObjective = false,
   },
-  {
+  -- Grand Hunt
+  ['df-grand-hunt'] = {
+    type = 'list',
+    expansion = 9,
+    index = 5,
     name = L["Grand Hunt"],
-    weekly = true,
-    func = GrandHuntUpdate,
-    showFunc = GrandHuntShow,
-    resetFunc = GrandHuntReset,
-    relatedQuest = {
+    questID = {
       70906, -- Epic
       71136, -- Rare
       71137, -- Uncommon
     },
-    tooltipKey = 'ShowGrandHuntTooltip',
+    reset = 'weekly',
+    persists = false,
+    progress = false,
+    onlyOnOrCompleted = false,
+    questName = {
+      [70906] = MAW_BUFF_QUALITY_STRING_EPIC, -- Epic
+      [71136] = MAW_BUFF_QUALITY_STRING_RARE, -- Rare
+      [71137] = MAW_BUFF_QUALITY_STRING_UNCOMMON, -- Uncommon
+    },
   },
-  {
+  -- Trial of Elements
+  ['df-trial-of-elements'] = {
+    type = 'single',
+    expansion = 9,
+    index = 6,
     name = L["Trial of Elements"],
-    weekly = true,
-    quest = 71995,
-    relatedQuest = {71995},
+    questID = 71995,
+    reset = 'weekly',
+    persists = false,
+    fullObjective = false,
   },
-  {
+  -- Trial of Flood
+  ['df-trial-of-flood'] = {
+    type = 'single',
+    expansion = 9,
+    index = 7,
     name = L["Trial of Flood"],
-    weekly = true,
-    quest = 71033,
-    relatedQuest = {71033},
+    questID = 71033,
+    reset = 'weekly',
+    persists = false,
+    fullObjective = false,
   },
-  {
+  -- Primal Storms Core
+  ['df-primal-storms-core'] = {
+    type = 'list',
+    expansion = 9,
+    index = 8,
     name = L["Primal Storms Core"],
-    weekly = true,
-    func = PrimalStormsCoreUpdate,
-    showFunc = PrimalStormsCoreShow,
-    resetFunc = PrimalStormsCoreReset,
-    relatedQuest = {
+    questID = {
       73162, -- Storm's Fury
       72686, -- Storm Surge
       70723, -- Earth
@@ -744,238 +534,1068 @@ Module.TrackedQuest = {
       70753, -- Air
       70754, -- Fire
     },
-    tooltipKey = 'ShowPrimalStormsCoreTooltip',
-  },
-  {
-    name = L["Primal Storms Elementals"],
-    daily = true,
-    func = PrimalStormsElementalsUpdate,
-    showFunc = PrimalStormsElementalsShow,
-    resetFunc = PrimalStormsElementalsReset,
-    relatedQuest = {
-      73991, --Emblazion -- Fire
-      74005, --Infernum
-      74006, --Kain Firebrand
-      74016, --Neela Firebane
-      73989, --Crystalus -- Water
-      73993, --Frozion
-      74027, --Rouen Icewind
-      74009, --Iceblade Trio
-      73986, --Bouldron -- Earth
-      73998, --Gravlion
-      73999, --Grizzlerock
-      74039, --Zurgaz Corebreaker
-      73995, --Gaelzion -- Air
-      74007, --Karantun
-      74022, --Pipspark Thundersnap
-      74038, --Voraazka
+    reset = 'weekly',
+    persists = false,
+    progress = false,
+    onlyOnOrCompleted = false,
+    questName = {
+      [73162] = L["Storm's Fury"], -- Storm's Fury
+      [72686] = L["Storm Surge"], -- Storm Surge
+      [70723] = YELLOW_FONT_COLOR_CODE .. L["Earth Core"] .. FONT_COLOR_CODE_CLOSE, -- Earth
+      [70752] = "|cff42a4f5" .. L["Water Core"] .. FONT_COLOR_CODE_CLOSE, -- Water
+      [70753] = "|cffe4f2f5" .. L["Air Core"] .. FONT_COLOR_CODE_CLOSE, -- Air
+      [70754] = ORANGE_FONT_COLOR_CODE .. L["Fire Core"] .. FONT_COLOR_CODE_CLOSE, -- Fire
     },
-    tooltipKey = 'ShowPrimalStormsElementalsTooltip',
   },
-  {
+  -- Primal Storms Elementals
+  ['df-primal-storms-elementals'] = {
+    type = 'list',
+    expansion = 9,
+    index = 9,
+    name = L["Primal Storms Elementals"],
+    questID = {
+      73991, -- Emblazion -- Fire
+      74005, -- Infernum
+      74006, -- Kain Firebrand
+      74016, -- Neela Firebane
+      73989, -- Crystalus -- Water
+      73993, -- Frozion
+      74027, -- Rouen Icewind
+      74009, -- Iceblade Trio
+      73986, -- Bouldron -- Earth
+      73998, -- Gravlion
+      73999, -- Grizzlerock
+      74039, -- Zurgaz Corebreaker
+      73995, -- Gaelzion -- Air
+      74007, -- Karantun
+      74022, -- Pipspark Thundersnap
+      74038, -- Voraazka
+    },
+    reset = 'daily',
+    persists = false,
+    progress = false,
+    onlyOnOrCompleted = false,
+    questName = {
+      [73991] = ORANGE_FONT_COLOR_CODE .. L["Emblazion"] .. FONT_COLOR_CODE_CLOSE, -- Emblazion -- Fire
+      [74005] = ORANGE_FONT_COLOR_CODE .. L["Infernum"] .. FONT_COLOR_CODE_CLOSE, -- Infernum
+      [74006] = ORANGE_FONT_COLOR_CODE .. L["Kain Firebrand"] .. FONT_COLOR_CODE_CLOSE, -- Kain Firebrand
+      [74016] = ORANGE_FONT_COLOR_CODE .. L["Neela Firebane"] .. FONT_COLOR_CODE_CLOSE, -- Neela Firebane
+      [73989] = "|cff42a4f5" .. L["Crystalus"] .. FONT_COLOR_CODE_CLOSE, -- Crystalus -- Water
+      [73993] = "|cff42a4f5" .. L["Frozion"] .. FONT_COLOR_CODE_CLOSE, -- Frozion
+      [74027] = "|cff42a4f5" .. L["Rouen Icewind"] .. FONT_COLOR_CODE_CLOSE, -- Rouen Icewind
+      [74009] = "|cff42a4f5" .. L["Iceblade Trio"] .. FONT_COLOR_CODE_CLOSE, -- Iceblade Trio
+      [73986] = YELLOW_FONT_COLOR_CODE .. L["Bouldron"] .. FONT_COLOR_CODE_CLOSE, -- Bouldron -- Earth
+      [73998] = YELLOW_FONT_COLOR_CODE .. L["Gravlion"] .. FONT_COLOR_CODE_CLOSE, -- Gravlion
+      [73999] = YELLOW_FONT_COLOR_CODE .. L["Grizzlerock"] .. FONT_COLOR_CODE_CLOSE, -- Grizzlerock
+      [74039] = YELLOW_FONT_COLOR_CODE .. L["Zurgaz Corebreaker"] .. FONT_COLOR_CODE_CLOSE, -- Zurgaz Corebreaker
+      [73995] = "|cffe4f2f5" .. L["Gaelzion"] .. FONT_COLOR_CODE_CLOSE, -- Gaelzion -- Air
+      [74007] = "|cffe4f2f5" .. L["Karantun"] .. FONT_COLOR_CODE_CLOSE, -- Karantun
+      [74022] = "|cffe4f2f5" .. L["Pipspark Thundersnap"] .. FONT_COLOR_CODE_CLOSE, -- Pipspark Thundersnap
+      [74038] = "|cffe4f2f5" .. L["Voraazka"] .. FONT_COLOR_CODE_CLOSE, -- Voraazka
+    },
+    separateLines = {
+      [1] = ORANGE_FONT_COLOR_CODE .. L["Fire"] .. FONT_COLOR_CODE_CLOSE,
+      [5] = "|cff42a4f5" .. L["Water"] .. FONT_COLOR_CODE_CLOSE,
+      [9] = YELLOW_FONT_COLOR_CODE .. L["Earth"] .. FONT_COLOR_CODE_CLOSE,
+      [13] = "|cffe4f2f5" .. L["Air"] .. FONT_COLOR_CODE_CLOSE,
+    },
+  },
+  -- Sparks of Life
+  ['df-sparks-of-life'] = {
+    type = 'any',
+    expansion = 9,
+    index = 10,
     name = L["Sparks of Life"],
-    weekly = true,
-    func = SparksOfLifeUpdate,
-    resetFunc = SparksOfLifeReset,
-    relatedQuest = {
+    questID = {
       72646, -- The Waking Shores
       72647, -- Ohn'ahran Plains
       72648, -- The Azure Span
       72649, -- Thaldraszus
     },
+    reset = 'weekly',
+    persists = false,
+    fullObjective = false,
   },
-  {
+  -- A Worthy Ally: Loamm Niffen
+  ['df-a-worthy-ally-loamm-niffen'] = {
+    type = 'single',
+    expansion = 9,
+    index = 11,
     name = L["A Worthy Ally: Loamm Niffen"],
-    weekly = true,
-    quest = 75665,
-    resetFunc = KeepProgress,
-    relatedQuest = {75665},
+    questID = 75665,
+    reset = 'weekly',
+    persists = true,
+    fullObjective = false,
   },
-  {
+  -- Fighting is Its Own Reward
+  ['df-fighting-is-its-own-reward'] = {
+    type = 'single',
+    expansion = 9,
+    index = 12,
     name = L["Fighting is Its Own Reward"],
-    weekly = true,
-    quest = 76122,
-    relatedQuest = {76122},
+    questID = 76122,
+    reset = 'weekly',
+    persists = true,
+    fullObjective = false,
+  },
+  -- Researchers Under Fire
+  ['df-researchers-under-fire'] = {
+    type = 'list',
+    expansion = 9,
+    index = 13,
+    name = L["Researchers Under Fire"],
+    questID = {
+      75630, -- Epic
+      75629, -- Rare
+      75628, -- Uncommon
+      75627, -- Common
+    },
+    reset = 'weekly',
+    persists = false,
+    progress = false,
+    onlyOnOrCompleted = false,
+    questName = {
+      [75630] = MAW_BUFF_QUALITY_STRING_EPIC, -- Epic
+      [75629] = MAW_BUFF_QUALITY_STRING_RARE, -- Rare
+      [75628] = MAW_BUFF_QUALITY_STRING_UNCOMMON, -- Uncommon
+      [75627] = MAW_BUFF_QUALITY_STRING_COMMON, -- Common
+    },
+  },
+  -- Disciple of Fyrakk
+  ['df-disciple-of-fyrakk'] = {
+    type = 'single',
+    expansion = 9,
+    index = 14,
+    name = L["Disciple of Fyrakk"],
+    questID = 75467,
+    reset = 'weekly',
+    persists = false,
+    fullObjective = false,
+  },
+  -- Secured Shipment
+  ['df-secured-shipment'] = {
+    type = 'any',
+    expansion = 9,
+    index = 15,
+    name = L["Secured Shipment"],
+    questID = {
+      75525,
+      74526,
+    },
+    reset = 'weekly',
+    persists = false,
+    fullObjective = false,
   },
 }
 
-function Module:OnEnable()
-  self:UpdateAll()
+---update the progress of quest to the store
+---@param store QuestStore
+---@param questID number
+---@return boolean show is completed or on quest
+local function UpdateQuestStore(store, questID)
+  wipe(store)
 
+  if C_QuestLog.IsQuestFlaggedCompleted(questID) then
+    store.show = true
+    store.isComplete = true
+
+    return true
+  elseif not C_QuestLog.IsOnQuest(questID) then
+    store.show = false
+
+    return false
+  else
+    local showText
+    local allFinished = true
+    local leaderboardCount = C_QuestLog.GetNumQuestObjectives(questID)
+    for i = 1, leaderboardCount do
+      local text, objectiveType, finished, numFulfilled, numRequired = GetQuestObjectiveInfo(questID, i, false)
+      ---@cast text string
+      ---@cast objectiveType "item"|"object"|"monster"|"reputation"|"log"|"event"|"player"|"progressbar"
+      ---@cast finished boolean
+      ---@cast numFulfilled number
+      ---@cast numRequired number
+
+      allFinished = allFinished and finished
+
+      local objectiveText
+      if objectiveType == 'progressbar' then
+        numFulfilled = GetQuestProgressBarPercent(questID)
+        numRequired = 100
+        objectiveText = floor(numFulfilled or 0) .. "%"
+      else
+        objectiveText = numFulfilled .. "/" .. numRequired
+      end
+
+      store[i] = text
+      if i == 1 then
+        store.objectiveType = objectiveType
+        store.numFulfilled = numFulfilled
+        store.numRequired = numRequired
+        showText = objectiveText
+      else
+        showText = showText .. ' ' .. objectiveText
+      end
+    end
+
+    store.show = true
+    store.isComplete = false
+    store.isFinish = allFinished
+    store.leaderboardCount = leaderboardCount
+    store.text = showText
+
+    return true
+  end
+end
+
+---reset the progress of quest to the store
+---@param store QuestStore
+---@param persists boolean
+local function ResetQuestStore(store, persists)
+  if not store.show or store.isComplete or not persists then
+    -- the store should be wiped if any of the following conditions are met:
+    -- 1. is not on quest
+    -- 2. is completed
+    -- 3. is not persistent
+
+    wipe(store)
+
+    store.show = false
+  end
+end
+
+---show the progress of quest
+---@param store QuestStore
+---@param entry SingleQuestEntry|AnyQuestEntry
+---@return string?
+local function ShowQuestStore(store, entry)
+  if not store.show then
+    return
+  elseif store.isComplete then
+    return "\124T" .. READY_CHECK_READY_TEXTURE .. ":0|t"
+  elseif store.isFinish then
+    return "\124T" .. READY_CHECK_WAITING_TEXTURE .. ":0|t"
+  elseif entry.fullObjective then
+    return store.text
+  elseif store.objectiveType == 'progressbar' and store.numFulfilled then
+    return store.numFulfilled .. "%"
+  elseif store.numFulfilled and store.numRequired then
+    return store.numFulfilled .. "/" .. store.numRequired
+  end
+end
+
+---show the progress of quest list
+---@param store QuestListStore
+---@param entry QuestListEntry
+---@return string?
+local function ShowQuestListStore(store, entry)
+  if not entry.show then
+    return
+  end
+
+  if entry.questAbbr then
+    for _, questID in ipairs(entry.questID) do
+      if store[questID].isComplete and entry.questAbbr[questID] then
+        return entry.questAbbr[questID]
+      end
+    end
+  end
+
+  local completed = 0
+  local total = entry.threshold or #entry.questID
+
+  for _, questID in ipairs(entry.questID) do
+    if store[questID].isComplete then
+      completed = completed + 1
+    end
+  end
+
+  return completed .. "/" .. total
+end
+
+---handle tooltip of quest
+local function TooltipQuestStore(_, arg)
+  local store, entry, toon = unpack(arg)
+  ---@cast store QuestStore
+  ---@cast entry SingleQuestEntry|AnyQuestEntry
+  ---@cast toon string
+
+  local tip = Tooltip:AcquireIndicatorTip(2, 'LEFT', 'RIGHT')
+  tip:AddHeader(SI:ClassColorToon(toon), entry.name)
+
+  if store.isComplete then
+    tip:AddLine("\124T" .. READY_CHECK_READY_TEXTURE .. ":0|t")
+  elseif store.isFinish then
+    tip:AddLine("\124T" .. READY_CHECK_WAITING_TEXTURE .. ":0|t")
+  elseif store.leaderboardCount and store.leaderboardCount > 0 then
+    for i = 1, store.leaderboardCount do
+      tip:AddLine("")
+      tip:SetCell(i + 1, 1, store[i], nil, 'LEFT', 2)
+    end
+  end
+
+  tip:Show()
+end
+
+---handle tooltip of quest list
+local function TooltipQuestListStore(_, arg)
+  local store, entry, toon = unpack(arg)
+  ---@cast store QuestListStore
+  ---@cast entry QuestListEntry
+  ---@cast toon string
+
+  local tip = Tooltip:AcquireIndicatorTip(2, 'LEFT', 'RIGHT')
+  tip:AddHeader(SI:ClassColorToon(toon), entry.name)
+
+  local completed = 0
+  local total = entry.threshold or #entry.questID
+
+  for _, questID in ipairs(entry.questID) do
+    if store[questID].isComplete then
+      completed = completed + 1
+    end
+  end
+
+  tip:AddLine("", completed .. "/" .. total)
+
+  for i, questID in ipairs(entry.questID) do
+    if entry.separateLines and entry.separateLines[i] then
+      tip:AddLine(entry.separateLines[i])
+    end
+
+    if not entry.onlyOnOrCompleted or store[questID].show then
+      local questName = entry.questName and entry.questName[questID] or SI:QuestInfo(questID)
+      local questText
+      if entry.progress then
+        if not store.show then
+          -- do nothing
+        elseif store[questID].isComplete then
+          questText = "\124T" .. READY_CHECK_READY_TEXTURE .. ":0|t"
+        elseif store[questID].isFinish then
+          questText = "\124T" .. READY_CHECK_WAITING_TEXTURE .. ":0|t"
+        elseif store[questID].objectiveType == 'progressbar' and store[questID].numFulfilled then
+          questText = store[questID].numFulfilled .. "%"
+        elseif store[questID].numFulfilled and store[questID].numRequired then
+          questText = store[questID].numFulfilled .. "/" .. store[questID].numRequired
+        end
+      else
+        questText = (
+          store[questID].isComplete and
+          (RED_FONT_COLOR_CODE .. CRITERIA_COMPLETED .. FONT_COLOR_CODE_CLOSE) or
+          (GREEN_FONT_COLOR_CODE .. AVAILABLE .. FONT_COLOR_CODE_CLOSE)
+        )
+      end
+
+      tip:AddLine(questName or questID, questText or "")
+    end
+  end
+
+  tip:Show()
+end
+
+---wrap tooltip of custom entry
+local function TooltipCustomEntry(_, arg)
+  local store, entry, toon = unpack(arg)
+  ---@cast store table
+  ---@cast entry CustomEntry
+  ---@cast toon string
+
+  if entry.tooltipFunc then
+    entry.tooltipFunc(store, entry, toon)
+  end
+end
+
+function Module:OnInitialize()
+  if not SI.db.Progress then
+    SI.db.Progress = {
+      Enable = {},
+      Order = {},
+      User = {},
+    }
+  end
+
+  for key in pairs(presets) do
+    if type(SI.db.Progress.Enable[key]) ~= 'boolean' then
+      SI.db.Progress.Enable[key] = true
+    end
+
+    if type(SI.db.Progress.Order[key]) ~= 'number' then
+      SI.db.Progress.Order[key] = 50
+    end
+  end
+
+  for key in pairs(SI.db.Progress.User) do
+    if type(SI.db.Progress.Enable[key]) ~= 'boolean' then
+      SI.db.Progress.Enable[key] = true
+    end
+
+    if type(SI.db.Progress.Order[key]) ~= 'number' then
+      SI.db.Progress.Order[key] = 50
+    end
+  end
+
+  local map = {
+    [1] = 'great-vault-pvp', -- PvP Conquest
+    [2] = 'bfa-island', -- Island Expedition
+    [3] = 'bfa-horrific-vision', -- Horrific Vision
+    [4] = 'bfa-nzoth-assault', -- N'Zoth Assaults
+    [5] = 'bfa-lesser-vision', -- Lesser Visions of N'Zoth
+    [7] = 'sl-covenant-assault', -- Covenant Assaults
+    [8] = 'the-world-awaits', -- The World Awaits
+    [9] = 'emissary-of-war', -- Emissary of War
+    [10] = 'sl-patterns-within-patterns', -- Patterns Within Patterns
+    [11] = 'df-renown', -- Dragonflight Renown
+    [12] = 'df-aiding-the-accord', -- Aiding the Accord
+    [13] = 'df-community-feast', -- Community Feast
+    [14] = 'df-siege-on-dragonbane-keep', -- Siege on Dragonbane Keep
+    [15] = 'df-grand-hunt', -- Grand Hunt
+    [16] = 'df-trial-of-elements', -- Trial of Elements
+    [17] = 'df-trial-of-flood', -- Trial of Flood
+    [18] = 'df-primal-storms-core', -- Primal Storms Core
+    [19] = 'df-primal-storms-elementals', -- Primal Storms Elementals
+    [20] = 'df-sparks-of-life', -- Sparks of Life
+    [21] = 'df-a-worthy-ally-loamm-niffen', -- A Worthy Ally: Loamm Niffen
+    [22] = 'df-fighting-is-its-own-reward', -- Fighting is Its Own Reward
+  }
+
+  for i = 1, 22 do
+    -- enable status migration
+    if SI.db.Tooltip['Progress' .. i] ~= nil and map[i] then
+      SI.db.Progress.Enable[map[i]] = SI.db.Tooltip['Progress' .. i]
+    end
+    SI.db.Tooltip['Progress' .. i] = nil
+  end
+
+  for _, db in pairs(SI.db.Toons) do
+    if db.Progress then
+      -- old database migration
+      for oldKey, newKey in pairs(map) do
+        if db.Progress[oldKey] then
+          db.Progress[newKey] = db.Progress[oldKey]
+          db.Progress[oldKey] = nil
+        end
+      end
+
+      -- database cleanup
+      for key in pairs(db.Progress) do
+        if not presets[key] and not SI.db.Progress.User[key] then
+          db.Progress[key] = nil
+        end
+      end
+    end
+  end
+
+  self.display = {}
+  self.displayAll = {}
+  self:BuildDisplayOrder()
+end
+
+function Module:OnEnable()
   self:RegisterEvent('PLAYER_ENTERING_WORLD', 'UpdateAll')
   self:RegisterEvent('QUEST_LOG_UPDATE', 'UpdateAll')
+
+  self:UpdateAll()
+end
+
+---sort entry
+---@param left string
+---@param right string
+---@return boolean
+local function sortDisplay(left, right)
+  -- sort display by order, then presets over user, then expansion, then index, then key
+  local leftOrder = SI.db.Progress.Order[left] or 50
+  local rightOrder = SI.db.Progress.Order[right] or 50
+  if leftOrder ~= rightOrder then
+    return leftOrder < rightOrder
+  end
+
+  local leftPreset = not not presets[left]
+  local rightPreset = not not presets[right]
+
+  if leftPreset ~= rightPreset then
+    return leftPreset
+  end
+
+  local leftEntry = presets[left] or SI.db.Progress.User[left]
+  local rightEntry = presets[right] or SI.db.Progress.User[right]
+
+  if (leftEntry.expansion or -1) ~= (rightEntry.expansion or -1) then
+    return (leftEntry.expansion or -1) < (rightEntry.expansion or -1)
+  end
+
+  if (leftEntry.index or 0) ~= (rightEntry.index or 0) then
+    return (leftEntry.index or 0) < (rightEntry.index or 0)
+  end
+
+  return left < right
+end
+
+function Module:BuildDisplayOrder()
+  wipe(self.display)
+  wipe(self.displayAll)
+
+  for key in pairs(presets) do
+    if SI.db.Progress.Enable[key] then
+      tinsert(self.display, key)
+    end
+    tinsert(self.displayAll, key)
+  end
+
+  for key in pairs(SI.db.Progress.User) do
+    if SI.db.Progress.Enable[key] then
+      tinsert(self.display, key)
+    end
+    tinsert(self.displayAll, key)
+  end
+
+  sort(self.display, sortDisplay)
+  sort(self.displayAll, sortDisplay)
+end
+
+---update progress entry
+---@param key string
+---@param entry ProgressEntry
+function Module:UpdateEntry(key, entry)
+  local db = SI.db.Toons[SI.thisToon].Progress
+  if not db[key] then
+    db[key] = {}
+  end
+  local store = db[key]
+
+  if entry.type == 'single' then
+    ---@cast entry SingleQuestEntry
+    ---@cast store QuestStore
+
+    UpdateQuestStore(store, entry.questID)
+  elseif entry.type == 'any' then
+    ---@cast entry AnyQuestEntry
+    ---@cast store QuestStore
+    for questID in ipairs(entry.questID) do
+      local show = UpdateQuestStore(store, questID)
+      if show then
+        break
+      end
+    end
+  elseif entry.type == 'list' then
+    ---@cast entry QuestListEntry
+    ---@cast store QuestListStore
+    wipe(store)
+
+    for questID in ipairs(entry.questID) do
+      store[questID] = {}
+      UpdateQuestStore(store[questID], questID)
+    end
+  elseif entry.type == 'custom' then
+    ---@cast entry CustomEntry
+    entry.func(store, entry)
+  end
 end
 
 function Module:UpdateAll()
-  local t = SI.db.Toons[SI.thisToon]
-  if not t.Progress then t.Progress = {} end
-  for i, tbl in ipairs(self.TrackedQuest) do
-    if tbl.func then
-      tbl.func(i)
-    elseif tbl.quest then
-      local questID = tbl.quest
-      if type(questID) ~= "number" then
-        questID = questID[t.Faction]
+  for key, entry in pairs(presets) do
+    self:UpdateEntry(key, entry)
+  end
+
+  for key, entry in pairs(SI.db.Progress.User) do
+    self:UpdateEntry(key, entry)
+  end
+end
+
+---reset progress entry
+---@param key string
+---@param entry ProgressEntry
+---@param toon string
+function Module:ResetEntry(key, entry, toon)
+  local store = SI.db.Toons[toon].Progress and SI.db.Toons[toon].Progress[key]
+  if not store then return end
+
+  if entry.type == 'single' then
+    ---@cast entry SingleQuestEntry
+    ---@cast store QuestStore
+
+    ResetQuestStore(store, entry.persists)
+  elseif entry.type == 'any' then
+    ---@cast entry AnyQuestEntry
+    ---@cast store QuestStore
+
+    ResetQuestStore(store, entry.persists)
+  elseif entry.type == 'list' then
+    ---@cast entry QuestListEntry
+    ---@cast store QuestListStore
+
+    for questID in ipairs(entry.questID) do
+      if store[questID] then
+        ResetQuestStore(store[questID], entry.persists)
       end
-      if questID then
-        -- no questID on Neutral Pandaren or first login
-        local result = {}
-        local _, objectiveType, finished, numFulfilled, numRequired = GetQuestObjectiveInfo(questID, 1, false)
-        if objectiveType == 'progressbar' then
-          numFulfilled = GetQuestProgressBarPercent(questID)
-          numRequired = 100
-        end
-        result.objectiveType = objectiveType
-        result.isFinish = finished
-        result.numFulfilled = numFulfilled
-        result.numRequired = numRequired
-        if C_QuestLog_IsQuestFlaggedCompleted(questID) then
-          result.unlocked = true
-          result.isComplete = true
-        else
-          local isOnQuest = C_QuestLog_IsOnQuest(questID)
-          result.unlocked = isOnQuest
-          result.isComplete = false
-        end
-        t.Progress[i] = result
-      end
+    end
+  elseif entry.type == 'custom' then
+    ---@cast entry CustomEntry
+    if entry.resetFunc then
+      entry.resetFunc(store, entry)
     end
   end
 end
 
 function Module:OnDailyReset(toon)
-  local t = SI.db.Toons[toon]
-  if not t or not t.Progress then return end
-  for i, tbl in ipairs(self.TrackedQuest) do
-    if tbl.daily then
-      if tbl.resetFunc then
-        tbl.resetFunc(toon, i)
-      else
-        local prev = t.Progress[i]
-        t.Progress[i] = {
-          unlocked = prev.unlocked,
-          isComplete = false,
-          isFinish = false,
-          numFulfilled = 0,
-          numRequired = prev.numRequired,
-        }
-      end
+  for key, entry in pairs(presets) do
+    if entry.reset == 'daily' then
+      self:ResetEntry(key, entry, toon)
+    end
+  end
+
+  for key, entry in pairs(SI.db.Progress.User) do
+    if entry.reset == 'daily' then
+      self:ResetEntry(key, entry, toon)
     end
   end
 end
 
 function Module:OnWeeklyReset(toon)
-  local t = SI.db.Toons[toon]
-  if not t or not t.Progress then return end
-  for i, tbl in ipairs(self.TrackedQuest) do
-    if tbl.weekly then
-      if tbl.resetFunc then
-        tbl.resetFunc(toon, i)
-      else
-        local prev = t.Progress[i]
-        if prev then
-          t.Progress[i] = {
-            unlocked = prev.unlocked,
-            isComplete = false,
-            isFinish = false,
-            numFulfilled = 0,
-            numRequired = prev.numRequired,
+  for key, entry in pairs(presets) do
+    if entry.reset == 'weekly' then
+      self:ResetEntry(key, entry, toon)
+    end
+  end
+
+  for key, entry in pairs(SI.db.Progress.User) do
+    if entry.reset == 'weekly' then
+      self:ResetEntry(key, entry, toon)
+    end
+  end
+end
+
+do
+  local randomSource = {
+    'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
+    'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
+    'U', 'V', 'W', 'X', 'Y', 'Z',
+    'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
+    'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
+    'u', 'v', 'w', 'x', 'y', 'z',
+    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+  }
+  local randomUID = function()
+    local result = ''
+    for _ = 1, 11 do
+      result = result .. randomSource[random(1, #randomSource)]
+    end
+    return result
+  end
+
+  local orderValidate = function(_, value)
+    if strfind(value, '^%s*[0-9]?[0-9]?[0-9]%s*$') then
+      return true
+    else
+      local err = L["Order must be a number in [0 - 999]"]
+      SI:ChatMsg(err)
+      return err
+    end
+  end
+
+  local options
+
+  ---Add user entry to option
+  ---@param key string
+  ---@param entry ProgressEntry
+  local function AddUserEntryToOption(key, entry)
+    options.args.Enable.args.User.args[key] = {
+      order = entry.index,
+      type = 'toggle',
+      name = entry.name,
+    }
+    options.args.Sorting.args[key] = {
+      order = function() return tIndexOf(Module.displayAll, key) end,
+      type = 'input',
+      name = entry.name,
+      desc = L["Sort Order"],
+      validate = orderValidate,
+    }
+    options.args.User.args[key] = {
+      order = entry.index,
+      type = 'group',
+      name = entry.name,
+      get = function(info) return SI.db.Progress.User[key][info[#info]] end,
+      set = function(info, value) SI.db.Progress.User[key][info[#info]] = value end,
+      args = {
+        name = {
+          order = 1,
+          type = 'input',
+          name = L["Quest Name"],
+        },
+        questID = {
+          order = 2,
+          type = 'input',
+          name = L["Quest ID"],
+          validate = function(info, value)
+            local number = tonumber(value)
+            return number and number == floor(number)
+          end,
+          get = function(info)
+            return tostring(SI.db.Progress.User[key][info[#info]])
+          end,
+          set = function(info, value)
+            SI.db.Progress.User[key][info[#info]] = tonumber(value) or 0
+
+            Module:CleanUserEntryStore(key)
+            Module:UpdateEntry(key, SI.db.Progress.User[key])
+          end,
+        },
+        reset = {
+          order = 3,
+          type = 'select',
+          name = L["Quest Reset Type"],
+          values = {
+              ['none'] = NONE,
+              ['daily'] = DAILY,
+              ['weekly'] = WEEKLY,
+          },
+        },
+        persists = {
+          order = 4,
+          type = 'toggle',
+          name = L["Progress Persists"],
+        },
+        fullObjective = {
+          order = 5,
+          type = 'toggle',
+          name = L["Full Objective"],
+        },
+        space = {
+          order = 6,
+          type = 'description',
+          name = '',
+        },
+        DeleteEntry = {
+          order = 7,
+          type = 'execute',
+          name = L["Delete Entry"],
+          func = function() Module:DeleteUserEntry(key) end,
+        },
+      },
+    }
+  end
+
+  ---Clean store of user entry
+  ---@param key string
+  function Module:CleanUserEntryStore(key)
+    for _, db in pairs(SI.db.Toons) do
+      if db.Progress and db.Progress[key] then
+        db.Progress[key] = nil
+      end
+    end
+  end
+
+  ---Add user entry
+  ---@param entry ProgressEntry
+  ---@return string key
+  function Module:AddUserEntry(entry)
+    local maxIndex = 0
+    for _, oldEntry in pairs(SI.db.Progress.User) do
+      if oldEntry.index > maxIndex then
+        maxIndex = oldEntry.index
+      end
+    end
+
+    local data = CopyTable(entry)
+    data.index = maxIndex + 1
+
+    local key = 'user-' .. randomUID()
+    while SI.db.Progress.User[key] do
+      key = 'user-' .. randomUID()
+    end
+
+    SI.db.Progress.User[key] = data
+    SI.db.Progress.Order[key] = 50
+    SI.db.Progress.Enable[key] = true
+
+    AddUserEntryToOption(key, data)
+
+    Module:BuildDisplayOrder()
+    Module:UpdateEntry(key, data)
+
+    return key
+  end
+
+  ---Delete user entry
+  ---@param key string
+  function Module:DeleteUserEntry(key)
+    -- clean up database
+    SI.db.Progress.User[key] = nil
+    SI.db.Progress.Order[key] = nil
+    SI.db.Progress.Enable[key] = nil
+
+    Module:CleanUserEntryStore(key)
+
+    -- remove from options
+    options.args.Enable.args.User.args[key] = nil
+    options.args.Sorting.args[key] = nil
+    options.args.User.args[key] = nil
+
+    Module:BuildDisplayOrder()
+  end
+
+  function Module:BuildOptions(order)
+    ---@type SingleQuestEntry
+    local userSingleEntry = {
+      type = 'single',
+      name = '',
+      questID = 0,
+      reset = "none",
+      persists = false,
+      fullObjective = false,
+    }
+
+    local userSingleEntryValidate = function()
+      if #(userSingleEntry.name) > 0 and userSingleEntry.questID and userSingleEntry.questID > 0 then
+        return true
+      end
+    end
+
+    options = {
+      order = order,
+      type = 'group',
+      childGroups = 'tab',
+      name = L['Quest progresses'],
+      args = {
+        Enable = {
+          order = 1,
+          type = 'group',
+          name = ENABLE,
+          get = function(info) return SI.db.Progress.Enable[info[#info]] end,
+          set = function(info, value) SI.db.Progress.Enable[info[#info]] = value; Module:BuildDisplayOrder() end,
+          args = {
+            Presets = {
+              order = 1,
+              type = 'group',
+              name = L['Presets'],
+              guiInline = true,
+              args = {
+                General = {
+                  order = 0,
+                  type = 'header',
+                  name = GENERAL,
+                },
+              },
+            },
+            User = {
+              order = 2,
+              type = 'group',
+              name = L['User'],
+              hidden = function() return not next(SI.db.Progress.User) end,
+              guiInline = true,
+              args = {},
+            },
+          },
+        },
+        Sorting = {
+          order = 2,
+          type = 'group',
+          name = L["Sorting"],
+          get = function(info) return tostring(SI.db.Progress.Order[info[#info]]) end,
+          set = function(info, value) SI.db.Progress.Order[info[#info]] = tonumber(value) or 50; Module:BuildDisplayOrder() end,
+          args = {},
+        },
+        User = {
+          order = 3,
+          type = 'group',
+          name = L["User"],
+          args = {
+            New = {
+              order = -1,
+              type = 'group',
+              name = L["New Single Quest"],
+              get = function(info) return userSingleEntry[info[#info]] end,
+              set = function(info, value) userSingleEntry[info[#info]] = value end,
+              args = {
+                name = {
+                  order = 1,
+                  type = 'input',
+                  name = L["Quest Name"],
+                },
+                questID = {
+                  order = 2,
+                  type = 'input',
+                  name = L["Quest ID"],
+                  validate = function(info, value)
+                    local number = tonumber(value)
+                    return number and number == floor(number)
+                  end,
+                  get = function(info) return tostring(userSingleEntry[info[#info]]) end,
+                  set = function(info, value) userSingleEntry[info[#info]] = tonumber(value) or 0 end,
+                },
+                reset = {
+                  order = 3,
+                  type = 'select',
+                  name = L["Quest Reset Type"],
+                  values = {
+                      ['none'] = NONE,
+                      ['daily'] = DAILY,
+                      ['weekly'] = WEEKLY,
+                  },
+                },
+                persists = {
+                  order = 4,
+                  type = 'toggle',
+                  name = L["Progress Persists"],
+                },
+                fullObjective = {
+                  order = 5,
+                  type = 'toggle',
+                  name = L["Full Objective"],
+                },
+                space = {
+                  order = 6,
+                  type = 'description',
+                  name = '',
+                },
+                AddEntry = {
+                  order = 7,
+                  type = 'execute',
+                  name = L["Add Entry"],
+                  disabled = function() return not userSingleEntryValidate() end,
+                  func = function() Module:AddUserEntry(userSingleEntry) end,
+                },
+                CleanEntry = {
+                  order = 8,
+                  type = 'execute',
+                  name = L["Clean Entry"],
+                  func = function()
+                    userSingleEntry.name = ''
+                    userSingleEntry.questID = 0
+                    userSingleEntry.reset = 'none'
+                    userSingleEntry.persists = false
+                    userSingleEntry.fullObjective = false
+                  end,
+                },
+              },
+            },
+          },
+        },
+      },
+    }
+
+    for key, entry in pairs(presets) do
+      if entry.expansion then
+        if not options.args.Enable.args.Presets.args['Expansion' .. entry.expansion .. 'Header'] then
+          options.args.Enable.args.Presets.args['Expansion' .. entry.expansion .. 'Header'] = {
+            order = (entry.expansion + 1) * 100,
+            type = 'header',
+            name = _G['EXPANSION_NAME' .. entry.expansion],
           }
         end
       end
+      options.args.Enable.args.Presets.args[key] = {
+        order = ((entry.expansion or -1) + 1) * 100 + entry.index,
+        type = 'toggle',
+        name = entry.name,
+      }
+      options.args.Sorting.args[key] = {
+        order = function() return tIndexOf(Module.displayAll, key) end,
+        type = 'input',
+        name = entry.name,
+        desc = L["Sort Order"],
+        validate = orderValidate,
+      }
     end
+
+    for key, entry in pairs(SI.db.Progress.User) do
+      AddUserEntryToOption(key, entry)
+    end
+
+    return options
   end
 end
 
-function Module:BuildOptions(order)
-  local option = {}
-  for index, tbl in ipairs(self.TrackedQuest) do
-    option["Progress" .. index] = {
-      type = "toggle",
-      order = order + index * 0.01,
-      name = tbl.name,
-    }
+---reset progress entry
+---@param entry ProgressEntry
+---@param questID number
+function Module:IsEntryContainsQuest(entry, questID)
+  if entry.type == 'single' then
+    ---@cast entry SingleQuestEntry
+    return entry.questID == questID
+  elseif entry.type == 'list' or entry.type == 'list' then
+    ---@cast entry AnyQuestEntry|QuestListEntry
+    return tContains(entry.questID, questID)
+  elseif entry.type == 'custom' and entry.relatedQuest then
+    ---@cast entry CustomEntry
+    return tContains(entry.relatedQuest, questID)
   end
-  return option
 end
 
 function Module:QuestEnabled(questID)
-  if not self.questMap then
-    self.questMap = {}
-    for index, tbl in ipairs(self.TrackedQuest) do
-      if tbl.relatedQuest then
-        for _, quest in ipairs(tbl.relatedQuest) do
-          self.questMap[quest] = index
-        end
-      end
+  for key, entry in pairs(presets) do
+    if SI.db.Progress.Enable[key] and self:IsEntryContainsQuest(entry, questID) then
+      return true
     end
   end
-  if self.questMap[questID] then
-    return SI.db.Tooltip["Progress" .. self.questMap[questID]]
-  end
-end
 
--- Use addon global function in future
-local function CloseTooltips()
-  _G.GameTooltip:Hide()
-  if SI.indicatortip then
-    SI.indicatortip:Hide()
+  for key, entry in pairs(SI.db.Progress.User) do
+    if SI.db.Progress.Enable[key] and self:IsEntryContainsQuest(entry, questID) then
+      return true
+    end
   end
 end
 
 function Module:ShowTooltip(tooltip, columns, showall, preshow)
   local cpairs = SI.cpairs
   local first = true
-  for index, tbl in ipairs(self.TrackedQuest) do
-    if SI.db.Tooltip["Progress" .. index] or showall then
-      local show
-      for toon, t in cpairs(SI.db.Toons, true) do
-        if (
-          showall or
-          (t.Progress and t.Progress[index] and t.Progress[index].unlocked) or
-          (tbl.showFunc and tbl.showFunc(toon, index))
-        ) then
-          show = true
-          break
-        end
+  for _, key in ipairs(showall and self.displayAll or self.display) do
+    local entry = presets[key] or SI.db.Progress.User[key]
+    local show = false
+    for _, t in cpairs(SI.db.Toons, true) do
+      local store = t.Progress and t.Progress[key]
+      if (
+        showall or
+        (entry.type ~= 'custom' and store and store.show) or
+        (entry.type == 'custom' and store and entry.showFunc(store, entry))
+      ) then
+        show = true
+        break
       end
-      if show then
-        if first == true then
-          preshow()
-          first = false
-        end
-        local line = tooltip:AddLine(NORMAL_FONT_COLOR_CODE .. tbl.name .. FONT_COLOR_CODE_CLOSE)
-        for toon, t in cpairs(SI.db.Toons, true) do
-          local value = t.Progress and t.Progress[index]
-          local text
-          if tbl.showFunc then
-            text = tbl.showFunc(toon, index)
-          elseif value then
-            if not value.unlocked then
-              -- do nothing
-            elseif value.isComplete then
-              text = "\124T" .. READY_CHECK_READY_TEXTURE .. ":0|t"
-            elseif value.isFinish then
-              text = "\124T" .. READY_CHECK_WAITING_TEXTURE .. ":0|t"
-            else
-              if value.objectiveType == 'progressbar' then
-                text = floor((value.numFulfilled or 0) / value.numRequired * 100) .. "%"
-              else
-                -- Note: no idea why .numRequired is nil rarely (#325)
-                -- protect this now to stop lua error
-                text = (value.numFulfilled or "?") .. "/" .. (value.numRequired or "?")
-              end
+    end
+
+    if show then
+      if first then
+        preshow()
+        first = false
+      end
+      local line = tooltip:AddLine(NORMAL_FONT_COLOR_CODE .. entry.name .. FONT_COLOR_CODE_CLOSE)
+      for toon, t in cpairs(SI.db.Toons, true) do
+        local store = t.Progress and t.Progress[key]
+        -- check if current toon is showing
+        -- don't add columns
+        if store and columns[toon .. 1] then
+          ---@cast store table|QuestStore|QuestListStore
+          local text, hoverFunc, hoverArg
+          if entry.type == 'custom' then
+            ---@cast entry CustomEntry
+            ---@cast store table
+            text = entry.showFunc(store, entry)
+            if entry.tooltipFunc then
+              hoverFunc = TooltipCustomEntry
+              hoverArg = {store, entry, toon}
             end
+          elseif entry.type == 'single' or entry.type == 'any' then
+            ---@cast entry SingleQuestEntry|AnyQuestEntry
+            ---@cast store QuestStore
+            text = ShowQuestStore(store, entry)
+            if entry.fullObjective then
+              hoverFunc = TooltipQuestStore
+              hoverArg = {store, entry, toon}
+            end
+          elseif entry.type == 'list' then
+            ---@cast entry QuestListEntry
+            ---@cast store QuestListStore
+            text = ShowQuestListStore(store, entry)
+            hoverFunc = TooltipQuestListStore
+            hoverArg = {store, entry, toon}
           end
-          local col = columns[toon .. 1]
-          if col and text then
-            -- check if current toon is showing
-            -- don't add columns
-            -- showFunc may return nil, or tbl.unlocked is nil, don't :SetCell and :SetCellScript in this case
-            tooltip:SetCell(line, col, text, "CENTER", 4)
-            if tbl.tooltipKey then
-              tooltip:SetCellScript(line, col, "OnEnter", SI.hoverTooltip[tbl.tooltipKey], {toon, index})
-              tooltip:SetCellScript(line, col, "OnLeave", CloseTooltips)
+          if text then
+            local col = columns[toon .. 1]
+            tooltip:SetCell(line, col, text, 'CENTER', 4)
+            if hoverFunc then
+              tooltip:SetCellScript(line, col, 'OnEnter', hoverFunc, hoverArg)
+              tooltip:SetCellScript(line, col, 'OnLeave', Tooltip.CloseIndicatorTip)
             end
           end
         end
