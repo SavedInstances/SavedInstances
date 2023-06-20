@@ -452,6 +452,16 @@ local QuestExceptions = {
   [72686] = "Weekly", -- Storm Surge
   -- Revival Catalyst
   [72528] = "AccountWeekly", -- Revival Catalyst
+  -- Zaralek Cavern Professions
+  [75286] = "Weekly", -- Blacksmith's Back
+  [75288] = "Weekly", -- Enchanted Tales with Topuiz
+  [75289] = "Weekly", -- Ink Master
+  [75301] = "Weekly", -- Mistie's Mix Magic
+  [75304] = "Weekly", -- I Need... a Tailor
+  [75307] = "Weekly", -- Road to Season City
+  [75308] = "Weekly", -- Scrybbil Engineering
+  [75309] = "Weekly", -- If a Gem Isn't Pretty
+  [75351] = "Weekly", -- Keep a Leather Eye Open
   -- Other Weeklies
   [75665] = "Weekly", -- A Worthy Ally: Loamm Niffen
   [76122] = "Weekly", -- Fighting is Its Own Reward
