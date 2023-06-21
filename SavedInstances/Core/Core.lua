@@ -30,8 +30,14 @@ local currency = SI.currency
 local QuestExceptions = SI.QuestExceptions
 local TimewalkingItemQuest = SI.TimewalkingItemQuest
 
-local Currency = SI:GetModule('Currency')
+local Config = SI:GetModule('Config')
 local Tooltip = SI:GetModule('Tooltip')
+local Calling = SI:GetModule('Calling')
+local Currency = SI:GetModule('Currency')
+local MythicPlus = SI:GetModule('MythicPlus')
+local Progress = SI:GetModule('Progress')
+local TradeSkill = SI:GetModule('TradeSkill')
+local Warfront = SI:GetModule('Warfront')
 
 SI.Indicators = {
   ICON_STAR = ICON_LIST[1] .. "16:16:0:0|t",
@@ -520,7 +526,7 @@ function SI:QuestIgnored(questID)
       return
     end
     return true
-  elseif SI:GetModule("Progress"):QuestEnabled(questID) then
+  elseif Progress:QuestEnabled(questID) then
     return true
   end
 end
@@ -1092,7 +1098,7 @@ function SI:UpdateInstanceData()
   -- SI.lfdid_to_name = lfdid_to_name
   -- SI.wbid_to_name = wbid_to_name
 
-  SI.config:BuildOptions() -- refresh config table
+  Config:BuildOptions() -- refresh config table
 
   starttime = debugprofilestop()-starttime
   SI:Debug("UpdateInstanceData(): completed in %.3f ms : %d added, %d renames, %d merges, %d conflicts.",
@@ -1330,9 +1336,7 @@ function SI:UpdateToonData()
   if currentSpecID then
     t.SoloShuffleRating[currentSpecID] = GetPersonalRatedInfo(7) or t.SoloShuffleRating[currentSpecID]
   end
-  SI:GetModule("TradeSkill"):ScanItemCDs()
-  local Calling = SI:GetModule("Calling")
-  local Progress = SI:GetModule("Progress")
+  TradeSkill:ScanItemCDs()
   -- Daily Reset
   if nextreset and nextreset > time() then
     for toon, ti in pairs(SI.db.Toons) do
@@ -1447,7 +1451,7 @@ function SI:UpdateToonData()
     end
   end
   Calling:PostRefresh()
-  SI:GetModule("Currency"):UpdateCurrency()
+  Currency:UpdateCurrency()
   local zone = GetRealZoneText()
   if zone and #zone > 0 then
     t.Zone = zone
@@ -2492,7 +2496,7 @@ function SI:OnInitialize()
       elseif button == "LeftButton" then
         Tooltip:ToggleDetached()
       else
-        SI.config:ShowConfig()
+        Config:ShowConfig()
       end
     end
   })
@@ -3072,7 +3076,7 @@ function SI:Refresh(recoverdaily)
   end
 
   SI:QuestRefresh(recoverdaily, nextreset, weeklyreset)
-  SI:GetModule('Warfront'):UpdateQuest()
+  Warfront:UpdateQuest()
 
   local icnt, dcnt = 0,0
   for name, _ in pairs(temp) do
@@ -3251,7 +3255,7 @@ local function OpenLFR(self, instanceid, button)
 end
 
 local function ReportKeys(self, index, button)
-  SI:GetModule("MythicPlus"):Keys(index)
+  MythicPlus:Keys(index)
 end
 
 local function OpenCurrency(self, _, button)
@@ -3707,7 +3711,7 @@ function SI:ShowTooltip(anchorframe)
     end
   end
 
-  SI:GetModule("Progress"):ShowTooltip(tooltip, columns, showall, function()
+  Progress:ShowTooltip(tooltip, columns, showall, function()
     if SI.db.Tooltip.CategorySpaces then
       addsep()
     end
@@ -3716,7 +3720,7 @@ function SI:ShowTooltip(anchorframe)
     end
   end)
 
-  SI:GetModule("Warfront"):ShowTooltip(tooltip, columns, showall, function()
+  Warfront:ShowTooltip(tooltip, columns, showall, function()
     if SI.db.Tooltip.CategorySpaces then
       addsep()
     end
