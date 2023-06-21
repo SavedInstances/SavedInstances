@@ -55,7 +55,7 @@ function Module:OnEnable()
 end
 
 function Module:QUEST_LOG_UPDATE()
-  if SI.db.DailyResetTime < time() then return end -- daliy reset not run yet
+  if SI.db.DailyResetTime < time() then return end -- daily reset not run yet
   local t = SI.db.Toons[SI.thisToon]
   if not t.Emissary then t.Emissary = {} end
   local expansionLevel, tbl

@@ -719,7 +719,7 @@ local _instance_exceptions = {
   [50] = { -- Blackwing Lair
     12435, -- Razorgore the Untamed
     13020, -- Vaelastrasz the Corrupt
-    12017, -- Boodlord Lashlayer
+    12017, -- Broodlord Lashlayer
     11983, -- Firemaw
     14601, -- Ebonroc
     11981, -- Flamegor
