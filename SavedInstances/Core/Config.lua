@@ -1,7 +1,9 @@
 local SI, L = unpack((select(2, ...)))
 local Config = SI:NewModule('Config')
-
-SI.config = Config
+local Tooltip = SI:GetModule('Tooltip')
+local Currency = SI:GetModule('Currency')
+local Progress = SI:GetModule('Progress')
+local Warfront = SI:GetModule('Warfront')
 
 -- Lua functions
 local pairs, ipairs, tonumber, tostring, wipe = pairs, ipairs, tonumber, tostring, wipe
@@ -198,7 +200,7 @@ function Config:BuildOptions()
         name = L["Show/Hide the SavedInstances tooltip"],
         guiHidden = true,
         type = "execute",
-        func = function() SI:GetModule('Tooltip'):ToggleDetached() end,
+        func = function() Tooltip:ToggleDetached() end,
       },
       General = {
         order = 1,
@@ -889,8 +891,8 @@ function Config:BuildOptions()
   for k,v in pairs(opts) do
     SI.Options[k] = v
   end
-  SI.Options.args.Progress = SI:GetModule('Progress'):BuildOptions(2)
-  local warfront = SI:GetModule("Warfront"):BuildOptions(34)
+  SI.Options.args.Progress = Progress:BuildOptions(2)
+  local warfront = Warfront:BuildOptions(34)
   for k, v in pairs(warfront) do
     SI.Options.args.General.args[k] = v
   end
@@ -902,7 +904,6 @@ function Config:BuildOptions()
     }
   end
   local hdroffset = SI.Options.args.Currency.args.CurrencyHeader.order
-  local Currency = SI:GetModule('Currency')
   for i, curr in ipairs(SI.currency) do
     local data = C_CurrencyInfo_GetCurrencyInfo(curr)
     local name = Currency.OverrideName[curr] or data.name
@@ -956,7 +957,7 @@ end
 
 local function ResetConfirmed()
   SI:Debug("Resetting characters")
-  SI:GetModule('Tooltip'):HideDetached()
+  Tooltip:HideDetached()
   -- clear saves
   for instance, i in pairs(SI.db.Instances) do
     for toon, t in pairs(SI.db.Toons) do
@@ -967,8 +968,8 @@ local function ResetConfirmed()
   SI.PlayedTime = nil -- reset played cache
   SI:toonInit() -- rebuild SI.thisToon
   SI:Refresh()
-  SI.config:BuildOptions() -- refresh config table
-  SI.config:ReopenConfigDisplay(configCharactersFrameName)
+  Config:BuildOptions() -- refresh config table
+  Config:ReopenConfigDisplay(configCharactersFrameName)
 end
 
 local function DeleteCharacter(toon)
@@ -977,14 +978,14 @@ local function DeleteCharacter(toon)
     return
   end
   SI:Debug("Deleting character: " .. toon)
-  SI:GetModule('Tooltip'):HideDetached()
+  Tooltip:HideDetached()
   -- clear saves
   for instance, i in pairs(SI.db.Instances) do
     i[toon] = nil
   end
   SI.db.Toons[toon] = nil
-  SI.config:BuildOptions() -- refresh config table
-  SI.config:ReopenConfigDisplay(configCharactersFrameName)
+  Config:BuildOptions() -- refresh config table
+  Config:ReopenConfigDisplay(configCharactersFrameName)
 end
 
 StaticPopupDialogs["SAVEDINSTANCES_RESET"] = {
