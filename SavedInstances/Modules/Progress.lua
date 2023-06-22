@@ -789,7 +789,7 @@ end
 ---@param entry QuestListEntry
 ---@return string?
 local function ShowQuestListStore(store, entry)
-  if not entry.show then
+  if not store.show then
     return
   end
 
@@ -1070,7 +1070,7 @@ function Module:UpdateEntry(key, entry)
   elseif entry.type == 'any' then
     ---@cast entry AnyQuestEntry
     ---@cast store QuestStore
-    for questID in ipairs(entry.questID) do
+    for _, questID in ipairs(entry.questID) do
       local show = UpdateQuestStore(store, questID)
       if show then
         break
@@ -1081,7 +1081,13 @@ function Module:UpdateEntry(key, entry)
     ---@cast store QuestListStore
     wipe(store)
 
-    for questID in ipairs(entry.questID) do
+    if entry.unlockQuest then
+      store.show = C_QuestLog.IsQuestFlaggedCompleted(entry.unlockQuest)
+    else
+      store.show = true
+    end
+
+    for _, questID in ipairs(entry.questID) do
       store[questID] = {}
       UpdateQuestStore(store[questID], questID)
     end
@@ -1123,7 +1129,7 @@ function Module:ResetEntry(key, entry, toon)
     ---@cast entry QuestListEntry
     ---@cast store QuestListStore
 
-    for questID in ipairs(entry.questID) do
+    for _, questID in ipairs(entry.questID) do
       if store[questID] then
         ResetQuestStore(store[questID], entry.persists)
       end
