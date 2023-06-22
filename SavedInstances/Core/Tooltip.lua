@@ -115,10 +115,10 @@ function Module:ShowDetached()
     else
       frame:SetPoint('CENTER')
     end
-    frame:SetScript('OnMouseDown', function()
+    frame:SetScript('OnMouseDown', function(self)
       self:StartMoving()
     end)
-    frame:SetScript('OnMouseUp', function()
+    frame:SetScript('OnMouseUp', function(self)
       self:StopMovingOrSizing()
       SI.db.Tooltip.posx = self:GetLeft()
       SI.db.Tooltip.posy = UIParent:GetTop() - (self:GetTop() * self:GetScale())
