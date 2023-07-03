@@ -980,6 +980,39 @@ function Module:OnInitialize()
       for key in pairs(db.Progress) do
         if not presets[key] and not SI.db.Progress.User[key] then
           db.Progress[key] = nil
+        else
+          -- check store type
+          local entry = presets[key] or SI.db.Progress.User[key]
+          local store = db.Progress[key]
+
+          if type(store) ~= 'nil' then
+            -- store contains somethings
+            if entry.type == 'list' then
+              ---@cast entry QuestListEntry
+              if type(store) ~= 'table' then
+                -- broken store, should be table
+                db.Progress[key] = {}
+              end
+
+              for _, questID in ipairs(entry.questID) do
+                if store[questID] == true then
+                  -- simple boolean for list entry
+                  store[questID] = {
+                    show = true,
+                  }
+                elseif type(store[questID]) ~= 'table' then
+                  -- broken store or false, should be table or nil
+                  store[questID] = nil
+                end
+              end
+            elseif entry.type ~= 'custom' then
+              ---@cast entry SingleQuestEntry|AnyQuestEntry
+              if type(store) ~= 'table' then
+                -- broken store, should be table
+                db.Progress[key] = {}
+              end
+            end
+          end
         end
       end
     end
