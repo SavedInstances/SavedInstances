@@ -2,6 +2,10 @@ local SI, L = unpack((select(2, ...)))
 local Module = SI:NewModule('Progress', 'AceEvent-3.0')
 local Tooltip = SI:GetModule('Tooltip')
 
+local GOLDFONT = NORMAL_FONT_COLOR_CODE
+local GREENFONT = GREEN_FONT_COLOR_CODE
+local FONTEND = FONT_COLOR_CODE_CLOSE
+
 ---@class SingleQuestEntry
 ---@field type "single"
 ---@field expansion number?
@@ -108,9 +112,9 @@ local presets = {
       end
       if store.rewardWaiting then
         if not text then
-          text = "\124T" .. READY_CHECK_WAITING_TEXTURE .. ":0|t"
+          text = GOLDFONT .. "?" .. FONTEND
         else
-          text = text .. "(\124T" .. READY_CHECK_WAITING_TEXTURE .. ":0|t)"
+          text = text .. "(" .. GOLDFONT .. "?" .. FONTEND .. ")"
         end
       end
       return text
@@ -164,7 +168,7 @@ local presets = {
       if not store.unlocked then
         return
       elseif store.isComplete then
-        text = "\124T" .. READY_CHECK_READY_TEXTURE .. ":0|t"
+        text = (GREENFONT .. "X" .. FONTEND)
       else
         text = store.numFulfilled .. "/" .. store.numRequired
       end
@@ -172,7 +176,7 @@ local presets = {
         text = text .. "(" .. store.unlocksCompleted .. "/" .. store.maxUnlocks .. ")"
       end
       if store.rewardWaiting then
-        text = text .. "(\124T" .. READY_CHECK_WAITING_TEXTURE .. ":0|t)"
+        text = text .. GOLDFONT .. "?" .. FONTEND
       end
       return text
     end,
@@ -450,6 +454,7 @@ local presets = {
       75859, -- Aiding the Accord: Sniffenseeking
       75860, -- Aiding the Accord: Researchers Under Fire
       75861, -- Aiding the Accord: Suffusion Camp
+	  77254, -- Aiding the Accord: Time Rift
     },
     reset = 'weekly',
     persists = true,
@@ -541,10 +546,10 @@ local presets = {
     questName = {
       [73162] = L["Storm's Fury"], -- Storm's Fury
       [72686] = L["Storm Surge"], -- Storm Surge
-      [70723] = YELLOW_FONT_COLOR_CODE .. L["Earth Core"] .. FONT_COLOR_CODE_CLOSE, -- Earth
-      [70752] = "|cff42a4f5" .. L["Water Core"] .. FONT_COLOR_CODE_CLOSE, -- Water
-      [70753] = "|cffe4f2f5" .. L["Air Core"] .. FONT_COLOR_CODE_CLOSE, -- Air
-      [70754] = ORANGE_FONT_COLOR_CODE .. L["Fire Core"] .. FONT_COLOR_CODE_CLOSE, -- Fire
+      [70723] = YELLOW_FONT_COLOR_CODE .. L["Earth Core"] .. FONTEND, -- Earth
+      [70752] = "|cff42a4f5" .. L["Water Core"] .. FONTEND, -- Water
+      [70753] = "|cffe4f2f5" .. L["Air Core"] .. FONTEND, -- Air
+      [70754] = ORANGE_FONT_COLOR_CODE .. L["Fire Core"] .. FONTEND, -- Fire
     },
   },
   -- Primal Storms Elementals
@@ -576,28 +581,28 @@ local presets = {
     progress = false,
     onlyOnOrCompleted = false,
     questName = {
-      [73991] = ORANGE_FONT_COLOR_CODE .. L["Emblazion"] .. FONT_COLOR_CODE_CLOSE, -- Emblazion -- Fire
-      [74005] = ORANGE_FONT_COLOR_CODE .. L["Infernum"] .. FONT_COLOR_CODE_CLOSE, -- Infernum
-      [74006] = ORANGE_FONT_COLOR_CODE .. L["Kain Firebrand"] .. FONT_COLOR_CODE_CLOSE, -- Kain Firebrand
-      [74016] = ORANGE_FONT_COLOR_CODE .. L["Neela Firebane"] .. FONT_COLOR_CODE_CLOSE, -- Neela Firebane
-      [73989] = "|cff42a4f5" .. L["Crystalus"] .. FONT_COLOR_CODE_CLOSE, -- Crystalus -- Water
-      [73993] = "|cff42a4f5" .. L["Frozion"] .. FONT_COLOR_CODE_CLOSE, -- Frozion
-      [74027] = "|cff42a4f5" .. L["Rouen Icewind"] .. FONT_COLOR_CODE_CLOSE, -- Rouen Icewind
-      [74009] = "|cff42a4f5" .. L["Iceblade Trio"] .. FONT_COLOR_CODE_CLOSE, -- Iceblade Trio
-      [73986] = YELLOW_FONT_COLOR_CODE .. L["Bouldron"] .. FONT_COLOR_CODE_CLOSE, -- Bouldron -- Earth
-      [73998] = YELLOW_FONT_COLOR_CODE .. L["Gravlion"] .. FONT_COLOR_CODE_CLOSE, -- Gravlion
-      [73999] = YELLOW_FONT_COLOR_CODE .. L["Grizzlerock"] .. FONT_COLOR_CODE_CLOSE, -- Grizzlerock
-      [74039] = YELLOW_FONT_COLOR_CODE .. L["Zurgaz Corebreaker"] .. FONT_COLOR_CODE_CLOSE, -- Zurgaz Corebreaker
-      [73995] = "|cffe4f2f5" .. L["Gaelzion"] .. FONT_COLOR_CODE_CLOSE, -- Gaelzion -- Air
-      [74007] = "|cffe4f2f5" .. L["Karantun"] .. FONT_COLOR_CODE_CLOSE, -- Karantun
-      [74022] = "|cffe4f2f5" .. L["Pipspark Thundersnap"] .. FONT_COLOR_CODE_CLOSE, -- Pipspark Thundersnap
-      [74038] = "|cffe4f2f5" .. L["Voraazka"] .. FONT_COLOR_CODE_CLOSE, -- Voraazka
+      [73991] = ORANGE_FONT_COLOR_CODE .. L["Emblazion"] .. FONTEND, -- Emblazion -- Fire
+      [74005] = ORANGE_FONT_COLOR_CODE .. L["Infernum"] .. FONTEND, -- Infernum
+      [74006] = ORANGE_FONT_COLOR_CODE .. L["Kain Firebrand"] .. FONTEND, -- Kain Firebrand
+      [74016] = ORANGE_FONT_COLOR_CODE .. L["Neela Firebane"] .. FONTEND, -- Neela Firebane
+      [73989] = "|cff42a4f5" .. L["Crystalus"] .. FONTEND, -- Crystalus -- Water
+      [73993] = "|cff42a4f5" .. L["Frozion"] .. FONTEND, -- Frozion
+      [74027] = "|cff42a4f5" .. L["Rouen Icewind"] .. FONTEND, -- Rouen Icewind
+      [74009] = "|cff42a4f5" .. L["Iceblade Trio"] .. FONTEND, -- Iceblade Trio
+      [73986] = YELLOW_FONT_COLOR_CODE .. L["Bouldron"] .. FONTEND, -- Bouldron -- Earth
+      [73998] = YELLOW_FONT_COLOR_CODE .. L["Gravlion"] .. FONTEND, -- Gravlion
+      [73999] = YELLOW_FONT_COLOR_CODE .. L["Grizzlerock"] .. FONTEND, -- Grizzlerock
+      [74039] = YELLOW_FONT_COLOR_CODE .. L["Zurgaz Corebreaker"] .. FONTEND, -- Zurgaz Corebreaker
+      [73995] = "|cffe4f2f5" .. L["Gaelzion"] .. FONTEND, -- Gaelzion -- Air
+      [74007] = "|cffe4f2f5" .. L["Karantun"] .. FONTEND, -- Karantun
+      [74022] = "|cffe4f2f5" .. L["Pipspark Thundersnap"] .. FONTEND, -- Pipspark Thundersnap
+      [74038] = "|cffe4f2f5" .. L["Voraazka"] .. FONTEND, -- Voraazka
     },
     separateLines = {
-      [1] = ORANGE_FONT_COLOR_CODE .. L["Fire"] .. FONT_COLOR_CODE_CLOSE,
-      [5] = "|cff42a4f5" .. L["Water"] .. FONT_COLOR_CODE_CLOSE,
-      [9] = YELLOW_FONT_COLOR_CODE .. L["Earth"] .. FONT_COLOR_CODE_CLOSE,
-      [13] = "|cffe4f2f5" .. L["Air"] .. FONT_COLOR_CODE_CLOSE,
+      [1] = ORANGE_FONT_COLOR_CODE .. L["Fire"] .. FONTEND,
+      [5] = "|cff42a4f5" .. L["Water"] .. FONTEND,
+      [9] = YELLOW_FONT_COLOR_CODE .. L["Earth"] .. FONTEND,
+      [13] = "|cffe4f2f5" .. L["Air"] .. FONTEND,
     },
   },
   -- Sparks of Life
@@ -772,9 +777,9 @@ local function ShowQuestStore(store, entry)
   if not store.show then
     return
   elseif store.isComplete then
-    return "\124T" .. READY_CHECK_READY_TEXTURE .. ":0|t"
+    return (GREENFONT .. "X" .. FONTEND)
   elseif store.isFinish then
-    return "\124T" .. READY_CHECK_WAITING_TEXTURE .. ":0|t"
+    return (GOLDFONT .. "?" .. FONTEND)
   elseif entry.fullObjective then
     return store.text
   elseif store.objectiveType == 'progressbar' and store.numFulfilled then
@@ -824,9 +829,9 @@ local function TooltipQuestStore(_, arg)
   tip:AddHeader(SI:ClassColorToon(toon), entry.name)
 
   if store.isComplete then
-    tip:AddLine("\124T" .. READY_CHECK_READY_TEXTURE .. ":0|t")
+    tip:AddLine(GREENFONT .. "X" .. FONTEND)
   elseif store.isFinish then
-    tip:AddLine("\124T" .. READY_CHECK_WAITING_TEXTURE .. ":0|t")
+    tip:AddLine(GOLDFONT .. "?" .. FONTEND)
   elseif store.leaderboardCount and store.leaderboardCount > 0 then
     for i = 1, store.leaderboardCount do
       tip:AddLine("")
@@ -870,9 +875,9 @@ local function TooltipQuestListStore(_, arg)
         if not store.show then
           -- do nothing
         elseif store[questID].isComplete then
-          questText = "\124T" .. READY_CHECK_READY_TEXTURE .. ":0|t"
+          questText = (GREENFONT .. "X" .. FONTEND)
         elseif store[questID].isFinish then
-          questText = "\124T" .. READY_CHECK_WAITING_TEXTURE .. ":0|t"
+          questText = GOLDFONT .. "?" .. FONTEND
         elseif store[questID].objectiveType == 'progressbar' and store[questID].numFulfilled then
           questText = store[questID].numFulfilled .. "%"
         elseif store[questID].numFulfilled and store[questID].numRequired then
@@ -881,8 +886,8 @@ local function TooltipQuestListStore(_, arg)
       else
         questText = (
           store[questID].isComplete and
-          (RED_FONT_COLOR_CODE .. CRITERIA_COMPLETED .. FONT_COLOR_CODE_CLOSE) or
-          (GREEN_FONT_COLOR_CODE .. AVAILABLE .. FONT_COLOR_CODE_CLOSE)
+          (RED_FONT_COLOR_CODE .. CRITERIA_COMPLETED .. FONTEND) or
+          (GREENFONT .. AVAILABLE .. FONTEND)
         )
       end
 
@@ -1598,7 +1603,7 @@ function Module:ShowTooltip(tooltip, columns, showall, preshow)
         preshow()
         first = false
       end
-      local line = tooltip:AddLine(NORMAL_FONT_COLOR_CODE .. entry.name .. FONT_COLOR_CODE_CLOSE)
+      local line = tooltip:AddLine(GOLDFONT .. entry.name .. FONTEND)
       for toon, t in cpairs(SI.db.Toons, true) do
         local store = t.Progress and t.Progress[key]
         -- check if current toon is showing
