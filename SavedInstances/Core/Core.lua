@@ -986,7 +986,7 @@ local function DifficultyString(instance, diff, toon, expired, killoverride, tot
       killed = "*"
       total = "*"
     elseif killed == 1 and total == 1 and not expired then
-      text = "\124T"..READY_CHECK_READY_TEXTURE..":0|t" -- checkmark
+      text = SI.questCheckMark
     end
     text = text:gsub("KILLED",killed)
     text = text:gsub("TOTAL",total)
@@ -1783,9 +1783,9 @@ hoverTooltip.ShowEmissarySummary = function (cell, arg, ...)
               end
               local text
               if info.isComplete == true then
-                text = "\124T"..READY_CHECK_READY_TEXTURE..":0|t"
+                text = SI.questCheckMark
               elseif info.isFinish == true then
-                text = "\124T"..READY_CHECK_WAITING_TEXTURE..":0|t"
+                text = SI.questTurnin
               else
                 text = info.questDone
                 if globalInfo.questNeed then
@@ -1810,9 +1810,9 @@ hoverTooltip.ShowEmissaryTooltip = function (cell, arg, ...)
   local globalInfo = SI.db.Emissary.Expansion[expansionLevel][day] or {}
   local text
   if info.isComplete == true then
-    text = "\124T"..READY_CHECK_READY_TEXTURE..":0|t"
+    text = SI.questCheckMark
   elseif info.isFinish == true then
-    text = "\124T"..READY_CHECK_WAITING_TEXTURE..":0|t"
+    text = SI.questTurnin
   else
     text = info.questDone
     if globalInfo.questNeed then
@@ -1850,11 +1850,11 @@ hoverTooltip.ShowCallingTooltip = function (cell, arg, ...)
   local indicatortip = Tooltip:AcquireIndicatorTip(2, "LEFT", "RIGHT")
   local text
   if info.isCompleted == true then
-    text = "\124T"..READY_CHECK_READY_TEXTURE..":0|t"
+    text = SI.questCheckMark
   elseif not info.isOnQuest then
-    text = "\124cFFFFFF00!\124r"
+    text = SI.questNormal
   elseif info.isFinished == true then
-    text = "\124T"..READY_CHECK_WAITING_TEXTURE..":0|t"
+    text = SI.questTurnin
   else
     if info.objectiveType == 'progressbar' then
       text = floor(info.questDone / info.questNeed * 100) .. "%"
@@ -3851,9 +3851,9 @@ function SI:ShowTooltip(anchorframe)
         end
         if t.MythicKeyBest.rewardWaiting then
           if keydesc == "" then
-            keydesc = "\124T" .. READY_CHECK_WAITING_TEXTURE .. ":0|t"
+            keydesc = SI.questTurnin
           else
-            keydesc = keydesc .. "(\124T" .. READY_CHECK_WAITING_TEXTURE .. ":0|t)"
+            keydesc = keydesc .. "(" .. SI.questTurnin .. ")"
           end
         end
         if keydesc ~= "" then
@@ -3909,9 +3909,9 @@ function SI:ShowTooltip(anchorframe)
                   local col = columns[toon .. day]
                   local text = ""
                   if tbl.isComplete == true then
-                    text = "\124T"..READY_CHECK_READY_TEXTURE..":0|t"
+                    text = SI.questCheckMark
                   elseif tbl.isFinish == true then
-                    text = "\124T"..READY_CHECK_WAITING_TEXTURE..":0|t"
+                    text = SI.questTurnin
                   else
                     text = tbl.questDone
                     if (
@@ -3968,9 +3968,9 @@ function SI:ShowTooltip(anchorframe)
                     local col = columns[toon .. 1]
                     local text = ""
                     if tbl.isComplete == true then
-                      text = "\124T"..READY_CHECK_READY_TEXTURE..":0|t"
+                      text = SI.questCheckMark
                     elseif tbl.isFinish == true then
-                      text = "\124T"..READY_CHECK_WAITING_TEXTURE..":0|t"
+                      text = SI.questTurnin
                     else
                       text = tbl.questDone
                       if (
@@ -4022,11 +4022,11 @@ function SI:ShowTooltip(anchorframe)
               local col = columns[toon .. day]
               local text = ""
               if t.Calling[day].isCompleted then
-                text = "\124T" .. READY_CHECK_READY_TEXTURE .. ":0|t"
+                text = SI.questCheckMark
               elseif not t.Calling[day].isOnQuest then
-                text = "\124cFFFFFF00!\124r"
+                text = SI.questNormal
               elseif t.Calling[day].isFinished then
-                text = "\124T" .. READY_CHECK_WAITING_TEXTURE .. ":0|t"
+                text = SI.questTurnin
               else
                 if t.Calling[day].objectiveType == 'progressbar' then
                   text = floor(t.Calling[day].questDone / t.Calling[day].questNeed * 100) .. "%"
@@ -4070,11 +4070,11 @@ function SI:ShowTooltip(anchorframe)
                 local col = columns[toon .. 1]
                 local text = ""
                 if t.Calling[day].isCompleted then
-                  text = "\124T" .. READY_CHECK_READY_TEXTURE .. ":0|t"
+                  text = SI.questCheckMark
                 elseif not t.Calling[day].isOnQuest then
-                  text = "\124cFFFFFF00!\124r"
+                  text = SI.questNormal
                 elseif t.Calling[day].isFinished then
-                  text = "\124T" .. READY_CHECK_WAITING_TEXTURE .. ":0|t"
+                  text = SI.questTurnin
                 else
                   if t.Calling[day].objectiveType == 'progressbar' then
                     text = floor(t.Calling[day].questDone / t.Calling[day].questNeed * 100) .. "%"
