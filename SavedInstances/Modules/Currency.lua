@@ -97,6 +97,7 @@ local currency = {
   2412, -- Aspect Crest Fragment Tracker [DNT]
   2413, -- 10.1 Professions - Personal Tracker - S2 Spark Drops (Hidden)
   2533, -- Renascent Shadowflame
+  2594, -- Paracausal Flakes
 }
 SI.currency = currency
 
