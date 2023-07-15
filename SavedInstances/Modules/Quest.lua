@@ -82,6 +82,7 @@ local _specialQuests = {
   [71033] = { name=L["Trial of Flood"] }, -- Trial of Flood
   [71995] = { name=L["Trial of Elements"] }, -- Trial of Elements
   [73162] = { name=L["Storm's Fury"] }, -- Storm's Fury
+  [77836] = { name=L["Time Rift"] }, -- Time Rift Weekly Gear Token
   -- Draconic Treatise
   [74105] = { lid=194699 }, -- Draconic Treatise on Inscription
   [74106] = { lid=194708 }, -- Draconic Treatise on Mining
