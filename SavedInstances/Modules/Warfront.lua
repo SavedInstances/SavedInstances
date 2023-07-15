@@ -12,7 +12,6 @@ local UnitLevel = UnitLevel
 
 local FONT_COLOR_CODE_CLOSE = FONT_COLOR_CODE_CLOSE
 local NORMAL_FONT_COLOR_CODE = NORMAL_FONT_COLOR_CODE
-local READY_CHECK_READY_TEXTURE = READY_CHECK_READY_TEXTURE
 
 -- Use following macro to get warfront ids
 -- /dump C_ContributionCollector.GetManagedContributionsForCreatureID(143709) -- Alliance
@@ -144,7 +143,7 @@ function Module:ShowTooltip(tooltip, columns, showall, preshow)
             if SI.db.Warfront[index] then
               if SI.db.Warfront[index].captureSide == t.Faction then
                 if value.boss then
-                  text = "\124T" .. READY_CHECK_READY_TEXTURE .. ":0|t"
+                  text = SI.questCheckMark
                 else
                   text = "0/1"
                 end
@@ -159,13 +158,13 @@ function Module:ShowTooltip(tooltip, columns, showall, preshow)
                       end
                     end
                     if completed == length then
-                      text = "\124T" .. READY_CHECK_READY_TEXTURE .. ":0|t"
+                      text = SI.questCheckMark
                     else
                       text = completed .. "/" .. length
                     end
                   else
                     -- old data fallback
-                    text = "\124T" .. READY_CHECK_READY_TEXTURE .. ":0|t"
+                    text = SI.questCheckMark
                   end
                 else
                   -- old data fallback

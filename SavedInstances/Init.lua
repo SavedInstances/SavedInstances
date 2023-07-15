@@ -20,3 +20,7 @@ SI.realmName = GetRealmName()
 SI.thisToon = SI.playerName .. ' - ' .. SI.realmName
 SI.maxLevel = GetMaxLevelForPlayerExpansion()
 SI.locale = GetLocale()
+
+SI.questCheckMark = '\124A:UI-LFG-ReadyMark:14:14\124a'
+SI.questTurnin = '\124A:QuestTurnin:14:14\124a'
+SI.questNormal = '\124A:QuestNormal:14:14\124a'

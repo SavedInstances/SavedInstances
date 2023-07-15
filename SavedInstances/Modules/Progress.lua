@@ -108,9 +108,9 @@ local presets = {
       end
       if store.rewardWaiting then
         if not text then
-          text = "\124T" .. READY_CHECK_WAITING_TEXTURE .. ":0|t"
+          text = SI.questTurnin
         else
-          text = text .. "(\124T" .. READY_CHECK_WAITING_TEXTURE .. ":0|t)"
+          text = text .. "(" .. SI.questTurnin .. ")"
         end
       end
       return text
@@ -164,7 +164,7 @@ local presets = {
       if not store.unlocked then
         return
       elseif store.isComplete then
-        text = "\124T" .. READY_CHECK_READY_TEXTURE .. ":0|t"
+        text = SI.questCheckMark
       else
         text = store.numFulfilled .. "/" .. store.numRequired
       end
@@ -172,7 +172,7 @@ local presets = {
         text = text .. "(" .. store.unlocksCompleted .. "/" .. store.maxUnlocks .. ")"
       end
       if store.rewardWaiting then
-        text = text .. "(\124T" .. READY_CHECK_WAITING_TEXTURE .. ":0|t)"
+        text = text .. "(" .. SI.questTurnin .. ")"
       end
       return text
     end,
@@ -772,9 +772,9 @@ local function ShowQuestStore(store, entry)
   if not store.show then
     return
   elseif store.isComplete then
-    return "\124T" .. READY_CHECK_READY_TEXTURE .. ":0|t"
+    return SI.questCheckMark
   elseif store.isFinish then
-    return "\124T" .. READY_CHECK_WAITING_TEXTURE .. ":0|t"
+    return SI.questTurnin
   elseif entry.fullObjective then
     return store.text
   elseif store.objectiveType == 'progressbar' and store.numFulfilled then
@@ -824,9 +824,9 @@ local function TooltipQuestStore(_, arg)
   tip:AddHeader(SI:ClassColorToon(toon), entry.name)
 
   if store.isComplete then
-    tip:AddLine("\124T" .. READY_CHECK_READY_TEXTURE .. ":0|t")
+    tip:AddLine(SI.questCheckMark)
   elseif store.isFinish then
-    tip:AddLine("\124T" .. READY_CHECK_WAITING_TEXTURE .. ":0|t")
+    tip:AddLine(SI.questTurnin)
   elseif store.leaderboardCount and store.leaderboardCount > 0 then
     for i = 1, store.leaderboardCount do
       tip:AddLine("")
@@ -870,9 +870,9 @@ local function TooltipQuestListStore(_, arg)
         if not store.show then
           -- do nothing
         elseif store[questID].isComplete then
-          questText = "\124T" .. READY_CHECK_READY_TEXTURE .. ":0|t"
+          questText = SI.questCheckMark
         elseif store[questID].isFinish then
-          questText = "\124T" .. READY_CHECK_WAITING_TEXTURE .. ":0|t"
+          questText = SI.questTurnin
         elseif store[questID].objectiveType == 'progressbar' and store[questID].numFulfilled then
           questText = store[questID].numFulfilled .. "%"
         elseif store[questID].numFulfilled and store[questID].numRequired then
