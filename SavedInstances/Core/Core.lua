@@ -1938,8 +1938,10 @@ hoverTooltip.ShowBonusTooltip = function (cell, arg, ...)
   local t = SI.db.Toons[toon]
   if not t or not t.BonusRoll then return end
   local indicatortip = Tooltip:AcquireIndicatorTip(4, "LEFT","LEFT","LEFT","LEFT")
-  indicatortip:SetAutoHideDelay(0.1, parent)
-  indicatortip:SmartAnchorTo(parent)
+  if parent then
+    indicatortip:SetAutoHideDelay(0.1, parent)
+    indicatortip:SmartAnchorTo(parent)
+  end
   local tname = ClassColorise(t.Class, toon)
   indicatortip:AddHeader()
   indicatortip:SetCell(1,1,tname,"LEFT",2)
