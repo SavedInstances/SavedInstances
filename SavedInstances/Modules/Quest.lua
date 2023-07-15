@@ -358,6 +358,7 @@ local QuestExceptions = {
   [75859] = "Weekly", -- Aiding the Accord: Sniffenseeking
   [75860] = "Weekly", -- Aiding the Accord: Researchers Under Fire
   [75861] = "Weekly", -- Aiding the Accord: Suffusion Camp
+  [77254] = "Weekly", -- Aiding the Accord: Time Rift
   -- Fishing Weeklies
   [70199] = "Weekly", -- Catch and Release: Scalebelly Mackerel
   [70200] = "Weekly", -- Catch and Release: Thousandbite Piranha
