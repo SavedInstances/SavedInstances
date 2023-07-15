@@ -466,6 +466,7 @@ local QuestExceptions = {
   -- Other Weeklies
   [75665] = "Weekly", -- A Worthy Ally: Loamm Niffen
   [76122] = "Weekly", -- Fighting is Its Own Reward
+  [77236] = "AccountWeekly", -- When Time Needs Mending
 
   -- General
   -- Darkmoon Faire
