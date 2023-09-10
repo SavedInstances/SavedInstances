@@ -451,6 +451,7 @@ local presets = {
       75860, -- Aiding the Accord: Researchers Under Fire
       75861, -- Aiding the Accord: Suffusion Camp
       77254, -- Aiding the Accord: Time Rift
+      77976, -- Aiding the Accord: Dreamsurge
     },
     reset = 'weekly',
     persists = true,
