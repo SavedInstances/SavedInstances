@@ -690,7 +690,7 @@ local presets = {
   },
   -- Time Rift
   ['df-time-rift'] = {
-    type = 'any',
+    type = 'single',
     expansion = 9,
     index = 16,
     name = L["Time Rift"],
