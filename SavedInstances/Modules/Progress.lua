@@ -694,9 +694,7 @@ local presets = {
     expansion = 9,
     index = 16,
     name = L["Time Rift"],
-    questID = {
-      77836
-    },
+    questID = 77836,
     reset = 'weekly',
     persists = false,
     fullObjective = false
