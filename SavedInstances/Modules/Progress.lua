@@ -690,7 +690,7 @@ local presets = {
   },
   -- Dreamsurge
   ['df-dreamsurge'] = {
-    type = 'any',
+    type = 'single',
     expansion = 9,
     index = 17,
     name = L["Shaping the Dreamsurge"],
