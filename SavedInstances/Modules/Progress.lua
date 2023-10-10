@@ -688,6 +688,17 @@ local presets = {
     persists = false,
     fullObjective = false,
   },
+  -- Time Rift
+  ['df-time-rift'] = {
+    type = 'single',
+    expansion = 9,
+    index = 16,
+    name = L["Time Rift"],
+    questID = 77836,
+    reset = 'weekly',
+    persists = false,
+    fullObjective = false
+  },
   -- Dreamsurge
   ['df-dreamsurge'] = {
     type = 'single',
