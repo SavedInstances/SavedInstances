@@ -699,6 +699,17 @@ local presets = {
     persists = false,
     fullObjective = false
   },
+  -- Dreamsurge
+  ['df-dreamsurge'] = {
+    type = 'single',
+    expansion = 9,
+    index = 17,
+    name = L["Shaping the Dreamsurge"],
+    questID = 77251,
+    reset = 'weekly',
+    persists = false,
+    fullObjective = false
+  }
 }
 
 ---update the progress of quest to the store
