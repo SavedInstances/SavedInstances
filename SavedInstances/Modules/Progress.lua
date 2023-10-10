@@ -694,9 +694,7 @@ local presets = {
     expansion = 9,
     index = 17,
     name = L["Shaping the Dreamsurge"],
-    questID = {
-      77251
-    },
+    questID = 77251,
     reset = 'weekly',
     persists = false,
     fullObjective = false
