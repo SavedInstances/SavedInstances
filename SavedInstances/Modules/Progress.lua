@@ -688,6 +688,19 @@ local presets = {
     persists = false,
     fullObjective = false,
   },
+  -- Time Rift
+  ['df-time-rift'] = {
+    type = 'any',
+    expansion = 9,
+    index = 16,
+    name = L["Time Rift"],
+    questID = {
+      77836
+    },
+    reset = 'weekly',
+    persists = false,
+    fullObjective = false
+  },
 }
 
 ---update the progress of quest to the store
