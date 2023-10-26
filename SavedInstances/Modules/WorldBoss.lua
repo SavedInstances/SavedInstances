@@ -78,6 +78,7 @@ SI.WorldBosses = {
   [2517] = { quest=69927, expansion=9, level=70 }, -- Bazual, The Dreaded Flame
   [2518] = { quest=69928, expansion=9, level=70 }, -- Liskanoth, The Futurebane
   [2531] = { quest=74892, expansion=9, level=70 }, -- The Zaqali Elders
+  [2562] = { quest=76367, expansion=9, level=70 }, -- Aurostor, The Hibernator
 
   -- bosses with no EJ entry (eid is a placeholder)
   [9001] = { quest=38276, name=GARRISON_LOCATION_TOOLTIP.." "..BOSS, expansion=5, level=40 },
