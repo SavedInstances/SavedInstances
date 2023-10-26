@@ -53,6 +53,7 @@ local factionID = {
   2510, -- Valdrakken Accord
   2511, -- Iskaara Tuskarr
   2564, -- Loamm Niffen
+  2574, -- Dream Wardens
 }
 
 function Module:OnEnable()
