@@ -13,11 +13,18 @@ local GetMoney = GetMoney
 
 local currency = {
   81, -- Epicurean Award
-  241, -- Champion's Seal
-  391, -- Tol Barad Commendation
-  402, -- Ironpaw Token
-  416, -- Mark of the World Tree
   515, -- Darkmoon Prize Ticket
+  2588, -- Riders of Azeroth Badge
+
+  -- Wrath of the Lich King
+  241, -- Champion's Seal
+
+  -- Cataclysm
+  391, -- Tol Barad Commendation
+  416, -- Mark of the World Tree
+
+  -- Mists of Pandaria
+  402, -- Ironpaw Token
   697, -- Elder Charm of Good Fortune
   738, -- Lesser Charm of Good Fortune
   752, -- Mogu Rune of Fate
@@ -85,12 +92,12 @@ local currency = {
 
   -- Dragonflight
   2003, -- Dragon Isles Supplies
-  2011, -- Effigy Adornments
-  2045, -- Purified Arcane Energy
+  2245, -- Flightstones
+  2123, -- Bloody Tokens
+  2797, -- Trophy of Strife
+  2045, -- Dragon Glyph Embers
   2118, -- Elemental Overflow
   2122, -- Storm Sigil
-  2123, -- Bloody Tokens
-  2245, -- Flightstones
   2409, -- Whelpling Crest Fragment Tracker [DNT]
   2410, -- Drake Crest Fragment Tracker [DNT]
   2411, -- Wyrm Crest Fragment Tracker [DNT]
@@ -98,6 +105,15 @@ local currency = {
   2413, -- 10.1 Professions - Personal Tracker - S2 Spark Drops (Hidden)
   2533, -- Renascent Shadowflame
   2594, -- Paracausal Flakes
+  2650, -- Emerald Dewdrop
+  2651, -- Seedbloom
+  2777, -- Dream Infusion
+  2796, -- Renascent Dream
+  2706, -- Whelpling's Dreaming Crest
+  2707, -- Drake's Dreaming Crest
+  2708, -- Wyrm's Dreaming Crest
+  2709, -- Aspect's Dreaming Crest
+  2774, -- 10.2 Professions - Personal Tracker - S3 Spark Drops (Hidden)
 }
 SI.currency = currency
 
@@ -183,10 +199,12 @@ Module.OverrideName = {
   [2411] = L["Loot Wyrm Crest Fragment"], -- Wyrm Crest Fragment Tracker [DNT]
   [2412] = L["Loot Aspect Crest Fragment"], -- Aspect Crest Fragment Tracker [DNT]
   [2413] = L["Loot Spark of Shadowflame"], -- 10.1 Professions - Personal Tracker - S2 Spark Drops (Hidden)
+  [2774] = L["Loot Spark of Dreams"], -- 10.2 Professions - Personal Tracker - S3 Spark Drops (Hidden)
 }
 
 Module.OverrideTexture = {
   [2413] = 5088829, -- 10.1 Professions - Personal Tracker - S2 Spark Drops (Hidden)
+  [2774] = 5341573, -- 10.2 Professions - Personal Tracker - S3 Spark Drops (Hidden)
 }
 
 function Module:OnEnable()
