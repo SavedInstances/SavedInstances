@@ -1576,7 +1576,7 @@ function Module:IsEntryContainsQuest(entry, questID)
   if entry.type == 'single' then
     ---@cast entry SingleQuestEntry
     return entry.questID == questID
-  elseif entry.type == 'list' or entry.type == 'list' then
+  elseif entry.type == 'any' or entry.type == 'list' then
     ---@cast entry AnyQuestEntry|QuestListEntry
     return tContains(entry.questID, questID)
   elseif entry.type == 'custom' and entry.relatedQuest then
