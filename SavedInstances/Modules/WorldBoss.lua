@@ -2,6 +2,8 @@ local SI, L = unpack((select(2, ...)))
 local Module = SI:NewModule('WorldBoss')
 
 -- encounter index is embedded in the Hjournal hyperlink
+-- https://wago.tools/db2/JournalEncounter
+-- https://wago.tools/db2/QuestV2CliTask?page=2&filter[Flags_0]=0x90040&filter[QuestInfoID]=112
 SI.WorldBosses = {
   -- Mist of Pandaria
   [691] = { quest=32099, expansion=4, level=35 }, -- Sha of Anger
