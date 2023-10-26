@@ -351,15 +351,19 @@ local QuestExceptions = {
   -- DF
   -- Aiding the Accord
   [70750] = "Weekly", -- Aiding the Accord
-  [72068] = "Weekly", -- Aiding the Accord: A Feast For All
-  [72373] = "Weekly", -- Aiding the Accord: The Hunt is On
-  [72374] = "Weekly", -- Aiding the Accord: Dragonbane Keep
-  [72375] = "Weekly", -- Aiding the Accord: The Isles Call
-  [75259] = "Weekly", -- Aiding the Accord: Zskera Vault
-  [75859] = "Weekly", -- Aiding the Accord: Sniffenseeking
-  [75860] = "Weekly", -- Aiding the Accord: Researchers Under Fire
-  [75861] = "Weekly", -- Aiding the Accord: Suffusion Camp
-  [77254] = "Weekly", -- Aiding the Accord: Time Rift
+  [72068] = "Regular", -- Aiding the Accord: A Feast For All
+  [72373] = "Regular", -- Aiding the Accord: The Hunt is On
+  [72374] = "Regular", -- Aiding the Accord: Dragonbane Keep
+  [72375] = "Regular", -- Aiding the Accord: The Isles Call
+  [75259] = "Regular", -- Aiding the Accord: Zskera Vault
+  [75859] = "Regular", -- Aiding the Accord: Sniffenseeking
+  [75860] = "Regular", -- Aiding the Accord: Researchers Under Fire
+  [75861] = "Regular", -- Aiding the Accord: Suffusion Camp
+  [77254] = "Regular", -- Aiding the Accord: Time Rift
+  [77976] = "Regular", -- Aiding the Accord: Dreamsurge
+  [78446] = "Regular", -- Aiding the Accord: Superbloom
+  [78447] = "Regular", -- Aiding the Accord: Emerald Bounty
+  [78861] = "Regular", -- Aiding the Accord
   -- Fishing Weeklies
   [70199] = "Weekly", -- Catch and Release: Scalebelly Mackerel
   [70200] = "Weekly", -- Catch and Release: Thousandbite Piranha
@@ -468,6 +472,7 @@ local QuestExceptions = {
   [75665] = "Weekly", -- A Worthy Ally: Loamm Niffen
   [76122] = "Weekly", -- Fighting is Its Own Reward
   [77236] = "AccountWeekly", -- When Time Needs Mending
+  [78444] = "Weekly", -- A Worthy Ally: Dream Wardens
 
   -- General
   -- Darkmoon Faire

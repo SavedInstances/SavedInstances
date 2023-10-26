@@ -452,6 +452,9 @@ local presets = {
       75861, -- Aiding the Accord: Suffusion Camp
       77254, -- Aiding the Accord: Time Rift
       77976, -- Aiding the Accord: Dreamsurge
+      78446, -- Aiding the Accord: Superbloom
+      78447, -- Aiding the Accord: Emerald Bounty
+      78861, -- Aiding the Accord
     },
     reset = 'weekly',
     persists = true,
@@ -697,7 +700,7 @@ local presets = {
     questID = 77836,
     reset = 'weekly',
     persists = false,
-    fullObjective = false
+    fullObjective = false,
   },
   -- Dreamsurge
   ['df-dreamsurge'] = {
@@ -708,8 +711,19 @@ local presets = {
     questID = 77251,
     reset = 'weekly',
     persists = false,
-    fullObjective = false
-  }
+    fullObjective = false,
+  },
+  -- A Worthy Ally: Dream Wardens
+  ['df-a-worthy-ally-dream-wardens'] = {
+    type = 'single',
+    expansion = 9,
+    index = 18,
+    name = L["A Worthy Ally: Dream Wardens"],
+    questID = 78444,
+    reset = 'weekly',
+    persists = true,
+    fullObjective = false,
+  },
 }
 
 ---update the progress of quest to the store
