@@ -126,9 +126,14 @@ local LFRInstances = {
   [2372] = { total=2, base=7,  parent=2390, minLvl=70, remap={ 1, 2 } }, -- Vault of the Incarnates: Fury of the Storm
 
   [2399] = { total=3, base=1,  parent=2405, minLvl=70, remap={ 1, 2, 3 } }, -- Aberrus, the Shadowed Crucible: Discarded Works
-  [2400] = { total=3, base=1,  parent=2405, minLvl=70, remap={ 1, 2, 3 } }, -- Aberrus, the Shadowed Crucible: Fury of Giants
-  [2401] = { total=2, base=1,  parent=2405, minLvl=70, remap={ 1, 2 } }, -- Aberrus, the Shadowed Crucible: Neltharion's Shadow
-  [2402] = { total=1, base=1,  parent=2405, minLvl=70, remap={ 1 } }, -- Aberrus, the Shadowed Crucible: Edge of the Void
+  [2400] = { total=3, base=4,  parent=2405, minLvl=70, remap={ 1, 2, 3 } }, -- Aberrus, the Shadowed Crucible: Fury of Giants
+  [2401] = { total=2, base=7,  parent=2405, minLvl=70, remap={ 1, 2 } }, -- Aberrus, the Shadowed Crucible: Neltharion's Shadow
+  [2402] = { total=1, base=9,  parent=2405, minLvl=70, remap={ 1 } }, -- Aberrus, the Shadowed Crucible: Edge of the Void
+
+  [2466] = { total=3, base=1,  parent=2504, minLvl=70, remap={ 1, 2, 3 } }, -- Amirdrassil, the Dream's Hope: Incarnate's Wake
+  [2467] = { total=2, base=4,  parent=2504, minLvl=70, remap={ 1, 2 } }, -- Amirdrassil, the Dream's Hope: The Viridian Weave
+  [2468] = { total=2, base=6,  parent=2504, minLvl=70, remap={ 1, 2 } }, -- Amirdrassil, the Dream's Hope: Molten Incursion
+  [2469] = { total=2, base=8,  parent=2504, minLvl=70, remap={ 1, 2 } }, -- Amirdrassil, the Dream's Hope: Fate of Amirdrassil
 }
 
 local tbl = {}
@@ -161,7 +166,13 @@ for id, info in pairs(LFRInstances) do
     elseif id == 2399 then -- Aberrus, the Shadowed Crucible: Discarded Works
       info.remap = { 1, 3, 4 }
     elseif id == 2400 then -- Aberrus, the Shadowed Crucible: Fury of Giants
-      info.remap = { 2, 5, 6}
+      info.remap = { 2, 5, 6 }
+    elseif id == 2466 then -- Amirdrassil, the Dream's Hope: Incarnate's Wake
+      info.remap = { 1, 2, 7 }
+    elseif id == 2467 then -- Amirdrassil, the Dream's Hope: The Viridian Weave
+      info.remap = { 5, 6 }
+    elseif id == 2468 then -- Amirdrassil, the Dream's Hope: Molten Incursion
+      info.remap = { 3, 4 }
     end
   end
 
