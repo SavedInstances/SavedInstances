@@ -22,7 +22,7 @@ local SendChatMessage = SendChatMessage
 
 local StaticPopup_Show = StaticPopup_Show
 
-local Enum_WeeklyRewardChestThresholdType_MythicPlus = Enum.WeeklyRewardChestThresholdType.MythicPlus
+local Enum_WeeklyRewardChestThresholdType_Activities = Enum.WeeklyRewardChestThresholdType.Activities
 
 local KeystoneAbbrev = {
   -- Cataclysm
@@ -172,7 +172,7 @@ do
     t.MythicKeyBest.rewardWaiting = C_WeeklyRewards_HasAvailableRewards() or C_WeeklyRewards_CanClaimRewards()
     t.MythicKeyBest.ResetTime = SI:GetNextWeeklyResetTime()
 
-    local activities = C_WeeklyRewards_GetActivities(Enum_WeeklyRewardChestThresholdType_MythicPlus)
+    local activities = C_WeeklyRewards_GetActivities(Enum_WeeklyRewardChestThresholdType_Activities)
     sort(activities, activityCompare)
 
     local lastCompletedIndex = 0
