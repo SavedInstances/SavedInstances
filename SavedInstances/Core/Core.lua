@@ -457,7 +457,7 @@ SI.defaultDB = {
 --   hooksecurefunc(SavedInstances,"SkinFrame",function(self,frame,name) frame:SetWhatever() end)
 function SI:SkinFrame(frame, name)
   -- default behavior (ticket 81)
-  if IsAddOnLoaded("ElvUI") or IsAddOnLoaded("Tukui") then
+  if C_AddOns.IsAddOnLoaded("ElvUI") or C_AddOns.IsAddOnLoaded("Tukui") then
     if frame.StripTextures then
       frame:StripTextures()
     end
@@ -2420,7 +2420,7 @@ function SI:toonInit()
 end
 
 function SI:OnInitialize()
-  local versionString = GetAddOnMetadata("SavedInstances", "version")
+  local versionString = C_AddOns.GetAddOnMetadata("SavedInstances", "version")
   --@debug@
   if versionString == "@project-version@" then
     versionString = "Dev"
@@ -3237,8 +3237,8 @@ SI.cpairs = cpairs
 local function OpenWeeklyRewards()
   if _G.WeeklyRewardsFrame and _G.WeeklyRewardsFrame:IsVisible() then return end
 
-  if not IsAddOnLoaded('Blizzard_WeeklyRewards') then
-    LoadAddOn('Blizzard_WeeklyRewards')
+  if not C_AddOns.IsAddOnLoaded('Blizzard_WeeklyRewards') then
+    C_AddOns.LoadAddOn('Blizzard_WeeklyRewards')
   end
   _G.WeeklyRewardsFrame:Show()
 end
