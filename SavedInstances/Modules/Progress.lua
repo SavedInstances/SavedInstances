@@ -427,6 +427,7 @@ local presets = {
     end,
     -- addition info
     factionIDs = {
+      2574, -- Dream Wardens
       2564, -- Loamm Niffen
       2507, -- Dragonscale Expedition
       2503, -- Maruuk Centaur
