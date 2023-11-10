@@ -3856,7 +3856,7 @@ function SI:ShowTooltip(anchorframe)
         if t.MythicKeyBest.lastCompletedIndex then
           for index = 1, t.MythicKeyBest.lastCompletedIndex do
             if t.MythicKeyBest[index] then
-              keydesc = keydesc .. (index > 1 and " / " or "") .. t.MythicKeyBest[index]
+              keydesc = keydesc .. (index > 1 and "||" or "") .. t.MythicKeyBest[index]
             end
           end
         end

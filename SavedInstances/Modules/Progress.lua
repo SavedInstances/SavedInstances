@@ -103,7 +103,7 @@ local presets = {
       local text
       for index = 1, #store do
         if store[index] then
-          text = (index > 1 and (text .. " / ") or "") .. (entry.difficultyNames[store[index]] or GetDifficultyInfo(store[index]))
+          text = (index > 1 and (text .. "||") or "") .. (entry.difficultyNames[store[index]] or GetDifficultyInfo(store[index]))
         end
       end
       if store.rewardWaiting then
@@ -376,7 +376,7 @@ local presets = {
         if not text then
           text = store[factionID] and store[factionID][1] or '0'
         else
-          text = text .. ' / ' .. (store[factionID] and store[factionID][1] or '0')
+          text = text .. "||" .. (store[factionID] and store[factionID][1] or '0')
         end
       end
 
@@ -385,7 +385,7 @@ local presets = {
           if not text then
             text = store[factionID] and store[factionID][1] or '0'
           else
-            text = text .. ' / ' .. (store[factionID] and store[factionID][1] or '0')
+            text = text .. "||" .. (store[factionID] and store[factionID][1] or '0')
           end
         end
       end
