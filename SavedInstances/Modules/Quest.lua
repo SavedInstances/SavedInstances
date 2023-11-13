@@ -472,7 +472,11 @@ local QuestExceptions = {
   [75665] = "Weekly", -- A Worthy Ally: Loamm Niffen
   [76122] = "Weekly", -- Fighting is Its Own Reward
   [77236] = "AccountWeekly", -- When Time Needs Mending
+  [78319] = "Weekly", -- The Superbloom
+  [78427] = "Weekly", -- Great Crates!
+  [78428] = "Weekly", -- Crate of the Art
   [78444] = "Weekly", -- A Worthy Ally: Dream Wardens
+  [78821] = "Weekly", -- Blooming Dreamseeds
 
   -- General
   -- Darkmoon Faire
