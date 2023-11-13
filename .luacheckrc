@@ -235,6 +235,7 @@ globals = {
 	"BuyReagentBank",
 	"BuyTrainerService",
 	"BuybackItem",
+	"C_AddOns",
 	"C_AdventureJournal",
 	"C_AdventureJournal.ActivateEntry",
 	"C_AdventureJournal.CanBeShown",
