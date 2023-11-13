@@ -725,6 +725,43 @@ local presets = {
     persists = true,
     fullObjective = false,
   },
+  -- The Superbloom
+  ['df-the-superbloom'] = {
+    type = 'single',
+    expansion = 9,
+    index = 19,
+    name = L["The Superbloom"],
+    questID = 78319,
+    reset = 'weekly',
+    persists = true,
+    fullObjective = false,
+  },
+  -- Blooming Dreamseeds
+  ['df-blooming-dreamseeds'] = {
+    type = 'single',
+    expansion = 9,
+    index = 20,
+    name = L["Blooming Dreamseeds"],
+    questID = 78821,
+    reset = 'weekly',
+    persists = true,
+    fullObjective = false,
+  },
+  -- Shipment of Goods
+  ['df-shipment-of-goods'] = {
+    type = 'list',
+    expansion = 9,
+    index = 21,
+    name = L["Shipment of Goods"],
+    questID = {
+      78427, -- Great Crates!
+      78428, -- Crate of the Art
+    },
+    reset = 'weekly',
+    persists = false,
+    progress = true,
+    onlyOnOrCompleted = false,
+  },
 }
 
 ---update the progress of quest to the store
