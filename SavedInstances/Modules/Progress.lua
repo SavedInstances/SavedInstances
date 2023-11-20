@@ -782,17 +782,14 @@ local function UpdateQuestStore(store, questID)
     return false
   else
     local showText
-    local allFinished = true
     local leaderboardCount = C_QuestLog.GetNumQuestObjectives(questID)
     for i = 1, leaderboardCount do
-      local text, objectiveType, finished, numFulfilled, numRequired = GetQuestObjectiveInfo(questID, i, false)
+      local text, objectiveType, _, numFulfilled, numRequired = GetQuestObjectiveInfo(questID, i, false)
       ---@cast text string
       ---@cast objectiveType "item"|"object"|"monster"|"reputation"|"log"|"event"|"player"|"progressbar"
-      ---@cast finished boolean
+      ---@cast _ boolean
       ---@cast numFulfilled number
       ---@cast numRequired number
-
-      allFinished = allFinished and finished
 
       local objectiveText
       if objectiveType == 'progressbar' then
@@ -816,7 +813,7 @@ local function UpdateQuestStore(store, questID)
 
     store.show = true
     store.isComplete = false
-    store.isFinish = allFinished
+    store.isFinish = C_QuestLog.IsComplete(questID)
     store.leaderboardCount = leaderboardCount
     store.text = showText
 
