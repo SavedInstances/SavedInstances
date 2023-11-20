@@ -262,6 +262,9 @@ function Module:UpdateCurrency()
           ci.covenant = ci.covenant or {}
           ci.covenant[covenantID] = ci.amount
         end
+      elseif idx == 2774 then -- 10.2 Professions - Personal Tracker - S3 Spark Drops (Hidden)
+        local duration = SI:GetNextWeeklyResetTime() - 1699365600 -- 2023-11-07T14:00:00+00:00
+        ci.totalMax = floor(duration / 604800) -- 7 days
       end
       -- don't store useless info
       if ci.weeklyMax == 0 then ci.weeklyMax = nil end
