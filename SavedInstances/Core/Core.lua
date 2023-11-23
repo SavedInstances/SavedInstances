@@ -1926,7 +1926,7 @@ hoverTooltip.ShowMythicPlusTooltip = function (cell, arg, ...)
       local runInfo = t.MythicKeyBest.runHistory[i]
       if runInfo.level and runInfo.name and runInfo.rewardLevel then
         indicatortip:AddLine()
-        text = string.format("(%3$d) %1$d - %2$s", runInfo.level, runInfo.name, runInfo.rewardLevel)
+        text = string.format("(%3$d) %1$s - %2$s", runInfo.level, runInfo.name, runInfo.rewardLevel)
         -- these are the thresholds that will populate the great vault
         if t.MythicKeyBest.threshold and tContains(t.MythicKeyBest.threshold, i) then
           text = GREENFONT..text..FONTEND
@@ -3848,7 +3848,7 @@ function SI:ShowTooltip(anchorframe)
       if SI.db.Tooltip.CategorySpaces and not (SI.db.Tooltip.MythicKey or SI.db.Tooltip.TimewornMythicKey or showall) then
         addsep()
       end
-      show = tooltip:AddLine(YELLOWFONT .. L["Mythic Key Best"] .. FONTEND)
+      show = tooltip:AddLine(YELLOWFONT .. L["Dungeon Runs"] .. FONTEND)
     end
     for toon, t in cpairs(SI.db.Toons, true) do
       if t.MythicKeyBest then
