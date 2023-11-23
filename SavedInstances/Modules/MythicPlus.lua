@@ -17,12 +17,20 @@ local C_MythicPlus_GetRewardLevelFromKeystoneLevel = C_MythicPlus.GetRewardLevel
 local C_WeeklyRewards_GetActivities = C_WeeklyRewards.GetActivities
 local C_WeeklyRewards_HasAvailableRewards = C_WeeklyRewards.HasAvailableRewards
 local C_WeeklyRewards_CanClaimRewards = C_WeeklyRewards.CanClaimRewards
+local C_WeeklyRewards_GetNumCompletedDungeonRuns = C_WeeklyRewards.GetNumCompletedDungeonRuns
+local WeeklyRewardsUtil_MythicLevel = WeeklyRewardsUtil.MythicLevel
+local WEEKLY_REWARDS_HEROIC, WEEKLY_REWARDS_MYTHIC = WEEKLY_REWARDS_HEROIC, WEEKLY_REWARDS_MYTHIC
 local CreateFrame = CreateFrame
 local SendChatMessage = SendChatMessage
 
 local StaticPopup_Show = StaticPopup_Show
 
 local Enum_WeeklyRewardChestThresholdType_Activities = Enum.WeeklyRewardChestThresholdType.Activities
+
+-- Dragonflight Season 3
+-- source: https://wago.tools/db2/MythicPlusSeasonRewardLevels?page=1&sort[WeeklyRewardLevel]=asc&filter[MythicPlusSeasonID]=98
+local HEROIC_ITEM_LEVEL = 441
+local MYTHIC_ITEM_LEVEL = 450
 
 local KeystoneAbbrev = {
   -- Cataclysm
@@ -187,12 +195,31 @@ do
     if lastCompletedIndex == 0 then return end
     t.MythicKeyBest.lastCompletedIndex = lastCompletedIndex
 
+    -- add Mythic+ runs
     local runHistory = C_MythicPlus_GetRunHistory(false, true)
     sort(runHistory, runCompare)
     for i = 1, #runHistory do
       runHistory[i].name = C_ChallengeMode_GetMapUIInfo(runHistory[i].mapChallengeModeID)
       runHistory[i].rewardLevel = C_MythicPlus_GetRewardLevelFromKeystoneLevel(runHistory[i].level)
     end
+
+    -- add Mythic 0 and Heroic runs
+    local numHeroic, numMythic, numMythicPlus = C_WeeklyRewards_GetNumCompletedDungeonRuns()
+    for i = 1, numMythic do
+      runHistory[#runHistory + 1] = {
+        name = WEEKLY_REWARDS_MYTHIC:format(WeeklyRewardsUtil_MythicLevel),
+        rewardLevel = MYTHIC_ITEM_LEVEL,
+        level = L["M"],
+      }
+    end
+    for i = 1, numHeroic do
+      runHistory[#runHistory + 1] = {
+        name = WEEKLY_REWARDS_HEROIC,
+        rewardLevel = HEROIC_ITEM_LEVEL,
+        level = L["H"],
+      }
+    end
+
     t.MythicKeyBest.runHistory = runHistory
 
     for index = 1, lastCompletedIndex do
