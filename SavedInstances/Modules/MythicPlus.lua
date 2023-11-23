@@ -14,6 +14,7 @@ local C_Container_GetContainerNumSlots = C_Container.GetContainerNumSlots
 local C_MythicPlus_GetRunHistory = C_MythicPlus.GetRunHistory
 local C_MythicPlus_RequestMapInfo = C_MythicPlus.RequestMapInfo
 local C_MythicPlus_GetRewardLevelFromKeystoneLevel = C_MythicPlus.GetRewardLevelFromKeystoneLevel
+local C_MythicPlus_GetCurrentSeasonValues = C_MythicPlus.GetCurrentSeasonValues
 local C_WeeklyRewards_GetActivities = C_WeeklyRewards.GetActivities
 local C_WeeklyRewards_HasAvailableRewards = C_WeeklyRewards.HasAvailableRewards
 local C_WeeklyRewards_CanClaimRewards = C_WeeklyRewards.CanClaimRewards
@@ -28,9 +29,13 @@ local StaticPopup_Show = StaticPopup_Show
 local Enum_WeeklyRewardChestThresholdType_Activities = Enum.WeeklyRewardChestThresholdType.Activities
 
 -- Dragonflight Season 3
--- source: https://wago.tools/db2/MythicPlusSeasonRewardLevels?page=1&sort[WeeklyRewardLevel]=asc&filter[MythicPlusSeasonID]=98
-local HEROIC_ITEM_LEVEL = 441
-local MYTHIC_ITEM_LEVEL = 450
+-- this is from https://wago.tools/db2/MythicPlusSeasonRewardLevels?page=1&sort[WeeklyRewardLevel]=asc&filter[MythicPlusSeasonID]=98
+local ItemLevelsBySeason = {
+  [98] = {
+    ["HEROIC"] = 441,
+    ["MYTHIC"] = 450,
+  },
+}
 
 local KeystoneAbbrev = {
   -- Cataclysm
@@ -205,17 +210,18 @@ do
 
     -- add Mythic 0 and Heroic runs
     local numHeroic, numMythic, numMythicPlus = C_WeeklyRewards_GetNumCompletedDungeonRuns()
+    local _, _, rewardSeasonID = C_MythicPlus_GetCurrentSeasonValues()
     for i = 1, numMythic do
       runHistory[#runHistory + 1] = {
         name = WEEKLY_REWARDS_MYTHIC:format(WeeklyRewardsUtil_MythicLevel),
-        rewardLevel = MYTHIC_ITEM_LEVEL,
+        rewardLevel = ItemLevelsBySeason[rewardSeasonID] and ItemLevelsBySeason[rewardSeasonID].MYTHIC or 0,
         level = L["M"],
       }
     end
     for i = 1, numHeroic do
       runHistory[#runHistory + 1] = {
         name = WEEKLY_REWARDS_HEROIC,
-        rewardLevel = HEROIC_ITEM_LEVEL,
+        rewardLevel = ItemLevelsBySeason[rewardSeasonID] and ItemLevelsBySeason[rewardSeasonID].HEROIC or 0,
         level = L["H"],
       }
     end
