@@ -209,7 +209,7 @@ do
     end
 
     -- add Mythic 0 and Heroic runs
-    local numHeroic, numMythic, numMythicPlus = C_WeeklyRewards_GetNumCompletedDungeonRuns()
+    local numHeroic, numMythic = C_WeeklyRewards_GetNumCompletedDungeonRuns()
     local _, _, rewardSeasonID = C_MythicPlus_GetCurrentSeasonValues()
     for i = 1, numMythic do
       runHistory[#runHistory + 1] = {
