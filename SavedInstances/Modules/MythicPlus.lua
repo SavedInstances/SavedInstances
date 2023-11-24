@@ -215,14 +215,14 @@ do
       runHistory[#runHistory + 1] = {
         name = WEEKLY_REWARDS_MYTHIC:format(WeeklyRewardsUtil_MythicLevel),
         rewardLevel = ItemLevelsBySeason[rewardSeasonID] and ItemLevelsBySeason[rewardSeasonID].MYTHIC or 0,
-        level = L["M"],
+        level = "M",
       }
     end
     for i = 1, numHeroic do
       runHistory[#runHistory + 1] = {
         name = WEEKLY_REWARDS_HEROIC,
         rewardLevel = ItemLevelsBySeason[rewardSeasonID] and ItemLevelsBySeason[rewardSeasonID].HEROIC or 0,
-        level = L["H"],
+        level = "H",
       }
     end
 
