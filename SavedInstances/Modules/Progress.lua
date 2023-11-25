@@ -364,6 +364,11 @@ local presets = {
       local majorFactionIDs = C_MajorFactions.GetMajorFactionIDs(LE_EXPANSION_DRAGONFLIGHT)
       for _, factionID in ipairs(majorFactionIDs) do
         local data = C_MajorFactions.GetMajorFactionData(factionID)
+        local currentRepValue, threshold = C_Reputation.GetFactionParagonInfo(factionID)
+        if currentRepValue and threshold then
+          data.renownReputationEarned = currentRepValue % threshold
+          data.renownLevelThreshold = threshold
+        end
         store[factionID] = data and {data.renownLevel, data.renownReputationEarned, data.renownLevelThreshold}
       end
     end,
