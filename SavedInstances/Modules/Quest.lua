@@ -477,6 +477,7 @@ local QuestExceptions = {
   [78428] = "Weekly", -- Crate of the Art
   [78444] = "Weekly", -- A Worthy Ally: Dream Wardens
   [78821] = "Weekly", -- Blooming Dreamseeds
+  [79226] = "Weekly", -- The Big Dig: Traitor's Rest
 
   -- General
   -- Darkmoon Faire

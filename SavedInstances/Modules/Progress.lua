@@ -769,6 +769,17 @@ local presets = {
     progress = true,
     onlyOnOrCompleted = false,
   },
+  -- The Big Dig: Traitor's Rest
+  ['df-the-big-dig-traitors-rest'] = {
+    type = 'single',
+    expansion = 9,
+    index = 22,
+    name = L["The Big Dig: Traitor's Rest"],
+    questID = 79226,
+    reset = 'weekly',
+    persists = true,
+    fullObjective = false,
+  },
 }
 
 ---update the progress of quest to the store
