@@ -114,6 +114,7 @@ local currency = {
   2708, -- Wyrm's Dreaming Crest
   2709, -- Aspect's Dreaming Crest
   2774, -- 10.2 Professions - Personal Tracker - S3 Spark Drops (Hidden)
+  2657, -- Mysterious Fragment
 }
 SI.currency = currency
 
