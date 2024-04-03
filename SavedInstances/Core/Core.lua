@@ -4222,7 +4222,7 @@ function SI:ShowTooltip(anchorframe)
               if (ci.weeklyMax or 0) > 0 then
                 str = earned.." ("..CurrencyColor(ci.earnedThisWeek,ci.weeklyMax)..weeklymax..")"
               elseif (ci.amount or 0) > 0 or (ci.totalEarned or 0) > 0 then
-                str = CurrencyColor(ci.amount,ci.totalMax)..totalmax
+                str = CurrencyColor(ci.amount, ci.totalEarned or ci.totalMax)..totalmax
               end
               if SI.specialCurrency[idx] and SI.specialCurrency[idx].relatedItem then
                 if SI.specialCurrency[idx].relatedItem.holdingMax then
