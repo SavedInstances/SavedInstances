@@ -622,8 +622,9 @@ local presets = {
       72647, -- Ohn'ahran Plains
       72648, -- The Azure Span
       72649, -- Thaldraszus
-	  75305, -- Zaralek Cavern
-	  78097, -- Emerald Dream
+      74871, -- The Forbidden Reach
+      75305, -- Zaralek Cavern
+      78097, -- Emerald Dream
     },
     reset = 'weekly',
     persists = false,
