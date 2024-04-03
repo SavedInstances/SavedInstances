@@ -130,7 +130,7 @@ do
     end
 
     local color = C_ChallengeMode_GetKeystoneLevelRarityColor(level)
-    colorCache[level] = color:GenerateHexColor()
+    colorCache[level] = color and color:GenerateHexColor() or 'ffffffff'
     return colorCache[level]
   end
 
