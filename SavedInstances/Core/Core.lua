@@ -500,14 +500,14 @@ local function ClassColorise(class, targetstring)
   return c .. targetstring .. FONTEND
 end
 
-local function CurrencyColor(amt, max)
+local function CurrencyColor(amt, max, alt)
   amt = amt or 0
   local samt = SI:formatNumber(amt)
   if max == nil or max == 0 then
     return samt
   end
   if SI.db.Tooltip.CurrencyValueColor then
-    local pct = amt / max
+    local pct = alt and (alt / max) or (amt / max)
     local color = GREENFONT
     if pct >= 1 then
       color = REDFONT
@@ -4222,7 +4222,7 @@ function SI:ShowTooltip(anchorframe)
               if (ci.weeklyMax or 0) > 0 then
                 str = earned.." ("..CurrencyColor(ci.earnedThisWeek,ci.weeklyMax)..weeklymax..")"
               elseif (ci.amount or 0) > 0 or (ci.totalEarned or 0) > 0 then
-                str = CurrencyColor(ci.amount, ci.totalEarned or ci.totalMax)..totalmax
+                str = CurrencyColor(ci.amount, ci.totalMax, ci.totalEarned) .. totalmax
               end
               if SI.specialCurrency[idx] and SI.specialCurrency[idx].relatedItem then
                 if SI.specialCurrency[idx].relatedItem.holdingMax then
