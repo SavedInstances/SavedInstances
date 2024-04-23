@@ -115,6 +115,13 @@ local currency = {
   2709, -- Aspect's Dreaming Crest
   2774, -- 10.2 Professions - Personal Tracker - S3 Spark Drops (Hidden)
   2657, -- Mysterious Fragment
+  2912, -- Renascent Awakening
+  2806, -- Whelpling's Awakened Crest
+  2807, -- Drake's Awakened Crest
+  2809, -- Wyrm's Awakened Crest
+  2812, -- Aspect's Awakened Crest
+  2800, -- 10.2.6 Professions - Personal Tracker - S4 Spark Drops (Hidden)
+  3010, -- 10.2.6 Rewards - Personal Tracker - S4 Dinar Drops (Hidden)
 }
 SI.currency = currency
 
@@ -201,11 +208,15 @@ Module.OverrideName = {
   [2412] = L["Loot Aspect Crest Fragment"], -- Aspect Crest Fragment Tracker [DNT]
   [2413] = L["Loot Spark of Shadowflame"], -- 10.1 Professions - Personal Tracker - S2 Spark Drops (Hidden)
   [2774] = L["Loot Spark of Dreams"], -- 10.2 Professions - Personal Tracker - S3 Spark Drops (Hidden)
+  [2800] = L["Loot Spark of Awakening"], -- 10.2.6 Professions - Personal Tracker - S4 Spark Drops (Hidden)
+  [3010] = L["Loot Antique Bronze Bullion"], -- 10.2.6 Rewards - Personal Tracker - S4 Dinar Drops (Hidden)
 }
 
 Module.OverrideTexture = {
   [2413] = 5088829, -- 10.1 Professions - Personal Tracker - S2 Spark Drops (Hidden)
   [2774] = 5341573, -- 10.2 Professions - Personal Tracker - S3 Spark Drops (Hidden)
+  [2800] = 4693222, -- 10.2.6 Professions - Personal Tracker - S4 Spark Drops (Hidden)
+  [3010] = 4555657, -- 10.2.6 Rewards - Personal Tracker - S4 Dinar Drops (Hidden)
 }
 
 function Module:OnEnable()
@@ -263,8 +274,8 @@ function Module:UpdateCurrency()
           ci.covenant = ci.covenant or {}
           ci.covenant[covenantID] = ci.amount
         end
-      elseif idx == 2774 then -- 10.2 Professions - Personal Tracker - S3 Spark Drops (Hidden)
-        local duration = SI:GetNextWeeklyResetTime() - 1699365600 -- 2023-11-07T14:00:00+00:00
+      elseif idx == 2800 or idx == 3010 then -- 10.2.6 Professions - Personal Tracker - S4 Spark Drops (Hidden) / 10.2.6 Rewards - Personal Tracker - S4 Dinar Drops (Hidden)
+        local duration = SI:GetNextWeeklyResetTime() - 1713880800 -- 2024-04-23T14:00:00+00:00
         ci.totalMax = floor(duration / 604800) -- 7 days
       end
       -- don't store useless info
