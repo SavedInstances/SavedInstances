@@ -364,6 +364,10 @@ local QuestExceptions = {
   [78446] = "Regular", -- Aiding the Accord: Superbloom
   [78447] = "Regular", -- Aiding the Accord: Emerald Bounty
   [78861] = "Regular", -- Aiding the Accord
+  [80385] = "Regular", -- Last Hurrah: Dragon Isles
+  [80386] = "Regular", -- Last Hurrah: Zaralek Caverns and Time Rifts
+  [80388] = "Regular", -- Last Hurrah: Emerald Dream
+  [80389] = "Regular", -- Last Hurrah
   -- Fishing Weeklies
   [70199] = "Weekly", -- Catch and Release: Scalebelly Mackerel
   [70200] = "Weekly", -- Catch and Release: Thousandbite Piranha

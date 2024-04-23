@@ -461,6 +461,10 @@ local presets = {
       78446, -- Aiding the Accord: Superbloom
       78447, -- Aiding the Accord: Emerald Bounty
       78861, -- Aiding the Accord
+      80385, -- Last Hurrah: Dragon Isles
+      80386, -- Last Hurrah: Zaralek Caverns and Time Rifts
+      80388, -- Last Hurrah: Emerald Dream
+      80389, -- Last Hurrah
     },
     reset = 'weekly',
     persists = true,
