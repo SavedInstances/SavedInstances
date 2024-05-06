@@ -3,6 +3,7 @@ local Config = SI:NewModule('Config')
 local Tooltip = SI:GetModule('Tooltip')
 local Currency = SI:GetModule('Currency')
 local Progress = SI:GetModule('Progress')
+local Professions = SI:GetModule('Professions')
 local Warfront = SI:GetModule('Warfront')
 
 -- Lua functions
@@ -892,6 +893,7 @@ function Config:BuildOptions()
     SI.Options[k] = v
   end
   SI.Options.args.Progress = Progress:BuildOptions(2)
+  SI.Options.args.Professions = Professions:BuildOptions(3)
   local warfront = Warfront:BuildOptions(34)
   for k, v in pairs(warfront) do
     SI.Options.args.General.args[k] = v
@@ -946,6 +948,7 @@ function Config:SetupOptions()
   local AceConfigDialog = LibStub("AceConfigDialog-3.0")
   local _, genernalFrameName = AceConfigDialog:AddToBlizOptions(namespace, nil, nil, "General")
   AceConfigDialog:AddToBlizOptions(namespace, L["Quest progresses"], namespace, "Progress")
+  AceConfigDialog:AddToBlizOptions(namespace, L["Profession Quests"], namespace, "Professions")
   AceConfigDialog:AddToBlizOptions(namespace, CURRENCY, namespace, "Currency")
   AceConfigDialog:AddToBlizOptions(namespace, L["Indicators"], namespace, "Indicators")
   AceConfigDialog:AddToBlizOptions(namespace, L["Instances"], namespace, "Instances")

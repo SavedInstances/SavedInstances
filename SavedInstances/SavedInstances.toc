@@ -38,6 +38,7 @@ Modules\Emissary.lua
 Modules\LFR.lua
 Modules\MythicPlus.lua
 Modules\Paragon.lua
+Modules\Professions.lua
 Modules\Progress.lua
 Modules\TradeSkill.lua
 Modules\Warfront.lua
