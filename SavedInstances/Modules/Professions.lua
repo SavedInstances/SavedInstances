@@ -285,7 +285,7 @@ local presets = {
           70572, -- The Cold Does Bother Them, Actually
           70582, -- Weave Well Enough Alone
           70586, -- Sew Many Cooks
-          70587, -- A Knapsack Problem 
+          70587, -- A Knapsack Problem
       },
       -- Herbalism
       [182] = {
@@ -371,7 +371,7 @@ local presets = {
       [773] = {
           66943, -- Wood for Writing
           66944, -- Peacock Pigments
-          66945, -- Icy Ink        
+          66945, -- Icy Ink
           72438, -- Tarasek Intentions
 	  75573, -- Proclamation Reclamation
 	  75149, -- Obsidian Essays
@@ -554,17 +554,14 @@ local function UpdateQuestStore(store, questID)
     return false
   else
     local showText
-    local allFinished = true
     local leaderboardCount = C_QuestLog.GetNumQuestObjectives(questID)
     for i = 1, leaderboardCount do
-      local text, objectiveType, finished, numFulfilled, numRequired = GetQuestObjectiveInfo(questID, i, false)
+      local text, objectiveType, _, numFulfilled, numRequired = GetQuestObjectiveInfo(questID, i, false)
       ---@cast text string
       ---@cast objectiveType "item"|"object"|"monster"|"reputation"|"log"|"event"|"player"|"progressbar"
-      ---@cast finished boolean
+      ---@cast _ boolean
       ---@cast numFulfilled number
       ---@cast numRequired number
-
-      allFinished = allFinished and finished
 
       local objectiveText
       if objectiveType == 'progressbar' then
@@ -588,7 +585,7 @@ local function UpdateQuestStore(store, questID)
 
     store.show = true
     store.isComplete = false
-    store.isFinish = allFinished
+    store.isFinish = C_QuestLog.IsComplete(questID)
     store.leaderboardCount = leaderboardCount
     store.text = showText
 
@@ -753,8 +750,6 @@ local function TooltipQuestListStore(_, arg)
     end
   end
 
-  --tip:AddLine("", completed .. "/" .. total)
-
   for i, questID in ipairs(entry.questID) do
     if entry.separateLines and entry.separateLines[i] then
       tip:AddLine(entry.separateLines[i])
@@ -779,7 +774,6 @@ local function TooltipQuestListStore(_, arg)
         questText = (
           store[questID].isComplete and
           (RED_FONT_COLOR_CODE .. CRITERIA_COMPLETED .. FONT_COLOR_CODE_CLOSE) or
-          --(GREEN_FONT_COLOR_CODE .. AVAILABLE .. FONT_COLOR_CODE_CLOSE)
 	  store[questID].text
         )
       end
@@ -806,7 +800,7 @@ local function TooltipQuestSpecificStore(_, arg)
 
   for prof, profInfo in pairs(profs or {}) do
     local needPlaceholder = entry.questIDList[prof] and ((not profInfo.finishedKP) or entry.reset == 'darkmoon')
-    for _, questID in ipairs(entry.questIDList[prof] or {}) do
+    for i, questID in ipairs(entry.questIDList[prof] or {}) do
       if store[questID] then
 	if entry.separateLines and entry.separateLines[i] then
 	  tip:AddLine(entry.separateLines[i])
@@ -910,7 +904,7 @@ function Module:OnInitialize()
 
       -- database cleanup
       for key in pairs(db.Professions) do
-        if not presets[key] and not key == "charProfessions" then
+        if not presets[key] and not (key == "charProfessions") then
           db.Professions[key] = nil
         end
       end
@@ -1083,8 +1077,8 @@ function Module:UpdateAll()
 
   for _, profID in ipairs({ p1, p2 }) do
     if profID then
-      pname, _, _, _, _, _, baseSkillLine = GetProfessionInfo(profID)
-      
+      local pname, _, _, _, _, _, baseSkillLine = GetProfessionInfo(profID)
+
       -- check KP
       local finishedKP = true
       if UnitLevel("player") < 60 then  -- haven't hit DF - no KP
