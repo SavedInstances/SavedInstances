@@ -785,6 +785,24 @@ local presets = {
     persists = true,
     fullObjective = false,
   },
+  -- Services Requested
+  ['df-services-requested'] = {
+    type = 'any',
+    expansion = 9,
+    index = 23,
+    name = L["Services Requested"],
+    questID = {
+      70589, -- Blacksmithing Services Requested
+      70591, -- Engineering Services Requested
+      70592, -- Inscription Services Requested
+      70593, -- Jewelcrafting Services Requested
+      70594, -- Leatherworking Services Requested
+      70595, -- Tailoring Services Requested
+    },
+    reset = 'weekly',
+    persists = true,
+    fullObjective = false,
+  },
 }
 
 ---update the progress of quest to the store
