@@ -100,6 +100,7 @@ globals = {
 	"ScenarioFinderFrame",
 	"BonusRollFrame",
 	"SettingsPanel",
+	"WeeklyRewardsFrame",
 
 	-- HybridScrollFrame
 	"HybridScrollFrame_CreateButtons",
