@@ -76,7 +76,7 @@ function Module:IsTooltipShown()
 end
 
 function Module.CloseIndicatorTip()
-  _G.GameTooltip:Hide()
+  GameTooltip:Hide()
   if indicatorTip then
     indicatorTip:Hide()
   end

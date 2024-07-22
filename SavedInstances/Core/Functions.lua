@@ -1,7 +1,6 @@
 local SI, L = unpack((select(2, ...)))
 
 -- Lua functions
-local _G = _G
 local format, strmatch, strupper = format, strmatch, strupper
 
 -- WoW API / Variables
@@ -18,7 +17,7 @@ end
 
 -- Chat Message and Bug Report Reminder
 function SI:ChatMsg(...)
-  _G.DEFAULT_CHAT_FRAME:AddMessage('|cFFFF0000SavedInstances|r: ' .. format(...))
+  DEFAULT_CHAT_FRAME:AddMessage('|cFFFF0000SavedInstances|r: ' .. format(...))
 end
 
 do

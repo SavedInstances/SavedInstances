@@ -175,7 +175,7 @@ function SI:specialQuests()
         qinfo.name = l:gsub("%p$","")
       end
     elseif not qinfo.name and qinfo.aid then
-      SI.ScanTooltip:SetOwner(_G.UIParent, 'ANCHOR_NONE')
+      SI.ScanTooltip:SetOwner(UIParent, 'ANCHOR_NONE')
       SI.ScanTooltip:SetAchievementByID(qinfo.aid)
       SI.ScanTooltip:Show()
       local l = _G[SI.ScanTooltip:GetName().."Text"..(qinfo.aline or "Left1")]
@@ -286,7 +286,7 @@ local QuestExceptions = {
   [56116] = "Regular", -- Even More Recycling
   -- Assaults
   [57157] = "Weekly", -- Assault: The Black Empire (Uldum)
-  [56064] = "Weekly", -- Assault: The Black Empite (Vale of Eternal Blossoms)
+  [56064] = "Weekly", -- Assault: The Black Empire (Vale of Eternal Blossoms)
   [55350] = "Weekly", -- Assault: Amathet Advance (Uldum)
   [57008] = "Weekly", -- Assault: The Warring Clans (Vale of Eternal Blossoms)
   [57728] = "Weekly", -- Assault: The Endless Swarm (Vale of Eternal Blossoms)

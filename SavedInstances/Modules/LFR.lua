@@ -181,4 +181,5 @@ for id, info in pairs(LFRInstances) do
     tbl[info.altid] = info
   end
 end
+
 SI.LFRInstances = tbl

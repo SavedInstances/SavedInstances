@@ -11,8 +11,8 @@ SI.Libs.QTip = LibStub('LibQTip-1.0')
 SI.Libs.LDB = LibStub('LibDataBroker-1.1', true)
 SI.Libs.LDBI = SI.Libs.LDB and LibStub('LibDBIcon-1.0', true)
 
-SI.ScanTooltip = CreateFrame('GameTooltip', 'SavedInstancesScanTooltip', _G.UIParent, 'GameTooltipTemplate')
-SI.ScanTooltip:SetOwner(_G.UIParent, 'ANCHOR_NONE')
+SI.ScanTooltip = CreateFrame('GameTooltip', 'SavedInstancesScanTooltip', UIParent, 'GameTooltipTemplate')
+SI.ScanTooltip:SetOwner(UIParent, 'ANCHOR_NONE')
 
 SI.playerName = UnitName('player')
 SI.playerLevel = UnitLevel('player')

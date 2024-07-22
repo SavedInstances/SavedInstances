@@ -25,6 +25,7 @@ local Emissaries = {
     questID = 51722,
   },
 }
+
 SI.Emissaries = Emissaries
 
 -- [Alliance] = Horde

@@ -260,15 +260,15 @@ function Module:KeyData(index, action)
 
   for toon, t in cpairs(SI.db.Toons, true) do
     if t[index] and t[index].link then
-      local toonname
+      local toonName
       if SI.db.Tooltip.ShowServer then
-        toonname = toon
+        toonName = toon
       else
         local tname, tserver = toon:match('^(.*) [-] (.*)$')
-        toonname = tname
+        toonName = tname
       end
 
-      action(toonname, t[index].link)
+      action(toonName, t[index].link)
     end
   end
 end
@@ -279,7 +279,7 @@ end
 
 function Module:ExportKeys(index)
   if not self.KeyExportWindow then
-    local f = CreateFrame("Frame", nil, _G.UIParent, "DialogBoxFrame")
+    local f = CreateFrame("Frame", nil, UIParent, "DialogBoxFrame")
     f:SetSize(700, 450)
     f:SetPoint("CENTER")
     f:SetFrameStrata("HIGH")

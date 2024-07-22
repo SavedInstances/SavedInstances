@@ -26,7 +26,7 @@ local DifficultyUtil_ID_DungeonChallenge = DifficultyUtil.ID.DungeonChallenge
 
 local function BonusRollShow()
   local t = SI.db.Toons[SI.thisToon]
-  local BonusRollFrame = _G.BonusRollFrame
+  local BonusRollFrame = BonusRollFrame
   if not t or not BonusRollFrame then return end
   local bonus = SI:BonusRollCount(SI.thisToon, BonusRollFrame.CurrentCountFrame.currencyID)
   if not bonus or not SI.db.Tooltip.AugmentBonus then
@@ -122,7 +122,7 @@ function Module:BONUS_ROLL_RESULT(event, rewardType, rewardLink, rewardQuantity,
   local roll = {
     name = bossname,
     time = now,
-    costCurrencyID = _G.BonusRollFrame.CurrentCountFrame.currencyID,
+    costCurrencyID = BonusRollFrame.CurrentCountFrame.currencyID,
   }
   if rewardType == "money" then
     roll.money = rewardQuantity

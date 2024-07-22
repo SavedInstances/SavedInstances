@@ -4,9 +4,6 @@ local Module = SI:NewModule('Paragon', 'AceEvent-3.0', 'AceTimer-3.0')
 -- Lua functions
 local pairs, tinsert = pairs, tinsert
 
--- WoW API / Variables
-local C_Reputation_GetFactionParagonInfo = C_Reputation.GetFactionParagonInfo
-
 local factionID = {
   -- Legion
   -- 1090, -- Kirin Tor - No paragon chest
@@ -65,7 +62,7 @@ function Module:UPDATE_FACTION()
   local t = SI.db.Toons[SI.thisToon]
   t.Paragon = {}
   for _, faction in pairs(factionID) do
-    local currentValue, _, _, hasRewardPending = C_Reputation_GetFactionParagonInfo(faction)
+    local currentValue, _, _, hasRewardPending = C_Reputation.GetFactionParagonInfo(faction)
     if currentValue and hasRewardPending then
       tinsert(t.Paragon, faction)
     end

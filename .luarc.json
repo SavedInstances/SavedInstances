@@ -3,7 +3,8 @@
     "workspace.ignoreDir": [
       ".github",
       ".vscode",
-      ".luacheckrc"
+      ".luacheckrc",
+      "Libs"
     ],
     "diagnostics.globals": [
         "abs",
@@ -281,7 +282,13 @@
         "wipe",
         "WORLD_MAP_THREATS",
         "YELLOW_FONT_COLOR_CODE",
-        "ZONE"
+        "ZONE",
+        "tIndexOf",
+        "C_Item",
+        "BonusRollFrame",
+        "C_AddOns",
+        "WeeklyRewardsFrame",
+        "SettingsPanel"
     ],
     "diagnostics.disable": [
         "lowercase-global",

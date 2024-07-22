@@ -11,7 +11,7 @@ assignees: ''
 <!-- What did you expect to happen and what happened instead? -->
 
 **Do you have an error log of what happened?**
-<!-- If you don't see any errors, make sure that error reporting is enabled (`/console scriptErrors 1`) or install https://www.curseforge.com/wow/addons/bugsack & https://www.curseforge.com/wow/addons/bug-grabber, yes both are needed. --> 
+<!-- If you don't see any errors, make sure that error reporting is enabled (`/console scriptErrors 1`) or install https://www.curseforge.com/wow/addons/bugsack & https://www.curseforge.com/wow/addons/bug-grabber, yes both are needed. -->
 
 **To Reproduce**
 <!-- Steps to reproduce the behavior:
@@ -19,7 +19,7 @@ assignees: ''
 2. Click on '....'
 3. Scroll down to '....'
 4. See error
---> 
+-->
 
 **Screenshots**
 

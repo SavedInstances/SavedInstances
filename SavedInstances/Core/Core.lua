@@ -3239,12 +3239,12 @@ SI.cpairs = cpairs
 -- tooltip event handlers
 
 local function OpenWeeklyRewards()
-  if _G.WeeklyRewardsFrame and _G.WeeklyRewardsFrame:IsVisible() then return end
+  if WeeklyRewardsFrame and WeeklyRewardsFrame:IsVisible() then return end
 
   if not C_AddOns.IsAddOnLoaded('Blizzard_WeeklyRewards') then
     C_AddOns.LoadAddOn('Blizzard_WeeklyRewards')
   end
-  _G.WeeklyRewardsFrame:Show()
+  WeeklyRewardsFrame:Show()
 end
 
 local function OpenLFD(self, instanceid, button)

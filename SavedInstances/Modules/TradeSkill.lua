@@ -306,7 +306,7 @@ function Module:RecordSkill(spellID, expires)
     local slink = GetSpellLink(spellID)
     if slink and #slink > 0 then  -- tt scan for the full name with profession
       link = "\124cffffd000\124Henchant:" .. spellID .. "\124h[X]\124h\124r"
-      SI.ScanTooltip:SetOwner(_G.UIParent, 'ANCHOR_NONE')
+      SI.ScanTooltip:SetOwner(UIParent, 'ANCHOR_NONE')
       SI.ScanTooltip:SetHyperlink(link)
       SI.ScanTooltip:Show()
       local line = _G[SI.ScanTooltip:GetName() .. "TextLeft1"]
@@ -335,17 +335,17 @@ function Module:RecordSkill(spellID, expires)
   end
   expires = floor(expires)
 
-  local sinfo = t.Skills[index] or {}
-  t.Skills[index] = sinfo
-  local change = expires - (sinfo.Expires or 0)
+  local skillInfo = t.Skills[index] or {}
+  t.Skills[index] = skillInfo
+  local change = expires - (skillInfo.Expires or 0)
   if abs(change) > 180 then -- updating expiration guess (more than 3 min update lag)
     SI:Debug("Trade skill cd: "..(link or title).." ("..spellID..") "..
-      (sinfo.Expires and format("%d",change).." sec" or "(new)")..
+      (skillInfo.Expires and format("%d",change).." sec" or "(new)")..
       " Local time: "..date("%c",expires))
   end
-  sinfo.Title = title
-  sinfo.Link = link
-  sinfo.Expires = expires
+  skillInfo.Title = title
+  skillInfo.Link = link
+  skillInfo.Expires = expires
 
   return true
 end
