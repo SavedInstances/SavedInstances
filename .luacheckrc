@@ -52,6 +52,7 @@ globals = {
 	"C_ChatInfo",
 	"C_Calendar",
 	"C_MythicPlus",
+	"C_Spell",
 	"CooldownFrame_Set",
 	"DEFAULT_CHAT_FRAME",
 	"GameTooltip_Hide",
