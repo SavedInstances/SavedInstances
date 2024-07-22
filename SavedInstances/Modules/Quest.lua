@@ -8,8 +8,8 @@ local _G = _G
 -- WoW API / Variables
 local C_Map_GetMapInfo = C_Map.GetMapInfo
 local GetAchievementCriteriaInfo = GetAchievementCriteriaInfo
-local GetItemInfo = GetItemInfo
-local GetSpellInfo = GetSpellInfo
+local GetItemInfo = C_Item.GetItemInfo and C_Item.GetItemInfo or GetItemInfo
+local GetSpellInfo = C_Spell.GetSpellInfo and C_Spell.GetSpellName or GetSpellInfo
 local LOOT = LOOT
 
 local _specialQuests = {
@@ -531,7 +531,9 @@ local TimewalkingItemQuest = {
   [55499] = 1971, -- The Shimmering Crystal - WOD Timewalking - Horde
   [64710] = 2274, -- Whispering Felflame Crystal - LEG Timewalking
 }
+
 for questID, tbl in pairs(TimewalkingItemQuest) do
   QuestExceptions[questID] = "Weekly"
 end
+
 SI.TimewalkingItemQuest = TimewalkingItemQuest

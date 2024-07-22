@@ -18,7 +18,8 @@ local CreateFrame = CreateFrame
 local GetBonusRollEncounterJournalLinkDifficulty = GetBonusRollEncounterJournalLinkDifficulty
 local GetDifficultyInfo = GetDifficultyInfo
 local GetInstanceInfo = GetInstanceInfo
-local GetItemInfoInstant = GetItemInfoInstant
+local GetItemInfoInstant = C_Item.GetItemInfoInstant and C_Item.GetItemInfoInstant or GetItemInfoInstant
+
 local GetRealZoneText = GetRealZoneText
 local GetSubZoneText = GetSubZoneText
 local DifficultyUtil_ID_DungeonChallenge = DifficultyUtil.ID.DungeonChallenge

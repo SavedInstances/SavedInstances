@@ -8,7 +8,7 @@ local ipairs, pairs = ipairs, pairs
 local C_Covenants_GetActiveCovenantID = C_Covenants.GetActiveCovenantID
 local C_CurrencyInfo_GetCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo
 local C_QuestLog_IsQuestFlaggedCompleted = C_QuestLog.IsQuestFlaggedCompleted
-local GetItemCount = GetItemCount
+local GetItemCount = C_Item.GetItemCount and C_Item.GetItemCount or GetItemCount
 local GetMoney = GetMoney
 
 local currency = {

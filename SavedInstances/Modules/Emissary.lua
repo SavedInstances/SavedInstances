@@ -9,9 +9,7 @@ local C_QuestLog_GetBountiesForMapID = C_QuestLog.GetBountiesForMapID
 local C_QuestLog_GetTitleForQuestID = C_QuestLog.GetTitleForQuestID
 local C_QuestLog_IsQuestFlaggedCompleted = C_QuestLog.IsQuestFlaggedCompleted
 local C_TaskQuest_GetQuestTimeLeftMinutes = C_TaskQuest.GetQuestTimeLeftMinutes
-local GetNumQuestLogRewardCurrencies = GetNumQuestLogRewardCurrencies
 local GetNumQuestLogRewards = GetNumQuestLogRewards
-local GetQuestLogRewardCurrencyInfo = GetQuestLogRewardCurrencyInfo
 local GetQuestLogRewardInfo = GetQuestLogRewardInfo
 local GetQuestLogRewardMoney = GetQuestLogRewardMoney
 local GetQuestObjectiveInfo = GetQuestObjectiveInfo
@@ -77,7 +75,7 @@ function Module:QUEST_LOG_UPDATE()
         local _, _, isFinish, questDone, questNeed = GetQuestObjectiveInfo(info.questID, 1, false)
         local money = GetQuestLogRewardMoney(info.questID)
         local numQuestRewards = GetNumQuestLogRewards(info.questID)
-        local numCurrencyRewards = GetNumQuestLogRewardCurrencies(info.questID)
+        local numCurrencyRewards = #C_QuestLog.GetQuestRewardCurrencies (info.questID)
         if title then
           SI.db.Emissary.Cache[info.questID] = title -- cache quest name
           local day = tonumber(floor(timeleft / 1440) + 1) -- [1, 2, 3]
@@ -108,7 +106,7 @@ function Module:QUEST_LOG_UPDATE()
               tbl.questReward.quality = quality
               tbl.questReward.itemLvl = itemLvl
             else
-              local _, _, quantity, currencyID = GetQuestLogRewardCurrencyInfo(1, info.questID)
+              local _, _, quantity, currencyID = C_QuestLog.GetQuestRewardCurrencies(1, info.questID)
               tbl.questReward.currencyID = currencyID
               tbl.questReward.quantity = quantity
             end

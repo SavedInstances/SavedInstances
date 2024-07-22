@@ -12,10 +12,10 @@ local C_TradeSkillUI_GetFilteredRecipeIDs = C_TradeSkillUI.GetFilteredRecipeIDs
 local C_TradeSkillUI_GetRecipeCooldown = C_TradeSkillUI.GetRecipeCooldown
 local C_TradeSkillUI_IsTradeSkillGuild = C_TradeSkillUI.IsTradeSkillGuild
 local C_TradeSkillUI_IsTradeSkillLinked = C_TradeSkillUI.IsTradeSkillLinked
-local GetItemCooldown = GetItemCooldown
-local GetItemInfo = GetItemInfo
-local GetSpellInfo = GetSpellInfo
-local GetSpellLink = GetSpellLink
+local GetItemCooldown = C_Container.GetItemCooldown and C_Container.GetItemCooldown or GetItemCooldown
+local GetItemInfo = C_Item.GetItemInfo and C_Item.GetItemInfo or GetItemInfo
+local GetSpellInfo = C_Spell.GetSpellInfo and C_Spell.GetSpellName or GetSpellInfo
+local GetSpellLink = C_Spell.GetSpellLink and C_Spell.GetSpellLink or GetSpellLink
 
 local tradeSpells = {
   -- Alchemy
@@ -243,14 +243,14 @@ local itemCDs = { -- [spellID] = itemID
 }
 
 local categoryNames = {
-  ["xmute"] = GetSpellInfo(2259).. ": "..L["Transmute"],
-  ["wildxmute"] = GetSpellInfo(2259).. ": "..L["Wild Transmute"],
-  ["legionxmute"] = GetSpellInfo(2259).. ": "..L["Legion Transmute"],
-  ["dragonflightxmute"] = GetSpellInfo(2259).. ": "..L["Dragonflight Transmute"],
-  ["dragonflightexper"] = GetSpellInfo(2259).. ": "..L["Dragonflight Experimentation"],
-  ["facet"] = GetSpellInfo(25229)..": "..L["Facets of Research"],
-  ["sphere"] = GetSpellInfo(7411).. ": "..GetSpellInfo(28027),
-  ["magni"] = GetSpellInfo(2108).. ": "..GetSpellInfo(140040)
+  ["xmute"] = GetSpellInfo(2259) .. ": "..L["Transmute"],
+  ["wildxmute"] = GetSpellInfo(2259) .. ": "..L["Wild Transmute"],
+  ["legionxmute"] = GetSpellInfo(2259) .. ": "..L["Legion Transmute"],
+  ["dragonflightxmute"] = GetSpellInfo(2259) .. ": "..L["Dragonflight Transmute"],
+  ["dragonflightexper"] = GetSpellInfo(2259) .. ": "..L["Dragonflight Experimentation"],
+  ["facet"] = GetSpellInfo(25229) ..": "..L["Facets of Research"],
+  ["sphere"] = GetSpellInfo(7411) .. ": "..GetSpellInfo(28027),
+  ["magni"] = GetSpellInfo(2108) .. ": "..GetSpellInfo(140040)
 }
 
 function Module:OnEnable()
