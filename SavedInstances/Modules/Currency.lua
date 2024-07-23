@@ -293,12 +293,6 @@ function Module:UpdateCurrency()
           ci.covenant = ci.covenant or {}
           ci.covenant[covenantID] = ci.amount
         end
-      elseif idx == 2800 then -- 10.2.6 Professions - Personal Tracker - S4 Spark Drops (Hidden)
-        local duration = SI:GetNextWeeklyResetTime() - 1713276000 -- 2024-04-16T14:00:00+00:00
-        ci.totalMax = floor(duration / 604800) -- 7 days
-      elseif idx == 3010 then -- 10.2.6 Rewards - Personal Tracker - S4 Dinar Drops (Hidden)
-        local duration = SI:GetNextWeeklyResetTime() - 1713880800 -- 2024-04-23T14:00:00+00:00
-        ci.totalMax = floor(duration / 604800) -- 7 days
       end
       -- don't store useless info
       if ci.weeklyMax == 0 then
