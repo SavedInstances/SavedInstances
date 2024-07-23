@@ -2,14 +2,14 @@ local SI, L = unpack((select(2, ...)))
 local Module = SI:NewModule("Quest")
 
 -- Lua functions
-local pairs, strtrim = pairs, strtrim
 local _G = _G
+local pairs, strtrim = pairs, strtrim
 
 -- WoW API / Variables
+local C_Item_GetItemInfo = C_Item.GetItemInfo
 local C_Map_GetMapInfo = C_Map.GetMapInfo
+local C_Spell_GetSpellName = C_Spell.GetSpellName
 local GetAchievementCriteriaInfo = GetAchievementCriteriaInfo
-local GetItemInfo = C_Item.GetItemInfo and C_Item.GetItemInfo or GetItemInfo
-local GetSpellInfo = C_Spell.GetSpellInfo and C_Spell.GetSpellName or GetSpellInfo
 local LOOT = LOOT
 
 local _specialQuests = {
@@ -131,22 +131,22 @@ local _specialQuests = {
   [72164] = { lid = 201301 }, -- Iridescent Ore
   [72165] = { lid = 201301 }, -- Iridescent Ore
   -- Disturbed Dirt / Expedition Scout's Pack
-  [66373] = { name = L["Disturbed Dirt / Expedition Scout's Pack"] .. " - " .. GetSpellInfo(2259) }, -- Alchemy
-  [66374] = { name = L["Disturbed Dirt / Expedition Scout's Pack"] .. " - " .. GetSpellInfo(2259) }, -- Alchemy
-  [66375] = { name = L["Disturbed Dirt / Expedition Scout's Pack"] .. " - " .. GetSpellInfo(45357) }, -- Inscription
-  [66376] = { name = L["Disturbed Dirt / Expedition Scout's Pack"] .. " - " .. GetSpellInfo(45357) }, -- Inscription
-  [66377] = { name = L["Disturbed Dirt / Expedition Scout's Pack"] .. " - " .. GetSpellInfo(7411) }, -- Enchanting
-  [66378] = { name = L["Disturbed Dirt / Expedition Scout's Pack"] .. " - " .. GetSpellInfo(7411) }, -- Enchanting
-  [66379] = { name = L["Disturbed Dirt / Expedition Scout's Pack"] .. " - " .. GetSpellInfo(4036) }, -- Engineering
-  [66380] = { name = L["Disturbed Dirt / Expedition Scout's Pack"] .. " - " .. GetSpellInfo(4036) }, -- Engineering
-  [66381] = { name = L["Disturbed Dirt / Expedition Scout's Pack"] .. " - " .. GetSpellInfo(2018) }, -- Blacksmithing
-  [66382] = { name = L["Disturbed Dirt / Expedition Scout's Pack"] .. " - " .. GetSpellInfo(2018) }, -- Blacksmithing
-  [66384] = { name = L["Disturbed Dirt / Expedition Scout's Pack"] .. " - " .. GetSpellInfo(2108) }, -- Leatherworking
-  [66385] = { name = L["Disturbed Dirt / Expedition Scout's Pack"] .. " - " .. GetSpellInfo(2108) }, -- Leatherworking
-  [66386] = { name = L["Disturbed Dirt / Expedition Scout's Pack"] .. " - " .. GetSpellInfo(3908) }, -- Tailoring
-  [66387] = { name = L["Disturbed Dirt / Expedition Scout's Pack"] .. " - " .. GetSpellInfo(3908) }, -- Tailoring
-  [66388] = { name = L["Disturbed Dirt / Expedition Scout's Pack"] .. " - " .. GetSpellInfo(25229) }, -- Jewelcrafting
-  [66389] = { name = L["Disturbed Dirt / Expedition Scout's Pack"] .. " - " .. GetSpellInfo(25229) }, -- Jewelcrafting
+  [66373] = { name = L["Disturbed Dirt / Expedition Scout's Pack"] .. " - " .. C_Spell_GetSpellName(2259) }, -- Alchemy
+  [66374] = { name = L["Disturbed Dirt / Expedition Scout's Pack"] .. " - " .. C_Spell_GetSpellName(2259) }, -- Alchemy
+  [66375] = { name = L["Disturbed Dirt / Expedition Scout's Pack"] .. " - " .. C_Spell_GetSpellName(45357) }, -- Inscription
+  [66376] = { name = L["Disturbed Dirt / Expedition Scout's Pack"] .. " - " .. C_Spell_GetSpellName(45357) }, -- Inscription
+  [66377] = { name = L["Disturbed Dirt / Expedition Scout's Pack"] .. " - " .. C_Spell_GetSpellName(7411) }, -- Enchanting
+  [66378] = { name = L["Disturbed Dirt / Expedition Scout's Pack"] .. " - " .. C_Spell_GetSpellName(7411) }, -- Enchanting
+  [66379] = { name = L["Disturbed Dirt / Expedition Scout's Pack"] .. " - " .. C_Spell_GetSpellName(4036) }, -- Engineering
+  [66380] = { name = L["Disturbed Dirt / Expedition Scout's Pack"] .. " - " .. C_Spell_GetSpellName(4036) }, -- Engineering
+  [66381] = { name = L["Disturbed Dirt / Expedition Scout's Pack"] .. " - " .. C_Spell_GetSpellName(2018) }, -- Blacksmithing
+  [66382] = { name = L["Disturbed Dirt / Expedition Scout's Pack"] .. " - " .. C_Spell_GetSpellName(2018) }, -- Blacksmithing
+  [66384] = { name = L["Disturbed Dirt / Expedition Scout's Pack"] .. " - " .. C_Spell_GetSpellName(2108) }, -- Leatherworking
+  [66385] = { name = L["Disturbed Dirt / Expedition Scout's Pack"] .. " - " .. C_Spell_GetSpellName(2108) }, -- Leatherworking
+  [66386] = { name = L["Disturbed Dirt / Expedition Scout's Pack"] .. " - " .. C_Spell_GetSpellName(3908) }, -- Tailoring
+  [66387] = { name = L["Disturbed Dirt / Expedition Scout's Pack"] .. " - " .. C_Spell_GetSpellName(3908) }, -- Tailoring
+  [66388] = { name = L["Disturbed Dirt / Expedition Scout's Pack"] .. " - " .. C_Spell_GetSpellName(25229) }, -- Jewelcrafting
+  [66389] = { name = L["Disturbed Dirt / Expedition Scout's Pack"] .. " - " .. C_Spell_GetSpellName(25229) }, -- Jewelcrafting
 
   -- Old Vanilla Bosses during Anniversary Event
   [47461] = { daily = true, name = L["Lord Kazzak"] }, -- Lord Kazzak
@@ -160,7 +160,7 @@ function SI:specialQuests()
     qinfo.quest = qid
 
     if not qinfo.name and (qinfo.lid or qinfo.lid1) then
-      local itemname, itemlink = GetItemInfo(qinfo.lid or qinfo.lid1)
+      local itemname, itemlink = C_Item_GetItemInfo(qinfo.lid or qinfo.lid1)
       if itemlink and qinfo.lid then
         qinfo.name = itemlink .. " (" .. LOOT .. ")"
       elseif itemname and qinfo.lid1 then
@@ -184,7 +184,7 @@ function SI:specialQuests()
         qinfo.name = l:gsub("%p$", "")
       end
     elseif not qinfo.name and qinfo.sid then
-      qinfo.name = GetSpellInfo(qinfo.sid)
+      qinfo.name = C_Spell_GetSpellName(qinfo.sid)
     end
     if not qinfo.name or #qinfo.name == 0 then
       local title, link = SI:QuestInfo(qid)

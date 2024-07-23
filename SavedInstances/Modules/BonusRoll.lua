@@ -9,19 +9,19 @@ local ignoreItem = {
 }
 
 -- Lua functions
-local tostring, ipairs, time, pairs, strsplit = tostring, ipairs, time, pairs, strsplit
-local tonumber, tinsert, sort, select = tonumber, tinsert, sort, select
 local _G = _G
+local ipairs, pairs, select, sort, strsplit = ipairs, pairs, select, sort, strsplit
+local time, tinsert, tonumber, tostring = time, tinsert, tonumber, tostring
 
 -- WoW API / Variables
+local C_Item_GetItemInfoInstant = C_Item.GetItemInfoInstant
 local CreateFrame = CreateFrame
-local GetBonusRollEncounterJournalLinkDifficulty = GetBonusRollEncounterJournalLinkDifficulty
 local GetDifficultyInfo = GetDifficultyInfo
 local GetInstanceInfo = GetInstanceInfo
-local GetItemInfoInstant = C_Item.GetItemInfoInstant and C_Item.GetItemInfoInstant or GetItemInfoInstant
-
 local GetRealZoneText = GetRealZoneText
 local GetSubZoneText = GetSubZoneText
+
+local GetBonusRollEncounterJournalLinkDifficulty = GetBonusRollEncounterJournalLinkDifficulty
 local DifficultyUtil_ID_DungeonChallenge = DifficultyUtil.ID.DungeonChallenge
 
 local function BonusRollShow()
@@ -171,7 +171,7 @@ function SI:BonusRollCount(toon, currencyID)
       if not tbl.item then
         count = count + 1
       else
-        local itemID = GetItemInfoInstant(tbl.item)
+        local itemID = C_Item_GetItemInfoInstant(tbl.item)
         if ignoreItem[itemID] then
           count = count + 1
         else
