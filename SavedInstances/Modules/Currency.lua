@@ -122,6 +122,20 @@ local currency = {
   2812, -- Aspect's Awakened Crest
   2800, -- 10.2.6 Professions - Personal Tracker - S4 Spark Drops (Hidden)
   3010, -- 10.2.6 Rewards - Personal Tracker - S4 Dinar Drops (Hidden)
+  2778, -- Bronze
+
+  -- The War Within
+  3089, -- Residual Memories
+  2803, -- Undercoin
+  2815, -- Resonance Crystals
+  3028, -- Restored Coffer Key
+  3056, -- Kej
+  3008, -- Valorstones
+  2914, -- Weathered Harbinger Crest
+  2915, -- Carved Harbinger Crest
+  2916, -- Runed Harbinger Crest
+  2917, -- Gilded Harbinger Crest
+  3023, -- 11.0 Professions - Personal Tracker - S1 Spark Drops (Hidden)
 }
 SI.currency = currency
 
@@ -209,6 +223,7 @@ Module.OverrideName = {
   [2774] = L["Loot Spark of Dreams"], -- 10.2 Professions - Personal Tracker - S3 Spark Drops (Hidden)
   [2800] = L["Loot Spark of Awakening"], -- 10.2.6 Professions - Personal Tracker - S4 Spark Drops (Hidden)
   [3010] = L["Loot Antique Bronze Bullion"], -- 10.2.6 Rewards - Personal Tracker - S4 Dinar Drops (Hidden)
+  [3023] = L["Loot Spark of Omens"], -- 11.0 Professions - Personal Tracker - S1 Spark Drops (Hidden)
 }
 
 Module.OverrideTexture = {
@@ -216,6 +231,7 @@ Module.OverrideTexture = {
   [2774] = 5341573, -- 10.2 Professions - Personal Tracker - S3 Spark Drops (Hidden)
   [2800] = 4693222, -- 10.2.6 Professions - Personal Tracker - S4 Spark Drops (Hidden)
   [3010] = 4555657, -- 10.2.6 Rewards - Personal Tracker - S4 Dinar Drops (Hidden)
+  [3023] = 5929759, -- 11.0 Professions - Personal Tracker - S1 Spark Drops (Hidden)
 }
 
 function Module:OnEnable()
