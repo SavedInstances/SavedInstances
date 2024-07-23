@@ -4,6 +4,7 @@ local Module = SI:NewModule("WorldBoss")
 -- encounter index is embedded in the Hjournal hyperlink
 -- https://wago.tools/db2/JournalEncounter
 -- https://wago.tools/db2/QuestV2CliTask?page=2&filter[Flags_0]=0x90040&filter[QuestInfoID]=112
+-- https://wago.tools/db2/QuestV2CliTask?page=1&filter[QuestInfoID]=exact%3A289
 SI.WorldBosses = {
   -- Mist of Pandaria
   [691] = { quest = 32099, expansion = 4, level = 35 }, -- Sha of Anger
@@ -84,6 +85,12 @@ SI.WorldBosses = {
   [2518] = { quest = 69928, expansion = 9, level = 70 }, -- Liskanoth, The Futurebane
   [2531] = { quest = 74892, expansion = 9, level = 70 }, -- The Zaqali Elders
   [2562] = { quest = 76367, expansion = 9, level = 70 }, -- Aurostor, The Hibernator
+
+  -- The War Within
+  [2625] = { quest=81624, expansion=10, level=80 }, -- Orta, the Broken Mountain
+  [2635] = { quest=82653, expansion=10, level=80 }, -- Aggregation of Horrors
+  [2636] = { quest=81653, expansion=10, level=80 }, -- Shurrai, Atrocity of the Undersea
+  [2637] = { quest=81630, expansion=10, level=80 }, -- Kordac, the Dormant Protector
 
   -- bosses with no EJ entry (eid is a placeholder)
   [9001] = { quest = 38276, name = GARRISON_LOCATION_TOOLTIP .. " " .. BOSS, expansion = 5, level = 40 },
