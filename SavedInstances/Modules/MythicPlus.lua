@@ -40,12 +40,18 @@ local ItemLevelsBySeason = {
     ["HEROIC"] = 489,
     ["MYTHIC"] = 506,
   },
+  -- TWW Season 1
+  [99] = {
+    ["HEROIC"] = 593,
+    ["MYTHIC"] = 603,
+  },
 }
 
 local KeystoneAbbrev = {
   -- Cataclysm
   [438] = L["VP"], -- The Vortex Pinnacle
   [456] = L["TOTT"], -- Throne of the Tides
+  [507] = L["GB"], -- Grim Batol
 
   -- Mists of Pandaria
   [2] = L["TJS"], -- Temple of the Jade Serpent
@@ -108,6 +114,16 @@ local KeystoneAbbrev = {
   [406] = L["HOI"], -- Halls of Infusion
   [463] = L["FALL"], -- Dawn of the Infinite: Galakrond's Fall
   [464] = L["RISE"], -- Dawn of the Infinite: Murozond's Rise
+
+  -- The War Within
+  [499] = L["PSF"], -- Priory of the Sacred Flame
+  [500] = L["ROOK"], -- The Rookery
+  [501] = L["SV"], -- The Stonevault
+  [502] = L["COT"], -- City of Threads
+  [503] = L["ARAK"], -- Ara-Kara, City of Echoes
+  [504] = L["DFC"], -- Darkflame Cleft
+  [505] = L["DAWN"], -- The Dawnbreaker
+  [506] = L["BREW"], -- Cinderbrew Meadery
 }
 SI.KeystoneAbbrev = KeystoneAbbrev
 
