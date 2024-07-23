@@ -8,7 +8,7 @@ local ipairs, pairs = ipairs, pairs
 local C_Covenants_GetActiveCovenantID = C_Covenants.GetActiveCovenantID
 local C_CurrencyInfo_GetCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo
 local C_QuestLog_IsQuestFlaggedCompleted = C_QuestLog.IsQuestFlaggedCompleted
-local GetItemCount = C_Item.GetItemCount and C_Item.GetItemCount or GetItemCount
+local C_Item_GetItemCount = C_Item.GetItemCount
 local GetMoney = GetMoney
 
 local currency = {
@@ -262,7 +262,7 @@ function Module:UpdateCurrency()
           end
         end
         if tbl.relatedItem then
-          ci.relatedItemCount = GetItemCount(tbl.relatedItem.id)
+          ci.relatedItemCount = C_Item_GetItemCount(tbl.relatedItem.id)
         end
       elseif idx == 1822 then -- Renown
         -- plus one to amount and totalMax
@@ -309,7 +309,7 @@ function Module:UpdateCurrencyItem()
 
   for currencyID, tbl in pairs(specialCurrency) do
     if tbl.relatedItem and SI.db.Toons[SI.thisToon].currency[currencyID] then
-      SI.db.Toons[SI.thisToon].currency[currencyID].relatedItemCount = GetItemCount(tbl.relatedItem.id)
+      SI.db.Toons[SI.thisToon].currency[currencyID].relatedItemCount = C_Item_GetItemCount(tbl.relatedItem.id)
     end
   end
 end

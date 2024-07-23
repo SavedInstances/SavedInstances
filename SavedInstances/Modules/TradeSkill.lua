@@ -2,20 +2,20 @@ local SI, L = unpack((select(2, ...)))
 local Module = SI:NewModule("TradeSkill", "AceEvent-3.0", "AceTimer-3.0", "AceBucket-3.0")
 
 -- Lua functions
-local pairs, type, floor, abs, format = pairs, type, floor, abs, format
-local date, ipairs, tonumber, time = date, ipairs, tonumber, time
 local _G = _G
+local abs, date, floor, format, ipairs = abs, date, floor, format, ipairs
+local pairs, time, tonumber, type = pairs, time, tonumber, type
 
 -- WoW API / Variables
+local C_Item_GetItemCooldown = C_Item.GetItemCooldown
+local C_Item_GetItemInfo = C_Item.GetItemInfo
+local C_Spell_GetSpellLink = C_Spell.GetSpellLink
+local C_Spell_GetSpellName = C_Spell.GetSpellName
 local C_TradeSkillUI_GetAllRecipeIDs = C_TradeSkillUI.GetAllRecipeIDs
 local C_TradeSkillUI_GetFilteredRecipeIDs = C_TradeSkillUI.GetFilteredRecipeIDs
 local C_TradeSkillUI_GetRecipeCooldown = C_TradeSkillUI.GetRecipeCooldown
 local C_TradeSkillUI_IsTradeSkillGuild = C_TradeSkillUI.IsTradeSkillGuild
 local C_TradeSkillUI_IsTradeSkillLinked = C_TradeSkillUI.IsTradeSkillLinked
-local GetItemCooldown = C_Container.GetItemCooldown and C_Container.GetItemCooldown or GetItemCooldown
-local GetItemInfo = C_Item.GetItemInfo and C_Item.GetItemInfo or GetItemInfo
-local GetSpellInfo = C_Spell.GetSpellInfo and C_Spell.GetSpellName or GetSpellInfo
-local GetSpellLink = C_Spell.GetSpellLink and C_Spell.GetSpellLink or GetSpellLink
 
 local tradeSpells = {
   -- Alchemy
@@ -243,14 +243,14 @@ local itemCDs = { -- [spellID] = itemID
 }
 
 local categoryNames = {
-  ["xmute"] = GetSpellInfo(2259) .. ": " .. L["Transmute"],
-  ["wildxmute"] = GetSpellInfo(2259) .. ": " .. L["Wild Transmute"],
-  ["legionxmute"] = GetSpellInfo(2259) .. ": " .. L["Legion Transmute"],
-  ["dragonflightxmute"] = GetSpellInfo(2259) .. ": " .. L["Dragonflight Transmute"],
-  ["dragonflightexper"] = GetSpellInfo(2259) .. ": " .. L["Dragonflight Experimentation"],
-  ["facet"] = GetSpellInfo(25229) .. ": " .. L["Facets of Research"],
-  ["sphere"] = GetSpellInfo(7411) .. ": " .. GetSpellInfo(28027),
-  ["magni"] = GetSpellInfo(2108) .. ": " .. GetSpellInfo(140040),
+  ["xmute"] = C_Spell_GetSpellName(2259) .. ": " .. L["Transmute"],
+  ["wildxmute"] = C_Spell_GetSpellName(2259) .. ": " .. L["Wild Transmute"],
+  ["legionxmute"] = C_Spell_GetSpellName(2259) .. ": " .. L["Legion Transmute"],
+  ["dragonflightxmute"] = C_Spell_GetSpellName(2259) .. ": " .. L["Dragonflight Transmute"],
+  ["dragonflightexper"] = C_Spell_GetSpellName(2259) .. ": " .. L["Dragonflight Experimentation"],
+  ["facet"] = C_Spell_GetSpellName(25229) .. ": " .. L["Facets of Research"],
+  ["sphere"] = C_Spell_GetSpellName(7411) .. ": " .. C_Spell_GetSpellName(28027),
+  ["magni"] = C_Spell_GetSpellName(2108) .. ": " .. C_Spell_GetSpellName(140040)
 }
 
 function Module:OnEnable()
@@ -260,7 +260,7 @@ end
 
 function Module:ScanItemCDs()
   for spellID, itemID in pairs(itemCDs) do
-    local start, duration = GetItemCooldown(itemID)
+    local start, duration = C_Item_GetItemCooldown(itemID)
     if start and duration and start > 0 then
       self:RecordSkill(spellID, SI:GetTimeToTime(start + duration))
     end
@@ -276,7 +276,7 @@ function Module:RecordSkill(spellID, expires)
     self.missingWarned = self.missingWarned or {}
     if expires and expires > 0 and not self.missingWarned[spellID] then
       self.missingWarned[spellID] = true
-      SI:BugReport("Unrecognized trade skill cd " .. (GetSpellInfo(spellID) or "??") .. " (" .. spellID .. ")")
+      SI:BugReport("Unrecognized trade skill cd " .. (C_Spell_GetSpellName(spellID) or "??") .. " (" .. spellID .. ")")
     end
     return
   end
@@ -285,7 +285,7 @@ function Module:RecordSkill(spellID, expires)
   t.Skills = t.Skills or {}
 
   local index = spellID
-  local spellName = GetSpellInfo(spellID)
+  local spellName = C_Spell_GetSpellName(spellID)
   local title = spellName
   local link = nil
   if info == "item" then
@@ -298,14 +298,14 @@ function Module:RecordSkill(spellID, expires)
     end
     if itemCDs[spellID] then
       -- use item name as some item spellnames are ambiguous or wrong
-      title, link = GetItemInfo(itemCDs[spellID])
+      title, link = C_Item_GetItemInfo(itemCDs[spellID])
       title = title or spellName
     end
   elseif type(info) == "string" then
     index = info
     title = categoryNames[info] or title
   elseif expires ~= 0 then
-    local slink = GetSpellLink(spellID)
+    local slink = C_Spell_GetSpellLink(spellID)
     if slink and #slink > 0 then -- tt scan for the full name with profession
       link = "\124cffffd000\124Henchant:" .. spellID .. "\124h[X]\124h\124r"
       SI.ScanTooltip:SetOwner(UIParent, "ANCHOR_NONE")
@@ -412,7 +412,7 @@ function Module:UNIT_SPELLCAST_SUCCEEDED(_, unit, _, spellID)
     return
   end
 
-  SI:Debug("UNIT_SPELLCAST_SUCCEEDED: %s (%s)", GetSpellLink(spellID), spellID)
+  SI:Debug("UNIT_SPELLCAST_SUCCEEDED: %s (%s)", C_Spell_GetSpellLink(spellID), spellID)
 
   if not self:RecordSkill(spellID) then
     return

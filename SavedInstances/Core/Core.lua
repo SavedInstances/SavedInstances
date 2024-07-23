@@ -8,7 +8,7 @@ local maxid = 3000 -- highest possible value for an instanceID, current max (Bat
 
 local table, math, bit, string, pairs, ipairs, unpack, strsplit, time, type, wipe, tonumber, select, strsub =
   table, math, bit, string, pairs, ipairs, unpack, strsplit, time, type, wipe, tonumber, select, strsub
-local GetSavedInstanceInfo, GetNumSavedInstances, GetSavedInstanceChatLink, GetLFGDungeonNumEncounters, GetLFGDungeonEncounterInfo, GetNumRandomDungeons, GetLFGRandomDungeonInfo, GetLFGDungeonInfo, GetLFGDungeonRewards, GetTime, UnitIsUnit, GetInstanceInfo, IsInInstance, SecondsToTime, GetNumGroupMembers, UnitAura =
+local GetSavedInstanceInfo, GetNumSavedInstances, GetSavedInstanceChatLink, GetLFGDungeonNumEncounters, GetLFGDungeonEncounterInfo, GetNumRandomDungeons, GetLFGRandomDungeonInfo, GetLFGDungeonInfo, GetLFGDungeonRewards, GetTime, UnitIsUnit, GetInstanceInfo, IsInInstance, SecondsToTime, GetNumGroupMembers =
   GetSavedInstanceInfo,
   GetNumSavedInstances,
   GetSavedInstanceChatLink,
@@ -23,11 +23,7 @@ local GetSavedInstanceInfo, GetNumSavedInstances, GetSavedInstanceChatLink, GetL
   GetInstanceInfo,
   IsInInstance,
   SecondsToTime,
-  GetNumGroupMembers,
-  UnitAura
-
-local GetSpellInfo = C_Spell.GetSpellInfo and C_Spell.GetSpellName or GetSpellInfo
-local GetItemInfo = C_Item.GetItemInfo and C_Item.GetItemInfo or GetItemInfo
+  GetNumGroupMembers
 
 local RAID_CLASS_COLORS = RAID_CLASS_COLORS
 local FONTEND = FONT_COLOR_CODE_CLOSE
@@ -1276,23 +1272,16 @@ function SI:UpdateInstance(id)
 end
 
 function SI:updateSpellTip(spellID)
-  local slot
   SI.db.spelltip = SI.db.spelltip or {}
   SI.db.spelltip[spellID] = SI.db.spelltip[spellID] or {}
-  for i = 1, 255 do
-    local id = select(10, UnitAura("player", i, "HARMFUL"))
-    if id == spellID then
-      slot = i
-      break
-    end
-  end
-  if slot then
-    SI.ScanTooltip:SetOwner(UIParent, "ANCHOR_NONE")
-    SI.ScanTooltip:SetUnitDebuff("player", slot)
-    SI.ScanTooltip:Show()
-    for i = 1, SI.ScanTooltip:NumLines() - 1 do
-      local textLeft = _G[SI.ScanTooltip:GetName() .. "TextLeft" .. i]
-      SI.db.spelltip[spellID][i] = textLeft:GetText()
+
+  local auraInfo = C_UnitAuras.GetPlayerAuraBySpellID(spellID)
+  if auraInfo and auraInfo.auraInstanceID then
+    local data = C_TooltipInfo.GetUnitDebuffByAuraInstanceID('player', auraInfo.auraInstanceID)
+    if data and data.lines then
+      for i, line in ipairs(data.lines) do
+        SI.db.spelltip[spellID][i] = line.leftText
+      end
     end
   end
 end
@@ -1568,14 +1557,17 @@ function SI:QuestIsDarkmoonMonthly()
   if QuestIsDaily() then
     return false
   end
+
   local id = GetQuestID()
   local scope = id and QuestExceptions[id]
   if scope and scope ~= "Darkmoon" then
+    -- one-time referral quests
     return false
-  end -- one-time referral quests
-  for i = 1, GetNumRewardCurrencies() do
-    local name, texture, amount = GetQuestCurrencyInfo("reward", i)
-    if texture == 134481 then
+  end
+
+  local currencyRewards = C_QuestLog.GetQuestRewardCurrencies(id)
+  for _, reward in ipairs(currencyRewards) do
+    if reward.currencyID == 515 then
       return true
     end
   end
@@ -1936,7 +1928,7 @@ hoverTooltip.ShowEmissaryTooltip = function(cell, arg, ...)
   if info.questReward then
     text = ""
     if info.questReward.itemName then
-      text = "|c" .. select(4, GetItemQualityColor(info.questReward.quality)) .. "[" .. info.questReward.itemName .. "(" .. info.questReward.itemLvl .. ")]" .. FONTEND
+      text = "|c" .. select(4, C_Item.GetItemQualityColor(info.questReward.quality)) .. "[" .. info.questReward.itemName .. "(" .. info.questReward.itemLvl .. ")]" .. FONTEND
     elseif info.questReward.money then
       text = GetMoneyString(info.questReward.money)
     elseif info.questReward.currencyID then
@@ -1984,7 +1976,7 @@ hoverTooltip.ShowCallingTooltip = function(cell, arg, ...)
   end
   indicatortip:SetCell(2, 1, text or L["Calling Missing"], "LEFT", 2)
   if info.questReward and info.questReward.itemName then
-    text = "|c" .. select(4, GetItemQualityColor(info.questReward.quality)) .. "[" .. info.questReward.itemName .. "]" .. FONTEND
+    text = "|c" .. select(4, C_Item.GetItemQualityColor(info.questReward.quality)) .. "[" .. info.questReward.itemName .. "]" .. FONTEND
     indicatortip:AddLine()
     indicatortip:SetCell(3, 1, text, "RIGHT", 2)
   end
@@ -2000,9 +1992,9 @@ hoverTooltip.ShowParagonTooltip = function(cell, arg, ...)
   local indicatortip = Tooltip:AcquireIndicatorTip(2, "LEFT", "RIGHT")
   indicatortip:AddHeader(ClassColorise(t.Class, toon), #t.Paragon)
   for k, v in pairs(t.Paragon) do
-    local name = GetFactionInfoByID(v)
+    local data = C_Reputation.GetFactionDataByID(v)
     indicatortip:AddLine()
-    indicatortip:SetCell(k + 1, 1, name, "RIGHT", 2)
+    indicatortip:SetCell(k + 1, 1, data.name, "RIGHT", 2)
   end
   indicatortip:Show()
 end
@@ -2455,7 +2447,7 @@ hoverTooltip.ShowCurrencyTooltip = function(cell, arg, ...)
       indicatortip:AddLine(" ")
       spacer = true
     end
-    local itemName = GetItemInfo(SI.specialCurrency[idx].relatedItem.id) or ""
+    local itemName = C_Item.GetItemNameByID(SI.specialCurrency[idx].relatedItem.id) or ""
     if SI.specialCurrency[idx].relatedItem.holdingMax then
       local holdingMax = SI.specialCurrency[idx].relatedItem.holdingMax
       indicatortip:AddLine(itemName .. ": " .. CurrencyColor(ci.relatedItemCount or 0, holdingMax) .. "/" .. holdingMax)
@@ -2478,7 +2470,7 @@ hoverTooltip.ShowCurrencySummary = function(cell, arg, ...)
   local itemFlag, itemIcon
   if SI.specialCurrency[idx] and SI.specialCurrency[idx].relatedItem then
     itemFlag = true
-    itemIcon = select(10, GetItemInfo(SI.specialCurrency[idx].relatedItem.id))
+    itemIcon = C_Item.GetItemIconByID(SI.specialCurrency[idx].relatedItem.id)
     itemIcon = itemIcon and (" \124T" .. itemIcon .. ":0\124t") or ""
   end
   local indicatortip = Tooltip:AcquireIndicatorTip(2, "LEFT", "RIGHT")
@@ -3810,7 +3802,7 @@ function SI:ShowTooltip(anchorframe)
       end
       local cooldown = ITEM_COOLDOWN_TOTAL:gsub("%%s", ""):gsub("%p", "")
       cd1 = cd1 and tooltip:AddLine(YELLOWFONT .. LFG_TYPE_RANDOM_DUNGEON .. cooldown .. FONTEND)
-      cd2 = cd2 and tooltip:AddLine(YELLOWFONT .. GetSpellInfo(71041) .. FONTEND)
+      cd2 = cd2 and tooltip:AddLine(YELLOWFONT .. C_Spell.GetSpellName(71041) .. FONTEND)
     end
     for toon, t in cpairs(SI.db.Toons, true) do
       local d1 = (t.LFG1 and t.LFG1 - time()) or -1
