@@ -1,5 +1,5 @@
 local SI, L = unpack((select(2, ...)))
-local Module = SI:NewModule('Quest')
+local Module = SI:NewModule("Quest")
 
 -- Lua functions
 local pairs, strtrim = pairs, strtrim
@@ -14,145 +14,145 @@ local LOOT = LOOT
 
 local _specialQuests = {
   -- Isle of Thunder
-  [32610] = { zid=504, lid=94221 }, -- Shan'ze Ritual Stone looted
-  [32611] = { zid=504, lid1=95350 },-- Incantation of X looted
-  [32626] = { zid=504, lid=94222 }, -- Key to the Palace of Lei Shen looted
-  [32609] = { zid=504, aid=8104, aline="Left5"  }, -- Trove of the Thunder King (outdoor chest)
+  [32610] = { zid = 504, lid = 94221 }, -- Shan'ze Ritual Stone looted
+  [32611] = { zid = 504, lid1 = 95350 }, -- Incantation of X looted
+  [32626] = { zid = 504, lid = 94222 }, -- Key to the Palace of Lei Shen looted
+  [32609] = { zid = 504, aid = 8104, aline = "Left5" }, -- Trove of the Thunder King (outdoor chest)
 
   -- Timeless Isle
-  [32962] = { zid=554, aid=8743, daily=true },  -- Zarhym
-  [32961] = { zid=554, daily=true },  -- Scary Ghosts and Nice Sprites
-  [32956] = { zid=554, aid=8727, acid=2, aline="Right7" }, -- Blackguard's Jetsam
-  [32957] = { zid=554, aid=8727, acid=1, aline="Left7" },  -- Sunken Treasure
-  [32970] = { zid=554, aid=8727, acid=3, aline="Left8" },  -- Gleaming Treasure Satchel
-  [32968] = { zid=554, aid=8726, acid=2, aline="Right7" }, -- Rope-Bound Treasure Chest
-  [32969] = { zid=554, aid=8726, acid=1, aline="Left7" },  -- Gleaming Treasure Chest
-  [32971] = { zid=554, aid=8726, acid=3, aline="Left8" },  -- Mist-Covered Treasure Chest
+  [32962] = { zid = 554, aid = 8743, daily = true }, -- Zarhym
+  [32961] = { zid = 554, daily = true }, -- Scary Ghosts and Nice Sprites
+  [32956] = { zid = 554, aid = 8727, acid = 2, aline = "Right7" }, -- Blackguard's Jetsam
+  [32957] = { zid = 554, aid = 8727, acid = 1, aline = "Left7" }, -- Sunken Treasure
+  [32970] = { zid = 554, aid = 8727, acid = 3, aline = "Left8" }, -- Gleaming Treasure Satchel
+  [32968] = { zid = 554, aid = 8726, acid = 2, aline = "Right7" }, -- Rope-Bound Treasure Chest
+  [32969] = { zid = 554, aid = 8726, acid = 1, aline = "Left7" }, -- Gleaming Treasure Chest
+  [32971] = { zid = 554, aid = 8726, acid = 3, aline = "Left8" }, -- Mist-Covered Treasure Chest
 
   -- Garrison
-  [37638] = { zone=GARRISON_LOCATION_TOOLTIP, aid=9162 }, -- Bronze Defender
-  [37639] = { zone=GARRISON_LOCATION_TOOLTIP, aid=9164 }, -- Silver Defender
-  [37640] = { zone=GARRISON_LOCATION_TOOLTIP, aid=9165 }, -- Golden Defender
-  [38482] = { zone=GARRISON_LOCATION_TOOLTIP, aid=9826 }, -- Platinum Defender
+  [37638] = { zone = GARRISON_LOCATION_TOOLTIP, aid = 9162 }, -- Bronze Defender
+  [37639] = { zone = GARRISON_LOCATION_TOOLTIP, aid = 9164 }, -- Silver Defender
+  [37640] = { zone = GARRISON_LOCATION_TOOLTIP, aid = 9165 }, -- Golden Defender
+  [38482] = { zone = GARRISON_LOCATION_TOOLTIP, aid = 9826 }, -- Platinum Defender
 
   -- Tanaan Jungle
-  [39287] = { zid=534, daily=true }, -- Deathtalon
-  [39288] = { zid=534, daily=true }, -- Terrorfist
-  [39289] = { zid=534, daily=true }, -- Doomroller
-  [39290] = { zid=534, daily=true }, -- Vengeance
+  [39287] = { zid = 534, daily = true }, -- Deathtalon
+  [39288] = { zid = 534, daily = true }, -- Terrorfist
+  [39289] = { zid = 534, daily = true }, -- Doomroller
+  [39290] = { zid = 534, daily = true }, -- Vengeance
 
   -- Order Hall
-  [42481] = { zid=717, daily=true }, -- Warlock: Ritual of Doom
-  [43763] = { zid=695, lid=141069 }, -- Warrior: Skyhold Chest of Riches
-  [44707] = { zid=719, daily=true, sid=228651 }, -- Demon Hunter: Twisting Nether
+  [42481] = { zid = 717, daily = true }, -- Warlock: Ritual of Doom
+  [43763] = { zid = 695, lid = 141069 }, -- Warrior: Skyhold Chest of Riches
+  [44707] = { zid = 719, daily = true, sid = 228651 }, -- Demon Hunter: Twisting Nether
 
   -- Mechagon
-  [57081] = { name=L["Mechanized Chest"] }, -- Mechanized Chest
-  [56139] = { daily=true, zid=1462, }, -- Junkyard Treasures
-  [55901] = { daily=true, zid=1462, }, -- Rustbolt Rebellion
-  [56141] = { daily=true, zid=1462, }, -- Security First
+  [57081] = { name = L["Mechanized Chest"] }, -- Mechanized Chest
+  [56139] = { daily = true, zid = 1462 }, -- Junkyard Treasures
+  [55901] = { daily = true, zid = 1462 }, -- Rustbolt Rebellion
+  [56141] = { daily = true, zid = 1462 }, -- Security First
 
   -- Assault Coffers
-  [57628] = { name=L["Cursed Coffer"] },      -- Cursed Coffer
-  [57214] = { name=L["Mogu Strongbox"] },     -- Mogu Strongbox
-  [58137] = { name=L["Infested Strongbox"] }, -- Infested Strongbox
-  [55692] = { name=L["Amathet Reliquary"] },  -- Amathet Reliquary
-  [58770] = { name=L["Ambered Coffer"] },     -- Ambered Coffer
+  [57628] = { name = L["Cursed Coffer"] }, -- Cursed Coffer
+  [57214] = { name = L["Mogu Strongbox"] }, -- Mogu Strongbox
+  [58137] = { name = L["Infested Strongbox"] }, -- Infested Strongbox
+  [55692] = { name = L["Amathet Reliquary"] }, -- Amathet Reliquary
+  [58770] = { name = L["Ambered Coffer"] }, -- Ambered Coffer
 
   -- Beastwarrens Hunts
-  [63433] = { name=L["Hunt: Shadehounds"] },        -- Hunt: Shadehounds (63180 -> 63433 which tracks mount droping)
-  [63194] = { name=L["Hunt: Winged Soul Eaters"] }, -- Hunt: Winged Soul Eaters
-  [63198] = { name=L["Hunt: Death Elementals"] },   -- Hunt: Death Elementals
-  [63199] = { name=L["Hunt: Soul Eaters"] },        -- Hunt: Soul Eaters
+  [63433] = { name = L["Hunt: Shadehounds"] }, -- Hunt: Shadehounds (63180 -> 63433 which tracks mount droping)
+  [63194] = { name = L["Hunt: Winged Soul Eaters"] }, -- Hunt: Winged Soul Eaters
+  [63198] = { name = L["Hunt: Death Elementals"] }, -- Hunt: Death Elementals
+  [63199] = { name = L["Hunt: Soul Eaters"] }, -- Hunt: Soul Eaters
 
   -- Covenant Assaults
-  [63543] = { zid=1543 }, -- Necrolord Assault
-  [63822] = { zid=1543 }, -- Venthyr Assault
-  [63823] = { zid=1543 }, -- Night Fae Assault
-  [63824] = { zid=1543 }, -- Kyrian Assault
+  [63543] = { zid = 1543 }, -- Necrolord Assault
+  [63822] = { zid = 1543 }, -- Venthyr Assault
+  [63823] = { zid = 1543 }, -- Night Fae Assault
+  [63824] = { zid = 1543 }, -- Kyrian Assault
 
   -- Dragonflight
-  [66419] = { zid=2022 }, -- Allegiance to One
-  [66133] = { zid=2022 }, -- Keys of Loyalty (Warthion)
-  [66805] = { zid=2022 }, -- Keys of Loyalty (Sabellian)
-  [70866] = { name=L["Siege on Dragonbane Keep"], zid=2022 }, -- Siege on Dragonbane Keep
-  [70906] = { name=L["Grand Hunts: Mythic Reward"] }, -- Grand Hunts: Mythic Reward
-  [71136] = { name=L["Grand Hunts: Rare Reward"] }, -- Grand Hunts: Rare Reward
-  [71137] = { name=L["Grand Hunts: Uncommon Reward"] }, -- Grand Hunts: Uncommon Reward
-  [71033] = { name=L["Trial of Flood"] }, -- Trial of Flood
-  [71995] = { name=L["Trial of Elements"] }, -- Trial of Elements
-  [73162] = { name=L["Storm's Fury"] }, -- Storm's Fury
-  [77836] = { name=L["Time Rift"] }, -- Time Rift Weekly Gear Token
+  [66419] = { zid = 2022 }, -- Allegiance to One
+  [66133] = { zid = 2022 }, -- Keys of Loyalty (Warthion)
+  [66805] = { zid = 2022 }, -- Keys of Loyalty (Sabellian)
+  [70866] = { name = L["Siege on Dragonbane Keep"], zid = 2022 }, -- Siege on Dragonbane Keep
+  [70906] = { name = L["Grand Hunts: Mythic Reward"] }, -- Grand Hunts: Mythic Reward
+  [71136] = { name = L["Grand Hunts: Rare Reward"] }, -- Grand Hunts: Rare Reward
+  [71137] = { name = L["Grand Hunts: Uncommon Reward"] }, -- Grand Hunts: Uncommon Reward
+  [71033] = { name = L["Trial of Flood"] }, -- Trial of Flood
+  [71995] = { name = L["Trial of Elements"] }, -- Trial of Elements
+  [73162] = { name = L["Storm's Fury"] }, -- Storm's Fury
+  [77836] = { name = L["Time Rift"] }, -- Time Rift Weekly Gear Token
   -- Draconic Treatise
-  [74105] = { lid=194699 }, -- Draconic Treatise on Inscription
-  [74106] = { lid=194708 }, -- Draconic Treatise on Mining
-  [74107] = { lid=194704 }, -- Draconic Treatise on Herbalism
-  [74108] = { lid=194697 }, -- Draconic Treatise on Alchemy
-  [74109] = { lid=198454 }, -- Draconic Treatise on Blacksmithing
-  [74110] = { lid=194702 }, -- Draconic Treatise on Enchanting
-  [74111] = { lid=198510 }, -- Draconic Treatise on Engineering
-  [74112] = { lid=194703 }, -- Draconic Treatise on Jewelcrafting
-  [74113] = { lid=194700 }, -- Draconic Treatise on Leatherworking
-  [74114] = { lid=201023 }, -- Draconic Treatise on Skinning
-  [74115] = { lid=194698 }, -- Draconic Treatise on Tailoring
+  [74105] = { lid = 194699 }, -- Draconic Treatise on Inscription
+  [74106] = { lid = 194708 }, -- Draconic Treatise on Mining
+  [74107] = { lid = 194704 }, -- Draconic Treatise on Herbalism
+  [74108] = { lid = 194697 }, -- Draconic Treatise on Alchemy
+  [74109] = { lid = 198454 }, -- Draconic Treatise on Blacksmithing
+  [74110] = { lid = 194702 }, -- Draconic Treatise on Enchanting
+  [74111] = { lid = 198510 }, -- Draconic Treatise on Engineering
+  [74112] = { lid = 194703 }, -- Draconic Treatise on Jewelcrafting
+  [74113] = { lid = 194700 }, -- Draconic Treatise on Leatherworking
+  [74114] = { lid = 201023 }, -- Draconic Treatise on Skinning
+  [74115] = { lid = 194698 }, -- Draconic Treatise on Tailoring
   -- Dropping Profession Knowledge Items
-  [70381] = { lid=198837 }, -- Curious Hide Scraps
-  [70383] = { lid=198837 }, -- Curious Hide Scraps
-  [70384] = { lid=198837 }, -- Curious Hide Scraps
-  [70385] = { lid=198837 }, -- Curious Hide Scraps
-  [70386] = { lid=198837 }, -- Curious Hide Scraps
-  [70389] = { lid=198837 }, -- Curious Hide Scraps
-  [70504] = { lid=198963 }, -- Decaying Phlegm
-  [70511] = { lid=198964 }, -- Elementious Splinter
-  [70512] = { lid=198965 }, -- Primeval Earth Fragment
-  [70513] = { lid=198966 }, -- Molten Globule
-  [70514] = { lid=198967 }, -- Primordial Aether
-  [70515] = { lid=198968 }, -- Primalist Charm
-  [70516] = { lid=198969 }, -- Keeper's Mark
-  [70517] = { lid=198970 }, -- Infinitely Attachable Pair o' Docks
-  [70518] = { lid=198971 }, -- Curious Djaradin Rune
-  [70519] = { lid=198972 }, -- Draconic Glamour
-  [70520] = { lid=198973 }, -- Incandescent Curio
-  [70521] = { lid=198974 }, -- Elegantly Engraved Embellishment
-  [70522] = { lid=198975 }, -- Ossified Hide
-  [70523] = { lid=198976 }, -- Exceedingly Soft Skin
-  [70524] = { lid=198977 }, -- Ohn'arhan Weave
-  [70525] = { lid=198978 }, -- Stupidly Effective Stitchery
-  [71857] = { lid=200678 }, -- Dreambloom
-  [71858] = { lid=200678 }, -- Dreambloom
-  [71859] = { lid=200678 }, -- Dreambloom
-  [71860] = { lid=200678 }, -- Dreambloom
-  [71861] = { lid=200678 }, -- Dreambloom
-  [71864] = { lid=200678 }, -- Dreambloom
-  [72160] = { lid=201301 }, -- Iridescent Ore
-  [72161] = { lid=201301 }, -- Iridescent Ore
-  [72162] = { lid=201301 }, -- Iridescent Ore
-  [72163] = { lid=201301 }, -- Iridescent Ore
-  [72164] = { lid=201301 }, -- Iridescent Ore
-  [72165] = { lid=201301 }, -- Iridescent Ore
+  [70381] = { lid = 198837 }, -- Curious Hide Scraps
+  [70383] = { lid = 198837 }, -- Curious Hide Scraps
+  [70384] = { lid = 198837 }, -- Curious Hide Scraps
+  [70385] = { lid = 198837 }, -- Curious Hide Scraps
+  [70386] = { lid = 198837 }, -- Curious Hide Scraps
+  [70389] = { lid = 198837 }, -- Curious Hide Scraps
+  [70504] = { lid = 198963 }, -- Decaying Phlegm
+  [70511] = { lid = 198964 }, -- Elementious Splinter
+  [70512] = { lid = 198965 }, -- Primeval Earth Fragment
+  [70513] = { lid = 198966 }, -- Molten Globule
+  [70514] = { lid = 198967 }, -- Primordial Aether
+  [70515] = { lid = 198968 }, -- Primalist Charm
+  [70516] = { lid = 198969 }, -- Keeper's Mark
+  [70517] = { lid = 198970 }, -- Infinitely Attachable Pair o' Docks
+  [70518] = { lid = 198971 }, -- Curious Djaradin Rune
+  [70519] = { lid = 198972 }, -- Draconic Glamour
+  [70520] = { lid = 198973 }, -- Incandescent Curio
+  [70521] = { lid = 198974 }, -- Elegantly Engraved Embellishment
+  [70522] = { lid = 198975 }, -- Ossified Hide
+  [70523] = { lid = 198976 }, -- Exceedingly Soft Skin
+  [70524] = { lid = 198977 }, -- Ohn'arhan Weave
+  [70525] = { lid = 198978 }, -- Stupidly Effective Stitchery
+  [71857] = { lid = 200678 }, -- Dreambloom
+  [71858] = { lid = 200678 }, -- Dreambloom
+  [71859] = { lid = 200678 }, -- Dreambloom
+  [71860] = { lid = 200678 }, -- Dreambloom
+  [71861] = { lid = 200678 }, -- Dreambloom
+  [71864] = { lid = 200678 }, -- Dreambloom
+  [72160] = { lid = 201301 }, -- Iridescent Ore
+  [72161] = { lid = 201301 }, -- Iridescent Ore
+  [72162] = { lid = 201301 }, -- Iridescent Ore
+  [72163] = { lid = 201301 }, -- Iridescent Ore
+  [72164] = { lid = 201301 }, -- Iridescent Ore
+  [72165] = { lid = 201301 }, -- Iridescent Ore
   -- Disturbed Dirt / Expedition Scout's Pack
-  [66373] = { name=L["Disturbed Dirt / Expedition Scout's Pack"] .. ' - ' .. GetSpellInfo(2259) }, -- Alchemy
-  [66374] = { name=L["Disturbed Dirt / Expedition Scout's Pack"] .. ' - ' .. GetSpellInfo(2259) }, -- Alchemy
-  [66375] = { name=L["Disturbed Dirt / Expedition Scout's Pack"] .. ' - ' .. GetSpellInfo(45357) }, -- Inscription
-  [66376] = { name=L["Disturbed Dirt / Expedition Scout's Pack"] .. ' - ' .. GetSpellInfo(45357) }, -- Inscription
-  [66377] = { name=L["Disturbed Dirt / Expedition Scout's Pack"] .. ' - ' .. GetSpellInfo(7411) }, -- Enchanting
-  [66378] = { name=L["Disturbed Dirt / Expedition Scout's Pack"] .. ' - ' .. GetSpellInfo(7411) }, -- Enchanting
-  [66379] = { name=L["Disturbed Dirt / Expedition Scout's Pack"] .. ' - ' .. GetSpellInfo(4036) }, -- Engineering
-  [66380] = { name=L["Disturbed Dirt / Expedition Scout's Pack"] .. ' - ' .. GetSpellInfo(4036) }, -- Engineering
-  [66381] = { name=L["Disturbed Dirt / Expedition Scout's Pack"] .. ' - ' .. GetSpellInfo(2018) }, -- Blacksmithing
-  [66382] = { name=L["Disturbed Dirt / Expedition Scout's Pack"] .. ' - ' .. GetSpellInfo(2018) }, -- Blacksmithing
-  [66384] = { name=L["Disturbed Dirt / Expedition Scout's Pack"] .. ' - ' .. GetSpellInfo(2108) }, -- Leatherworking
-  [66385] = { name=L["Disturbed Dirt / Expedition Scout's Pack"] .. ' - ' .. GetSpellInfo(2108) }, -- Leatherworking
-  [66386] = { name=L["Disturbed Dirt / Expedition Scout's Pack"] .. ' - ' .. GetSpellInfo(3908) }, -- Tailoring
-  [66387] = { name=L["Disturbed Dirt / Expedition Scout's Pack"] .. ' - ' .. GetSpellInfo(3908) }, -- Tailoring
-  [66388] = { name=L["Disturbed Dirt / Expedition Scout's Pack"] .. ' - ' .. GetSpellInfo(25229) }, -- Jewelcrafting
-  [66389] = { name=L["Disturbed Dirt / Expedition Scout's Pack"] .. ' - ' .. GetSpellInfo(25229) }, -- Jewelcrafting
+  [66373] = { name = L["Disturbed Dirt / Expedition Scout's Pack"] .. " - " .. GetSpellInfo(2259) }, -- Alchemy
+  [66374] = { name = L["Disturbed Dirt / Expedition Scout's Pack"] .. " - " .. GetSpellInfo(2259) }, -- Alchemy
+  [66375] = { name = L["Disturbed Dirt / Expedition Scout's Pack"] .. " - " .. GetSpellInfo(45357) }, -- Inscription
+  [66376] = { name = L["Disturbed Dirt / Expedition Scout's Pack"] .. " - " .. GetSpellInfo(45357) }, -- Inscription
+  [66377] = { name = L["Disturbed Dirt / Expedition Scout's Pack"] .. " - " .. GetSpellInfo(7411) }, -- Enchanting
+  [66378] = { name = L["Disturbed Dirt / Expedition Scout's Pack"] .. " - " .. GetSpellInfo(7411) }, -- Enchanting
+  [66379] = { name = L["Disturbed Dirt / Expedition Scout's Pack"] .. " - " .. GetSpellInfo(4036) }, -- Engineering
+  [66380] = { name = L["Disturbed Dirt / Expedition Scout's Pack"] .. " - " .. GetSpellInfo(4036) }, -- Engineering
+  [66381] = { name = L["Disturbed Dirt / Expedition Scout's Pack"] .. " - " .. GetSpellInfo(2018) }, -- Blacksmithing
+  [66382] = { name = L["Disturbed Dirt / Expedition Scout's Pack"] .. " - " .. GetSpellInfo(2018) }, -- Blacksmithing
+  [66384] = { name = L["Disturbed Dirt / Expedition Scout's Pack"] .. " - " .. GetSpellInfo(2108) }, -- Leatherworking
+  [66385] = { name = L["Disturbed Dirt / Expedition Scout's Pack"] .. " - " .. GetSpellInfo(2108) }, -- Leatherworking
+  [66386] = { name = L["Disturbed Dirt / Expedition Scout's Pack"] .. " - " .. GetSpellInfo(3908) }, -- Tailoring
+  [66387] = { name = L["Disturbed Dirt / Expedition Scout's Pack"] .. " - " .. GetSpellInfo(3908) }, -- Tailoring
+  [66388] = { name = L["Disturbed Dirt / Expedition Scout's Pack"] .. " - " .. GetSpellInfo(25229) }, -- Jewelcrafting
+  [66389] = { name = L["Disturbed Dirt / Expedition Scout's Pack"] .. " - " .. GetSpellInfo(25229) }, -- Jewelcrafting
 
   -- Old Vanilla Bosses during Anniversary Event
-  [47461] = { daily=true, name=L["Lord Kazzak"] },          -- Lord Kazzak
-  [47462] = { daily=true, name=L["Azuregos"] },             -- Azuregos
-  [47463] = { daily=true, name=L["Dragon of Nightmare"] },  -- Dragon of Nightmare
-  [60214] = { daily=true, name=L["Doomwalker"] },           -- Doomwalker
+  [47461] = { daily = true, name = L["Lord Kazzak"] }, -- Lord Kazzak
+  [47462] = { daily = true, name = L["Azuregos"] }, -- Azuregos
+  [47463] = { daily = true, name = L["Dragon of Nightmare"] }, -- Dragon of Nightmare
+  [60214] = { daily = true, name = L["Doomwalker"] }, -- Doomwalker
 }
 
 function SI:specialQuests()
@@ -162,26 +162,26 @@ function SI:specialQuests()
     if not qinfo.name and (qinfo.lid or qinfo.lid1) then
       local itemname, itemlink = GetItemInfo(qinfo.lid or qinfo.lid1)
       if itemlink and qinfo.lid then
-        qinfo.name = itemlink.." ("..LOOT..")"
+        qinfo.name = itemlink .. " (" .. LOOT .. ")"
       elseif itemname and qinfo.lid1 then
         local name = itemname:match("^[^%s]+")
         if name and #name > 0 then
-          qinfo.name = name.." ("..LOOT..")"
+          qinfo.name = name .. " (" .. LOOT .. ")"
         end
       end
     elseif not qinfo.name and qinfo.aid and qinfo.acid then
       local l = GetAchievementCriteriaInfo(qinfo.aid, qinfo.acid)
       if l then
-        qinfo.name = l:gsub("%p$","")
+        qinfo.name = l:gsub("%p$", "")
       end
     elseif not qinfo.name and qinfo.aid then
-      SI.ScanTooltip:SetOwner(UIParent, 'ANCHOR_NONE')
+      SI.ScanTooltip:SetOwner(UIParent, "ANCHOR_NONE")
       SI.ScanTooltip:SetAchievementByID(qinfo.aid)
       SI.ScanTooltip:Show()
-      local l = _G[SI.ScanTooltip:GetName().."Text"..(qinfo.aline or "Left1")]
+      local l = _G[SI.ScanTooltip:GetName() .. "Text" .. (qinfo.aline or "Left1")]
       l = l and l:GetText()
       if l then
-        qinfo.name = l:gsub("%p$","")
+        qinfo.name = l:gsub("%p$", "")
       end
     elseif not qinfo.name and qinfo.sid then
       qinfo.name = GetSpellInfo(qinfo.sid)
@@ -189,7 +189,7 @@ function SI:specialQuests()
     if not qinfo.name or #qinfo.name == 0 then
       local title, link = SI:QuestInfo(qid)
       if title then
-        title = title:gsub("%p?%s*[Tt]racking%s*[Qq]uest","")
+        title = title:gsub("%p?%s*[Tt]racking%s*[Qq]uest", "")
         title = strtrim(title)
         qinfo.name = title
       end
@@ -325,19 +325,19 @@ local QuestExceptions = {
   [62288] = "Weekly", -- Observing Teamwork
   [62289] = "Weekly", -- Observing Conflict
   -- Ve'nari Weekly (Daily after Patch 9.1)
-  [60622] = "Daily",  -- Eye of the Scryer
-  [60646] = "Daily",  -- Misery Business
-  [60762] = "Daily",  -- Death Motes
-  [60775] = "Daily",  -- A Suitable Demise
-  [61075] = "Daily",  -- A Spark of Light
-  [61079] = "Daily",  -- The Jailer's Share
-  [61088] = "Daily",  -- Dust to Dust
-  [61103] = "Daily",  -- Disrupting the Cycle
-  [61104] = "Daily",  -- Grathalax, the Extractor
-  [61765] = "Daily",  -- Words of Warding
-  [62214] = "Daily",  -- Forces of Perdition
-  [62234] = "Daily",  -- Power of the Colossus
-  [63206] = "Daily",  -- Soulless Husks
+  [60622] = "Daily", -- Eye of the Scryer
+  [60646] = "Daily", -- Misery Business
+  [60762] = "Daily", -- Death Motes
+  [60775] = "Daily", -- A Suitable Demise
+  [61075] = "Daily", -- A Spark of Light
+  [61079] = "Daily", -- The Jailer's Share
+  [61088] = "Daily", -- Dust to Dust
+  [61103] = "Daily", -- Disrupting the Cycle
+  [61104] = "Daily", -- Grathalax, the Extractor
+  [61765] = "Daily", -- Words of Warding
+  [62214] = "Daily", -- Forces of Perdition
+  [62234] = "Daily", -- Power of the Colossus
+  [63206] = "Daily", -- Soulless Husks
   [64541] = "Weekly", -- The Cost of Death
   -- Queen's Conservatory
   [62441] = "Weekly", -- Fair Exchange for a Soul
@@ -485,9 +485,9 @@ local QuestExceptions = {
 
   -- General
   -- Darkmoon Faire
-  [7905]  = "Regular",  -- Darkmoon Faire referral -- old addon versions misidentified this as monthly
-  [7926]  = "Regular",  -- Darkmoon Faire referral
-  [37819] = "Regular",  -- Darkmoon Faire races referral
+  [7905] = "Regular", -- Darkmoon Faire referral -- old addon versions misidentified this as monthly
+  [7926] = "Regular", -- Darkmoon Faire referral
+  [37819] = "Regular", -- Darkmoon Faire races referral
   [47767] = "Darkmoon", -- Death Metal Knight
 
   -- Blingtron
@@ -522,8 +522,8 @@ SI.QuestExceptions = QuestExceptions
 -- Timewalking Dungeon final boss drops
 -- [questID] = LFDID,
 local TimewalkingItemQuest = {
-  [40168] = 744,  -- The Swirling Vial - TBC Timewalking
-  [40173] = 995,  -- The Unstable Prism - WLK Timewalking
+  [40168] = 744, -- The Swirling Vial - TBC Timewalking
+  [40173] = 995, -- The Unstable Prism - WLK Timewalking
   [40786] = 1146, -- The Smoldering Ember - CTM Timewalking - Horde
   [40787] = 1146, -- The Smoldering Ember - CTM Timewalking - Alliance
   [45563] = 1453, -- The Shrouded Coin - MOP Timewalking

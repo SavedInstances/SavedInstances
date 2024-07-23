@@ -1,5 +1,5 @@
 local SI, L = unpack((select(2, ...)))
-local Module = SI:NewModule('Paragon', 'AceEvent-3.0', 'AceTimer-3.0')
+local Module = SI:NewModule("Paragon", "AceEvent-3.0", "AceTimer-3.0")
 
 -- Lua functions
 local pairs, tinsert = pairs, tinsert

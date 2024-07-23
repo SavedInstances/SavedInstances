@@ -1,5 +1,5 @@
 local SI, L = unpack((select(2, ...)))
-local Module = SI:NewModule('Emissary', 'AceEvent-3.0')
+local Module = SI:NewModule("Emissary", "AceEvent-3.0")
 
 -- Lua functions
 local time, pairs, ipairs, tonumber, floor = time, pairs, ipairs, tonumber, floor
@@ -54,20 +54,32 @@ function Module:OnEnable()
 end
 
 function Module:QUEST_LOG_UPDATE()
-  if SI.db.DailyResetTime < time() then return end -- daily reset not run yet
+  if SI.db.DailyResetTime < time() then
+    return
+  end -- daily reset not run yet
   local t = SI.db.Toons[SI.thisToon]
-  if not t.Emissary then t.Emissary = {} end
+  if not t.Emissary then
+    t.Emissary = {}
+  end
   local expansionLevel, tbl
   for expansionLevel, tbl in pairs(Emissaries) do
-    if not SI.db.Emissary.Expansion[expansionLevel] then SI.db.Emissary.Expansion[expansionLevel] = {} end
+    if not SI.db.Emissary.Expansion[expansionLevel] then
+      SI.db.Emissary.Expansion[expansionLevel] = {}
+    end
     local currExpansion = SI.db.Emissary.Expansion[expansionLevel]
-    if not t.Emissary[expansionLevel] then t.Emissary[expansionLevel] = {} end
+    if not t.Emissary[expansionLevel] then
+      t.Emissary[expansionLevel] = {}
+    end
     if C_QuestLog_IsQuestFlaggedCompleted(tbl.questID) then
       t.Emissary[expansionLevel].unlocked = true
-      if not t.Emissary[expansionLevel].days then t.Emissary[expansionLevel].days = {} end
+      if not t.Emissary[expansionLevel].days then
+        t.Emissary[expansionLevel].days = {}
+      end
       local BountyQuest = C_QuestLog_GetBountiesForMapID(tbl.UiMapID)
       for i = 1, 3 do
-        if not t.Emissary[expansionLevel].days[i] then t.Emissary[expansionLevel].days[i] = {} end
+        if not t.Emissary[expansionLevel].days[i] then
+          t.Emissary[expansionLevel].days[i] = {}
+        end
         t.Emissary[expansionLevel].days[i].isComplete = true
       end
       for i, info in ipairs(BountyQuest) do
@@ -76,11 +88,13 @@ function Module:QUEST_LOG_UPDATE()
         local _, _, isFinish, questDone, questNeed = GetQuestObjectiveInfo(info.questID, 1, false)
         local money = GetQuestLogRewardMoney(info.questID)
         local numQuestRewards = GetNumQuestLogRewards(info.questID)
-        local numCurrencyRewards = #C_QuestLog.GetQuestRewardCurrencies (info.questID)
+        local numCurrencyRewards = #C_QuestLog.GetQuestRewardCurrencies(info.questID)
         if title then
           SI.db.Emissary.Cache[info.questID] = title -- cache quest name
           local day = tonumber(floor(timeleft / 1440) + 1) -- [1, 2, 3]
-          if not currExpansion[day] then currExpansion[day] = {} end
+          if not currExpansion[day] then
+            currExpansion[day] = {}
+          end
           if switching[info.questID] then
             currExpansion[day].questID = switching[info.questID]
           else

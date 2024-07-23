@@ -39,39 +39,24 @@ function SI:TimeDebug()
   offset = offset * 60 * 60 -- offset in seconds
 
   t = SI:GetNextDailyResetTime()
-  SI:ChatMsg(
-    "Next daily reset: %s local, %s server",
-    date("%Y/%m/%d %H:%M:%S", t), date("%Y/%m/%d %H:%M:%S", t + offset)
-  )
+  SI:ChatMsg("Next daily reset: %s local, %s server", date("%Y/%m/%d %H:%M:%S", t), date("%Y/%m/%d %H:%M:%S", t + offset))
 
   t = SI:GetNextWeeklyResetTime()
-  SI:ChatMsg(
-    "Next weekly reset: %s local, %s server",
-    date("%Y/%m/%d %H:%M:%S", t), date("%Y/%m/%d %H:%M:%S", t + offset)
-  )
+  SI:ChatMsg("Next weekly reset: %s local, %s server", date("%Y/%m/%d %H:%M:%S", t), date("%Y/%m/%d %H:%M:%S", t + offset))
 
   t = SI:GetNextDailySkillResetTime()
-  SI:ChatMsg(
-    "Next skill reset: %s local, %s server",
-    date("%Y/%m/%d %H:%M:%S", t), date("%Y/%m/%d %H:%M:%S", t + offset)
-  )
+  SI:ChatMsg("Next skill reset: %s local, %s server", date("%Y/%m/%d %H:%M:%S", t), date("%Y/%m/%d %H:%M:%S", t + offset))
 
   t = SI:GetNextDarkmoonResetTime()
-  SI:ChatMsg(
-    "Next Darkmoon reset: %s local, %s server",
-    date("%Y/%m/%d %H:%M:%S", t), date("%Y/%m/%d %H:%M:%S", t + offset)
-  )
+  SI:ChatMsg("Next Darkmoon reset: %s local, %s server", date("%Y/%m/%d %H:%M:%S", t), date("%Y/%m/%d %H:%M:%S", t + offset))
 end
 
 do
   local function questTableToString(data)
-    local level = UnitLevel('player')
-    local ret = ''
+    local level = UnitLevel("player")
+    local ret = ""
     for index, questID in ipairs(data) do
-      ret = ret .. format(
-        "%s\124cffffff00\124Hquest:%s:%s\124h[%s]\124h\124r",
-        (index == 1) and "" or ", ", questID, level, questID
-      )
+      ret = ret .. format("%s\124cffffff00\124Hquest:%s:%s\124h[%s]\124h\124r", (index == 1) and "" or ", ", questID, level, questID)
     end
     return ret
   end
@@ -81,7 +66,7 @@ do
     local ql = C_QuestLog_GetAllCompletedQuestIDs()
 
     local cmd = info.input
-    cmd = cmd and strtrim(cmd:gsub("^%s*(%w+)%s*","")):lower()
+    cmd = cmd and strtrim(cmd:gsub("^%s*(%w+)%s*", "")):lower()
     if t.completedquests and (cmd == "load" or not SI.completedquests) then
       SI:ChatMsg("Loaded quest list")
       SI.completedquests = t.completedquests
@@ -96,14 +81,14 @@ do
       t.completedquests = nil
       return
     elseif cmd and #cmd > 0 then
-      SI:ChatMsg("Quest command not understood: '"..cmd.."'")
+      SI:ChatMsg("Quest command not understood: '" .. cmd .. "'")
       SI:ChatMsg("/si quest ([save|load|clear])")
       return
     end
     local cnt = #ql
     local add = {}
     local remove = {}
-    SI:ChatMsg("Completed quests: "..cnt)
+    SI:ChatMsg("Completed quests: " .. cnt)
     if SI.completedquests then
       local prev, curr = 1, 1
       while true do

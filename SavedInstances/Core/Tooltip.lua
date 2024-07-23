@@ -1,5 +1,5 @@
 local SI, L = unpack(select(2, ...))
-local Module = SI:NewModule('Tooltip', 'AceEvent-3.0')
+local Module = SI:NewModule("Tooltip", "AceEvent-3.0")
 local QTip = SI.Libs.QTip
 
 local tooltip
@@ -21,13 +21,13 @@ end
 local headerFont
 local function getHeaderFont()
   if not headerFont then
-    headerFont = CreateFont('SavedInstancedTooltipHeaderFont')
+    headerFont = CreateFont("SavedInstancedTooltipHeaderFont")
 
-    local temp = QTip:Acquire('SavedInstancesHeaderTooltip', 1, 'LEFT')
+    local temp = QTip:Acquire("SavedInstancesHeaderTooltip", 1, "LEFT")
     local hFont = temp:GetHeaderFont()
     local hFontPath, hFontSize = hFont:GetFont()
 
-    headerFont:SetFont(hFontPath, hFontSize, 'OUTLINE')
+    headerFont:SetFont(hFontPath, hFontSize, "OUTLINE")
 
     QTip:Release(temp)
   end
@@ -40,14 +40,14 @@ function Module:AcquireTooltip()
     QTip:Release(tooltip)
   end
 
-  tooltip = QTip:Acquire('SavedInstancesTooltip', 1, 'LEFT')
+  tooltip = QTip:Acquire("SavedInstancesTooltip", 1, "LEFT")
   tooltip:SetHeaderFont(getHeaderFont())
   tooltip.OnRelease = clearTooltip -- extra-safety: update our variable on auto-release
   return tooltip
 end
 
 function Module:AcquireIndicatorTip(...)
-  indicatorTip = QTip:Acquire('SavedInstancesIndicatorTooltip', ...)
+  indicatorTip = QTip:Acquire("SavedInstancesIndicatorTooltip", ...)
   indicatorTip:Clear()
   indicatorTip:SetHeaderFont(getHeaderFont())
   indicatorTip:SetScale(SI.db.Tooltip.Scale)
@@ -59,7 +59,7 @@ function Module:AcquireIndicatorTip(...)
   end
   indicatorTip:SetFrameLevel(150) -- ensure visibility when forced to overlap main tooltip
 
-  SI:SkinFrame(indicatorTip, 'SavedInstancesIndicatorTooltip')
+  SI:SkinFrame(indicatorTip, "SavedInstancesIndicatorTooltip")
 
   return indicatorTip
 end
@@ -102,47 +102,44 @@ end
 
 function Module:ShowDetached()
   if not detachframe then
-    local frame = CreateFrame('Frame', 'SavedInstancesDetachHeader', UIParent, 'BasicFrameTemplate, BackdropTemplate')
+    local frame = CreateFrame("Frame", "SavedInstancesDetachHeader", UIParent, "BasicFrameTemplate, BackdropTemplate")
     frame:SetMovable(true)
-    frame:SetFrameStrata('TOOLTIP')
+    frame:SetFrameStrata("TOOLTIP")
     frame:SetFrameLevel(100) -- prevent weird interlacings with other tooltips
     frame:SetClampedToScreen(true)
     frame:EnableMouse(true)
     frame:SetUserPlaced(true)
     frame:SetAlpha(0.5)
     if SI.db.Tooltip.posx and SI.db.Tooltip.posy then
-      frame:SetPoint('TOPLEFT', SI.db.Tooltip.posx, -SI.db.Tooltip.posy)
+      frame:SetPoint("TOPLEFT", SI.db.Tooltip.posx, -SI.db.Tooltip.posy)
     else
-      frame:SetPoint('CENTER')
+      frame:SetPoint("CENTER")
     end
-    frame:SetScript('OnMouseDown', function(self)
+    frame:SetScript("OnMouseDown", function(self)
       self:StartMoving()
     end)
-    frame:SetScript('OnMouseUp', function(self)
+    frame:SetScript("OnMouseUp", function(self)
       self:StopMovingOrSizing()
       SI.db.Tooltip.posx = self:GetLeft()
       SI.db.Tooltip.posy = UIParent:GetTop() - (self:GetTop() * self:GetScale())
     end)
-    frame:SetScript('OnHide', Module.ReleaseTooltip)
-    frame:SetScript('OnUpdate', function(self)
+    frame:SetScript("OnHide", Module.ReleaseTooltip)
+    frame:SetScript("OnUpdate", function(self)
       if not tooltip then
         self:Hide()
         return
       end
-      local w,h = tooltip:GetSize()
-	    self:SetSize(
-        w * tooltip:GetEffectiveScale() / UIParent:GetEffectiveScale(),
-        h * tooltip:GetEffectiveScale() / UIParent:GetEffectiveScale() + 20
-      )
+      local w, h = tooltip:GetSize()
+      self:SetSize(w * tooltip:GetEffectiveScale() / UIParent:GetEffectiveScale(), h * tooltip:GetEffectiveScale() / UIParent:GetEffectiveScale() + 20)
     end)
-    frame:SetScript('OnKeyDown', function(self, key)
-      if key == 'ESCAPE' then
+    frame:SetScript("OnKeyDown", function(self, key)
+      if key == "ESCAPE" then
         self:SetPropagateKeyboardInput(false)
         self:Hide()
       end
     end)
     frame:EnableKeyboard(true)
-    SI:SkinFrame(frame, 'SavedInstancesDetachHeader')
+    SI:SkinFrame(frame, "SavedInstancesDetachHeader")
     detachframe = frame
   end
 

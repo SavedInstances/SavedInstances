@@ -1,0 +1,8 @@
+{
+    "recommendations": [
+        "editorconfig.editorconfig",
+        "sumneko.lua",
+        "johnnymorganz.stylua",
+        "ketho.wow-api"
+    ]
+}

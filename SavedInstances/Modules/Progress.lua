@@ -1,6 +1,6 @@
 local SI, L = unpack((select(2, ...)))
-local Module = SI:NewModule('Progress', 'AceEvent-3.0')
-local Tooltip = SI:GetModule('Tooltip')
+local Module = SI:NewModule("Progress", "AceEvent-3.0")
+local Tooltip = SI:GetModule("Tooltip")
 
 ---@class SingleQuestEntry
 ---@field type "single"
@@ -70,11 +70,11 @@ local Tooltip = SI:GetModule('Tooltip')
 ---@type table<string, ProgressEntry>
 local presets = {
   -- Great Vault (Raid)
-  ['great-vault-raid'] = {
-    type = 'custom',
+  ["great-vault-raid"] = {
+    type = "custom",
     index = 1,
     name = RAIDS,
-    reset = 'weekly',
+    reset = "weekly",
     func = function(store, entry)
       wipe(store)
 
@@ -128,18 +128,18 @@ local presets = {
       return left.index < right.index
     end,
     difficultyNames = {
-      [17] = 'L',
-      [14] = 'N',
-      [15] = 'H',
-      [16] = 'M',
+      [17] = "L",
+      [14] = "N",
+      [15] = "H",
+      [16] = "M",
     },
   },
   -- Great Vault (PvP)
-  ['great-vault-pvp'] = {
-    type = 'custom',
+  ["great-vault-pvp"] = {
+    type = "custom",
     index = 2,
     name = PVP,
-    reset = 'weekly',
+    reset = "weekly",
     func = function(store)
       wipe(store)
 
@@ -193,28 +193,28 @@ local presets = {
     end,
   },
   -- The World Awaits
-  ['the-world-awaits'] = {
-    type = 'single',
+  ["the-world-awaits"] = {
+    type = "single",
     index = 3,
     name = L["The World Awaits"],
     questID = 72728,
-    reset = 'weekly',
+    reset = "weekly",
     persists = false,
     fullObjective = false,
   },
   -- Emissary of War
-  ['emissary-of-war'] = {
-    type = 'single',
+  ["emissary-of-war"] = {
+    type = "single",
     index = 4,
     name = L["Emissary of War"],
     questID = 72722,
-    reset = 'weekly',
+    reset = "weekly",
     persists = false,
     fullObjective = false,
   },
   -- Timewalking
-  ['timewalking'] = {
-    type = 'any',
+  ["timewalking"] = {
+    type = "any",
     index = 5,
     name = L["Timewalking Weekend Event"],
     questID = {
@@ -225,13 +225,13 @@ local presets = {
       72724, -- A Savage Path Through Time - WOD Timewalking
       72719, -- A Fel Path Through Time - LEG Timewalking
     },
-    reset = 'weekly',
+    reset = "weekly",
     persists = false,
     fullObjective = false,
   },
   -- Island Expedition
-  ['bfa-island'] = {
-    type = 'any',
+  ["bfa-island"] = {
+    type = "any",
     expansion = 7,
     index = 1,
     name = ISLANDS_HEADER,
@@ -239,13 +239,13 @@ local presets = {
       53436, -- Alliance
       53435, -- Horde
     },
-    reset = 'weekly',
+    reset = "weekly",
     persists = true,
     fullObjective = false,
   },
   -- Horrific Vision
-  ['bfa-horrific-vision'] = {
-    type = 'list',
+  ["bfa-horrific-vision"] = {
+    type = "list",
     expansion = 7,
     index = 2,
     name = SPLASH_BATTLEFORAZEROTH_8_3_0_FEATURE1_TITLE,
@@ -260,7 +260,7 @@ local presets = {
       57841,
     },
     unlockQuest = 58634, -- Opening the Gateway
-    reset = 'weekly',
+    reset = "weekly",
     persists = false,
     questAbbr = {
       [57848] = "5 + 5",
@@ -286,8 +286,8 @@ local presets = {
     },
   },
   -- N'Zoth Assaults
-  ['bfa-nzoth-assault'] = {
-    type = 'list',
+  ["bfa-nzoth-assault"] = {
+    type = "list",
     expansion = 7,
     index = 3,
     name = WORLD_MAP_THREATS,
@@ -302,15 +302,15 @@ local presets = {
       57728, -- Assault: The Endless Swarm
     },
     unlockQuest = 57362, -- Deeper Into the Darkness
-    reset = 'weekly',
+    reset = "weekly",
     persists = false,
     threshold = 3,
     progress = true,
     onlyOnOrCompleted = true,
   },
   -- Lesser Visions of N'Zoth
-  ['bfa-lesser-vision'] = {
-    type = 'any',
+  ["bfa-lesser-vision"] = {
+    type = "any",
     expansion = 7,
     index = 4,
     name = L["Lesser Visions of N'Zoth"],
@@ -321,13 +321,13 @@ local presets = {
       58167, -- Preventative Measures
       58168, -- A Dark, Glaring Reality
     },
-    reset = 'daily',
+    reset = "daily",
     persists = false,
     fullObjective = false,
   },
   -- Covenant Assaults
-  ['sl-covenant-assault'] = {
-    type = 'any',
+  ["sl-covenant-assault"] = {
+    type = "any",
     expansion = 8,
     index = 1,
     name = L["Covenant Assaults"],
@@ -337,28 +337,28 @@ local presets = {
       63824, -- Kyrian Assault
       63543, -- Necrolord Assault
     },
-    reset = 'weekly',
+    reset = "weekly",
     persists = false,
     fullObjective = false,
   },
   -- Patterns Within Patterns
-  ['sl-patterns-within-patterns'] = {
-    type = 'single',
+  ["sl-patterns-within-patterns"] = {
+    type = "single",
     expansion = 8,
     index = 2,
     name = L["Patterns Within Patterns"],
     questID = 66042,
-    reset = 'weekly',
+    reset = "weekly",
     persists = true,
     fullObjective = false,
   },
   -- Dragonflight Renown
-  ['df-renown'] = {
-    type = 'custom',
+  ["df-renown"] = {
+    type = "custom",
     expansion = 9,
     index = 1,
     name = L["Dragonflight Renown"],
-    reset = 'none',
+    reset = "none",
     func = function(store)
       wipe(store)
       local majorFactionIDs = C_MajorFactions.GetMajorFactionIDs(LE_EXPANSION_DRAGONFLIGHT)
@@ -369,7 +369,7 @@ local presets = {
           data.renownReputationEarned = currentRepValue % threshold
           data.renownLevelThreshold = threshold
         end
-        store[factionID] = data and {data.renownLevel, data.renownReputationEarned, data.renownLevelThreshold}
+        store[factionID] = data and { data.renownLevel, data.renownReputationEarned, data.renownLevelThreshold }
       end
     end,
     showFunc = function(store, entry)
@@ -379,18 +379,18 @@ local presets = {
       local factionIDs = entry.factionIDs
       for _, factionID in ipairs(entry.factionIDs) do
         if not text then
-          text = store[factionID] and store[factionID][1] or '0'
+          text = store[factionID] and store[factionID][1] or "0"
         else
-          text = text .. "||" .. (store[factionID] and store[factionID][1] or '0')
+          text = text .. "||" .. (store[factionID] and store[factionID][1] or "0")
         end
       end
 
       for _, factionID in ipairs(majorFactionIDs) do
         if not tContains(factionIDs, factionID) then
           if not text then
-            text = store[factionID] and store[factionID][1] or '0'
+            text = store[factionID] and store[factionID][1] or "0"
           else
-            text = text .. "||" .. (store[factionID] and store[factionID][1] or '0')
+            text = text .. "||" .. (store[factionID] and store[factionID][1] or "0")
           end
         end
       end
@@ -398,7 +398,7 @@ local presets = {
       return text
     end,
     tooltipFunc = function(store, entry, toon)
-      local tip = Tooltip:AcquireIndicatorTip(2, 'LEFT', 'RIGHT')
+      local tip = Tooltip:AcquireIndicatorTip(2, "LEFT", "RIGHT")
       tip:AddHeader(SI:ClassColorToon(toon), L["Dragonflight Renown"])
 
       local majorFactionIDs = C_MajorFactions.GetMajorFactionIDs(LE_EXPANSION_DRAGONFLIGHT)
@@ -406,10 +406,7 @@ local presets = {
       local factionIDs = entry.factionIDs
       for _, factionID in ipairs(factionIDs) do
         if store[factionID] then
-          tip:AddLine(
-            C_MajorFactions.GetMajorFactionData(factionID).name,
-            format("%s %s (%s/%s)", COVENANT_SANCTUM_TAB_RENOWN, unpack(store[factionID]))
-          )
+          tip:AddLine(C_MajorFactions.GetMajorFactionData(factionID).name, format("%s %s (%s/%s)", COVENANT_SANCTUM_TAB_RENOWN, unpack(store[factionID])))
         else
           tip:AddLine(C_MajorFactions.GetMajorFactionData(factionID).name, LOCKED)
         end
@@ -418,10 +415,7 @@ local presets = {
       for _, factionID in ipairs(majorFactionIDs) do
         if not tContains(factionIDs, factionID) then
           if store[factionID] then
-            tip:AddLine(
-              C_MajorFactions.GetMajorFactionData(factionID).name,
-              format("%s %s (%s/%s)", COVENANT_SANCTUM_TAB_RENOWN, unpack(store[factionID]))
-            )
+            tip:AddLine(C_MajorFactions.GetMajorFactionData(factionID).name, format("%s %s (%s/%s)", COVENANT_SANCTUM_TAB_RENOWN, unpack(store[factionID])))
           else
             tip:AddLine(C_MajorFactions.GetMajorFactionData(factionID).name, LOCKED)
           end
@@ -441,8 +435,8 @@ local presets = {
     },
   },
   -- Aiding the Accord
-  ['df-aiding-the-accord'] = {
-    type = 'any',
+  ["df-aiding-the-accord"] = {
+    type = "any",
     expansion = 9,
     index = 2,
     name = L["Aiding the Accord"],
@@ -466,35 +460,35 @@ local presets = {
       80388, -- Last Hurrah: Emerald Dream
       80389, -- Last Hurrah
     },
-    reset = 'weekly',
+    reset = "weekly",
     persists = true,
     fullObjective = true,
   },
   -- Community Feast
-  ['df-community-feast'] = {
-    type = 'single',
+  ["df-community-feast"] = {
+    type = "single",
     expansion = 9,
     index = 3,
     name = L["Community Feast"],
     questID = 70893,
-    reset = 'weekly',
+    reset = "weekly",
     persists = false,
     fullObjective = false,
   },
   -- Siege on Dragonbane Keep
-  ['df-siege-on-dragonbane-keep'] = {
-    type = 'single',
+  ["df-siege-on-dragonbane-keep"] = {
+    type = "single",
     expansion = 9,
     index = 4,
     name = L["Siege on Dragonbane Keep"],
     questID = 70866,
-    reset = 'weekly',
+    reset = "weekly",
     persists = false,
     fullObjective = false,
   },
   -- Grand Hunt
-  ['df-grand-hunt'] = {
-    type = 'list',
+  ["df-grand-hunt"] = {
+    type = "list",
     expansion = 9,
     index = 5,
     name = L["Grand Hunt"],
@@ -503,7 +497,7 @@ local presets = {
       71136, -- Rare
       71137, -- Uncommon
     },
-    reset = 'weekly',
+    reset = "weekly",
     persists = false,
     progress = false,
     onlyOnOrCompleted = false,
@@ -514,30 +508,30 @@ local presets = {
     },
   },
   -- Trial of Elements
-  ['df-trial-of-elements'] = {
-    type = 'single',
+  ["df-trial-of-elements"] = {
+    type = "single",
     expansion = 9,
     index = 6,
     name = L["Trial of Elements"],
     questID = 71995,
-    reset = 'weekly',
+    reset = "weekly",
     persists = false,
     fullObjective = false,
   },
   -- Trial of Flood
-  ['df-trial-of-flood'] = {
-    type = 'single',
+  ["df-trial-of-flood"] = {
+    type = "single",
     expansion = 9,
     index = 7,
     name = L["Trial of Flood"],
     questID = 71033,
-    reset = 'weekly',
+    reset = "weekly",
     persists = false,
     fullObjective = false,
   },
   -- Primal Storms Core
-  ['df-primal-storms-core'] = {
-    type = 'list',
+  ["df-primal-storms-core"] = {
+    type = "list",
     expansion = 9,
     index = 8,
     name = L["Primal Storms Core"],
@@ -549,7 +543,7 @@ local presets = {
       70753, -- Air
       70754, -- Fire
     },
-    reset = 'weekly',
+    reset = "weekly",
     persists = false,
     progress = false,
     onlyOnOrCompleted = false,
@@ -563,8 +557,8 @@ local presets = {
     },
   },
   -- Primal Storms Elementals
-  ['df-primal-storms-elementals'] = {
-    type = 'list',
+  ["df-primal-storms-elementals"] = {
+    type = "list",
     expansion = 9,
     index = 9,
     name = L["Primal Storms Elementals"],
@@ -586,7 +580,7 @@ local presets = {
       74022, -- Pipspark Thundersnap
       74038, -- Voraazka
     },
-    reset = 'daily',
+    reset = "daily",
     persists = false,
     progress = false,
     onlyOnOrCompleted = false,
@@ -616,8 +610,8 @@ local presets = {
     },
   },
   -- Sparks of Life
-  ['df-sparks-of-life'] = {
-    type = 'any',
+  ["df-sparks-of-life"] = {
+    type = "any",
     expansion = 9,
     index = 10,
     name = L["Sparks of Life"],
@@ -630,35 +624,35 @@ local presets = {
       75305, -- Zaralek Cavern
       78097, -- Emerald Dream
     },
-    reset = 'weekly',
+    reset = "weekly",
     persists = false,
     fullObjective = false,
   },
   -- A Worthy Ally: Loamm Niffen
-  ['df-a-worthy-ally-loamm-niffen'] = {
-    type = 'single',
+  ["df-a-worthy-ally-loamm-niffen"] = {
+    type = "single",
     expansion = 9,
     index = 11,
     name = L["A Worthy Ally: Loamm Niffen"],
     questID = 75665,
-    reset = 'weekly',
+    reset = "weekly",
     persists = true,
     fullObjective = false,
   },
   -- Fighting is Its Own Reward
-  ['df-fighting-is-its-own-reward'] = {
-    type = 'single',
+  ["df-fighting-is-its-own-reward"] = {
+    type = "single",
     expansion = 9,
     index = 12,
     name = L["Fighting is Its Own Reward"],
     questID = 76122,
-    reset = 'weekly',
+    reset = "weekly",
     persists = true,
     fullObjective = false,
   },
   -- Researchers Under Fire
-  ['df-researchers-under-fire'] = {
-    type = 'list',
+  ["df-researchers-under-fire"] = {
+    type = "list",
     expansion = 9,
     index = 13,
     name = L["Researchers Under Fire"],
@@ -668,7 +662,7 @@ local presets = {
       75628, -- Uncommon
       75627, -- Common
     },
-    reset = 'weekly',
+    reset = "weekly",
     persists = false,
     progress = false,
     onlyOnOrCompleted = false,
@@ -680,19 +674,19 @@ local presets = {
     },
   },
   -- Disciple of Fyrakk
-  ['df-disciple-of-fyrakk'] = {
-    type = 'single',
+  ["df-disciple-of-fyrakk"] = {
+    type = "single",
     expansion = 9,
     index = 14,
     name = L["Disciple of Fyrakk"],
     questID = 75467,
-    reset = 'weekly',
+    reset = "weekly",
     persists = false,
     fullObjective = false,
   },
   -- Secured Shipment
-  ['df-secured-shipment'] = {
-    type = 'any',
+  ["df-secured-shipment"] = {
+    type = "any",
     expansion = 9,
     index = 15,
     name = L["Secured Shipment"],
@@ -700,68 +694,68 @@ local presets = {
       75525,
       74526,
     },
-    reset = 'weekly',
+    reset = "weekly",
     persists = false,
     fullObjective = false,
   },
   -- Time Rift
-  ['df-time-rift'] = {
-    type = 'single',
+  ["df-time-rift"] = {
+    type = "single",
     expansion = 9,
     index = 16,
     name = L["Time Rift"],
     questID = 77836,
-    reset = 'weekly',
+    reset = "weekly",
     persists = false,
     fullObjective = false,
   },
   -- Dreamsurge
-  ['df-dreamsurge'] = {
-    type = 'single',
+  ["df-dreamsurge"] = {
+    type = "single",
     expansion = 9,
     index = 17,
     name = L["Shaping the Dreamsurge"],
     questID = 77251,
-    reset = 'weekly',
+    reset = "weekly",
     persists = false,
     fullObjective = false,
   },
   -- A Worthy Ally: Dream Wardens
-  ['df-a-worthy-ally-dream-wardens'] = {
-    type = 'single',
+  ["df-a-worthy-ally-dream-wardens"] = {
+    type = "single",
     expansion = 9,
     index = 18,
     name = L["A Worthy Ally: Dream Wardens"],
     questID = 78444,
-    reset = 'weekly',
+    reset = "weekly",
     persists = true,
     fullObjective = false,
   },
   -- The Superbloom
-  ['df-the-superbloom'] = {
-    type = 'single',
+  ["df-the-superbloom"] = {
+    type = "single",
     expansion = 9,
     index = 19,
     name = L["The Superbloom"],
     questID = 78319,
-    reset = 'weekly',
+    reset = "weekly",
     persists = true,
     fullObjective = false,
   },
   -- Blooming Dreamseeds
-  ['df-blooming-dreamseeds'] = {
-    type = 'single',
+  ["df-blooming-dreamseeds"] = {
+    type = "single",
     expansion = 9,
     index = 20,
     name = L["Blooming Dreamseeds"],
     questID = 78821,
-    reset = 'weekly',
+    reset = "weekly",
     persists = true,
     fullObjective = false,
   },
   -- Shipment of Goods
-  ['df-shipment-of-goods'] = {
-    type = 'list',
+  ["df-shipment-of-goods"] = {
+    type = "list",
     expansion = 9,
     index = 21,
     name = L["Shipment of Goods"],
@@ -769,19 +763,19 @@ local presets = {
       78427, -- Great Crates!
       78428, -- Crate of the Art
     },
-    reset = 'weekly',
+    reset = "weekly",
     persists = false,
     progress = true,
     onlyOnOrCompleted = false,
   },
   -- The Big Dig: Traitor's Rest
-  ['df-the-big-dig-traitors-rest'] = {
-    type = 'single',
+  ["df-the-big-dig-traitors-rest"] = {
+    type = "single",
     expansion = 9,
     index = 22,
     name = L["The Big Dig: Traitor's Rest"],
     questID = 79226,
-    reset = 'weekly',
+    reset = "weekly",
     persists = true,
     fullObjective = false,
   },
@@ -815,7 +809,7 @@ local function UpdateQuestStore(store, questID)
       ---@cast numRequired number
 
       local objectiveText
-      if objectiveType == 'progressbar' then
+      if objectiveType == "progressbar" then
         numFulfilled = GetQuestProgressBarPercent(questID)
         numRequired = 100
         objectiveText = floor(numFulfilled or 0) .. "%"
@@ -830,7 +824,7 @@ local function UpdateQuestStore(store, questID)
         store.numRequired = numRequired
         showText = objectiveText
       else
-        showText = showText .. ' ' .. objectiveText
+        showText = showText .. " " .. objectiveText
       end
     end
 
@@ -873,7 +867,7 @@ local function ShowQuestStore(store, entry)
     return SI.questTurnin
   elseif entry.fullObjective then
     return store.text
-  elseif store.objectiveType == 'progressbar' and store.numFulfilled then
+  elseif store.objectiveType == "progressbar" and store.numFulfilled then
     return store.numFulfilled .. "%"
   elseif store.numFulfilled and store.numRequired then
     return store.numFulfilled .. "/" .. store.numRequired
@@ -916,7 +910,7 @@ local function TooltipQuestStore(_, arg)
   ---@cast entry SingleQuestEntry|AnyQuestEntry
   ---@cast toon string
 
-  local tip = Tooltip:AcquireIndicatorTip(2, 'LEFT', 'RIGHT')
+  local tip = Tooltip:AcquireIndicatorTip(2, "LEFT", "RIGHT")
   tip:AddHeader(SI:ClassColorToon(toon), entry.name)
 
   if store.isComplete then
@@ -926,7 +920,7 @@ local function TooltipQuestStore(_, arg)
   elseif store.leaderboardCount and store.leaderboardCount > 0 then
     for i = 1, store.leaderboardCount do
       tip:AddLine("")
-      tip:SetCell(i + 1, 1, store[i], nil, 'LEFT', 2)
+      tip:SetCell(i + 1, 1, store[i], nil, "LEFT", 2)
     end
   end
 
@@ -940,7 +934,7 @@ local function TooltipQuestListStore(_, arg)
   ---@cast entry QuestListEntry
   ---@cast toon string
 
-  local tip = Tooltip:AcquireIndicatorTip(2, 'LEFT', 'RIGHT')
+  local tip = Tooltip:AcquireIndicatorTip(2, "LEFT", "RIGHT")
   tip:AddHeader(SI:ClassColorToon(toon), entry.name)
 
   local completed = 0
@@ -969,16 +963,15 @@ local function TooltipQuestListStore(_, arg)
           questText = SI.questCheckMark
         elseif store[questID].isFinish then
           questText = SI.questTurnin
-        elseif store[questID].objectiveType == 'progressbar' and store[questID].numFulfilled then
+        elseif store[questID].objectiveType == "progressbar" and store[questID].numFulfilled then
           questText = store[questID].numFulfilled .. "%"
         elseif store[questID].numFulfilled and store[questID].numRequired then
           questText = store[questID].numFulfilled .. "/" .. store[questID].numRequired
         end
       else
         questText = (
-          store[questID].isComplete and
-          (RED_FONT_COLOR_CODE .. CRITERIA_COMPLETED .. FONT_COLOR_CODE_CLOSE) or
-          (GREEN_FONT_COLOR_CODE .. AVAILABLE .. FONT_COLOR_CODE_CLOSE)
+          store[questID].isComplete and (RED_FONT_COLOR_CODE .. CRITERIA_COMPLETED .. FONT_COLOR_CODE_CLOSE)
+          or (GREEN_FONT_COLOR_CODE .. AVAILABLE .. FONT_COLOR_CODE_CLOSE)
         )
       end
 
@@ -1011,55 +1004,55 @@ function Module:OnInitialize()
   end
 
   for key in pairs(presets) do
-    if type(SI.db.Progress.Enable[key]) ~= 'boolean' then
+    if type(SI.db.Progress.Enable[key]) ~= "boolean" then
       SI.db.Progress.Enable[key] = true
     end
 
-    if type(SI.db.Progress.Order[key]) ~= 'number' then
+    if type(SI.db.Progress.Order[key]) ~= "number" then
       SI.db.Progress.Order[key] = 50
     end
   end
 
   for key in pairs(SI.db.Progress.User) do
-    if type(SI.db.Progress.Enable[key]) ~= 'boolean' then
+    if type(SI.db.Progress.Enable[key]) ~= "boolean" then
       SI.db.Progress.Enable[key] = true
     end
 
-    if type(SI.db.Progress.Order[key]) ~= 'number' then
+    if type(SI.db.Progress.Order[key]) ~= "number" then
       SI.db.Progress.Order[key] = 50
     end
   end
 
   local map = {
-    [1] = 'great-vault-pvp', -- PvP Conquest
-    [2] = 'bfa-island', -- Island Expedition
-    [3] = 'bfa-horrific-vision', -- Horrific Vision
-    [4] = 'bfa-nzoth-assault', -- N'Zoth Assaults
-    [5] = 'bfa-lesser-vision', -- Lesser Visions of N'Zoth
-    [7] = 'sl-covenant-assault', -- Covenant Assaults
-    [8] = 'the-world-awaits', -- The World Awaits
-    [9] = 'emissary-of-war', -- Emissary of War
-    [10] = 'sl-patterns-within-patterns', -- Patterns Within Patterns
-    [11] = 'df-renown', -- Dragonflight Renown
-    [12] = 'df-aiding-the-accord', -- Aiding the Accord
-    [13] = 'df-community-feast', -- Community Feast
-    [14] = 'df-siege-on-dragonbane-keep', -- Siege on Dragonbane Keep
-    [15] = 'df-grand-hunt', -- Grand Hunt
-    [16] = 'df-trial-of-elements', -- Trial of Elements
-    [17] = 'df-trial-of-flood', -- Trial of Flood
-    [18] = 'df-primal-storms-core', -- Primal Storms Core
-    [19] = 'df-primal-storms-elementals', -- Primal Storms Elementals
-    [20] = 'df-sparks-of-life', -- Sparks of Life
-    [21] = 'df-a-worthy-ally-loamm-niffen', -- A Worthy Ally: Loamm Niffen
-    [22] = 'df-fighting-is-its-own-reward', -- Fighting is Its Own Reward
+    [1] = "great-vault-pvp", -- PvP Conquest
+    [2] = "bfa-island", -- Island Expedition
+    [3] = "bfa-horrific-vision", -- Horrific Vision
+    [4] = "bfa-nzoth-assault", -- N'Zoth Assaults
+    [5] = "bfa-lesser-vision", -- Lesser Visions of N'Zoth
+    [7] = "sl-covenant-assault", -- Covenant Assaults
+    [8] = "the-world-awaits", -- The World Awaits
+    [9] = "emissary-of-war", -- Emissary of War
+    [10] = "sl-patterns-within-patterns", -- Patterns Within Patterns
+    [11] = "df-renown", -- Dragonflight Renown
+    [12] = "df-aiding-the-accord", -- Aiding the Accord
+    [13] = "df-community-feast", -- Community Feast
+    [14] = "df-siege-on-dragonbane-keep", -- Siege on Dragonbane Keep
+    [15] = "df-grand-hunt", -- Grand Hunt
+    [16] = "df-trial-of-elements", -- Trial of Elements
+    [17] = "df-trial-of-flood", -- Trial of Flood
+    [18] = "df-primal-storms-core", -- Primal Storms Core
+    [19] = "df-primal-storms-elementals", -- Primal Storms Elementals
+    [20] = "df-sparks-of-life", -- Sparks of Life
+    [21] = "df-a-worthy-ally-loamm-niffen", -- A Worthy Ally: Loamm Niffen
+    [22] = "df-fighting-is-its-own-reward", -- Fighting is Its Own Reward
   }
 
   for i = 1, 22 do
     -- enable status migration
-    if SI.db.Tooltip['Progress' .. i] ~= nil and map[i] then
-      SI.db.Progress.Enable[map[i]] = SI.db.Tooltip['Progress' .. i]
+    if SI.db.Tooltip["Progress" .. i] ~= nil and map[i] then
+      SI.db.Progress.Enable[map[i]] = SI.db.Tooltip["Progress" .. i]
     end
-    SI.db.Tooltip['Progress' .. i] = nil
+    SI.db.Tooltip["Progress" .. i] = nil
   end
 
   for _, db in pairs(SI.db.Toons) do
@@ -1081,11 +1074,11 @@ function Module:OnInitialize()
           local entry = presets[key] or SI.db.Progress.User[key]
           local store = db.Progress[key]
 
-          if type(store) ~= 'nil' then
+          if type(store) ~= "nil" then
             -- store contains somethings
-            if entry.type == 'list' then
+            if entry.type == "list" then
               ---@cast entry QuestListEntry
-              if type(store) ~= 'table' then
+              if type(store) ~= "table" then
                 -- broken store, should be table
                 db.Progress[key] = {}
               end
@@ -1096,14 +1089,14 @@ function Module:OnInitialize()
                   store[questID] = {
                     show = true,
                   }
-                elseif type(store[questID]) ~= 'table' then
+                elseif type(store[questID]) ~= "table" then
                   -- broken store or false, should be table or nil
                   store[questID] = nil
                 end
               end
-            elseif entry.type ~= 'custom' then
+            elseif entry.type ~= "custom" then
               ---@cast entry SingleQuestEntry|AnyQuestEntry
-              if type(store) ~= 'table' then
+              if type(store) ~= "table" then
                 -- broken store, should be table
                 db.Progress[key] = {}
               end
@@ -1120,8 +1113,8 @@ function Module:OnInitialize()
 end
 
 function Module:OnEnable()
-  self:RegisterEvent('PLAYER_ENTERING_WORLD', 'UpdateAll')
-  self:RegisterEvent('QUEST_LOG_UPDATE', 'UpdateAll')
+  self:RegisterEvent("PLAYER_ENTERING_WORLD", "UpdateAll")
+  self:RegisterEvent("QUEST_LOG_UPDATE", "UpdateAll")
 
   self:UpdateAll()
 end
@@ -1191,12 +1184,12 @@ function Module:UpdateEntry(key, entry)
   end
   local store = db[key]
 
-  if entry.type == 'single' then
+  if entry.type == "single" then
     ---@cast entry SingleQuestEntry
     ---@cast store QuestStore
 
     UpdateQuestStore(store, entry.questID)
-  elseif entry.type == 'any' then
+  elseif entry.type == "any" then
     ---@cast entry AnyQuestEntry
     ---@cast store QuestStore
     for _, questID in ipairs(entry.questID) do
@@ -1205,7 +1198,7 @@ function Module:UpdateEntry(key, entry)
         break
       end
     end
-  elseif entry.type == 'list' then
+  elseif entry.type == "list" then
     ---@cast entry QuestListEntry
     ---@cast store QuestListStore
     wipe(store)
@@ -1220,7 +1213,7 @@ function Module:UpdateEntry(key, entry)
       store[questID] = {}
       UpdateQuestStore(store[questID], questID)
     end
-  elseif entry.type == 'custom' then
+  elseif entry.type == "custom" then
     ---@cast entry CustomEntry
     entry.func(store, entry)
   end
@@ -1242,19 +1235,21 @@ end
 ---@param toon string
 function Module:ResetEntry(key, entry, toon)
   local store = SI.db.Toons[toon].Progress and SI.db.Toons[toon].Progress[key]
-  if not store then return end
+  if not store then
+    return
+  end
 
-  if entry.type == 'single' then
+  if entry.type == "single" then
     ---@cast entry SingleQuestEntry
     ---@cast store QuestStore
 
     ResetQuestStore(store, entry.persists)
-  elseif entry.type == 'any' then
+  elseif entry.type == "any" then
     ---@cast entry AnyQuestEntry
     ---@cast store QuestStore
 
     ResetQuestStore(store, entry.persists)
-  elseif entry.type == 'list' then
+  elseif entry.type == "list" then
     ---@cast entry QuestListEntry
     ---@cast store QuestListStore
 
@@ -1263,7 +1258,7 @@ function Module:ResetEntry(key, entry, toon)
         ResetQuestStore(store[questID], entry.persists)
       end
     end
-  elseif entry.type == 'custom' then
+  elseif entry.type == "custom" then
     ---@cast entry CustomEntry
     if entry.resetFunc then
       entry.resetFunc(store, entry)
@@ -1273,13 +1268,13 @@ end
 
 function Module:OnDailyReset(toon)
   for key, entry in pairs(presets) do
-    if entry.reset == 'daily' then
+    if entry.reset == "daily" then
       self:ResetEntry(key, entry, toon)
     end
   end
 
   for key, entry in pairs(SI.db.Progress.User) do
-    if entry.reset == 'daily' then
+    if entry.reset == "daily" then
       self:ResetEntry(key, entry, toon)
     end
   end
@@ -1287,13 +1282,13 @@ end
 
 function Module:OnWeeklyReset(toon)
   for key, entry in pairs(presets) do
-    if entry.reset == 'weekly' then
+    if entry.reset == "weekly" then
       self:ResetEntry(key, entry, toon)
     end
   end
 
   for key, entry in pairs(SI.db.Progress.User) do
-    if entry.reset == 'weekly' then
+    if entry.reset == "weekly" then
       self:ResetEntry(key, entry, toon)
     end
   end
@@ -1301,16 +1296,71 @@ end
 
 do
   local randomSource = {
-    'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
-    'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
-    'U', 'V', 'W', 'X', 'Y', 'Z',
-    'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
-    'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
-    'u', 'v', 'w', 'x', 'y', 'z',
-    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F",
+    "G",
+    "H",
+    "I",
+    "J",
+    "K",
+    "L",
+    "M",
+    "N",
+    "O",
+    "P",
+    "Q",
+    "R",
+    "S",
+    "T",
+    "U",
+    "V",
+    "W",
+    "X",
+    "Y",
+    "Z",
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k",
+    "l",
+    "m",
+    "n",
+    "o",
+    "p",
+    "q",
+    "r",
+    "s",
+    "t",
+    "u",
+    "v",
+    "w",
+    "x",
+    "y",
+    "z",
+    "0",
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
   }
   local randomUID = function()
-    local result = ''
+    local result = ""
     for _ = 1, 11 do
       result = result .. randomSource[random(1, #randomSource)]
     end
@@ -1318,7 +1368,7 @@ do
   end
 
   local orderValidate = function(_, value)
-    if strfind(value, '^%s*[0-9]?[0-9]?[0-9]%s*$') then
+    if strfind(value, "^%s*[0-9]?[0-9]?[0-9]%s*$") then
       return true
     else
       local err = L["Order must be a number in [0 - 999]"]
@@ -1335,31 +1385,37 @@ do
   local function AddUserEntryToOption(key, entry)
     options.args.Enable.args.User.args[key] = {
       order = entry.index,
-      type = 'toggle',
+      type = "toggle",
       name = entry.name,
     }
     options.args.Sorting.args[key] = {
-      order = function() return tIndexOf(Module.displayAll, key) end,
-      type = 'input',
+      order = function()
+        return tIndexOf(Module.displayAll, key)
+      end,
+      type = "input",
       name = entry.name,
       desc = L["Sort Order"],
       validate = orderValidate,
     }
     options.args.User.args[key] = {
       order = entry.index,
-      type = 'group',
+      type = "group",
       name = entry.name,
-      get = function(info) return SI.db.Progress.User[key][info[#info]] end,
-      set = function(info, value) SI.db.Progress.User[key][info[#info]] = value end,
+      get = function(info)
+        return SI.db.Progress.User[key][info[#info]]
+      end,
+      set = function(info, value)
+        SI.db.Progress.User[key][info[#info]] = value
+      end,
       args = {
         name = {
           order = 1,
-          type = 'input',
+          type = "input",
           name = L["Quest Name"],
         },
         questID = {
           order = 2,
-          type = 'input',
+          type = "input",
           name = L["Quest ID"],
           validate = function(info, value)
             local number = tonumber(value)
@@ -1377,34 +1433,36 @@ do
         },
         reset = {
           order = 3,
-          type = 'select',
+          type = "select",
           name = L["Quest Reset Type"],
           values = {
-              ['none'] = NONE,
-              ['daily'] = DAILY,
-              ['weekly'] = WEEKLY,
+            ["none"] = NONE,
+            ["daily"] = DAILY,
+            ["weekly"] = WEEKLY,
           },
         },
         persists = {
           order = 4,
-          type = 'toggle',
+          type = "toggle",
           name = L["Progress Persists"],
         },
         fullObjective = {
           order = 5,
-          type = 'toggle',
+          type = "toggle",
           name = L["Full Objective"],
         },
         space = {
           order = 6,
-          type = 'description',
-          name = '',
+          type = "description",
+          name = "",
         },
         DeleteEntry = {
           order = 7,
-          type = 'execute',
+          type = "execute",
           name = L["Delete Entry"],
-          func = function() Module:DeleteUserEntry(key) end,
+          func = function()
+            Module:DeleteUserEntry(key)
+          end,
         },
       },
     }
@@ -1434,9 +1492,9 @@ do
     local data = CopyTable(entry)
     data.index = maxIndex + 1
 
-    local key = 'user-' .. randomUID()
+    local key = "user-" .. randomUID()
     while SI.db.Progress.User[key] do
-      key = 'user-' .. randomUID()
+      key = "user-" .. randomUID()
     end
 
     SI.db.Progress.User[key] = data
@@ -1472,8 +1530,8 @@ do
   function Module:BuildOptions(order)
     ---@type SingleQuestEntry
     local userSingleEntry = {
-      type = 'single',
-      name = '',
+      type = "single",
+      name = "",
       questID = 0,
       reset = "none",
       persists = false,
@@ -1481,42 +1539,49 @@ do
     }
 
     local userSingleEntryValidate = function()
-      if #(userSingleEntry.name) > 0 and userSingleEntry.questID and userSingleEntry.questID > 0 then
+      if #userSingleEntry.name > 0 and userSingleEntry.questID and userSingleEntry.questID > 0 then
         return true
       end
     end
 
     options = {
       order = order,
-      type = 'group',
-      childGroups = 'tab',
+      type = "group",
+      childGroups = "tab",
       name = L["Quest progresses"],
       args = {
         Enable = {
           order = 1,
-          type = 'group',
+          type = "group",
           name = ENABLE,
-          get = function(info) return SI.db.Progress.Enable[info[#info]] end,
-          set = function(info, value) SI.db.Progress.Enable[info[#info]] = value; Module:BuildDisplayOrder() end,
+          get = function(info)
+            return SI.db.Progress.Enable[info[#info]]
+          end,
+          set = function(info, value)
+            SI.db.Progress.Enable[info[#info]] = value
+            Module:BuildDisplayOrder()
+          end,
           args = {
             Presets = {
               order = 1,
-              type = 'group',
+              type = "group",
               name = L["Presets"],
               guiInline = true,
               args = {
                 General = {
                   order = 0,
-                  type = 'header',
+                  type = "header",
                   name = GENERAL,
                 },
               },
             },
             User = {
               order = 2,
-              type = 'group',
+              type = "group",
               name = L["User"],
-              hidden = function() return not next(SI.db.Progress.User) end,
+              hidden = function()
+                return not next(SI.db.Progress.User)
+              end,
               guiInline = true,
               args = {},
             },
@@ -1524,80 +1589,97 @@ do
         },
         Sorting = {
           order = 2,
-          type = 'group',
+          type = "group",
           name = L["Sorting"],
-          get = function(info) return tostring(SI.db.Progress.Order[info[#info]]) end,
-          set = function(info, value) SI.db.Progress.Order[info[#info]] = tonumber(value) or 50; Module:BuildDisplayOrder() end,
+          get = function(info)
+            return tostring(SI.db.Progress.Order[info[#info]])
+          end,
+          set = function(info, value)
+            SI.db.Progress.Order[info[#info]] = tonumber(value) or 50
+            Module:BuildDisplayOrder()
+          end,
           args = {},
         },
         User = {
           order = 3,
-          type = 'group',
+          type = "group",
           name = L["User"],
           args = {
             New = {
               order = -1,
-              type = 'group',
+              type = "group",
               name = L["New Single Quest"],
-              get = function(info) return userSingleEntry[info[#info]] end,
-              set = function(info, value) userSingleEntry[info[#info]] = value end,
+              get = function(info)
+                return userSingleEntry[info[#info]]
+              end,
+              set = function(info, value)
+                userSingleEntry[info[#info]] = value
+              end,
               args = {
                 name = {
                   order = 1,
-                  type = 'input',
+                  type = "input",
                   name = L["Quest Name"],
                 },
                 questID = {
                   order = 2,
-                  type = 'input',
+                  type = "input",
                   name = L["Quest ID"],
                   validate = function(info, value)
                     local number = tonumber(value)
                     return number and number == floor(number)
                   end,
-                  get = function(info) return tostring(userSingleEntry[info[#info]]) end,
-                  set = function(info, value) userSingleEntry[info[#info]] = tonumber(value) or 0 end,
+                  get = function(info)
+                    return tostring(userSingleEntry[info[#info]])
+                  end,
+                  set = function(info, value)
+                    userSingleEntry[info[#info]] = tonumber(value) or 0
+                  end,
                 },
                 reset = {
                   order = 3,
-                  type = 'select',
+                  type = "select",
                   name = L["Quest Reset Type"],
                   values = {
-                      ['none'] = NONE,
-                      ['daily'] = DAILY,
-                      ['weekly'] = WEEKLY,
+                    ["none"] = NONE,
+                    ["daily"] = DAILY,
+                    ["weekly"] = WEEKLY,
                   },
                 },
                 persists = {
                   order = 4,
-                  type = 'toggle',
+                  type = "toggle",
                   name = L["Progress Persists"],
                 },
                 fullObjective = {
                   order = 5,
-                  type = 'toggle',
+                  type = "toggle",
                   name = L["Full Objective"],
                 },
                 space = {
                   order = 6,
-                  type = 'description',
-                  name = '',
+                  type = "description",
+                  name = "",
                 },
                 AddEntry = {
                   order = 7,
-                  type = 'execute',
+                  type = "execute",
                   name = L["Add Entry"],
-                  disabled = function() return not userSingleEntryValidate() end,
-                  func = function() Module:AddUserEntry(userSingleEntry) end,
+                  disabled = function()
+                    return not userSingleEntryValidate()
+                  end,
+                  func = function()
+                    Module:AddUserEntry(userSingleEntry)
+                  end,
                 },
                 CleanEntry = {
                   order = 8,
-                  type = 'execute',
+                  type = "execute",
                   name = L["Clean Entry"],
                   func = function()
-                    userSingleEntry.name = ''
+                    userSingleEntry.name = ""
                     userSingleEntry.questID = 0
-                    userSingleEntry.reset = 'none'
+                    userSingleEntry.reset = "none"
                     userSingleEntry.persists = false
                     userSingleEntry.fullObjective = false
                   end,
@@ -1611,22 +1693,24 @@ do
 
     for key, entry in pairs(presets) do
       if entry.expansion then
-        if not options.args.Enable.args.Presets.args['Expansion' .. entry.expansion .. 'Header'] then
-          options.args.Enable.args.Presets.args['Expansion' .. entry.expansion .. 'Header'] = {
+        if not options.args.Enable.args.Presets.args["Expansion" .. entry.expansion .. "Header"] then
+          options.args.Enable.args.Presets.args["Expansion" .. entry.expansion .. "Header"] = {
             order = (entry.expansion + 1) * 100,
-            type = 'header',
-            name = _G['EXPANSION_NAME' .. entry.expansion],
+            type = "header",
+            name = _G["EXPANSION_NAME" .. entry.expansion],
           }
         end
       end
       options.args.Enable.args.Presets.args[key] = {
         order = ((entry.expansion or -1) + 1) * 100 + entry.index,
-        type = 'toggle',
+        type = "toggle",
         name = entry.name,
       }
       options.args.Sorting.args[key] = {
-        order = function() return tIndexOf(Module.displayAll, key) end,
-        type = 'input',
+        order = function()
+          return tIndexOf(Module.displayAll, key)
+        end,
+        type = "input",
         name = entry.name,
         desc = L["Sort Order"],
         validate = orderValidate,
@@ -1645,13 +1729,13 @@ end
 ---@param entry ProgressEntry
 ---@param questID number
 function Module:IsEntryContainsQuest(entry, questID)
-  if entry.type == 'single' then
+  if entry.type == "single" then
     ---@cast entry SingleQuestEntry
     return entry.questID == questID
-  elseif entry.type == 'any' or entry.type == 'list' then
+  elseif entry.type == "any" or entry.type == "list" then
     ---@cast entry AnyQuestEntry|QuestListEntry
     return tContains(entry.questID, questID)
-  elseif entry.type == 'custom' and entry.relatedQuest then
+  elseif entry.type == "custom" and entry.relatedQuest then
     ---@cast entry CustomEntry
     return tContains(entry.relatedQuest, questID)
   end
@@ -1679,11 +1763,7 @@ function Module:ShowTooltip(tooltip, columns, showall, preshow)
     local show = false
     for _, t in cpairs(SI.db.Toons, true) do
       local store = t.Progress and t.Progress[key]
-      if (
-        showall or
-        (entry.type ~= 'custom' and store and store.show) or
-        (entry.type == 'custom' and store and entry.showFunc(store, entry))
-      ) then
+      if showall or (entry.type ~= "custom" and store and store.show) or (entry.type == "custom" and store and entry.showFunc(store, entry)) then
         show = true
         break
       end
@@ -1702,35 +1782,35 @@ function Module:ShowTooltip(tooltip, columns, showall, preshow)
         if store and columns[toon .. 1] then
           ---@cast store table|QuestStore|QuestListStore
           local text, hoverFunc, hoverArg
-          if entry.type == 'custom' then
+          if entry.type == "custom" then
             ---@cast entry CustomEntry
             ---@cast store table
             text = entry.showFunc(store, entry)
             if entry.tooltipFunc then
               hoverFunc = TooltipCustomEntry
-              hoverArg = {store, entry, toon}
+              hoverArg = { store, entry, toon }
             end
-          elseif entry.type == 'single' or entry.type == 'any' then
+          elseif entry.type == "single" or entry.type == "any" then
             ---@cast entry SingleQuestEntry|AnyQuestEntry
             ---@cast store QuestStore
             text = ShowQuestStore(store, entry)
             if entry.fullObjective then
               hoverFunc = TooltipQuestStore
-              hoverArg = {store, entry, toon}
+              hoverArg = { store, entry, toon }
             end
-          elseif entry.type == 'list' then
+          elseif entry.type == "list" then
             ---@cast entry QuestListEntry
             ---@cast store QuestListStore
             text = ShowQuestListStore(store, entry)
             hoverFunc = TooltipQuestListStore
-            hoverArg = {store, entry, toon}
+            hoverArg = { store, entry, toon }
           end
           if text then
             local col = columns[toon .. 1]
-            tooltip:SetCell(line, col, text, 'CENTER', 4)
+            tooltip:SetCell(line, col, text, "CENTER", 4)
             if hoverFunc then
-              tooltip:SetCellScript(line, col, 'OnEnter', hoverFunc, hoverArg)
-              tooltip:SetCellScript(line, col, 'OnLeave', Tooltip.CloseIndicatorTip)
+              tooltip:SetCellScript(line, col, "OnEnter", hoverFunc, hoverArg)
+              tooltip:SetCellScript(line, col, "OnLeave", Tooltip.CloseIndicatorTip)
             end
           end
         end

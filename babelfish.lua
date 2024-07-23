@@ -6,53 +6,53 @@ local filePrefix = ""
 -- luacheck: globals io
 
 local function generateFileList(dir)
-    local fileTable = {}
-    local p = io.popen('find "'.. dir ..'" -name "*.lua" -not -path "*/Locales/*" -not -path "*/Libs/*"')
-    for file in p:lines() do
-        table.insert(fileTable, file)
-    end
+  local fileTable = {}
+  local p = io.popen("find \"" .. dir .. "\" -name \"*.lua\" -not -path \"*/Locales/*\" -not -path \"*/Libs/*\"")
+  for file in p:lines() do
+    table.insert(fileTable, file)
+  end
 
-    return fileTable
+  return fileTable
 end
 
 local fileList = {
-    SavedInstances_Main = generateFileList("SavedInstances"),
+  SavedInstances_Main = generateFileList("SavedInstances"),
 }
 
 local ordered = {
-    "SavedInstances_Main",
+  "SavedInstances_Main",
 }
 
 local function parseFile(filename)
-    local strings = {}
-    local file = assert(io.open(string.format("%s%s", filePrefix or "", filename), "r"), "Could not open " .. filename)
-    local text = file:read("*all")
-    file:close()
+  local strings = {}
+  local file = assert(io.open(string.format("%s%s", filePrefix or "", filename), "r"), "Could not open " .. filename)
+  local text = file:read("*all")
+  file:close()
 
-    for match in string.gmatch(text, "L%[\"(.-)\"%]") do
-        strings[match] = true
-    end
-    return strings
+  for match in string.gmatch(text, "L%[\"(.-)\"%]") do
+    strings[match] = true
+  end
+  return strings
 end
 
 -- extract data from specified lua files
 for _, namespace in ipairs(ordered) do
-    print(namespace)
-    local ns_file = assert(io.open(namespace .. ".lua", "w"), "Error opening file")
-    for _, file in ipairs(fileList[namespace]) do
-        local strings = parseFile(file)
+  print(namespace)
+  local ns_file = assert(io.open(namespace .. ".lua", "w"), "Error opening file")
+  for _, file in ipairs(fileList[namespace]) do
+    local strings = parseFile(file)
 
-        local sorted = {}
-        for k in next, strings do
-            table.insert(sorted, k)
-        end
-        table.sort(sorted)
-        if #sorted > 0 then
-            for _, v in ipairs(sorted) do
-                ns_file:write(string.format("L[\"%s\"] = true\n", v))
-            end
-        end
-        print("  (" .. #sorted .. ") " .. file)
+    local sorted = {}
+    for k in next, strings do
+      table.insert(sorted, k)
     end
-    ns_file:close()
+    table.sort(sorted)
+    if #sorted > 0 then
+      for _, v in ipairs(sorted) do
+        ns_file:write(string.format("L[\"%s\"] = true\n", v))
+      end
+    end
+    print("  (" .. #sorted .. ") " .. file)
+  end
+  ns_file:close()
 end

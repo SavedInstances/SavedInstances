@@ -1,5 +1,5 @@
 local SI, L = unpack((select(2, ...)))
-local Module = SI:NewModule('Warfront', 'AceEvent-3.0', 'AceTimer-3.0')
+local Module = SI:NewModule("Warfront", "AceEvent-3.0", "AceTimer-3.0")
 
 -- Lua functions
 local pairs, type = pairs, type
@@ -21,12 +21,12 @@ local warfronts = {
   {
     Alliance = {
       id = 116,
-      scenario = {53414, 56136}, -- Warfront: The Battle for Stromgarde (Alliance)
+      scenario = { 53414, 56136 }, -- Warfront: The Battle for Stromgarde (Alliance)
       boss = 52847, -- Doom's Howl
     },
     Horde = {
       id = 11,
-      scenario = {53416, 56137}, -- Warfront: The Battle for Stromgarde (Horde)
+      scenario = { 53416, 56137 }, -- Warfront: The Battle for Stromgarde (Horde)
       boss = 52848, -- The Lion's Roar
     },
   },
@@ -34,12 +34,12 @@ local warfronts = {
   {
     Alliance = {
       id = 117,
-      scenario = {53992, 57960}, -- Warfront: The Battle for Darkshore (Alliance)
+      scenario = { 53992, 57960 }, -- Warfront: The Battle for Darkshore (Alliance)
       boss = 54895, -- Ivus the Decayed
     },
     Horde = {
       id = 118,
-      scenario = {53955, 57959}, -- Warfront: The Battle for Darkshore (Horde)
+      scenario = { 53955, 57959 }, -- Warfront: The Battle for Darkshore (Horde)
       boss = 54896, -- Ivus the Forest Lord
     },
   },
@@ -75,10 +75,16 @@ end
 
 function Module:UpdateQuest()
   local t = SI.db.Toons[SI.thisToon]
-  if not t or UnitLevel("player") < 50 then return end
-  if not t.Warfront then t.Warfront = {} end
+  if not t or UnitLevel("player") < 50 then
+    return
+  end
+  if not t.Warfront then
+    t.Warfront = {}
+  end
   for index, tbl in pairs(warfronts) do
-    if not t.Warfront[index] then t.Warfront[index] = {} end
+    if not t.Warfront[index] then
+      t.Warfront[index] = {}
+    end
     local curr = tbl[t.Faction]
     if curr then
       -- faction is not ready on Neutral Pandaren or first login
@@ -96,7 +102,9 @@ end
 function Module:OnReset(index, captureSide)
   for toon, ti in pairs(SI.db.Toons) do
     local t = SI.db.Toons[toon]
-    if not t or not t.Warfront or not t.Warfront[index] then return end
+    if not t or not t.Warfront or not t.Warfront[index] then
+      return
+    end
     local tbl = t.Warfront[index]
     if t.Faction == captureSide then
       tbl.boss = false
@@ -149,7 +157,7 @@ function Module:ShowTooltip(tooltip, columns, showall, preshow)
                 end
               elseif not SI.db.Warfront[index].contributing then
                 if value.scenario then
-                  if type(value.scenario) == 'table' then
+                  if type(value.scenario) == "table" then
                     local completed = 0
                     local length = #tbl.Alliance.scenario
                     for _, v in pairs(value.scenario) do

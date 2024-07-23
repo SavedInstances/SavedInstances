@@ -1,5 +1,5 @@
 local SI, L = unpack((select(2, ...)))
-local Module = SI:NewModule('MythicPlus', 'AceEvent-3.0', 'AceBucket-3.0')
+local Module = SI:NewModule("MythicPlus", "AceEvent-3.0", "AceBucket-3.0")
 
 -- Lua functions
 local _G = _G
@@ -48,73 +48,73 @@ local KeystoneAbbrev = {
   [456] = L["TOTT"], -- Throne of the Tides
 
   -- Mists of Pandaria
-  [2]   = L["TJS"],  -- Temple of the Jade Serpent
+  [2] = L["TJS"], -- Temple of the Jade Serpent
 
   -- Warlords of Draenor
-  [165] = L["SBG"],   -- Shadowmoon Burial Grounds
-  [166] = L["GD"],    -- Grimrail Depot
-  [168] = L["EB"],    -- Everbloom
-  [169] = L["ID"],    -- Iron Docks
+  [165] = L["SBG"], -- Shadowmoon Burial Grounds
+  [166] = L["GD"], -- Grimrail Depot
+  [168] = L["EB"], -- Everbloom
+  [169] = L["ID"], -- Iron Docks
 
   -- Legion
-  [197] = L["EOA"],   -- Eye of Azshara
-  [198] = L["DHT"],   -- Darkheart Thicket
-  [199] = L["BRH"],   -- Black Rook Hold
-  [200] = L["HOV"],   -- Halls of Valor
-  [206] = L["NL"],    -- Neltharion's Lair
-  [207] = L["VOTW"],  -- Vault of the Wardens
-  [208] = L["MOS"],   -- Maw of Souls
-  [209] = L["ARC"],   -- The Arcway
-  [210] = L["COS"],   -- Court of Stars
-  [227] = L["LOWR"],  -- Return to Karazhan: Lower
-  [233] = L["COEN"],  -- Cathedral of Eternal Night
-  [234] = L["UPPR"],  -- Return to Karazhan: Upper
-  [239] = L["SEAT"],  -- Seat of the Triumvirate
+  [197] = L["EOA"], -- Eye of Azshara
+  [198] = L["DHT"], -- Darkheart Thicket
+  [199] = L["BRH"], -- Black Rook Hold
+  [200] = L["HOV"], -- Halls of Valor
+  [206] = L["NL"], -- Neltharion's Lair
+  [207] = L["VOTW"], -- Vault of the Wardens
+  [208] = L["MOS"], -- Maw of Souls
+  [209] = L["ARC"], -- The Arcway
+  [210] = L["COS"], -- Court of Stars
+  [227] = L["LOWR"], -- Return to Karazhan: Lower
+  [233] = L["COEN"], -- Cathedral of Eternal Night
+  [234] = L["UPPR"], -- Return to Karazhan: Upper
+  [239] = L["SEAT"], -- Seat of the Triumvirate
 
   -- Battle for Azeroth
-  [244] = L["AD"],    -- Atal'Dazar
-  [245] = L["FH"],    -- Freehold
-  [246] = L["TD"],    -- Tol Dagor
-  [247] = L["ML"],    -- The MOTHERLODE!!
-  [248] = L["WM"],    -- Waycrest Manor
-  [249] = L["KR"],    -- Kings' Rest
-  [250] = L["TOS"],   -- Temple of Sethraliss
-  [251] = L["UNDR"],  -- The Underrot
-  [252] = L["SOTS"],  -- Shrine of the Storm
+  [244] = L["AD"], -- Atal'Dazar
+  [245] = L["FH"], -- Freehold
+  [246] = L["TD"], -- Tol Dagor
+  [247] = L["ML"], -- The MOTHERLODE!!
+  [248] = L["WM"], -- Waycrest Manor
+  [249] = L["KR"], -- Kings' Rest
+  [250] = L["TOS"], -- Temple of Sethraliss
+  [251] = L["UNDR"], -- The Underrot
+  [252] = L["SOTS"], -- Shrine of the Storm
   [353] = L["SIEGE"], -- Siege of Boralus
-  [369] = L["YARD"],  -- Operation: Mechagon - Junkyard
-  [370] = L["WORK"],  -- Operation: Mechagon - Workshop
+  [369] = L["YARD"], -- Operation: Mechagon - Junkyard
+  [370] = L["WORK"], -- Operation: Mechagon - Workshop
 
   -- Shadowlands
   [375] = L["MISTS"], -- Mists of Tirna Scithe
-  [376] = L["NW"],    -- The Necrotic Wake
-  [377] = L["DOS"],   -- De Other Side
-  [378] = L["HOA"],   -- Halls of Atonement
-  [379] = L["PF"],    -- Plaguefall
-  [380] = L["SD"],    -- Sanguine Depths
-  [381] = L["SOA"],   -- Spires of Ascension
-  [382] = L["TOP"],   -- Theater of Pain
-  [391] = L["STRT"],  -- Tazavesh: Streets of Wonder
-  [392] = L["GMBT"],  -- Tazavesh: So'leah's Gambit
+  [376] = L["NW"], -- The Necrotic Wake
+  [377] = L["DOS"], -- De Other Side
+  [378] = L["HOA"], -- Halls of Atonement
+  [379] = L["PF"], -- Plaguefall
+  [380] = L["SD"], -- Sanguine Depths
+  [381] = L["SOA"], -- Spires of Ascension
+  [382] = L["TOP"], -- Theater of Pain
+  [391] = L["STRT"], -- Tazavesh: Streets of Wonder
+  [392] = L["GMBT"], -- Tazavesh: So'leah's Gambit
 
   -- Dragonflight
-  [399] = L["RLP"],   -- Ruby Life Pools
-  [400] = L["TNO"],   -- The Nokhud Offensive
-  [401] = L["TAV"],   -- The Azure Vault
-  [402] = L["AA"],    -- Algeth'ar Academy
-  [403] = L["ULD"],   -- Uldaman: Legacy of Tyr
-  [404] = L["NELT"],  -- Neltharus
-  [405] = L["BH"],    -- Brackenhide Hollow
-  [406] = L["HOI"],   -- Halls of Infusion
-  [463] = L["FALL"],  -- Dawn of the Infinite: Galakrond's Fall
-  [464] = L["RISE"],  -- Dawn of the Infinite: Murozond's Rise
+  [399] = L["RLP"], -- Ruby Life Pools
+  [400] = L["TNO"], -- The Nokhud Offensive
+  [401] = L["TAV"], -- The Azure Vault
+  [402] = L["AA"], -- Algeth'ar Academy
+  [403] = L["ULD"], -- Uldaman: Legacy of Tyr
+  [404] = L["NELT"], -- Neltharus
+  [405] = L["BH"], -- Brackenhide Hollow
+  [406] = L["HOI"], -- Halls of Infusion
+  [463] = L["FALL"], -- Dawn of the Infinite: Galakrond's Fall
+  [464] = L["RISE"], -- Dawn of the Infinite: Murozond's Rise
 }
 SI.KeystoneAbbrev = KeystoneAbbrev
 
 function Module:OnEnable()
   self:RegisterEvent("BAG_UPDATE_DELAYED", "RefreshMythicKeyInfo")
 
-  self:RegisterBucketEvent('CHALLENGE_MODE_COMPLETED', 5, C_MythicPlus_RequestMapInfo)
+  self:RegisterBucketEvent("CHALLENGE_MODE_COMPLETED", 5, C_MythicPlus_RequestMapInfo)
 
   self:RegisterBucketEvent({
     "WEEKLY_REWARDS_UPDATE",
@@ -135,12 +135,12 @@ do
     end
 
     local color = C_ChallengeMode_GetKeystoneLevelRarityColor(level)
-    colorCache[level] = color and color:GenerateHexColor() or 'ffffffff'
+    colorCache[level] = color and color:GenerateHexColor() or "ffffffff"
     return colorCache[level]
   end
 
   function Module:ProcessKey(itemLink, targetTable)
-    local _, _, mapID, mapLevel = strsplit(':', itemLink)
+    local _, _, mapID, mapLevel = strsplit(":", itemLink)
     mapID = tonumber(mapID)
     mapLevel = tonumber(mapLevel)
 
@@ -202,7 +202,9 @@ do
     end
 
     -- done nothing
-    if lastCompletedIndex == 0 then return end
+    if lastCompletedIndex == 0 then
+      return
+    end
     t.MythicKeyBest.lastCompletedIndex = lastCompletedIndex
 
     -- add Mythic+ runs
@@ -245,7 +247,7 @@ function Module:Keys(index)
   local target = SI.db.Tooltip.KeystoneReportTarget
   SI:Debug("Key report target: %s", target)
 
-  if target == 'EXPORT' then
+  if target == "EXPORT" then
     self:ExportKeys(index)
   else
     local dialog = StaticPopup_Show("SAVEDINSTANCES_REPORT_KEYS", target, nil, target)
@@ -264,7 +266,7 @@ function Module:KeyData(index, action)
       if SI.db.Tooltip.ShowServer then
         toonName = toon
       else
-        local tname, tserver = toon:match('^(.*) [-] (.*)$')
+        local tname, tserver = toon:match("^(.*) [-] (.*)$")
         toonName = tname
       end
 
@@ -274,7 +276,9 @@ function Module:KeyData(index, action)
 end
 
 function Module:ReportKeys(target, index)
-  self:KeyData(index, function(toon, key) SendChatMessage(toon .. ' - '.. key, target) end)
+  self:KeyData(index, function(toon, key)
+    SendChatMessage(toon .. " - " .. key, target)
+  end)
 end
 
 function Module:ExportKeys(index)
@@ -309,7 +313,9 @@ function Module:ExportKeys(index)
   end
 
   local keys = ""
-  self:KeyData(index, function(toon, key) keys = keys .. toon .. ' - ' .. key .. '\n' end)
+  self:KeyData(index, function(toon, key)
+    keys = keys .. toon .. " - " .. key .. "\n"
+  end)
 
   self.KeyExportText:SetText(keys)
   self.KeyExportText:HighlightText()
@@ -322,7 +328,9 @@ StaticPopupDialogs["SAVEDINSTANCES_REPORT_KEYS"] = {
   text = L["Are you sure you want to report all your keys to %s?"],
   button1 = OKAY,
   button2 = CANCEL,
-  OnAccept = function(self, target, index) Module:ReportKeys(target, index) end,
+  OnAccept = function(self, target, index)
+    Module:ReportKeys(target, index)
+  end,
   timeout = 0,
   whileDead = true,
   hideOnEscape = true,

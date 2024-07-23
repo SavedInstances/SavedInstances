@@ -1,5 +1,5 @@
 local SI, L = unpack((select(2, ...)))
-local Module = SI:NewModule('Currency', 'AceEvent-3.0', 'AceTimer-3.0', 'AceBucket-3.0')
+local Module = SI:NewModule("Currency", "AceEvent-3.0", "AceTimer-3.0", "AceBucket-3.0")
 
 -- Lua functions
 local ipairs, pairs = ipairs, pairs
@@ -129,21 +129,20 @@ local currencySorted = {}
 for _, idx in ipairs(currency) do
   table.insert(currencySorted, idx)
 end
-table.sort(currencySorted, function (c1, c2)
+table.sort(currencySorted, function(c1, c2)
   local c1_name = C_CurrencyInfo_GetCurrencyInfo(c1).name
   local c2_name = C_CurrencyInfo_GetCurrencyInfo(c2).name
   return c1_name < c2_name
 end)
 SI.currencySorted = currencySorted
 
-local hiddenCurrency = {
-}
+local hiddenCurrency = {}
 
 local specialCurrency = {
   [1129] = { -- WoD - Seal of Tempered Fate
     weeklyMax = 3,
     earnByQuest = {
-      36058,  -- Seal of Dwarven Bunker
+      36058, -- Seal of Dwarven Bunker
       -- Seal of Ashran quests
       36054,
       37454,
@@ -226,14 +225,16 @@ function Module:OnEnable()
 end
 
 function Module:UpdateCurrency()
-  if SI.logout then return end -- currency is unreliable during logout
+  if SI.logout then
+    return
+  end -- currency is unreliable during logout
 
   local t = SI.db.Toons[SI.thisToon]
   t.Money = GetMoney()
   t.currency = t.currency or {}
 
   local covenantID = C_Covenants_GetActiveCovenantID()
-  for _,idx in ipairs(currency) do
+  for _, idx in ipairs(currency) do
     local data = C_CurrencyInfo_GetCurrencyInfo(idx)
     if not data.discovered and not hiddenCurrency[idx] then
       t.currency[idx] = nil
@@ -249,7 +250,9 @@ function Module:UpdateCurrency()
       -- handle special currency
       if specialCurrency[idx] then
         local tbl = specialCurrency[idx]
-        if tbl.weeklyMax then ci.weeklyMax = tbl.weeklyMax end
+        if tbl.weeklyMax then
+          ci.weeklyMax = tbl.weeklyMax
+        end
         if tbl.earnByQuest then
           ci.earnedThisWeek = 0
           for _, questID in ipairs(tbl.earnByQuest) do
@@ -282,17 +285,27 @@ function Module:UpdateCurrency()
         ci.totalMax = floor(duration / 604800) -- 7 days
       end
       -- don't store useless info
-      if ci.weeklyMax == 0 then ci.weeklyMax = nil end
-      if ci.totalMax == 0 then ci.totalMax = nil end
-      if ci.earnedThisWeek == 0 then ci.earnedThisWeek = nil end
-      if ci.totalEarned == 0 then ci.totalEarned = nil end
+      if ci.weeklyMax == 0 then
+        ci.weeklyMax = nil
+      end
+      if ci.totalMax == 0 then
+        ci.totalMax = nil
+      end
+      if ci.earnedThisWeek == 0 then
+        ci.earnedThisWeek = nil
+      end
+      if ci.totalEarned == 0 then
+        ci.totalEarned = nil
+      end
       t.currency[idx] = ci
     end
   end
 end
 
 function Module:UpdateCurrencyItem()
-  if not SI.db.Toons[SI.thisToon].currency then return end
+  if not SI.db.Toons[SI.thisToon].currency then
+    return
+  end
 
   for currencyID, tbl in pairs(specialCurrency) do
     if tbl.relatedItem and SI.db.Toons[SI.thisToon].currency[currencyID] then

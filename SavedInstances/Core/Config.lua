@@ -1,9 +1,9 @@
 local SI, L = unpack((select(2, ...)))
-local Config = SI:NewModule('Config')
-local Tooltip = SI:GetModule('Tooltip')
-local Currency = SI:GetModule('Currency')
-local Progress = SI:GetModule('Progress')
-local Warfront = SI:GetModule('Warfront')
+local Config = SI:NewModule("Config")
+local Tooltip = SI:GetModule("Tooltip")
+local Currency = SI:GetModule("Currency")
+local Progress = SI:GetModule("Progress")
+local Warfront = SI:GetModule("Warfront")
 
 -- Lua functions
 local pairs, ipairs, tonumber, tostring, wipe = pairs, ipairs, tonumber, tostring, wipe
@@ -32,12 +32,10 @@ local GREEN_FONT_COLOR_CODE = GREEN_FONT_COLOR_CODE
 local LEVEL = LEVEL
 local RED_FONT_COLOR_CODE = RED_FONT_COLOR_CODE
 
--- GLOBALS: LibStub, BINDING_NAME_SAVEDINSTANCES, BINDING_HEADER_SAVEDINSTANCES
-
 SI.diff_strings = {
   D1 = DUNGEON_DIFFICULTY1, -- 5 man
   D2 = DUNGEON_DIFFICULTY2, -- 5 man (Heroic)
-  D3 = DUNGEON_DIFFICULTY1.." ("..GetDifficultyInfo(23)..")", -- 5 man (Mythic)
+  D3 = DUNGEON_DIFFICULTY1 .. " (" .. GetDifficultyInfo(23) .. ")", -- 5 man (Mythic)
   R0 = EXPANSION_NAME0 .. " " .. LFG_TYPE_RAID,
   R1 = RAID_DIFFICULTY1, -- "10 man"
   R2 = RAID_DIFFICULTY2, -- "25 man"
@@ -63,7 +61,7 @@ BINDING_HEADER_SAVEDINSTANCES = "SavedInstances"
 
 -- general helper functions
 
-function SI:idtext(instance,diff,info)
+function SI:idtext(instance, diff, info)
   if instance.WorldBoss then
     return L["World Boss"]
   elseif info.ID < 0 then
@@ -72,14 +70,14 @@ function SI:idtext(instance,diff,info)
     if diff == 23 then
       return SI.diff_strings["D3"]
     else
-      return SI.diff_strings["D"..diff]
+      return SI.diff_strings["D" .. diff]
     end
   elseif instance.Expansion == 0 then -- classic Raid
     return SI.diff_strings.R0
   elseif instance.Raid and diff >= 3 and diff <= 7 then -- pre-WoD raids
-    return SI.diff_strings["R"..(diff-2)]
+    return SI.diff_strings["R" .. (diff - 2)]
   elseif diff >= 14 and diff <= 16 then -- WoD raids
-    return SI.diff_strings["R"..(diff-8)]
+    return SI.diff_strings["R" .. (diff - 8)]
   elseif diff == 17 then -- Looking For Raid
     return SI.diff_strings.R5
   else
@@ -100,31 +98,35 @@ local function IndicatorOptions()
     Instructions = {
       order = 1,
       type = "description",
-      name = L["You can combine icons and text in a single indicator if you wish. Simply choose an icon, and insert the word ICON into the text field. Anywhere the word ICON is found, the icon you chose will be substituted in."].." "..L["Similarly, the words KILLED and TOTAL will be substituted with the number of bosses killed and total in the lockout."],
+      name = L["You can combine icons and text in a single indicator if you wish. Simply choose an icon, and insert the word ICON into the text field. Anywhere the word ICON is found, the icon you chose will be substituted in."]
+        .. " "
+        .. L["Similarly, the words KILLED and TOTAL will be substituted with the number of bosses killed and total in the lockout."],
     },
   }
   for diffname, diffstr in pairs(SI.diff_strings) do
     local dorder = (tonumber(diffname:match("%d+")) or 0) + 10
-    if diffname:find("^R") then dorder = dorder + 10 end
+    if diffname:find("^R") then
+      dorder = dorder + 10
+    end
     args[diffname] = {
       type = "group",
       name = diffstr,
       order = dorder,
       args = {
-        [diffname.."Indicator"] = {
+        [diffname .. "Indicator"] = {
           order = 1,
           type = "select",
           width = "half",
           name = EMBLEM_SYMBOL,
-          values = SI.Indicators
+          values = SI.Indicators,
         },
-        [diffname.."Text"] = {
+        [diffname .. "Text"] = {
           order = 2,
           type = "input",
           name = L["Text"],
-          multiline = false
+          multiline = false,
         },
-        [diffname.."Color"] = {
+        [diffname .. "Color"] = {
           order = 3,
           type = "color",
           width = "half",
@@ -146,10 +148,10 @@ local function IndicatorOptions()
             SI.db.Indicators[info[#info]][3] = b
           end,
         },
-        [diffname.."ClassColor"] = {
+        [diffname .. "ClassColor"] = {
           order = 4,
           type = "toggle",
-          name = L["Use class color"]
+          name = L["Use class color"],
         },
       },
     }
@@ -159,10 +161,8 @@ end
 
 -- options table below
 function Config:BuildOptions()
-  local valueslist = { ["always"] = GREEN_FONT_COLOR_CODE..L["Always show"]..FONTEND,
-    ["saved"] = L["Show when saved"],
-    ["never"] = RED_FONT_COLOR_CODE..L["Never show"]..FONTEND,
-  }
+  local valueslist =
+    { ["always"] = GREEN_FONT_COLOR_CODE .. L["Always show"] .. FONTEND, ["saved"] = L["Show when saved"], ["never"] = RED_FONT_COLOR_CODE .. L["Never show"] .. FONTEND }
   local opts = {
     type = "group",
     name = "SavedInstances",
@@ -171,7 +171,7 @@ function Config:BuildOptions()
       return SI.db.Tooltip[info[#info]]
     end,
     set = function(info, value)
-      SI:Debug(info[#info].." set to: "..tostring(value))
+      SI:Debug(info[#info] .. " set to: " .. tostring(value))
       SI.db.Tooltip[info[#info]] = value
       wipe(SI.scaleCache)
       wipe(SI.oi_cache)
@@ -182,25 +182,33 @@ function Config:BuildOptions()
         name = L["Open config"],
         guiHidden = true,
         type = "execute",
-        func = function() Config:ShowConfig() end,
+        func = function()
+          Config:ShowConfig()
+        end,
       },
       time = {
         name = L["Dump time debugging information"],
         guiHidden = true,
         type = "execute",
-        func = function() SI:TimeDebug() end,
+        func = function()
+          SI:TimeDebug()
+        end,
       },
       quest = {
         name = L["Dump quest debugging information"],
         guiHidden = true,
         type = "execute",
-        func = function(...) SI:QuestDebug(...) end,
+        func = function(...)
+          SI:QuestDebug(...)
+        end,
       },
       show = {
         name = L["Show/Hide the SavedInstances tooltip"],
         guiHidden = true,
         type = "execute",
-        func = function() Tooltip:ToggleDetached() end,
+        func = function()
+          Tooltip:ToggleDetached()
+        end,
       },
       General = {
         order = 1,
@@ -210,7 +218,9 @@ function Config:BuildOptions()
           ver = {
             order = 0.5,
             type = "description",
-            name = function() return "Version: SavedInstances "..SI.version end,
+            name = function()
+              return "Version: SavedInstances " .. SI.version
+            end,
           },
           GeneralHeader = {
             order = 2,
@@ -222,8 +232,12 @@ function Config:BuildOptions()
             name = L["Show minimap button"],
             desc = L["Show the SavedInstances minimap button"],
             order = 3,
-            hidden = function() return not SI.Libs.LDBI end,
-            get = function(info) return not SI.db.MinimapIcon.hide end,
+            hidden = function()
+              return not SI.Libs.LDBI
+            end,
+            get = function(info)
+              return not SI.db.MinimapIcon.hide
+            end,
             set = function(info, value)
               SI.db.MinimapIcon.hide = not value
               SI.Libs.LDBI:Refresh("SavedInstances")
@@ -259,7 +273,7 @@ function Config:BuildOptions()
             type = "toggle",
             name = L["Abbreviate keystones"],
             desc = L["Abbreviate Mythic keystone dungeon names"],
-            order = 4.85
+            order = 4.85,
           },
           KeystoneReportTarget = {
             type = "select",
@@ -267,9 +281,9 @@ function Config:BuildOptions()
             values = {
               ["PARTY"] = L["Party"],
               ["GUILD"] = L["Guild"],
-              ["EXPORT"] = L["Export"]
+              ["EXPORT"] = L["Export"],
             },
-            order = 4.86
+            order = 4.86,
           },
           DebugMode = {
             type = "toggle",
@@ -516,14 +530,20 @@ function Config:BuildOptions()
             width = "double",
             cmdHidden = true,
             order = -0.5,
-            set = function(info,val)
+            set = function(info, val)
               local b1, b2 = GetBindingKey("SAVEDINSTANCES")
-              if b1 then SetBinding(b1) end
-              if b2 then SetBinding(b2) end
+              if b1 then
+                SetBinding(b1)
+              end
+              if b2 then
+                SetBinding(b2)
+              end
               SetBinding(val, "SAVEDINSTANCES")
               SaveBindings(GetCurrentBindingSet())
             end,
-            get = function(info) return GetBindingKey("SAVEDINSTANCES") end
+            get = function(info)
+              return GetBindingKey("SAVEDINSTANCES")
+            end,
           },
         },
       },
@@ -535,7 +555,7 @@ function Config:BuildOptions()
           return SI.db.Tooltip[info[#info]]
         end,
         set = function(info, value)
-          SI:Debug(info[#info].." set to: "..tostring(value))
+          SI:Debug(info[#info] .. " set to: " .. tostring(value))
           SI.db.Tooltip[info[#info]] = value
           wipe(SI.scaleCache)
           wipe(SI.oi_cache)
@@ -545,22 +565,22 @@ function Config:BuildOptions()
           CurrencyValueColor = {
             type = "toggle",
             order = 10,
-            name = L["Color currency by cap"]
+            name = L["Color currency by cap"],
           },
           NumberFormat = {
             type = "toggle",
             order = 20,
-            name = L["Format large numbers"]
+            name = L["Format large numbers"],
           },
           CurrencyMax = {
             type = "toggle",
             order = 30,
-            name = L["Show currency max"]
+            name = L["Show currency max"],
           },
           CurrencyEarned = {
             type = "toggle",
             order = 40,
-            name = L["Show currency earned"]
+            name = L["Show currency earned"],
           },
           CurrencySortName = {
             type = "toggle",
@@ -586,7 +606,7 @@ function Config:BuildOptions()
           end
         end,
         set = function(info, value)
-          SI:Debug("Config set: "..info[#info].." = "..(value and "true" or "false"))
+          SI:Debug("Config set: " .. info[#info] .. " = " .. (value and "true" or "false"))
           SI.db.Indicators[info[#info]] = value
         end,
         args = IndicatorOptions(),
@@ -599,7 +619,7 @@ function Config:BuildOptions()
         width = "double",
         args = (function()
           local ret = {}
-          for i,cat in ipairs(SI.OrderedCategories()) do
+          for i, cat in ipairs(SI.OrderedCategories()) do
             ret[cat] = {
               order = i,
               type = "group",
@@ -629,7 +649,9 @@ function Config:BuildOptions()
                   name = L["Set All"],
                   type = "select",
                   values = valueslist,
-                  get = function(info) return "" end,
+                  get = function(info)
+                    return ""
+                  end,
                   set = function(info, value)
                     for j, inst in ipairs(insts) do
                       SI.db.Instances[inst].Show = value
@@ -699,7 +721,7 @@ function Config:BuildOptions()
                   ["interleave"] = L["Interleave"],
                 },
               },
-            }
+            },
           },
           Manage = {
             name = L["Manage"],
@@ -708,12 +730,12 @@ function Config:BuildOptions()
             order = 2,
             childGroups = "select",
             width = "double",
-            args = (function ()
+            args = (function()
               local toons = {}
               for toon, _ in pairs(SI.db.Toons) do
-                local tn, ts = toon:match('^(.*) [-] (.*)$')
+                local tn, ts = toon:match("^(.*) [-] (.*)$")
                 toons[ts] = toons[ts] or {}
-                tinsert(toons[ts],tn)
+                tinsert(toons[ts], tn)
               end
               local ret = {}
               ret.reset = {
@@ -722,7 +744,7 @@ function Config:BuildOptions()
                 type = "execute",
                 func = function()
                   StaticPopup_Show("SAVEDINSTANCES_RESET")
-                end
+                end,
               }
               ret.recover = {
                 order = 0.2,
@@ -731,16 +753,18 @@ function Config:BuildOptions()
                 type = "execute",
                 func = function()
                   SI:Refresh(true)
-                end
+                end,
               }
               local deltoon = function(info)
                 local toon, tinfo = unpack(info.arg)
-                if not toon then return end
+                if not toon then
+                  return
+                end
                 local dialog = StaticPopup_Show("SAVEDINSTANCES_DELETE_CHARACTER", toon, tinfo, toon)
               end
               local toonfncache = {}
               local toonget = function(field, default)
-                local key = field.."_get"
+                local key = field .. "_get"
                 local fn = toonfncache[key] or function(info)
                   return tostring(info.arg[field] or default)
                 end
@@ -748,13 +772,14 @@ function Config:BuildOptions()
                 return fn
               end
               local toonset = function(field, isnum)
-                local key = field.."_set"
-                local fn = toonfncache[key] or function(info, value)
-                  if isnum then
-                    value = tonumber(value)
+                local key = field .. "_set"
+                local fn = toonfncache[key]
+                  or function(info, value)
+                    if isnum then
+                      value = tonumber(value)
+                    end
+                    info.arg[field] = value
                   end
-                  info.arg[field] = value
-                end
                 toonfncache[key] = fn
                 return fn
               end
@@ -786,7 +811,7 @@ function Config:BuildOptions()
                 order = 0.42,
                 cmdHidden = true,
                 fontSize = "medium",
-                name = "  "..L["Show When"],
+                name = "  " .. L["Show When"],
                 type = "description",
                 width = "normal",
               }
@@ -794,7 +819,7 @@ function Config:BuildOptions()
                 order = 0.43,
                 cmdHidden = true,
                 fontSize = "medium",
-                name = "  "..L["Sort Order"],
+                name = "  " .. L["Sort Order"],
                 type = "description",
                 width = "half",
               }
@@ -810,17 +835,19 @@ function Config:BuildOptions()
                     local tret = {}
                     sort(stoons)
                     for ord, tn in pairs(stoons) do
-                      local toon = tn.." - "..server
+                      local toon = tn .. " - " .. server
                       local t = SI.db.Toons[toon]
                       local tinfo = ""
                       if t and t.Level and t.LClass then
-                        tinfo = tinfo.."\n"..LEVEL.." "..t.Level.." "..t.LClass
+                        tinfo = tinfo .. "\n" .. LEVEL .. " " .. t.Level .. " " .. t.LClass
                       end
                       if t and t.LastSeen then
-                        tinfo = tinfo.."\n"..L["Last updated"]..": "..date("%c",t.LastSeen)
+                        tinfo = tinfo .. "\n" .. L["Last updated"] .. ": " .. date("%c", t.LastSeen)
                       end
-                      tret[tn.."_desc"] = {
-                        order = function(info) return t.Order*1000 + ord*10 + 0 end,
+                      tret[tn .. "_desc"] = {
+                        order = function(info)
+                          return t.Order * 1000 + ord * 10 + 0
+                        end,
                         name = SI:ClassColorToon(toon),
                         desc = tn, -- unfortunately does nothing in dialog
                         descStyle = "tooltip",
@@ -829,7 +856,9 @@ function Config:BuildOptions()
                         cmdHidden = true,
                       }
                       tret[tn] = {
-                        order = function(info) return t.Order*1000 + ord*10 + 1 end,
+                        order = function(info)
+                          return t.Order * 1000 + ord * 10 + 1
+                        end,
                         name = "",
                         type = "select",
                         width = "normal",
@@ -838,8 +867,10 @@ function Config:BuildOptions()
                         get = toonget("Show", "saved"),
                         set = toonset("Show"),
                       }
-                      tret[tn.."_order"] = {
-                        order = function(info) return t.Order*1000 + ord*10 + 4 end,
+                      tret[tn .. "_order"] = {
+                        order = function(info)
+                          return t.Order * 1000 + ord * 10 + 4
+                        end,
                         name = "",
                         type = "input",
                         width = "half",
@@ -849,27 +880,33 @@ function Config:BuildOptions()
                         get = toonget("Order", 50),
                         set = toonset("Order", true),
                         validate = orderval,
-                      --pattern = "^%s*[0-9]?[0-9]?[0-9]%s*$",
-                      --usage = L["Order must be a number in [0 - 999]"],
+                        --pattern = "^%s*[0-9]?[0-9]?[0-9]%s*$",
+                        --usage = L["Order must be a number in [0 - 999]"],
                       }
-                      tret[tn.."_sp1"] = {
-                        order = function(info) return t.Order*1000 + ord*10 + 6 end,
+                      tret[tn .. "_sp1"] = {
+                        order = function(info)
+                          return t.Order * 1000 + ord * 10 + 6
+                        end,
                         name = " ",
                         type = "description",
                         width = "half",
                         cmdHidden = true,
                       }
-                      tret[tn.."_delete"] = {
-                        order = function(info) return t.Order*1000 + ord*10 + 7 end,
+                      tret[tn .. "_delete"] = {
+                        order = function(info)
+                          return t.Order * 1000 + ord * 10 + 7
+                        end,
                         name = DELETE,
-                        desc = DELETE.." "..toon..tinfo,
+                        desc = DELETE .. " " .. toon .. tinfo,
                         type = "execute",
                         width = "half",
                         arg = { toon, tinfo },
                         func = deltoon,
                       }
-                      tret[tn.."_nl"] = {
-                        order = function(info) return t.Order*1000 + ord*10 + 9 end,
+                      tret[tn .. "_nl"] = {
+                        order = function(info)
+                          return t.Order * 1000 + ord * 10 + 9
+                        end,
                         name = "",
                         type = "description",
                         width = "full",
@@ -881,14 +918,14 @@ function Config:BuildOptions()
                 }
               end
               return ret
-            end)()
+            end)(),
           },
         },
       },
     },
   }
   SI.Options = SI.Options or {} -- allow option table rebuild
-  for k,v in pairs(opts) do
+  for k, v in pairs(opts) do
     SI.Options[k] = v
   end
   SI.Options.args.Progress = Progress:BuildOptions(2)
@@ -908,11 +945,11 @@ function Config:BuildOptions()
     local data = C_CurrencyInfo_GetCurrencyInfo(curr)
     local name = Currency.OverrideName[curr] or data.name
     local tex = Currency.OverrideTexture[curr] or data.iconFileID
-    tex = "\124T"..tex..":0\124t "
-    SI.Options.args.Currency.args["Currency"..curr] = {
+    tex = "\124T" .. tex .. ":0\124t "
+    SI.Options.args.Currency.args["Currency" .. curr] = {
       type = "toggle",
-      order = hdroffset+i,
-      name = tex..name,
+      order = hdroffset + i,
+      name = tex .. name,
     }
   end
 end
@@ -1003,11 +1040,14 @@ StaticPopupDialogs["SAVEDINSTANCES_RESET"] = {
 
 StaticPopupDialogs["SAVEDINSTANCES_DELETE_CHARACTER"] = {
   preferredIndex = STATICPOPUP_NUMDIALOGS, -- reduce the chance of UI taint
-  text = string.format(L["Are you sure you want to remove %s from the SavedInstances character database?"],"\n\n%s%s\n\n").."\n\n"..
-  L["This should only be used for characters who have been renamed or deleted, as characters will be re-populated when you log into them."],
+  text = string.format(L["Are you sure you want to remove %s from the SavedInstances character database?"], "\n\n%s%s\n\n")
+    .. "\n\n"
+    .. L["This should only be used for characters who have been renamed or deleted, as characters will be re-populated when you log into them."],
   button1 = OKAY,
   button2 = CANCEL,
-  OnAccept = function(self, data) DeleteCharacter(data) end,
+  OnAccept = function(self, data)
+    DeleteCharacter(data)
+  end,
   timeout = 0,
   whileDead = true,
   hideOnEscape = true,

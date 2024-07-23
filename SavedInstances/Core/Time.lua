@@ -13,7 +13,9 @@ local GetQuestResetTime = GetQuestResetTime
 do
   local GTToffset = time() - GetTime()
   function SI:GetTimeToTime(val)
-    if not val then return end
+    if not val then
+      return
+    end
     return val + GTToffset
   end
 end
@@ -25,8 +27,8 @@ function SI:GetServerOffset()
   local serverDate = C_DateAndTime_GetCurrentCalendarTime() -- 1-based starts on Sun
   local serverWeekday, serverMinute, serverHour = serverDate.weekday - 1, serverDate.minute, serverDate.hour
   -- #211: date('%w') is 0-based starts on Sun
-  local localWeekday = tonumber(date('%w'))
-  local localHour, localMinute = tonumber(date('%H')), tonumber(date('%M'))
+  local localWeekday = tonumber(date("%w"))
+  local localHour, localMinute = tonumber(date("%H")), tonumber(date("%M"))
   if serverWeekday == (localWeekday + 1) % 7 then -- server is a day ahead
     serverHour = serverHour + 24
   elseif localWeekday == (serverWeekday + 1) % 7 then -- local is a day ahead
@@ -40,11 +42,12 @@ end
 
 function SI:GetNextDailyResetTime()
   local resetTime = GetQuestResetTime()
-  if (
-    not resetTime or resetTime <= 0 or -- ticket 43: can fail during startup
+  if
+    not resetTime
+    or resetTime <= 0 -- ticket 43: can fail during startup
     -- also right after a daylight savings rollover, when it returns negative values >.<
-    resetTime > 24 * 60 * 60 + 30 -- can also be wrong near reset in an instance
-  ) then
+    or resetTime > 24 * 60 * 60 + 30 -- can also be wrong near reset in an instance
+  then
     return
   end
 
@@ -58,7 +61,7 @@ function SI:GetNextWeeklyResetTime()
 end
 
 do
-  local darkmoonEnd = {hour=23, min=59}
+  local darkmoonEnd = { hour = 23, min = 59 }
   function SI:GetNextDarkmoonResetTime()
     -- Darkmoon faire runs from first Sunday of each month to following Saturday
     -- this function returns an approximate time after the end of the current month's faire

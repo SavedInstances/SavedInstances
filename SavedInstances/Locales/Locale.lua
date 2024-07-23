@@ -10,19 +10,21 @@ local print, format, rawget = print, format, rawget
 
 local Ld, La = {}, {}
 local locale = GAME_LOCALE or GetLocale()
-if locale == "enGB" then locale = "enUS" end
+if locale == "enGB" then
+  locale = "enUS"
+end
 
 local localeWarning
 L = setmetatable(L, {
   __index = function(t, s)
-    if not localeWarning and url and Ld[s] and not La[s] and locale ~= 'enUS' then
+    if not localeWarning and url and Ld[s] and not La[s] and locale ~= "enUS" then
       localeWarning = true
       print(format("*** SavedInstances needs help translating to your language! (%s)", locale))
       print("*** If you speak English, you can contribute by visiting:")
       print("*** " .. url)
     end
-    return La[s] or Ld[s] or rawget(t,s) or s
-  end
+    return La[s] or Ld[s] or rawget(t, s) or s
+  end,
 })
 
 --@localization(locale="enUS", format="lua_additive_table", handle-unlocalized="english", table-name="Ld")@
