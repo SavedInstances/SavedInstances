@@ -51,6 +51,11 @@ local factionID = {
   2511, -- Iskaara Tuskarr
   2564, -- Loamm Niffen
   2574, -- Dream Wardens
+
+  -- The War Within
+  2601, -- The Weaver
+  2605, -- The General
+  2607, -- The Vizier
 }
 
 function Module:OnEnable()
