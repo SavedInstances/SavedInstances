@@ -697,6 +697,21 @@ local presets = {
     persists = true,
     fullObjective = false,
   },
+  ["tww-radiant-echoes"] = {
+    type = "list",
+    expansion = 10,
+    index = 23,
+    name = L["Radiant Echoes"],
+    questID = {
+      82676, -- Broken Masquerade
+      78938, -- Champion of the Waterlords
+      82689, -- Only Darkness
+    },
+    reset = "weekly",
+    persists = false,
+    progress = true,
+    onlyOnOrCompleted = false,
+  },
 }
 
 ---update the progress of quest to the store
