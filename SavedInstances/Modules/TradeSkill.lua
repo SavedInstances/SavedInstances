@@ -19,183 +19,247 @@ local C_TradeSkillUI_IsTradeSkillLinked = C_TradeSkillUI.IsTradeSkillLinked
 
 local tradeSpells = {
   -- Alchemy
-  -- Vanilla
-  [11479] = "xmute", -- Transmute: Iron to Gold
-  [11480] = "xmute", -- Transmute: Mithril to Truesilver
-  [17559] = "xmute", -- Transmute: Air to Fire
-  [17566] = "xmute", -- Transmute: Earth to Life
-  [17561] = "xmute", -- Transmute: Earth to Water
-  [17560] = "xmute", -- Transmute: Fire to Earth
-  [17565] = "xmute", -- Transmute: Life to Earth
-  [17563] = "xmute", -- Transmute: Undeath to Water
-  [17562] = "xmute", -- Transmute: Water to Air
-  [17564] = "xmute", -- Transmute: Water to Undeath
+  -- Classic Alchemy
+  [11479] = "310", -- Transmute: Iron to Gold
+  [11480] = "310", -- Transmute: Mithril to Truesilver
+  [17559] = "310", -- Transmute: Air to Fire
+  [17560] = "310", -- Transmute: Fire to Earth
+  [17561] = "310", -- Transmute: Earth to Water
+  [17562] = "310", -- Transmute: Water to Air
+  [17563] = "310", -- Transmute: Undeath to Water
+  [17564] = "310", -- Transmute: Water to Undeath
+  [17565] = "310", -- Transmute: Life to Earth
+  [17566] = "310", -- Transmute: Earth to Life
+  -- Outland Alchemy
+  [28566] = "310", -- Transmute: Primal Air to Fire
+  [28567] = "310", -- Transmute: Primal Earth to Water
+  [28568] = "310", -- Transmute: Primal Fire to Earth
+  [28569] = "310", -- Transmute: Primal Water to Air
+  [28580] = "310", -- Transmute: Primal Shadow to Water
+  [28581] = "310", -- Transmute: Primal Water to Shadow
+  [28582] = "310", -- Transmute: Primal Mana to Fire
+  [28583] = "310", -- Transmute: Primal Fire to Mana
+  [28584] = "310", -- Transmute: Primal Life to Earth
+  [28585] = "310", -- Transmute: Primal Earth to Life
+  -- Northrend Alchemy
+  [53771] = "310", -- Transmute: Eternal Life to Shadow
+  [53773] = "310", -- Transmute: Eternal Life to Fire
+  [53774] = "310", -- Transmute: Eternal Fire to Water
+  [53775] = "310", -- Transmute: Eternal Fire to Life
+  [53776] = "310", -- Transmute: Eternal Air to Water
+  [53777] = "310", -- Transmute: Eternal Air to Earth
+  [53779] = "310", -- Transmute: Eternal Shadow to Earth
+  [53780] = "310", -- Transmute: Eternal Shadow to Life
+  [53781] = "310", -- Transmute: Eternal Earth to Air
+  [53782] = "310", -- Transmute: Eternal Earth to Shadow
+  [53783] = "310", -- Transmute: Eternal Water to Air
+  [53784] = "310", -- Transmute: Eternal Water to Fire
+  [54020] = "310", -- Transmute: Eternal Might
+  [60893] = true, -- Northrend Alchemy Research
+  [66658] = "310", -- Transmute: Ametrine
+  [66659] = "310", -- Transmute: Cardinal Ruby
+  [66660] = "310", -- Transmute: King's Amber
+  [66662] = "310", -- Transmute: Dreadstone
+  [66663] = "310", -- Transmute: Majestic Zircon
+  [66664] = "310", -- Transmute: Eye of Zul
+  -- Cataclysm Alchemy
+  [78866] = "310", -- Transmute: Living Elements
+  [80244] = "310", -- Transmute: Pyrium Bar
+  -- Pandaria Alchemy
+  [114780] = "310", -- Transmute: Living Steel
+  -- Draenor Alchemy
+  [156587] = "1477", -- Alchemical Catalyst
+  [156588] = "1477", -- Alchemical Catalyst - Fireweed
+  [156589] = "1477", -- Alchemical Catalyst - Flytrap
+  [156590] = "1477", -- Alchemical Catalyst - Starflower
+  [156592] = "1477", -- Alchemical Catalyst - Orchid
+  [156593] = "1477", -- Alchemical Catalyst - Lotus
+  [168042] = true, -- Alchemical Catalyst
+  [175880] = true, -- Secrets of Draenor Alchemy
+  [181643] = "310", -- Transmute: Savage Blood
+  -- Legion Alchemy
+  [188800] = "1479", -- Wild Transmutation
+  [188801] = "1479", -- Wild Transmutation
+  [188802] = "1479", -- Wild Transmutation
+  [213248] = "1199", -- Transmute: Ore to Cloth
+  [213249] = "1199", -- Transmute: Cloth to Skins
+  [213250] = "1199", -- Transmute: Skins to Ore
+  [213251] = "1199", -- Transmute: Ore to Herbs
+  [213252] = "1199", -- Transmute: Cloth to Herbs
+  [213253] = "1199", -- Transmute: Skins to Herbs
+  [213254] = "1199", -- Transmute: Fish to Gems
+  [213255] = "1199", -- Transmute: Meat to Pants
+  [213256] = "1199", -- Transmute: Meat to Pet
+  [213257] = "1199", -- Transmute: Blood of Sargeras
+  [247701] = "1199", -- Transmute: Primal Sargerite
+  -- Kul Tiran Alchemy
+  [251305] = "1199", -- Transmute: Herbs to Ore
+  [251306] = "1199", -- Transmute: Herbs to Cloth
+  [251309] = "1199", -- Transmute: Ore to Herbs
+  [251310] = "1199", -- Transmute: Ore to Cloth
+  [251311] = "1199", -- Transmute: Ore to Gems
+  [251314] = "1199", -- Transmute: Cloth to Skins
+  [251808] = "1199", -- Transmute: Meat to Pet
+  [251822] = "1199", -- Transmute: Fish to Gems
+  [251832] = "1199", -- Transmute: Expulsom
+  [286547] = "1199", -- Transmute: Herbs to Anchors
+  -- Shadowlands Alchemy
+  [307142] = "1902", -- Shadowghast Ingot
+  [307143] = "1199", -- Shadestone
+  [307144] = "1902", -- Stones to Ore
+  -- Dragon Isles Alchemy
+  [370707] = "2038", -- Transmute: Awakened Fire
+  [370708] = "2038", -- Transmute: Awakened Frost
+  [370710] = "2038", -- Transmute: Awakened Earth
+  [370711] = "2038", -- Transmute: Awakened Air
+  [370714] = "2038", -- Transmute: Decay to Elements
+  [370715] = "2038", -- Transmute: Order to Elements
+  [370743] = "2034", -- Basic Potion Experimentation
+  [370745] = "2034", -- Advanced Potion Experimentation
+  [370746] = "2034", -- Basic Phial Experimentation
+  [370747] = "2034", -- Advanced Phial Experimentation
+  [405847] = "2038", -- Transmute: Dracothyst
+  -- Khaz Algar Alchemy
+  [430345] = true, -- Meticulous Experimentation
+  [430618] = "2216", -- Mercurial Blessings
+  [430619] = "2216", -- Mercurial Storms
+  [430620] = "2216", -- Volatile Weaving
+  [430621] = "2216", -- Volatile Stone
+  [430622] = "2216", -- Ominous Call
+  [430623] = "2216", -- Ominous Gloom
+  [449571] = "2216", -- Mercurial Herbs
+  [449572] = "2216", -- Ominous Herbs
+  [449573] = "2216", -- Mercurial Coalescence
+  [449574] = "2216", -- Ominous Coalescence
+  [449575] = "2216", -- Volatile Coalescence
+  [449938] = "2216", -- Gleaming Chaos
 
-  -- BC
-  [28566] = "xmute", -- Transmute: Primal Air to Fire
-  [28585] = "xmute", -- Transmute: Primal Earth to Life
-  [28567] = "xmute", -- Transmute: Primal Earth to Water
-  [28568] = "xmute", -- Transmute: Primal Fire to Earth
-  [28583] = "xmute", -- Transmute: Primal Fire to Mana
-  [28584] = "xmute", -- Transmute: Primal Life to Earth
-  [28582] = "xmute", -- Transmute: Primal Mana to Fire
-  [28580] = "xmute", -- Transmute: Primal Shadow to Water
-  [28569] = "xmute", -- Transmute: Primal Water to Air
-  [28581] = "xmute", -- Transmute: Primal Water to Shadow
+  -- Blacksmithing
+  -- Pandaria Blacksmithing
+  [138646] = true, -- Lightning Steel Ingot
+  [143255] = true, -- Balanced Trillium Ingot
+  -- Draenor Blacksmithing
+  [171690] = true, -- Truesteel Ingot
+  [176090] = true, -- Secrets of Draenor Blacksmithing
+  -- Khaz Algar Blacksmithing
+  [453727] = true, -- Everburning Ignition
 
-  -- WotLK
-  [60893] = 3, -- Northrend Alchemy Research: 3 days
-  [53777] = "xmute", -- Transmute: Eternal Air to Earth
-  [53776] = "xmute", -- Transmute: Eternal Air to Water
-  [53781] = "xmute", -- Transmute: Eternal Earth to Air
-  [53782] = "xmute", -- Transmute: Eternal Earth to Shadow
-  [53775] = "xmute", -- Transmute: Eternal Fire to Life
-  [53774] = "xmute", -- Transmute: Eternal Fire to Water
-  [53773] = "xmute", -- Transmute: Eternal Life to Fire
-  [53771] = "xmute", -- Transmute: Eternal Life to Shadow
-  [54020] = "xmute", -- Transmute: Eternal Might
-  [53779] = "xmute", -- Transmute: Eternal Shadow to Earth
-  [53780] = "xmute", -- Transmute: Eternal Shadow to Life
-  [53783] = "xmute", -- Transmute: Eternal Water to Air
-  [53784] = "xmute", -- Transmute: Eternal Water to Fire
-  [66658] = "xmute", -- Transmute: Ametrine
-  [66659] = "xmute", -- Transmute: Cardinal Ruby
-  [66660] = "xmute", -- Transmute: King's Amber
-  [66662] = "xmute", -- Transmute: Dreadstone
-  [66663] = "xmute", -- Transmute: Majestic Zircon
-  [66664] = "xmute", -- Transmute: Eye of Zul
-
-  -- Cata
-  [78866] = "xmute", -- Transmute: Living Elements
-  [80244] = "xmute", -- Transmute: Pyrium Bar
-
-  -- MoP
-  [114780] = "xmute", -- Transmute: Living Steel
-
-  -- WoD
-  [175880] = true, -- Secrets of Draenor
-  [156587] = true, -- Alchemical Catalyst (4)
-  [168042] = true, -- Alchemical Catalyst (10), 3 charges w/ 24hr recharge
-  [181643] = "xmute", -- Transmute: Savage Blood
-
-  -- Legion
-  [188800] = "wildxmute", -- Transmute: Wild Transmutation (Rank 1)
-  [188801] = "wildxmute", -- Transmute: Wild Transmutation (Rank 2)
-  [188802] = "wildxmute", -- Transmute: Wild Transmutation (Rank 3)
-  [213248] = "legionxmute", -- Transmute: Ore to Cloth
-  [213249] = "legionxmute", -- Transmute: Cloth to Skins
-  [213250] = "legionxmute", -- Transmute: Skins to Ore
-  [213251] = "legionxmute", -- Transmute: Ore to Herbs
-  [213252] = "legionxmute", -- Transmute: Cloth to Herbs
-  [213253] = "legionxmute", -- Transmute: Skins to Herbs
-  [213254] = "legionxmute", -- Transmute: Fish to Gems
-  [213255] = "legionxmute", -- Transmute: Meat to Pants
-  [213256] = "legionxmute", -- Transmute: Meat to Pet
-  [213257] = "legionxmute", -- Transmute: Blood of Sargeras
-  [247701] = "legionxmute", -- Transmute: Primal Sargerite
-
-  -- BfA
-  [251832] = "xmute", -- Transmute: Expulsom
-  [251314] = "xmute", -- Transmute: Cloth to Skins
-  [251822] = "xmute", -- Transmute: Fish to Gems
-  [251306] = "xmute", -- Transmute: Herbs to Cloth
-  [251305] = "xmute", -- Transmute: Herbs to Ore
-  [251808] = "xmute", -- Transmute: Meat to Pet
-  [251310] = "xmute", -- Transmute: Ore to Cloth
-  [251311] = "xmute", -- Transmute: Ore to Gems
-  [251309] = "xmute", -- Transmute: Ore to Herbs
-  [286547] = "xmute", -- Transmute: Herbs to Anchors
-
-  -- SL
-  [307142] = true, -- Shadowghast Ingot
-  [307143] = true, -- Shadestone
-  [307144] = true, -- Stones to Ore
-
-  -- Dragonflight
-  [370707] = "dragonflightxmute", -- Transmute: Awakened Fire
-  [370708] = "dragonflightxmute", -- Transmute: Awakened Frost
-  [370710] = "dragonflightxmute", -- Transmute: Awakened Earth
-  [370711] = "dragonflightxmute", -- Transmute: Awakened Air
-  [370714] = "dragonflightxmute", -- Transmute: Decay to Elements
-  [370715] = "dragonflightxmute", -- Transmute: Order to Elements
-  [405847] = "dragonflightxmute", -- Transmute: Dracothyst
-  [370743] = "dragonflightexper", -- Basic Potion Experimentation
-  [370745] = "dragonflightexper", -- Advanced Potion Experimentation
-  [370746] = "dragonflightexper", -- Basic Phial Experimentation
-  [370747] = "dragonflightexper", -- Advanced Phial Experimentation
-
-  -- Enchanting
-  [28027] = "sphere", -- Prismatic Sphere (2-day shared, 5.2.0 verified)
-  [28028] = "sphere", -- Void Sphere (2-day shared, 5.2.0 verified)
-  [116499] = true, -- Sha Crystal
-  [177043] = true, -- Secrets of Draenor
-  [169092] = true, -- Temporal Crystal
+  -- Engineering
+  -- Pandaria Engineering
+  [139176] = true, -- Jard's Peculiar Energy Source
+  -- Draenor Engineering
+  [169080] = true, -- Gearspring Parts
+  [177054] = true, -- Secrets of Draenor Engineering
+  [178242] = true, -- Gearspring Parts
+  -- Dragon Isles Engineering
+  [382354] = true, -- Suspiciously Ticking Crate
+  [382358] = true, -- Suspiciously Silent Crate
+  -- Khaz Algar Engineering
+  [447312] = true, -- Invent
+  [447374] = true, -- Box o' Booms
 
   -- Jewelcrafting
-  [47280] = true, -- Brilliant Glass, still has a cd (5.2.0 verified)
-  [73478] = true, -- Fire Prism, still has a cd (5.2.0 verified)
-  [131691] = "facet", -- Imperial Amethyst/Facets of Research
-  [131686] = "facet", -- Primordial Ruby/Facets of Research
-  [131593] = "facet", -- River's Heart/Facets of Research
-  [131695] = "facet", -- Sun's Radiance/Facets of Research
-  [131690] = "facet", -- Vermilion Onyx/Facets of Research
-  [131688] = "facet", -- Wild Jade/Facets of Research
+  -- Outland Jewelcrafting
+  [32866] = "1154", -- Powerful Earthstorm Diamond
+  [32867] = "1154", -- Bracing Earthstorm Diamond
+  [32868] = "1154", -- Tenacious Earthstorm Diamond
+  [32869] = "1154", -- Brutal Earthstorm Diamond
+  [32870] = "1154", -- Insightful Earthstorm Diamond
+  [32871] = "1154", -- Destructive Skyfire Diamond
+  [32872] = "1154", -- Mystical Skyfire Diamond
+  [32873] = "1154", -- Swift Skyfire Diamond
+  [32874] = "1154", -- Enigmatic Skyfire Diamond
+  [39961] = "1154", -- Relentless Earthstorm Diamond
+  [39963] = "1154", -- Thundering Skyfire Diamond
+  [44794] = "1154", -- Chaotic Skyfire Diamond
+  [46597] = "1154", -- Eternal Earthstorm Diamond
+  [46601] = "1154", -- Ember Skyfire Diamond
+  [47280] = true, -- Brilliant Glass
+  -- Cataclysm Jewelcrafting
+  [73478] = true, -- Fire Prism
+  -- Pandaria Jewelcrafting
+  [131593] = "1409", -- River's Heart
+  [131686] = "1409", -- Primordial Ruby
+  [131688] = "1409", -- Wild Jade
+  [131690] = "1409", -- Vermilion Onyx
+  [131691] = "1409", -- Imperial Amethyst
+  [131695] = "1409", -- Sun's Radiance
   [140050] = true, -- Serpent's Heart
-  [176087] = true, -- Secrets of Draenor
+  -- Draenor Jewelcrafting
   [170700] = true, -- Taladite Crystal
+  [176087] = true, -- Secrets of Draenor Jewelcrafting
+  -- Dragon Isles Jewelcrafting
   [374546] = true, -- Queen's Gift
   [374547] = true, -- Dreamer's Vision
   [374548] = true, -- Keeper's Glory
   [374549] = true, -- Earthwarden's Prize
   [374550] = true, -- Timewatcher's Patience
   [374551] = true, -- Jeweled Dragon's Heart
-
-  -- Tailoring
-  [75141] = 7, -- Dream of Skywall
-  [75145] = 7, -- Dream of Ragnaros
-  [75144] = 7, -- Dream of Hyjal
-  [75142] = 7, -- Dream of Deepholm
-  [75146] = 7, -- Dream of Azshara
-  [143011] = true, -- Celestial Cloth
-  [125557] = true, -- Imperial Silk
-  [56005] = 7, -- Glacial Bag (5.2.0 verified)
-  [176058] = true, -- Secrets of Draenor
-  [168835] = true, -- Hexweave Cloth
-  [376556] = true, -- Azureweave Bolt
-  [376557] = true, -- Chronocloth Bolt
-
-  -- Inscription
-  [61288] = true, -- Minor Inscription Research
-  [61177] = true, -- Northrend Inscription Research
-  [86654] = true, -- Horde Forged Documents
-  [89244] = true, -- Alliance Forged Documents
-  [112996] = true, -- Scroll of Wisdom
-  [169081] = true, -- War Paints
-  [177045] = true, -- Secrets of Draenor
-  [176513] = true, -- Draenor Merchant Order
-
-  -- Blacksmithing
-  [138646] = true, -- Lightning Steel Ingot
-  [143255] = true, -- Balanced Trillium Ingot
-  [171690] = true, -- Truesteel Ingot
-  [171718] = true, -- Truestell Ingot, 3 charges w/ 24hr recharge
-  [176090] = true, -- Secrets of Draenor
+  -- Khaz Algar Jewelcrafting
+  [435337] = true, -- Algari Amber Prism
+  [435338] = true, -- Algari Emerald Prism
+  [435339] = true, -- Algari Ruby Prism
+  [435369] = true, -- Algari Onyx Prism
+  [435370] = true, -- Algari Sapphire Prism
 
   -- Leatherworking
-  [140040] = "magni", -- Magnificence of Leather
-  [140041] = "magni", -- Magnificence of Scales
+  -- Pandaria Leatherworking
+  [140040] = "1434", -- Magnificence of Leather
+  [140041] = "1434", -- Magnificence of Scales
   [142976] = true, -- Hardened Magnificent Hide
+  -- Draenor Leatherworking
   [171391] = true, -- Burnished Leather
-  [176089] = true, -- Secrets of Draenor
+  [171713] = true, -- Burnished Leather
+  [176089] = true, -- Secrets of Draenor Leatherworking
 
-  -- Engineering
-  [139176] = true, -- Stabilized Lightning Source
-  [169080] = true, -- Gearspring Parts
-  [177054] = true, -- Secrets of Draenor
-  [382358] = true, -- Suspiciously Silent Crate
-  [382354] = true, -- Suspiciously Ticking Crate
+  -- Tailoring
+  -- Northrend Tailoring
+  [56005] = true, -- Glacial Bag
+  -- Cataclysm Tailoring
+  [75141] = true, -- Dream of Skywall
+  [75142] = true, -- Dream of Deepholm
+  [75144] = true, -- Dream of Hyjal
+  [75145] = true, -- Dream of Ragnaros
+  [75146] = true, -- Dream of Azshara
+  -- Pandaria Tailoring
+  [125557] = true, -- Imperial Silk
+  [143011] = true, -- Celestial Cloth
+  -- Draenor Tailoring
+  [168835] = true, -- Hexweave Cloth
+  [169669] = true, -- Hexweave Cloth
+  [176058] = true, -- Secrets of Draenor Tailoring
+  -- Dragon Isles Tailoring
+  [376556] = true, -- Azureweave Bolt
+  [376557] = true, -- Chronocloth Bolt
+  -- Khaz Algar Tailoring
+  [446927] = true, -- Duskweave Bolt
+  [446928] = true, -- Dawnweave Bolt
+
+  -- Enchanting
+  -- Outland Enchanting
+  [28027] = "1174", -- Prismatic Sphere
+  [28028] = "1174", -- Void Sphere
+  -- Pandaria Enchanting
+  [116499] = true, -- Sha Crystal
+  -- Draenor Enchanting
+  [169092] = true, -- Temporal Crystal
+  [177043] = true, -- Secrets of Draenor Enchanting
+  [178241] = true, -- Temporal Crystal
+
+  -- Inscription
+  -- Cataclysm Inscription
+  [86654] = "1267", -- Forged Documents
+  [89244] = "1267", -- Forged Documents
+  -- Pandaria Inscription
+  [112996] = true, -- Scroll of Wisdom
+  -- Draenor Inscription
+  [169081] = true, -- War Paints
+  [176513] = true, -- Draenor Merchant Order
+  [177045] = true, -- Secrets of Draenor Inscription
+  [178240] = true, -- War Paints
 
   -- Cooking
+  -- Dragon Isles Cooking
   [378302] = true, -- Ooey-Gooey Chocolate
 
   -- Item
@@ -215,6 +279,7 @@ local tradeSpells = {
   [299084] = "item", -- Wormhole Generator: Zandalar
   [324031] = "item", -- Wormhole Generator: Shadowlands
   [386379] = "item", -- Wyrmhole Generator
+  [448126] = "item", -- Wormhole Generator: Khaz Algar
   -- Transporter
   [23453] = "item", -- Ultrasafe Transporter: Gadgetzhan
   [36941] = "item", -- Ultrasafe Transporter: Toshley's Station
@@ -237,20 +302,26 @@ local itemCDs = { -- [spellID] = itemID
   [299084] = 168808, -- Wormhole Generator: Zandalar
   [324031] = 172924, -- Wormhole Generator: Shadowlands
   [386379] = 198156, -- Wyrmhole Generator
+  [448126] = 221966, -- Wormhole Generator: Shadowlands
   -- Transporter
   [23453] = 18986, -- Ultrasafe Transporter: Gadgetzhan
   [36941] = 30544, -- Ultrasafe Transporter: Toshley's Station
 }
 
 local categoryNames = {
-  ["xmute"] = C_Spell_GetSpellName(2259) .. ": " .. L["Transmute"],
-  ["wildxmute"] = C_Spell_GetSpellName(2259) .. ": " .. L["Wild Transmute"],
-  ["legionxmute"] = C_Spell_GetSpellName(2259) .. ": " .. L["Legion Transmute"],
-  ["dragonflightxmute"] = C_Spell_GetSpellName(2259) .. ": " .. L["Dragonflight Transmute"],
-  ["dragonflightexper"] = C_Spell_GetSpellName(2259) .. ": " .. L["Dragonflight Experimentation"],
-  ["facet"] = C_Spell_GetSpellName(25229) .. ": " .. L["Facets of Research"],
-  ["sphere"] = C_Spell_GetSpellName(7411) .. ": " .. C_Spell_GetSpellName(28027),
-  ["magni"] = C_Spell_GetSpellName(2108) .. ": " .. C_Spell_GetSpellName(140040)
+  ["310"] = C_Spell_GetSpellName(2259) .. ": " .. L["Transmute"],
+  ["1154"] = C_Spell_GetSpellName(25229) .. ": " .. L["Outland Cut Jewel"],
+  ["1174"] = C_Spell_GetSpellName(7411) .. ": " .. C_Spell_GetSpellName(28027),
+  ["1199"] = C_Spell_GetSpellName(2259) .. ": " .. L["Legion Transmute"],
+  ["1267"] = C_Spell_GetSpellName(45357) .. ": " .. C_Spell_GetSpellName(86654),
+  ["1409"] = C_Spell_GetSpellName(25229) .. ": " .. L["Facets of Research"],
+  ["1434"] = C_Spell_GetSpellName(2108) .. ": " .. C_Spell_GetSpellName(140040),
+  ["1477"] = C_Spell_GetSpellName(2259) .. ": " .. C_Spell_GetSpellName(156587),
+  ["1479"] = C_Spell_GetSpellName(2259) .. ": " .. L["Wild Transmute"],
+  ["1902"] = C_Spell_GetSpellName(2259) .. ": " .. C_Spell_GetSpellName(307142),
+  ["2034"] = C_Spell_GetSpellName(2259) .. ": " .. L["Dragonflight Experimentation"],
+  ["2038"] = C_Spell_GetSpellName(2259) .. ": " .. L["Dragonflight Transmute"],
+  ["2216"] = C_Spell_GetSpellName(2259) .. ": " .. L["Khaz Algar Transmute"],
 }
 
 function Module:OnEnable()
