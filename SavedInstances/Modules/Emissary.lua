@@ -2,7 +2,7 @@ local SI, L = unpack((select(2, ...)))
 local Module = SI:NewModule("Emissary", "AceEvent-3.0")
 
 -- Lua functions
-local floor, ipairs, pairs, time, tonumber = floor, ipairs, pairs, time, tonumber
+local floor, ipairs, pairs, time = floor, ipairs, pairs, time
 
 -- WoW API / Variables
 local C_QuestLog_GetBountiesForMapID = C_QuestLog.GetBountiesForMapID
@@ -97,7 +97,7 @@ function Module:QUEST_LOG_UPDATE()
         local currencyRewards = C_QuestLog_GetQuestRewardCurrencies(info.questID)
         if title then
           SI.db.Emissary.Cache[info.questID] = title -- cache quest name
-          local day = tonumber(floor(timeleft / 1440) + 1) -- [1, 2, 3]
+          local day = floor((timeleft - 1) / 1440) + 1 -- [1, 2, 3]
           if not currExpansion[day] then
             currExpansion[day] = {}
           end
