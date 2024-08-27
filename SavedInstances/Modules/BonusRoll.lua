@@ -39,6 +39,7 @@ local function BonusRollShow()
   end
   if not BonusFrame then
     BonusFrame = CreateFrame("Button", "SavedInstancesBonusRollFrame", BonusRollFrame, "ButtonFrameTemplate")
+    BonusFrame:SetSize(32, 32)
     BonusFrame:SetPoint("LEFT", BonusRollFrame, "RIGHT", 0, 8)
     BonusFrame.text = BonusFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     BonusFrame.text:SetPoint("CENTER")
