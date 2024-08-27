@@ -134,6 +134,10 @@ local LFRInstances = {
   [2468] = { total = 2, base = 4, parent = 2504, minLvl = 70, remap = { 1, 2 } }, -- Amirdrassil, the Dream's Hope: Molten Incursion
   [2467] = { total = 2, base = 6, parent = 2504, minLvl = 70, remap = { 1, 2 } }, -- Amirdrassil, the Dream's Hope: The Viridian Weave
   [2469] = { total = 2, base = 8, parent = 2504, minLvl = 70, remap = { 1, 2 } }, -- Amirdrassil, the Dream's Hope: Fate of Amirdrassil
+
+  [2649] = { total=3, base=1,  parent=2645, minLvl=80, remap={ 1, 2, 3 } }, -- Nerub-ar Palace: The Skittering Battlements
+  [2650] = { total=3, base=4,  parent=2645, minLvl=80, remap={ 1, 2, 3 } }, -- Nerub-ar Palace: Secrets of Nerub-ar Palace
+  [2651] = { total=2, base=7,  parent=2645, minLvl=80, remap={ 1, 2 } }, -- Nerub-ar Palace: A Queen's Fall
 }
 
 local tbl = {}
