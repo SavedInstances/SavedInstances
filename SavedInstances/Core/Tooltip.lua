@@ -134,7 +134,6 @@ function Module:ShowDetached()
     end)
     frame:SetScript("OnKeyDown", function(self, key)
       if key == "ESCAPE" then
-        self:SetPropagateKeyboardInput(false)
         self:Hide()
       end
     end)
@@ -148,7 +147,6 @@ function Module:ShowDetached()
   end
 
   detachframe:Show()
-  detachframe:SetPropagateKeyboardInput(true)
   SI:ShowTooltip(detachframe)
 end
 
