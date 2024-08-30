@@ -715,6 +715,35 @@ local presets = {
     persists = true,
     fullObjective = false,
   },
+  -- Lesser Keyflame
+  ["tww-lesser-keyflame"] = {
+    type = "list",
+    expansion = 10,
+    index = 1,
+    name = L["Lesser Keyflame"],
+    questID = {
+      76169, -- Glow in the Dark
+      76394, -- Shadows of Flavor
+      76600, -- Right Between the Gyros-Optics
+      76733, -- Tater Trawl
+      76997, -- Lost in Shadows
+      78656, -- Hose It Down
+      78915, -- Squashing the Threat
+      78933, -- The Sweet Eclipse
+      78972, -- Harvest Havoc
+      79158, -- Seeds of Salvation
+      79173, -- Supply the Effort
+      79216, -- Web of Manipulation
+      79346, -- Chew On That
+      80004, -- Crab Grab
+      80562, -- Blossoming Delight
+      81574, -- Sporadic Growth
+      81632, -- Lizard Looters
+    },
+    reset = "weekly",
+    persists = true,
+    fullObjective = false,
+  },
 }
 
 ---update the progress of quest to the store
