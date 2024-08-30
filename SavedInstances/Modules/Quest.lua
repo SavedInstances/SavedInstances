@@ -483,6 +483,26 @@ local QuestExceptions = {
   [78821] = "Weekly", -- Blooming Dreamseeds
   [79226] = "Weekly", -- The Big Dig: Traitor's Rest
 
+  -- TWW
+  -- Lesser Keyflame
+  [76169] = "Weekly", -- Glow in the Dark
+  [76394] = "Weekly", -- Shadows of Flavor
+  [76600] = "Weekly", -- Right Between the Gyros-Optics
+  [76733] = "Weekly", -- Tater Trawl
+  [76997] = "Weekly", -- Lost in Shadows
+  [78656] = "Weekly", -- Hose It Down
+  [78915] = "Weekly", -- Squashing the Threat
+  [78933] = "Weekly", -- The Sweet Eclipse
+  [78972] = "Weekly", -- Harvest Havoc
+  [79158] = "Weekly", -- Seeds of Salvation
+  [79173] = "Weekly", -- Supply the Effort
+  [79216] = "Weekly", -- Web of Manipulation
+  [79346] = "Weekly", -- Chew On That
+  [80004] = "Weekly", -- Crab Grab
+  [80562] = "Weekly", -- Blossoming Delight
+  [81574] = "Weekly", -- Sporadic Growth
+  [81632] = "Weekly", -- Lizard Looters
+
   -- General
   -- Darkmoon Faire
   [7905] = "Regular", -- Darkmoon Faire referral -- old addon versions misidentified this as monthly
