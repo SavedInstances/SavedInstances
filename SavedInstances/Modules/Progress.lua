@@ -698,8 +698,8 @@ local presets = {
     fullObjective = false,
   },
   -- Services Requested
-  ['df-services-requested'] = {
-    type = 'any',
+  ["df-services-requested"] = {
+    type = "any",
     expansion = 9,
     index = 23,
     name = L["Services Requested"],
@@ -711,7 +711,7 @@ local presets = {
       70594, -- Leatherworking Services Requested
       70595, -- Tailoring Services Requested
     },
-    reset = 'weekly',
+    reset = "weekly",
     persists = true,
     fullObjective = false,
   },
@@ -743,6 +743,195 @@ local presets = {
     reset = "weekly",
     persists = true,
     fullObjective = false,
+  },
+  -- Brawl Weekly
+  ["tww-brawl-weekly"] = {
+    type = "single",
+    expansion = 10,
+    index = 2,
+    name = L["Brawl Weekly"],
+    questID = 47148,
+    reset = "weekly",
+    persists = true,
+    fullObjective = false,
+  },
+  -- PvP Weekly
+  ["tww-pvp-weekly"] = {
+    type = "any",
+    expansion = 10,
+    index = 3,
+    name = L["PvP Weekly"],
+    questID = {
+      80184, -- Preserving in Battle
+      80185, -- Preserving Solo
+      80186, -- Preserving in War
+      80187, -- Preserving in Skirmishes
+      80188, -- Preserving in Arenas
+      80189, -- Preserving Teamwork
+    },
+    reset = "weekly",
+    persists = true,
+    fullObjective = false,
+  },
+  ["tww-pvp-world"] = {
+    type = "any",
+    expansion = 10,
+    index = 4,
+    name = L["World PvP Weekly"],
+    questID = {
+      81793, -- Sparks of War: Isle of Dorn
+      81794, -- Sparks of War: The Ringing Deeps
+      81795, -- Sparks of War: Hallowfall
+      81796, -- Sparks of War: Azj-Kahet
+    },
+    reset = "weekly",
+    persists = true,
+    fullObjective = false,
+  },
+  ["The Severed Threads"] = {
+    type = "any",
+    expansion = 10,
+    index = 5,
+    name = L["The Severed Threads"],
+    questID = {
+      80670, -- Eyes of the Weaver
+      80671, -- Blade of the General
+      80672, -- Hand of the Vizier
+    },
+    reset = "weekly",
+    persists = true,
+    fullObjective = false,
+  },
+  -- The Call of the Worldsoul
+  ["tww-the-call-of-the-worldsoul"] = {
+    type = "any",
+    expansion = 10,
+    index = 6,
+    name = L["The Call of the Worldsoul"],
+    questID = {
+      82458,
+      82482,
+      82516,
+      82483,
+      82453,
+      82489,
+      82659,
+      82678,
+      82679,
+      82490,
+      82491,
+      82492,
+      82493,
+      82494,
+      82496,
+      82497,
+      82498,
+      82499,
+      82500,
+      82501,
+      82502,
+      82503,
+      82504,
+      82505,
+      82506,
+      82507,
+      82508,
+      82509,
+      82510,
+      82511,
+      82512,
+      82488,
+      82487,
+      82486,
+      82485,
+      82452,
+      82495,
+      82706,
+      82707,
+      82709,
+      82711,
+      82712,
+      82746,
+    },
+    reset = "weekly",
+    persists = true,
+    fullObjective = false,
+  },
+  -- The Theater Trope
+  ["tww-the-theater-trope"] = {
+    type = "single",
+    expansion = 10,
+    index = 7,
+    name = L["The Theater Trope"],
+    questID = 83240,
+    reset = "weekly",
+    persists = true,
+    fullObjective = false,
+  },
+  -- The Key to Success
+  ["tww-the-key-to-success"] = {
+    type = "single",
+    expansion = 10,
+    index = 8,
+    name = L["The Key to Success"],
+    questID = 84370,
+    reset = "weekly",
+    persists = true,
+    fullObjective = false,
+  },
+  -- Gearing Up for Trouble
+  ["tww-gearing-up-for-trouble"] = {
+    -- Custom to only show checkmark or nothing
+    -- Other types would display misleading or too much information
+    type = "custom",
+    expansion = 10,
+    index = 9,
+    name = L["Gearing Up for Trouble"],
+    reset = "weekly",
+    func = function(store, entry)
+      local questID = 83333
+      wipe(store)
+      store.unlocked = SI.playerLevel >= 70
+      store.isComplete = C_QuestLog.IsQuestFlaggedCompleted(questID)
+    end,
+    showFunc = function(store)
+      if store.isComplete then
+        return SI.questCheckMark
+      end
+    end,
+  },
+  -- Rollin' Down in the Deeps
+  ["tww-rollin-down-in-the-deeps"] = {
+    type = "single",
+    expansion = 10,
+    index = 10,
+    name = L["Rollin' Down in the Deeps"],
+    questID = 82946,
+    reset = "weekly",
+    persists = true,
+    fullObjective = false,
+  },
+  -- Special Assignments
+  ["tww-special-assignments"] = {
+    type = "list",
+    expansion = 10,
+    index = 11,
+    name = L["Special Assignments"],
+    questID = {
+      82355, -- Special Assignment: Cinderbee Surge (Completing)
+      81649, -- Special Assignment: Titanic Resurgence (Completing)
+      81691, -- Special Assignment: Shadows Below (Completing)
+      83229, -- Special Assignment: When the Deeps Stir (Completing)
+      82852, -- Special Assignment: Lynx Rescue (Completing)
+      82787, -- Special Assignment: Rise of the Colossals (Completing)
+      82414, -- Special Assignment: A Pound of Cure (Completing)
+      82531, -- Special Assignment: Bombs from Behind (Completing)
+    },
+    reset = "weekly",
+    persists = false,
+    threshold = 2,
+    progress = true,
+    onlyOnOrCompleted = true,
   },
 }
 
