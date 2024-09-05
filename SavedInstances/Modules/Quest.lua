@@ -503,6 +503,89 @@ local QuestExceptions = {
   [81574] = "Weekly", -- Sporadic Growth
   [81632] = "Weekly", -- Lizard Looters
 
+  -- PvP
+  [47148] = "Weekly", -- Something Different
+  [80184] = "Weekly", -- Preserving in Battle
+  [80185] = "Weekly", -- Preserving Solo
+  [80186] = "Weekly", -- Preserving in War
+  [80187] = "Weekly", -- Preserving in Skirmishes
+  [80188] = "Weekly", -- Preserving in Arenas
+  [80189] = "Weekly", -- Preserving Teamwork
+
+  -- World PvP
+  [81793] = "Weekly", -- Sparks of War: Isle of Dorn
+  [81794] = "Weekly", -- Sparks of War: The Ringing Deeps
+  [81795] = "Weekly", -- Sparks of War: Hallowfall
+  [81796] = "Weekly", -- Sparks of War: Azj-Kahet
+
+  -- The Severed Threads
+  [80592] = "Weekly", -- Forge a Pact
+  [80670] = "Weekly", -- Eyes of the Weaver
+  [80671] = "Weekly", -- Blade of the General
+  [80672] = "Weekly", -- Hand of the Vizier
+
+  -- Special Assignments
+  [82355] = "Weekly", -- Special Assignment: Cinderbee Surge (Completing)
+  [81649] = "Weekly", -- Special Assignment: Titanic Resurgence (Completing)
+  [81691] = "Weekly", -- Special Assignment: Shadows Below (Completing)
+  [83229] = "Weekly", -- Special Assignment: When the Deeps Stir (Completing)
+  [82852] = "Weekly", -- Special Assignment: Lynx Rescue (Completing)
+  [82787] = "Weekly", -- Special Assignment: Rise of the Colossals (Completing)
+  [82414] = "Weekly", -- Special Assignment: A Pound of Cure (Completing)
+  [82531] = "Weekly", -- Special Assignment: Bombs from Behind (Completing)
+
+  -- Other Weeklies
+  [82449] = "Weekly", -- The Call of the Worldsoul
+  [83240] = "Weekly", -- The Theater Trope
+  [84370] = "Weekly", -- The Key to Success
+  [83333] = "Weekly", -- Gearing Up for Trouble
+  [82946] = "Weekly", -- Rollin' Down in the Deeps
+
+  -- Worldsoul Weeklies
+  [82458] = "Weekly", -- Worldsoul: Renown
+  [82482] = "Weekly", -- Worldsoul: Snuffling
+  [82516] = "Weekly", -- Worldsoul: Forging a Pact
+  [82483] = "Weekly", -- Worldsoul: Spreading the Light
+  [82453] = "Weekly", -- Worldsoul: Encore!
+  [82489] = "Weekly", -- Worldsoul: The Dawnbreaker
+  [82659] = "Weekly", -- Worldsoul: Nerub-ar Palace
+  [82678] = "Weekly", -- Archives: The First Disc
+  [82679] = "Weekly", -- Archives: Seeking History
+  [82490] = "Weekly", -- Worldsoul: Priory of the Sacred Flame
+  [82491] = "Weekly", -- Worldsoul: Ara-Kara, City of Echoes
+  [82492] = "Weekly", -- Worldsoul: City of Threads
+  [82493] = "Weekly", -- Worldsoul: The Dawnbreaker
+  [82494] = "Weekly", -- Worldsoul: Ara-Kara, City of Echoes
+  [82496] = "Weekly", -- Worldsoul: City of Threads
+  [82497] = "Weekly", -- Worldsoul: The Stonevault
+  [82498] = "Weekly", -- Worldsoul: Darkflame Cleft
+  [82499] = "Weekly", -- Worldsoul: Priory of the Sacred Flame
+  [82500] = "Weekly", -- Worldsoul: The Rookery
+  [82501] = "Weekly", -- Worldsoul: The Dawnbreaker
+  [82502] = "Weekly", -- Worldsoul: Ara-Kara, City of Echoes
+  [82503] = "Weekly", -- Worldsoul: Cinderbrew Meadery
+  [82504] = "Weekly", -- Worldsoul: City of Threads
+  [82505] = "Weekly", -- Worldsoul: The Stonevault
+  [82506] = "Weekly", -- Worldsoul: Darkflame Cleft
+  [82507] = "Weekly", -- Worldsoul: Priory of the Sacred Flame
+  [82508] = "Weekly", -- Worldsoul: The Rookery
+  [82509] = "Weekly", -- Worldsoul: Nerub-ar Palace
+  [82510] = "Weekly", -- Worldsoul: Nerub-ar Palace
+  [82511] = "Weekly", -- Worldsoul: Awakening Machine
+  [82512] = "Weekly", -- Worldsoul: World Boss
+  [82488] = "Weekly", -- Worldsoul: Darkflame Cleft
+  [82487] = "Weekly", -- Worldsoul: The Stonevault
+  [82486] = "Weekly", -- Worldsoul: The Rookery
+  [82485] = "Weekly", -- Worldsoul: Cinderbrew Meadery
+  [82452] = "Weekly", -- Worldsoul: World Quests
+  [82495] = "Weekly", -- Worldsoul: Cinderbrew Meadery
+  [82706] = "Weekly", -- Delves: Khaz Algar Research
+  [82707] = "Weekly", -- Delves: Earthen Defense
+  [82709] = "Weekly", -- Delves: Percussive Archaeology
+  [82711] = "Weekly", -- Delves: Lost and Found
+  [82712] = "Weekly", -- Delves: Trouble Up and Down Khaz Algar
+  [82746] = "Weekly", -- Delves: Breaking Tough to Loot Stuff
+
   -- General
   -- Darkmoon Faire
   [7905] = "Regular", -- Darkmoon Faire referral -- old addon versions misidentified this as monthly
