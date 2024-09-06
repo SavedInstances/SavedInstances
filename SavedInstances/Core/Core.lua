@@ -2100,6 +2100,7 @@ hoverTooltip.ShowAccountSummary = function(cell, arg, ...)
   local ttime = 0
   local ttoons = 0
   local tmaxtoons = 0
+  local warbandMoney = C_Bank.FetchDepositedMoney(Enum.BankType.Account)
   local r = {}
   for toon, t in pairs(SI.db.Toons) do -- deliberately include ALL toons
     local realm = toon:match(" %- (.+)$")
@@ -2135,6 +2136,8 @@ hoverTooltip.ShowAccountSummary = function(cell, arg, ...)
   end
 
   -- history information
+  indicatortip:AddLine("")
+  indicatortip:AddLine(L["Warband Money"], SI:formatNumber(warbandMoney, true))
   indicatortip:AddLine("")
   SI:HistoryUpdate()
   local tmp = {}
