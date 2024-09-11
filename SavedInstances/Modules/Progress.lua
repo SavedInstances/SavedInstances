@@ -876,6 +876,22 @@ local presets = {
     progress = true,
     onlyOnOrCompleted = true,
   },
+  -- Weekly Dungeon Quest from Biergoth
+  ["tww-biergoth-dungeon-quest"] = {
+    type = "any",
+    expansion = 10,
+    index = 12,
+    name = L["Biergoth Dungeon Quest"],
+    questID = {
+      83443, -- Darkflame Cleft
+      83457, -- The Stonevault
+      83458, -- Priory of the Sacred Flame
+      83459, -- The Dawnbreaker
+    },
+    reset = "weekly",
+    persists = false,
+    fullObjective = false,
+  },
 }
 
 ---update the progress of quest to the store
