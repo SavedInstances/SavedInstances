@@ -502,7 +502,6 @@ local QuestExceptions = {
   [80562] = "Weekly", -- Blossoming Delight
   [81574] = "Weekly", -- Sporadic Growth
   [81632] = "Weekly", -- Lizard Looters
-
   -- PvP
   [47148] = "Weekly", -- Something Different
   [80184] = "Weekly", -- Preserving in Battle
@@ -511,19 +510,16 @@ local QuestExceptions = {
   [80187] = "Weekly", -- Preserving in Skirmishes
   [80188] = "Weekly", -- Preserving in Arenas
   [80189] = "Weekly", -- Preserving Teamwork
-
   -- World PvP
   [81793] = "Weekly", -- Sparks of War: Isle of Dorn
   [81794] = "Weekly", -- Sparks of War: The Ringing Deeps
   [81795] = "Weekly", -- Sparks of War: Hallowfall
   [81796] = "Weekly", -- Sparks of War: Azj-Kahet
-
   -- The Severed Threads
   [80592] = "Weekly", -- Forge a Pact
   [80670] = "Weekly", -- Eyes of the Weaver
   [80671] = "Weekly", -- Blade of the General
   [80672] = "Weekly", -- Hand of the Vizier
-
   -- Special Assignments
   [82355] = "Weekly", -- Special Assignment: Cinderbee Surge (Completing)
   [81649] = "Weekly", -- Special Assignment: Titanic Resurgence (Completing)
@@ -533,14 +529,12 @@ local QuestExceptions = {
   [82787] = "Weekly", -- Special Assignment: Rise of the Colossals (Completing)
   [82414] = "Weekly", -- Special Assignment: A Pound of Cure (Completing)
   [82531] = "Weekly", -- Special Assignment: Bombs from Behind (Completing)
-
   -- Other Weeklies
   [82449] = "Weekly", -- The Call of the Worldsoul
   [83240] = "Weekly", -- The Theater Trope
   [84370] = "Weekly", -- The Key to Success
   [83333] = "Weekly", -- Gearing Up for Trouble
   [82946] = "Weekly", -- Rollin' Down in the Deeps
-
   -- Worldsoul Weeklies
   [82458] = "Weekly", -- Worldsoul: Renown
   [82482] = "Weekly", -- Worldsoul: Snuffling
@@ -608,17 +602,18 @@ local QuestExceptions = {
   [58458] = "AccountWeekly", -- Pet Battle Challenge: Blackrock Depths
 
   -- Weekend Event
-  [72728] = "Weekly", -- The World Awaits - World Quests
-  [72727] = "Weekly", -- A Burning Path Through Time - TBC Timewalking
-  [72726] = "Weekly", -- A Frozen Path Through Time - WLK Timewalking
-  [72810] = "Weekly", -- A Shattered Path Through Time - CTM Timewalking
-  [72725] = "Weekly", -- A Shrouded Path Through Time - MOP Timewalking
-  [72724] = "Weekly", -- A Savage Path Through Time - WOD Timewalking
-  [72719] = "Weekly", -- A Fel Path Through Time - LEG Timewalking
-  [72723] = "Weekly", -- A Call to Battle - Battlegrounds
-  [72722] = "Weekly", -- Emissary of War - Mythic Dungeons
-  [72721] = "AccountWeekly", -- The Very Best - PvP Pet Battles
-  [72720] = "Weekly", -- The Arena Calls - Arena Skirmishes
+  -- [72727] = "Weekly", -- A Burning Path Through Time - TBC Timewalking
+  -- [72726] = "Weekly", -- A Frozen Path Through Time - WLK Timewalking
+  -- [72810] = "Weekly", -- A Shattered Path Through Time - CTM Timewalking
+  -- [72725] = "Weekly", -- A Shrouded Path Through Time - MOP Timewalking
+  -- [72724] = "Weekly", -- A Savage Path Through Time - WOD Timewalking
+  -- [72719] = "Weekly", -- A Fel Path Through Time - LEG Timewalking
+  [83345] = "Weekly", -- A Call to Battle - Battlegrounds
+  [83347] = "Weekly", -- Emissary of War - Mythic Dungeons
+  [83357] = "AccountWeekly", -- The Very Best - PvP Pet Battles
+  [83358] = "Weekly", -- The Arena Calls - Arena Skirmishes
+  [83366] = "Weekly", -- The World Awaits - World Quests
+  [84776] = "Weekly", -- A Call to Delves - Delves
 }
 SI.QuestExceptions = QuestExceptions
 
