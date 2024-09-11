@@ -203,6 +203,11 @@ local specialCurrency = {
       id = 173363, -- Vessel of Horrific Visions
     },
   },
+  [3028] = { -- Restored Coffer Key
+    relatedItem = {
+      id = 229899, -- Coffer Key Shard
+    },
+  },
 }
 SI.specialCurrency = specialCurrency
 
