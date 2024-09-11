@@ -882,24 +882,14 @@ local presets = {
   },
   -- Gearing Up for Trouble
   ["tww-gearing-up-for-trouble"] = {
-    -- Custom to only show checkmark or nothing
-    -- Other types would display misleading or too much information
-    type = "custom",
+    type = "single",
     expansion = 10,
     index = 9,
     name = L["Gearing Up for Trouble"],
+    questID = 83333,
     reset = "weekly",
-    func = function(store, entry)
-      local questID = 83333
-      wipe(store)
-      store.unlocked = SI.playerLevel >= 70
-      store.isComplete = C_QuestLog.IsQuestFlaggedCompleted(questID)
-    end,
-    showFunc = function(store)
-      if store.isComplete then
-        return SI.questCheckMark
-      end
-    end,
+    persists = true,
+    fullObjective = false,
   },
   -- Rollin' Down in the Deeps
   ["tww-rollin-down-in-the-deeps"] = {
