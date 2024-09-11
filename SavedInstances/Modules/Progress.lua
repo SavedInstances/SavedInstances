@@ -809,49 +809,49 @@ local presets = {
     index = 6,
     name = L["The Call of the Worldsoul"],
     questID = {
-      82458,
-      82482,
-      82516,
-      82483,
-      82453,
-      82489,
-      82659,
-      82678,
-      82679,
-      82490,
-      82491,
-      82492,
-      82493,
-      82494,
-      82496,
-      82497,
-      82498,
-      82499,
-      82500,
-      82501,
-      82502,
-      82503,
-      82504,
-      82505,
-      82506,
-      82507,
-      82508,
-      82509,
-      82510,
-      82511,
-      82512,
-      82488,
-      82487,
-      82486,
-      82485,
-      82452,
-      82495,
-      82706,
-      82707,
-      82709,
-      82711,
-      82712,
-      82746,
+      82458, -- Worldsoul: Renown
+      82482, -- Worldsoul: Snuffling
+      82516, -- Worldsoul: Forging a Pact
+      82483, -- Worldsoul: Spreading the Light
+      82453, -- Worldsoul: Encore!
+      82489, -- Worldsoul: The Dawnbreaker
+      82659, -- Worldsoul: Nerub-ar Palace
+      82678, -- Archives: The First Disc
+      82679, -- Archives: Seeking History
+      82490, -- Worldsoul: Priory of the Sacred Flame
+      82491, -- Worldsoul: Ara-Kara, City of Echoes
+      82492, -- Worldsoul: City of Threads
+      82493, -- Worldsoul: The Dawnbreaker
+      82494, -- Worldsoul: Ara-Kara, City of Echoes
+      82496, -- Worldsoul: City of Threads
+      82497, -- Worldsoul: The Stonevault
+      82498, -- Worldsoul: Darkflame Cleft
+      82499, -- Worldsoul: Priory of the Sacred Flame
+      82500, -- Worldsoul: The Rookery
+      82501, -- Worldsoul: The Dawnbreaker
+      82502, -- Worldsoul: Ara-Kara, City of Echoes
+      82503, -- Worldsoul: Cinderbrew Meadery
+      82504, -- Worldsoul: City of Threads
+      82505, -- Worldsoul: The Stonevault
+      82506, -- Worldsoul: Darkflame Cleft
+      82507, -- Worldsoul: Priory of the Sacred Flame
+      82508, -- Worldsoul: The Rookery
+      82509, -- Worldsoul: Nerub-ar Palace
+      82510, -- Worldsoul: Nerub-ar Palace
+      82511, -- Worldsoul: Awakening Machine
+      82512, -- Worldsoul: World Boss
+      82488, -- Worldsoul: Darkflame Cleft
+      82487, -- Worldsoul: The Stonevault
+      82486, -- Worldsoul: The Rookery
+      82485, -- Worldsoul: Cinderbrew Meadery
+      82452, -- Worldsoul: World Quests
+      82495, -- Worldsoul: Cinderbrew Meadery
+      82706, -- Delves: Khaz Algar Research
+      82707, -- Delves: Earthen Defense
+      82709, -- Delves: Percussive Archaeology
+      82711, -- Delves: Lost and Found
+      82712, -- Delves: Trouble Up and Down Khaz Algar
+      82746, -- Delves: Breaking Tough to Loot Stuff
     },
     reset = "weekly",
     persists = true,
