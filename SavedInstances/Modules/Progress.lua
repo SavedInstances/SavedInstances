@@ -134,12 +134,22 @@ local presets = {
       [16] = "M",
     },
   },
+  -- A Call to Delves
+  ["call-to-delves"] = {
+    type = "single",
+    index = 2,
+    name = L["A Call to Delves"],
+    questID = 84776,
+    reset = "weekly",
+    persists = false,
+    fullObjective = false,
+  },
   -- The World Awaits
   ["the-world-awaits"] = {
     type = "single",
     index = 3,
     name = L["The World Awaits"],
-    questID = 72728,
+    questID = 83366,
     reset = "weekly",
     persists = false,
     fullObjective = false,
@@ -149,7 +159,7 @@ local presets = {
     type = "single",
     index = 4,
     name = L["Emissary of War"],
-    questID = 72722,
+    questID = 83347,
     reset = "weekly",
     persists = false,
     fullObjective = false,
