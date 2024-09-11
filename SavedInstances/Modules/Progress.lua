@@ -742,6 +742,7 @@ local presets = {
     },
     reset = "weekly",
     persists = true,
+    threshold = 8,
     fullObjective = false,
   },
   -- Brawl Weekly
