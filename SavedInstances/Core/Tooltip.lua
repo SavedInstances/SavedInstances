@@ -132,12 +132,7 @@ function Module:ShowDetached()
       local w, h = tooltip:GetSize()
       self:SetSize(w * tooltip:GetEffectiveScale() / UIParent:GetEffectiveScale(), h * tooltip:GetEffectiveScale() / UIParent:GetEffectiveScale() + 20)
     end)
-    frame:SetScript("OnKeyDown", function(self, key)
-      if key == "ESCAPE" then
-        self:Hide()
-      end
-    end)
-    frame:EnableKeyboard(true)
+    tinsert(UISpecialFrames, "SavedInstancesDetachHeader")
     SI:SkinFrame(frame, "SavedInstancesDetachHeader")
     detachframe = frame
   end
