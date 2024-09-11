@@ -164,6 +164,16 @@ local presets = {
     persists = false,
     fullObjective = false,
   },
+  -- A Call to Battle
+  ["call-to-battle"] = {
+    type = "single",
+    index = 5,
+    name = L["A Call to Battle"],
+    questID = 83345,
+    reset = "weekly",
+    persists = false,
+    fullObjective = false,
+  },
   -- Timewalking
   ["timewalking"] = {
     type = "any",
