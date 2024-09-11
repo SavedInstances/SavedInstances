@@ -77,6 +77,7 @@ globals = {
 	"TradeSkillOnlyShowSkillUps",
 	"SetTradeSkillInvSlotFilter",
 	"ExpandTradeSkillSubClass",
+	"UISpecialFrames",
 
 	-- FrameXML frames
 	"GameTooltip",
