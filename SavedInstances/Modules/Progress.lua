@@ -952,6 +952,7 @@ local function UpdateQuestStore(store, questID)
 
     return false
   else
+    local findingPendingObjective = true
     local showText
     local leaderboardCount = C_QuestLog.GetNumQuestObjectives(questID)
     for i = 1, leaderboardCount do
@@ -970,15 +971,20 @@ local function UpdateQuestStore(store, questID)
       else
         objectiveText = numFulfilled .. "/" .. numRequired
       end
+      local isObjectiveCompleted = numFulfilled >= numRequired
 
       store[i] = text
-      if i == 1 then
-        store.objectiveType = objectiveType
-        store.numFulfilled = numFulfilled
-        store.numRequired = numRequired
-        showText = objectiveText
-      else
-        showText = showText .. " " .. objectiveText
+      if not isObjectiveCompleted then
+        if findingPendingObjective then
+          store.objectiveType = objectiveType
+          store.numFulfilled = numFulfilled
+          store.numRequired = numRequired
+          showText = objectiveText
+
+          findingPendingObjective = false
+        else
+          showText = showText .. " " .. objectiveText
+        end
       end
     end
 
