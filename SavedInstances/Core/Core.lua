@@ -398,6 +398,7 @@ SI.defaultDB = {
     Currency3028 = true, -- Restored Coffer Key
     Currency3056 = true, -- Kej
     Currency3008 = true, -- Valorstones
+    Currency2813 = true, -- Harmonized Silk
     Currency2914 = true, -- Weathered Harbinger Crest
     Currency2915 = true, -- Carved Harbinger Crest
     Currency2916 = true, -- Runed Harbinger Crest
