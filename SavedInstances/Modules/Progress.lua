@@ -717,6 +717,16 @@ local presets = {
     reset = "weekly",
     persists = true,
     fullObjective = false,
+  },  -- Beledar's Spawn
+  ["tww-beledar-spawn"] = {
+    type = "single",
+    expansion = 10,
+    index = 2,
+    name = L["Beledar's Spawn"],
+    questID = 81763,
+    reset = "daily",
+    persists = true,
+    fullObjective = false,
   },
   -- PvP Weekly
   ["tww-pvp-weekly"] = {
