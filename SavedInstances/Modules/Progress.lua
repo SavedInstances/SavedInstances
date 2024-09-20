@@ -180,12 +180,12 @@ local presets = {
     index = 5,
     name = L["Timewalking Weekend Event"],
     questID = {
-      72727, -- A Burning Path Through Time - TBC Timewalking
-      72726, -- A Frozen Path Through Time - WLK Timewalking
-      72810, -- A Shattered Path Through Time - CTM Timewalking
-      72725, -- A Shrouded Path Through Time - MOP Timewalking
-      72724, -- A Savage Path Through Time - WOD Timewalking
-      72719, -- A Fel Path Through Time - LEG Timewalking
+      83363, -- A Burning Path Through Time - TBC Timewalking
+      83365, -- A Frozen Path Through Time - WLK Timewalking
+      83359, -- A Shattered Path Through Time - CTM Timewalking
+      83362, -- A Shrouded Path Through Time - MOP Timewalking
+      83364, -- A Savage Path Through Time - WOD Timewalking
+      83360, -- A Fel Path Through Time - LEG Timewalking
     },
     reset = "weekly",
     persists = false,

@@ -602,12 +602,12 @@ local QuestExceptions = {
   [58458] = "AccountWeekly", -- Pet Battle Challenge: Blackrock Depths
 
   -- Weekend Event
-  -- [72727] = "Weekly", -- A Burning Path Through Time - TBC Timewalking
-  -- [72726] = "Weekly", -- A Frozen Path Through Time - WLK Timewalking
-  -- [72810] = "Weekly", -- A Shattered Path Through Time - CTM Timewalking
-  -- [72725] = "Weekly", -- A Shrouded Path Through Time - MOP Timewalking
-  -- [72724] = "Weekly", -- A Savage Path Through Time - WOD Timewalking
-  -- [72719] = "Weekly", -- A Fel Path Through Time - LEG Timewalking
+  [83363] = "Weekly", -- A Burning Path Through Time - TBC Timewalking
+  [83365] = "Weekly", -- A Frozen Path Through Time - WLK Timewalking
+  [83359] = "Weekly", -- A Shattered Path Through Time - CTM Timewalking
+  [83362] = "Weekly", -- A Shrouded Path Through Time - MOP Timewalking
+  [83364] = "Weekly", -- A Savage Path Through Time - WOD Timewalking
+  [83360] = "Weekly", -- A Fel Path Through Time - LEG Timewalking
   [83345] = "Weekly", -- A Call to Battle - Battlegrounds
   [83347] = "Weekly", -- Emissary of War - Mythic Dungeons
   [83357] = "AccountWeekly", -- The Very Best - PvP Pet Battles
