@@ -897,6 +897,7 @@ local presets = {
       83457, -- The Stonevault
       83458, -- Priory of the Sacred Flame
       83459, -- The Dawnbreaker
+      83465, -- Ara-Kara, City of Echoes
     },
     reset = "weekly",
     persists = false,
