@@ -134,10 +134,69 @@ local presets = {
       [16] = "M",
     },
   },
+  -- Great Vault (World)
+  ["great-vault-world"] = {
+    type = "custom",
+    index = 2,
+    name = WORLD,
+    reset = "weekly",
+    func = function(store, entry)
+      wipe(store)
+
+      if SI.playerLevel < SI.maxLevel then
+        store.unlocked = false
+      else
+        store.unlocked = true
+
+        local activities = C_WeeklyRewards.GetActivities(Enum.WeeklyRewardChestThresholdType.World)
+        sort(activities, entry.activityCompare)
+
+        for i, activityInfo in ipairs(activities) do
+          if activityInfo.progress >= activityInfo.threshold then
+            store[i] = activityInfo.level
+          end
+        end
+
+        local rewardWaiting = C_WeeklyRewards.HasAvailableRewards() and C_WeeklyRewards.CanClaimRewards()
+        store.rewardWaiting = rewardWaiting
+      end
+    end,
+    showFunc = function(store)
+      if not store.unlocked then
+        return
+      end
+      local text
+      for index = 1, #store do
+        if store[index] then
+          text = (index > 1 and (text .. "||") or "") .. store[index]
+        end
+      end
+      if store.rewardWaiting then
+        if not text then
+          text = SI.questTurnin
+        else
+          text = text .. "(" .. SI.questTurnin .. ")"
+        end
+      end
+      return text
+    end,
+    resetFunc = function(store)
+      local unlocked = store.unlocked
+      local rewardWaiting = not not store[1]
+      wipe(store)
+
+      store.unlocked = unlocked
+      store.rewardWaiting = rewardWaiting
+    end,
+    -- addition info
+    activityCompare = function(left, right)
+      return left.index < right.index
+    end,
+  },
   -- A Call to Delves
   ["call-to-delves"] = {
     type = "single",
-    index = 2,
+    index = 3,
     name = L["A Call to Delves"],
     questID = 84776,
     reset = "weekly",
@@ -147,7 +206,7 @@ local presets = {
   -- The World Awaits
   ["the-world-awaits"] = {
     type = "single",
-    index = 3,
+    index = 4,
     name = L["The World Awaits"],
     questID = 83366,
     reset = "weekly",
@@ -157,7 +216,7 @@ local presets = {
   -- Emissary of War
   ["emissary-of-war"] = {
     type = "single",
-    index = 4,
+    index = 5,
     name = L["Emissary of War"],
     questID = 83347,
     reset = "weekly",
@@ -167,7 +226,7 @@ local presets = {
   -- A Call to Battle
   ["call-to-battle"] = {
     type = "single",
-    index = 5,
+    index = 6,
     name = L["A Call to Battle"],
     questID = 83345,
     reset = "weekly",
@@ -177,7 +236,7 @@ local presets = {
   -- Timewalking
   ["timewalking"] = {
     type = "any",
-    index = 5,
+    index = 7,
     name = L["Timewalking Weekend Event"],
     questID = {
       83363, -- A Burning Path Through Time - TBC Timewalking
