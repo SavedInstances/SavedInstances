@@ -831,15 +831,15 @@ local presets = {
     persists = true,
     fullObjective = false,
   },
-  -- The Key to Success
-  ["tww-the-key-to-success"] = {
+  -- Spreading the Light
+  ["tww-spreading-the-light"] = {
     type = "single",
     expansion = 10,
     index = 8,
-    name = L["The Key to Success"],
-    questID = 84370,
+    name = L["Spreading the Light"],
+    questID = 76586,
     reset = "weekly",
-    persists = true,
+    persists = false,
     fullObjective = false,
   },
   -- Gearing Up for Trouble
@@ -853,22 +853,11 @@ local presets = {
     persists = true,
     fullObjective = false,
   },
-  -- Rollin' Down in the Deeps
-  ["tww-rollin-down-in-the-deeps"] = {
-    type = "single",
-    expansion = 10,
-    index = 10,
-    name = L["Rollin' Down in the Deeps"],
-    questID = 82946,
-    reset = "weekly",
-    persists = true,
-    fullObjective = false,
-  },
   -- Special Assignments
   ["tww-special-assignments"] = {
     type = "list",
     expansion = 10,
-    index = 11,
+    index = 10,
     name = L["Special Assignments"],
     questID = {
       82355, -- Special Assignment: Cinderbee Surge (Completing)
@@ -886,6 +875,17 @@ local presets = {
     progress = true,
     onlyOnOrCompleted = true,
   },
+  -- Rollin' Down in the Deeps
+  ["tww-rollin-down-in-the-deeps"] = {
+    type = "single",
+    expansion = 10,
+    index = 11,
+    name = L["Rollin' Down in the Deeps"],
+    questID = 82946,
+    reset = "weekly",
+    persists = true,
+    fullObjective = false,
+  },
   -- Weekly Dungeon Quest from Biergoth
   ["tww-biergoth-dungeon-quest"] = {
     type = "any",
@@ -900,6 +900,17 @@ local presets = {
     },
     reset = "weekly",
     persists = false,
+    fullObjective = false,
+  },
+  -- The Key to Success
+  ["tww-the-key-to-success"] = {
+    type = "single",
+    expansion = 10,
+    index = 13,
+    name = L["The Key to Success"],
+    questID = 84370,
+    reset = "weekly",
+    persists = true,
     fullObjective = false,
   },
 }
