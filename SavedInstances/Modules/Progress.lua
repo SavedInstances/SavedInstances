@@ -772,6 +772,7 @@ local presets = {
     index = 6,
     name = L["The Call of the Worldsoul"],
     questID = {
+      -- https://wago.tools/db2/QuestLineXQuest?filter[QuestLineID]=5572&page=1&sort[OrderIndex]=asc
       82458, -- Worldsoul: Renown
       82482, -- Worldsoul: Snuffling
       82516, -- Worldsoul: Forging a Pact
@@ -803,15 +804,21 @@ local presets = {
       82510, -- Worldsoul: Nerub-ar Palace
       82511, -- Worldsoul: Awakening Machine
       82512, -- Worldsoul: World Boss
+      82513, --
+      82514, --
+      82515, --
       82488, -- Worldsoul: Darkflame Cleft
       82487, -- Worldsoul: The Stonevault
       82486, -- Worldsoul: The Rookery
       82485, -- Worldsoul: Cinderbrew Meadery
+      82484, --
       82452, -- Worldsoul: World Quests
       82495, -- Worldsoul: Cinderbrew Meadery
       82706, -- Delves: Khaz Algar Research
       82707, -- Delves: Earthen Defense
+      82708, -- Delves: Nerubian Menace
       82709, -- Delves: Percussive Archaeology
+      82710, -- Delves: Empire-ical Exploration
       82711, -- Delves: Lost and Found
       82712, -- Delves: Trouble Up and Down Khaz Algar
       82746, -- Delves: Breaking Tough to Loot Stuff
