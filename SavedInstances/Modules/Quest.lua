@@ -516,7 +516,7 @@ local QuestExceptions = {
   [81795] = "Weekly", -- Sparks of War: Hallowfall
   [81796] = "Weekly", -- Sparks of War: Azj-Kahet
   -- The Severed Threads
-  [80592] = "Weekly", -- Forge a Pact
+  [80592] = "AccountWeekly", -- Forge a Pact
   [80670] = "Weekly", -- Eyes of the Weaver
   [80671] = "Weekly", -- Blade of the General
   [80672] = "Weekly", -- Hand of the Vizier
@@ -532,7 +532,7 @@ local QuestExceptions = {
   -- Other Weeklies
   [82449] = "Weekly", -- The Call of the Worldsoul
   [83240] = "Weekly", -- The Theater Trope
-  [84370] = "Weekly", -- The Key to Success
+  [84370] = "AccountWeekly", -- The Key to Success
   [83333] = "Weekly", -- Gearing Up for Trouble
   [82946] = "Weekly", -- Rollin' Down in the Deeps
   -- Worldsoul Weeklies
