@@ -531,7 +531,7 @@ local QuestExceptions = {
   [82531] = "Weekly", -- Special Assignment: Bombs from Behind (Completing)
   -- Other Weeklies
   [82449] = "Weekly", -- The Call of the Worldsoul
-  [83240] = "Weekly", -- The Theater Trope
+  [83240] = "Weekly", -- The Theater Troupe
   [84370] = "AccountWeekly", -- The Key to Success
   [83333] = "Weekly", -- Gearing Up for Trouble
   [82946] = "Weekly", -- Rollin' Down in the Deeps
