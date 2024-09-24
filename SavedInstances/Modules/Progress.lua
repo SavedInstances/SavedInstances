@@ -886,12 +886,12 @@ local presets = {
     persists = true,
     fullObjective = false,
   },
-  -- The Theater Trope
+  -- The Theater Troupe
   ["tww-the-theater-trope"] = {
     type = "single",
     expansion = 10,
     index = 7,
-    name = L["The Theater Trope"],
+    name = L["The Theater Troupe"],
     questID = 83240,
     reset = "weekly",
     persists = true,
