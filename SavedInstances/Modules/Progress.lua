@@ -736,11 +736,34 @@ local presets = {
     persists = true,
     fullObjective = false,
   },
+  -- TWW Weekly Cache
+  ["tww-weekly-cache"] = {
+    type = "list",
+    expansion = 10,
+    index = 1,
+    name = L["TWW Weekly Cache"],
+    questID = {
+      84736,
+      84737,
+      84738,
+      84739,
+    },
+    reset = "weekly",
+    persists = false,
+    progress = false,
+    onlyOnOrCompleted = false,
+    questName = {
+      [84736] = L["First Cache"],
+      [84737] = L["Second Cache"],
+      [84738] = L["Third Cache"],
+      [84739] = L["Fourth Cache"],
+    },
+  },
   -- Lesser Keyflame
   ["tww-lesser-keyflame"] = {
     type = "list",
     expansion = 10,
-    index = 1,
+    index = 2,
     name = L["Lesser Keyflame"],
     questID = {
       76169, -- Glow in the Dark
@@ -770,7 +793,7 @@ local presets = {
   ["tww-brawl-weekly"] = {
     type = "single",
     expansion = 10,
-    index = 2,
+    index = 3,
     name = L["Brawl Weekly"],
     questID = 47148,
     reset = "weekly",
@@ -781,7 +804,7 @@ local presets = {
   ["tww-pvp-weekly"] = {
     type = "any",
     expansion = 10,
-    index = 3,
+    index = 4,
     name = L["PvP Weekly"],
     questID = {
       80184, -- Preserving in Battle
@@ -798,7 +821,7 @@ local presets = {
   ["tww-pvp-world"] = {
     type = "any",
     expansion = 10,
-    index = 4,
+    index = 5,
     name = L["World PvP Weekly"],
     questID = {
       81793, -- Sparks of War: Isle of Dorn
@@ -813,7 +836,7 @@ local presets = {
   ["The Severed Threads"] = {
     type = "any",
     expansion = 10,
-    index = 5,
+    index = 6,
     name = L["The Severed Threads"],
     questID = {
       80670, -- Eyes of the Weaver
@@ -828,7 +851,7 @@ local presets = {
   ["tww-the-call-of-the-worldsoul"] = {
     type = "any",
     expansion = 10,
-    index = 6,
+    index = 7,
     name = L["The Call of the Worldsoul"],
     questID = {
       -- https://wago.tools/db2/QuestLineXQuest?filter[QuestLineID]=5572&page=1&sort[OrderIndex]=asc
@@ -890,7 +913,7 @@ local presets = {
   ["tww-the-theater-trope"] = {
     type = "single",
     expansion = 10,
-    index = 7,
+    index = 8,
     name = L["The Theater Troupe"],
     questID = 83240,
     reset = "weekly",
@@ -901,7 +924,7 @@ local presets = {
   ["tww-spreading-the-light"] = {
     type = "single",
     expansion = 10,
-    index = 8,
+    index = 9,
     name = L["Spreading the Light"],
     questID = 76586,
     reset = "weekly",
@@ -912,7 +935,7 @@ local presets = {
   ["tww-gearing-up-for-trouble"] = {
     type = "single",
     expansion = 10,
-    index = 9,
+    index = 10,
     name = L["Gearing Up for Trouble"],
     questID = 83333,
     reset = "weekly",
@@ -923,7 +946,7 @@ local presets = {
   ["tww-special-assignments"] = {
     type = "list",
     expansion = 10,
-    index = 10,
+    index = 11,
     name = L["Special Assignments"],
     questID = {
       82355, -- Special Assignment: Cinderbee Surge (Completing)
@@ -945,7 +968,7 @@ local presets = {
   ["tww-rollin-down-in-the-deeps"] = {
     type = "single",
     expansion = 10,
-    index = 11,
+    index = 12,
     name = L["Rollin' Down in the Deeps"],
     questID = 82946,
     reset = "weekly",
@@ -956,7 +979,7 @@ local presets = {
   ["tww-biergoth-dungeon-quest"] = {
     type = "any",
     expansion = 10,
-    index = 12,
+    index = 13,
     name = L["Biergoth Dungeon Quest"],
     questID = {
       83443, -- Darkflame Cleft
@@ -973,7 +996,7 @@ local presets = {
   ["tww-the-key-to-success"] = {
     type = "single",
     expansion = 10,
-    index = 13,
+    index = 14,
     name = L["The Key to Success"],
     questID = 84370,
     reset = "weekly",
