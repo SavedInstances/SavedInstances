@@ -982,11 +982,14 @@ local presets = {
     index = 13,
     name = L["Biergoth Dungeon Quest"],
     questID = {
+      83432, -- The Rookery
+      83436, -- Cinderbrew Meadery
       83443, -- Darkflame Cleft
       83457, -- The Stonevault
       83458, -- Priory of the Sacred Flame
       83459, -- The Dawnbreaker
       83465, -- Ara-Kara, City of Echoes
+      83469, -- City of Threads
     },
     reset = "weekly",
     persists = false,
