@@ -148,6 +148,9 @@ local _specialQuests = {
   [66388] = { name = L["Disturbed Dirt / Expedition Scout's Pack"] .. " - " .. C_Spell_GetSpellName(25229) }, -- Jewelcrafting
   [66389] = { name = L["Disturbed Dirt / Expedition Scout's Pack"] .. " - " .. C_Spell_GetSpellName(25229) }, -- Jewelcrafting
 
+  -- TWW
+  [81090] = { name = L["Alchemy Thaumaturgy"] }, -- Alchemy Thaumaturgy
+
   -- Old Vanilla Bosses during Anniversary Event
   [47461] = { daily = true, name = L["Lord Kazzak"] }, -- Lord Kazzak
   [47462] = { daily = true, name = L["Azuregos"] }, -- Azuregos
