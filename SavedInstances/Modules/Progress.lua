@@ -346,11 +346,66 @@ local presets = {
     persists = false,
     fullObjective = false,
   },
+  -- Replenish the Reservoir
+  ["sl-replenish-the-reservoir"] = {
+    type = "any",
+    expansion = 8,
+    name = L["Replenish the Reservoir"],
+    persists = true,
+    index = 1,
+    questID = {
+      61981, -- Venthyr
+      61982, -- Kyrian
+      61983, -- Necrolord
+      61984, -- Night Fae
+    },
+    fullObjective = true,
+    reset = "weekly",
+  },
+  -- Return Lost Souls
+  ["sl-return-lost-souls"] = {
+    type = "any",
+    expansion = 8,
+    name = L["Return Lost Souls"],
+    persists = true,
+    index = 2,
+    questID = {
+      61331,
+      61332,
+      61333,
+      61334,
+      62858,
+      62859,
+      62860,
+      62861,
+      62862,
+      62863,
+      62864,
+      62865,
+      62866,
+      62867,
+      62868,
+      62869,
+    },
+    fullObjective = true,
+    reset = "weekly",
+  },
+  -- Shaping Fate
+  ["sl-shaping-fate"] = {
+    type = "single",
+    expansion = 8,
+    name = L["Shaping Fate"],
+    persists = true,
+    index = 3,
+    questID = 63949,
+    fullObjective = true,
+    reset = "weekly",
+  },
   -- Covenant Assaults
   ["sl-covenant-assault"] = {
     type = "any",
     expansion = 8,
-    index = 1,
+    index = 4,
     name = L["Covenant Assaults"],
     questID = {
       63823, -- Night Fae Assault
@@ -366,7 +421,7 @@ local presets = {
   ["sl-patterns-within-patterns"] = {
     type = "single",
     expansion = 8,
-    index = 2,
+    index = 5,
     name = L["Patterns Within Patterns"],
     questID = 66042,
     reset = "weekly",
