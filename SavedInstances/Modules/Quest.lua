@@ -159,7 +159,7 @@ local _specialQuests = {
   [84130] = "Weekly", -- Jewelcrafting Services Requested
   [84131] = "Weekly", -- Leatherworking Services Requested
   [84132] = "Weekly", -- Tailoring Services Requested
-  
+
   -- TWW Algari Treatise
   [83727] = { lid = 222550 }, -- Algari Treatise on Enchanting
   [83728] = { lid = 222621 }, -- Algari Treatise on Engineering
