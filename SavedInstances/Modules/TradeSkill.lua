@@ -283,6 +283,9 @@ local tradeSpells = {
   -- Transporter
   [23453] = "item", -- Ultrasafe Transporter: Gadgetzhan
   [36941] = "item", -- Ultrasafe Transporter: Toshley's Station
+  -- Skinning
+  [382134] = "item", -- Elusive Creature Bait
+  [442680] = "item", -- Elusive Creature Lure
 }
 
 local itemCDs = { -- [spellID] = itemID
@@ -306,6 +309,9 @@ local itemCDs = { -- [spellID] = itemID
   -- Transporter
   [23453] = 18986, -- Ultrasafe Transporter: Gadgetzhan
   [36941] = 30544, -- Ultrasafe Transporter: Toshley's Station
+  -- Skinning
+  [382134] = 193906, -- Elusive Creature Bait
+  [442680] = 219007, -- Elusive Creature Lure
 }
 
 local categoryNames = {
