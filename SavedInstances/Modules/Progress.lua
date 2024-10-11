@@ -1099,7 +1099,7 @@ local presets = {
       83732, -- Algari Treatise on Leatherworking
       83733, -- Algari Treatise on Mining
       83734, -- Algari Treatise on Skinning
-      83735, -- Algari Treatise on Tailoring      
+      83735, -- Algari Treatise on Tailoring
     },
     questName = {
       [83725] = "Algari Treatise on Alchemy",
