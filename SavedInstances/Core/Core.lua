@@ -4405,7 +4405,11 @@ function SI:ShowTooltip(anchorframe)
                 weeklymax = "/" .. SI:formatNumber(ci.weeklyMax)
               end
               if (ci.totalMax or 0) > 0 then
-                totalmax = "/" .. SI:formatNumber(ci.totalMax)
+                if (ci.totalEarned or 0) > 0 then
+                  totalmax = "/" .. SI:formatNumber(ci.totalMax - ci.totalEarned + ci.amount)
+                else
+                  totalmax = "/" .. SI:formatNumber(ci.totalMax)
+                end
               end
             end
             if SI.db.Tooltip.CurrencyEarned or showall then
