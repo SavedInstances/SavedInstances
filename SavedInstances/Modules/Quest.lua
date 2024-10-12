@@ -151,15 +151,6 @@ local _specialQuests = {
   -- TWW
   [81090] = { name = L["Alchemy Thaumaturgy"] }, -- Alchemy Thaumaturgy
 
-  -- TWW Profession Services
-  [84133] = "Weekly", -- Alchemy Services Requested
-  [84127] = "Weekly", -- Blacksmithing Services Requested
-  [84128] = "Weekly", -- Engineering Services Requested
-  [84129] = "Weekly", -- Inscription Services Requested
-  [84130] = "Weekly", -- Jewelcrafting Services Requested
-  [84131] = "Weekly", -- Leatherworking Services Requested
-  [84132] = "Weekly", -- Tailoring Services Requested
-
   -- TWW Algari Treatise
   [83727] = { lid = 222550 }, -- Algari Treatise on Enchanting
   [83728] = { lid = 222621 }, -- Algari Treatise on Engineering
@@ -602,6 +593,14 @@ local QuestExceptions = {
   [82711] = "Weekly", -- Delves: Lost and Found
   [82712] = "Weekly", -- Delves: Trouble Up and Down Khaz Algar
   [82746] = "Weekly", -- Delves: Breaking Tough to Loot Stuff
+  -- TWW Profession Services
+  [84133] = "Weekly", -- Alchemy Services Requested
+  [84127] = "Weekly", -- Blacksmithing Services Requested
+  [84128] = "Weekly", -- Engineering Services Requested
+  [84129] = "Weekly", -- Inscription Services Requested
+  [84130] = "Weekly", -- Jewelcrafting Services Requested
+  [84131] = "Weekly", -- Leatherworking Services Requested
+  [84132] = "Weekly", -- Tailoring Services Requested
 
   -- General
   -- Darkmoon Faire
