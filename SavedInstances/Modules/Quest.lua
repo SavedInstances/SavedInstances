@@ -151,6 +151,17 @@ local _specialQuests = {
   -- TWW
   [81090] = { name = L["Alchemy Thaumaturgy"] }, -- Alchemy Thaumaturgy
 
+  -- TWW Algari Treatise
+  [83727] = { lid = 222550 }, -- Algari Treatise on Enchanting
+  [83728] = { lid = 222621 }, -- Algari Treatise on Engineering
+  [83729] = { lid = 222552 }, -- Algari Treatise on Herbalism
+  [83730] = { lid = 222548 }, -- Algari Treatise on Inscription
+  [83731] = { lid = 222551 }, -- Algari Treatise on Jewelcrafting
+  [83732] = { lid = 222549 }, -- Algari Treatise on Leatherworking
+  [83733] = { lid = 222553 }, -- Algari Treatise on Mining
+  [83734] = { lid = 222649 }, -- Algari Treatise on Skinning
+  [83735] = { lid = 222547 }, -- Algari Treatise on Tailoring
+
   -- Old Vanilla Bosses during Anniversary Event
   [47461] = { daily = true, name = L["Lord Kazzak"] }, -- Lord Kazzak
   [47462] = { daily = true, name = L["Azuregos"] }, -- Azuregos
@@ -582,6 +593,14 @@ local QuestExceptions = {
   [82711] = "Weekly", -- Delves: Lost and Found
   [82712] = "Weekly", -- Delves: Trouble Up and Down Khaz Algar
   [82746] = "Weekly", -- Delves: Breaking Tough to Loot Stuff
+  -- TWW Profession Services
+  [84133] = "Weekly", -- Alchemy Services Requested
+  [84127] = "Weekly", -- Blacksmithing Services Requested
+  [84128] = "Weekly", -- Engineering Services Requested
+  [84129] = "Weekly", -- Inscription Services Requested
+  [84130] = "Weekly", -- Jewelcrafting Services Requested
+  [84131] = "Weekly", -- Leatherworking Services Requested
+  [84132] = "Weekly", -- Tailoring Services Requested
 
   -- General
   -- Darkmoon Faire

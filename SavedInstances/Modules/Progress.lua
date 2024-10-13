@@ -1061,6 +1061,63 @@ local presets = {
     persists = true,
     fullObjective = false,
   },
+  -- TWW Services Requested
+  ["tww-services-requested"] = {
+    type = "any",
+    expansion = 10,
+    index = 15,
+    name = L["TWW Services Requested"],
+    questID = {
+      84127, -- Blacksmithing Services Requested
+      84128, -- Engineering Services Requested
+      84129, -- Inscription Services Requested
+      84130, -- Jewelcrafting Services Requested
+      84131, -- Leatherworking Services Requested
+      84132, -- Tailoring Services Requested
+      84133, -- Alchemy Services Requested
+    },
+    reset = "weekly",
+    persists = true,
+    threshold = 2,
+    fullObjective = false,
+  },
+  -- TWW Treatise
+  ["tww-algari-treatise"] = {
+    type = "list",
+    expansion = 10,
+    index = 16,
+    name = L["TWW Algari Treatise"],
+    threshold = 2,
+    questID = {
+      83725, -- Algari Treatise on Alchemy
+      83726, -- Algari Treatise on Blacksmithing
+      83727, -- Algari Treatise on Enchanting
+      83728, -- Algari Treatise on Engineering
+      83729, -- Algari Treatise on Herbalism
+      83730, -- Algari Treatise on Inscription
+      83731, -- Algari Treatise on Jewelcrafting
+      83732, -- Algari Treatise on Leatherworking
+      83733, -- Algari Treatise on Mining
+      83734, -- Algari Treatise on Skinning
+      83735, -- Algari Treatise on Tailoring
+    },
+    questName = {
+      [83725] = L["Algari Treatise on Alchemy"],
+      [83726] = L["Algari Treatise on Blacksmithing"],
+      [83727] = L["Algari Treatise on Enchanting"],
+      [83728] = L["Algari Treatise on Engineering"],
+      [83729] = L["Algari Treatise on Herbalism"],
+      [83730] = L["Algari Treatise on Inscription"],
+      [83731] = L["Algari Treatise on Jewelcrafting"],
+      [83732] = L["Algari Treatise on Leatherworking"],
+      [83733] = L["Algari Treatise on Mining"],
+      [83734] = L["Algari Treatise on Skinning"],
+      [83735] = L["Algari Treatise on Tailoring"],
+    },
+    reset = "weekly",
+    persists = true,
+    fullObjective = false,
+  },
 }
 
 ---update the progress of quest to the store
