@@ -180,6 +180,7 @@ SI.defaultDB = {
   -- Arena3v3rating: integer
   -- RBGrating: integer
   -- SoloShuffleRating: table
+  -- BGBRating: table
   -- SpecializationIDs: table
 
   -- currency: key: currencyID  value:
@@ -1413,6 +1414,13 @@ function SI:UpdateToonData()
   if currentSpecID then
     t.SoloShuffleRating[currentSpecID] = GetPersonalRatedInfo(7) or t.SoloShuffleRating[currentSpecID]
   end
+
+  t.BGBRating = t.BGBRating or {}
+  local currentSpecID = GetSpecialization()
+  if currentSpecID then
+    t.BGBRating[currentSpecID] = GetPersonalRatedInfo(9) or t.BGBRating[currentSpecID]
+  end
+
   TradeSkill:ScanItemCDs()
   -- Daily Reset
   if nextreset and nextreset > time() then
@@ -1727,6 +1735,14 @@ hoverTooltip.ShowToonTooltip = function(cell, arg, ...)
       if t.SoloShuffleRating[i] and t.SoloShuffleRating[i] > 0 then
         local _, specName = GetSpecializationInfoForSpecID(specID)
         indicatortip:AddLine(PVP_RATED_SOLO_SHUFFLE .. " " .. RATING .. ": " .. specName, t.SoloShuffleRating[i])
+      end
+    end
+  end
+  if t.BGBRating and t.SpecializationIDs then
+    for i, specID in ipairs(t.SpecializationIDs) do
+      if t.BGBRating[i] and t.BGBRating[i] > 0 then
+        local _, specName = GetSpecializationInfoForSpecID(specID)
+        indicatortip:AddLine(PVP_RATED_BG_BLITZ .. " " .. RATING .. ": " .. specName, t.BGBRating[i])
       end
     end
   end
