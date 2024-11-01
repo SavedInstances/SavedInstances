@@ -137,6 +137,7 @@ local currency = {
   2916, -- Runed Harbinger Crest
   2917, -- Gilded Harbinger Crest
   3023, -- 11.0 Professions - Personal Tracker - S1 Spark Drops (Hidden)
+  3100, -- Bronze Celebration Token
 }
 SI.currency = currency
 
