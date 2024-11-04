@@ -208,6 +208,7 @@
         "PVP_LABEL_WAR_MODE",
         "PVP_RATED_BATTLEGROUND",
         "PVP_RATED_SOLO_SHUFFLE",
+	"PVP_RATED_BG_BLITZ",
         "PVP_WAR_MODE_ENABLED",
         "PVP",
         "QuestIsDaily",

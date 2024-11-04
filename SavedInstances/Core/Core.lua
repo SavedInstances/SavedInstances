@@ -1416,7 +1416,6 @@ function SI:UpdateToonData()
   end
 
   t.BGBRating = t.BGBRating or {}
-  local currentSpecID = GetSpecialization()
   if currentSpecID then
     t.BGBRating[currentSpecID] = GetPersonalRatedInfo(9) or t.BGBRating[currentSpecID]
   end
