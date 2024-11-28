@@ -1,4 +1,4 @@
-## Interface: 110000, 110002
+## Interface: 110005, 110007
 ## Title: SavedInstances
 ## Notes: Tracks Raid, Instance, World Boss lockouts for all your characters, daily/weekly quests, currencies, trade cooldowns, and more!
 ## Notes-ruRU: Отслеживает прогресс в рейдах и подземельях, также блокировки мировых боссов для всех Ваших персонажей, также ежедневные/еженедельные квесты, валюту и многое другое!
