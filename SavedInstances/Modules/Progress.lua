@@ -910,15 +910,12 @@ local presets = {
     name = L["The Call of the Worldsoul"],
     questID = {
       -- https://wago.tools/db2/QuestLineXQuest?filter[QuestLineID]=5572&page=1&sort[OrderIndex]=asc
-      82458, -- Worldsoul: Renown
       82482, -- Worldsoul: Snuffling
       82516, -- Worldsoul: Forging a Pact
       82483, -- Worldsoul: Spreading the Light
       82453, -- Worldsoul: Encore!
       82489, -- Worldsoul: The Dawnbreaker
       82659, -- Worldsoul: Nerub-ar Palace
-      82678, -- Archives: The First Disc
-      82679, -- Archives: Seeking History
       82490, -- Worldsoul: Priory of the Sacred Flame
       82491, -- Worldsoul: Ara-Kara, City of Echoes
       82492, -- Worldsoul: City of Threads
@@ -941,19 +938,43 @@ local presets = {
       82510, -- Worldsoul: Nerub-ar Palace
       82511, -- Worldsoul: Awakening Machine
       82512, -- Worldsoul: World Boss
-      82513, --
-      82514, --
-      82515, --
       82488, -- Worldsoul: Darkflame Cleft
       82487, -- Worldsoul: The Stonevault
       82486, -- Worldsoul: The Rookery
       82485, -- Worldsoul: Cinderbrew Meadery
-      82484, --
       82452, -- Worldsoul: World Quests
       82495, -- Worldsoul: Cinderbrew Meadery
-      82706, -- Delves: Khaz Algar Research
-      82707, -- Delves: Earthen Defense
+    },
+    reset = "weekly",
+    persists = true,
+    fullObjective = false,
+  },
+  -- The Call of the Worldsoul
+  ["tww-archives"] = {
+    type = "any",
+    expansion = 10,
+    index = 7.1,
+    name = L["Archives"],
+    questID = {
+      -- https://wago.tools/db2/QuestLineXQuest?filter[QuestLineID]=5572&page=1&sort[OrderIndex]=asc
+      82678, -- Archives: The First Disc
+      82679, -- Archives: Seeking History
+    },
+    reset = "weekly",
+    persists = true,
+    fullObjective = false,
+  },
+  -- The Call of the Worldsoul
+  ["tww-delves"] = {
+    type = "any",
+    expansion = 10,
+    index = 7.2,
+    name = L["Delves"],
+    questID = {
+      -- https://wago.tools/db2/QuestLineXQuest?filter[QuestLineID]=5572&page=1&sort[OrderIndex]=asc
       82708, -- Delves: Nerubian Menace
+      82707, -- Delves: Earthen Defense
+      82706, -- Delves: Khaz Algar Research
       82709, -- Delves: Percussive Archaeology
       82710, -- Delves: Empire-ical Exploration
       82711, -- Delves: Lost and Found
