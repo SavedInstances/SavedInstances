@@ -1139,6 +1139,17 @@ local presets = {
     persists = true,
     fullObjective = false,
   },
+  -- Anniversary Restored Coffer Key
+  ["tww-anniversary-restored-coffer-key"] = {
+    type = "single",
+    expansion = 10,
+    index = 17,
+    name = L["Anniversary Restored Coffer Key"],
+    questID = 86202,
+    reset = "weekly",
+    persists = true,
+    fullObjective = false,
+  },
 }
 
 ---update the progress of quest to the store
