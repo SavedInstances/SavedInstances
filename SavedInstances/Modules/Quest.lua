@@ -149,7 +149,7 @@ local _specialQuests = {
   [66389] = { name = L["Disturbed Dirt / Expedition Scout's Pack"] .. " - " .. C_Spell_GetSpellName(25229) }, -- Jewelcrafting
 
   -- TWW
-  [81090] = { name = L["Alchemy Thaumaturgy"] }, -- Alchemy Thaumaturgy
+  [81090] = { name = L["Alchemy Thaumaturgy"], daily = true }, -- Alchemy Thaumaturgy
 
   -- TWW Algari Treatise
   [83727] = { lid = 222550 }, -- Algari Treatise on Enchanting
