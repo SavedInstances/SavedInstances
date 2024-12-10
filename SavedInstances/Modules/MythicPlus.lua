@@ -203,7 +203,7 @@ do
 
     t.MythicKeyBest = wipe(t.MythicKeyBest or {})
     t.MythicKeyBest.threshold = wipe(t.MythicKeyBest.threshold or {})
-    t.MythicKeyBest.rewardWaiting = C_WeeklyRewards_HasAvailableRewards() or C_WeeklyRewards_CanClaimRewards()
+    t.MythicKeyBest.rewardWaiting = SI.playerLevel >= SI.maxLevel and (C_WeeklyRewards_HasAvailableRewards() or C_WeeklyRewards_CanClaimRewards())
     t.MythicKeyBest.ResetTime = SI:GetNextWeeklyResetTime()
 
     local activities = C_WeeklyRewards_GetActivities(Enum_WeeklyRewardChestThresholdType_Activities)
