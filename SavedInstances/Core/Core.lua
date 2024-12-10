@@ -1328,18 +1328,19 @@ function SI:UpdateToonData()
     if (i.Holiday and SI.activeHolidays[instance]) or (i.Random and not i.Holiday) then
       local id = i.LFDID
       GetLFGDungeonInfo(id) -- forces update
-      local _, isAvailableForPlayer, hideIfNotJoinable = IsLFGDungeonJoinable(id)
       local donetoday, money = GetLFGDungeonRewards(id)
-      if not isAvailableForPlayer and hideIfNotJoinable then
-        -- ignore hidden LFG donetoday
-        donetoday = false
-      end
       if
         donetoday
-        and i.Random
         and (
           id == 301 -- Random Cataclysm Heroic
           or id == 434 -- Random Hour of Twilight Heroic
+          or id == 744 -- Random Timewalking Dungeon (Burning Crusade)
+          or id == 995 -- Random Timewalking Dungeon (Wrath of the Lich King)
+          or id == 1146 -- Random Timewalking Dungeon (Cataclysm)
+          or id == 1453 -- Random Timewalking Dungeon (Mists of Pandaria)
+          or id == 1971 -- Random Timewalking Dungeon (Warlords of Draenor)
+          or id == 2274 -- Random Timewalking Dungeon (Legion)
+          or id == 2634 -- Random Timewalking Dungeon (Classic)
           or id == 2714 -- The Codex of Chromie
         )
       then -- donetoday flag is falsely set for some level/dungeon combos where no daily incentive is available
