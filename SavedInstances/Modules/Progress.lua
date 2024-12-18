@@ -1152,6 +1152,42 @@ local presets = {
     persists = true,
     fullObjective = false,
   },
+  -- Siren Isle Weekly
+  ["tww-siren-isle-weekly"] = {
+    type = "list",
+    expansion = 10,
+    index = 16,
+    name = L["Siren Isle Weekly"],
+    questID = {
+      -- Vrykul invasion
+      84852, -- Legacy of the Vrykul
+      84680, -- Rock 'n Stone Revival
+      83932, -- Historical Documents
+      84432, -- Longship Landing
+      84248, -- A Ritual of Runes
+      84222, -- Secure the Perimeter
+      -- Pirate invasion
+      84851, -- Tides of Greed
+      83753, -- Cannon Karma
+      84299, -- Pirate Plunder
+      84619, -- Ooker Dooker Literature Club
+      83827, -- Silence the Song
+      84001, -- Cart Blanche
+      -- Naga invasion
+      84850, -- Serpent's Wrath
+      85589, -- Ruffled Pages
+      84430, -- Crystal Crusade
+      85051, -- Beach Comber
+      84627, -- Three Heads of the Deep
+      84252, -- Peak Precision
+    },
+    unlockQuest = 84725, -- The Circlet Calls
+    reset = "weekly",
+    persists = false,
+    threshold = 6,
+    progress = true,
+    onlyOnOrCompleted = true,
+  },
 }
 
 ---update the progress of quest to the store
