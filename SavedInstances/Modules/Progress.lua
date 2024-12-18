@@ -842,7 +842,8 @@ local presets = {
     reset = "weekly",
     persists = true,
     threshold = 8,
-    fullObjective = false,
+    progress = true,
+    onlyOnOrCompleted = true,
   },
   -- Brawl Weekly
   ["tww-brawl-weekly"] = {
@@ -1108,7 +1109,6 @@ local presets = {
     expansion = 10,
     index = 16,
     name = L["TWW Algari Treatise"],
-    threshold = 2,
     questID = {
       83725, -- Algari Treatise on Alchemy
       83726, -- Algari Treatise on Blacksmithing
@@ -1122,6 +1122,11 @@ local presets = {
       83734, -- Algari Treatise on Skinning
       83735, -- Algari Treatise on Tailoring
     },
+    reset = "weekly",
+    persists = false,
+    threshold = 2,
+    progress = false,
+    onlyOnOrCompleted = true,
     questName = {
       [83725] = L["Algari Treatise on Alchemy"],
       [83726] = L["Algari Treatise on Blacksmithing"],
@@ -1135,9 +1140,6 @@ local presets = {
       [83734] = L["Algari Treatise on Skinning"],
       [83735] = L["Algari Treatise on Tailoring"],
     },
-    reset = "weekly",
-    persists = true,
-    fullObjective = false,
   },
   -- Anniversary Restored Coffer Key
   ["tww-anniversary-restored-coffer-key"] = {
