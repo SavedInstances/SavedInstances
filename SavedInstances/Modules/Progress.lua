@@ -842,7 +842,8 @@ local presets = {
     reset = "weekly",
     persists = true,
     threshold = 8,
-    fullObjective = false,
+    progress = true,
+    onlyOnOrCompleted = true,
   },
   -- Brawl Weekly
   ["tww-brawl-weekly"] = {
@@ -1108,7 +1109,6 @@ local presets = {
     expansion = 10,
     index = 16,
     name = L["TWW Algari Treatise"],
-    threshold = 2,
     questID = {
       83725, -- Algari Treatise on Alchemy
       83726, -- Algari Treatise on Blacksmithing
@@ -1122,6 +1122,11 @@ local presets = {
       83734, -- Algari Treatise on Skinning
       83735, -- Algari Treatise on Tailoring
     },
+    reset = "weekly",
+    persists = false,
+    threshold = 2,
+    progress = false,
+    onlyOnOrCompleted = true,
     questName = {
       [83725] = L["Algari Treatise on Alchemy"],
       [83726] = L["Algari Treatise on Blacksmithing"],
@@ -1135,9 +1140,6 @@ local presets = {
       [83734] = L["Algari Treatise on Skinning"],
       [83735] = L["Algari Treatise on Tailoring"],
     },
-    reset = "weekly",
-    persists = true,
-    fullObjective = false,
   },
   -- Anniversary Restored Coffer Key
   ["tww-anniversary-restored-coffer-key"] = {
@@ -1149,6 +1151,42 @@ local presets = {
     reset = "weekly",
     persists = true,
     fullObjective = false,
+  },
+  -- Siren Isle Weekly
+  ["tww-siren-isle-weekly"] = {
+    type = "list",
+    expansion = 10,
+    index = 16,
+    name = L["Siren Isle Weekly"],
+    questID = {
+      -- Vrykul invasion
+      84852, -- Legacy of the Vrykul
+      84680, -- Rock 'n Stone Revival
+      83932, -- Historical Documents
+      84432, -- Longship Landing
+      84248, -- A Ritual of Runes
+      84222, -- Secure the Perimeter
+      -- Pirate invasion
+      84851, -- Tides of Greed
+      83753, -- Cannon Karma
+      84299, -- Pirate Plunder
+      84619, -- Ooker Dooker Literature Club
+      83827, -- Silence the Song
+      84001, -- Cart Blanche
+      -- Naga invasion
+      84850, -- Serpent's Wrath
+      85589, -- Ruffled Pages
+      84430, -- Crystal Crusade
+      85051, -- Beach Comber
+      84627, -- Three Heads of the Deep
+      84252, -- Peak Precision
+    },
+    unlockQuest = 84725, -- The Circlet Calls
+    reset = "weekly",
+    persists = false,
+    threshold = 6,
+    progress = true,
+    onlyOnOrCompleted = true,
   },
 }
 

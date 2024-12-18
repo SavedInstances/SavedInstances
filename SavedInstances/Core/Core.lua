@@ -406,6 +406,7 @@ SI.defaultDB = {
     Currency2917 = true, -- Gilded Harbinger Crest
     Currency3023 = true, -- 11.0 Professions - Personal Tracker - S1 Spark Drops (Hidden)
     Currency3100 = true, -- Bronze Celebration Token
+    Currency3090 = true, -- Flame-Blessed Iron
     CurrencyMax = false,
     CurrencyEarned = true,
     CurrencySortName = false,
