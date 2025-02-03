@@ -245,6 +245,7 @@ local presets = {
       83362, -- A Shrouded Path Through Time - MOP Timewalking
       83364, -- A Savage Path Through Time - WOD Timewalking
       83360, -- A Fel Path Through Time - LEG Timewalking
+      86731, -- An Original Path Through Time - CLA Timewalking
     },
     reset = "weekly",
     persists = false,
