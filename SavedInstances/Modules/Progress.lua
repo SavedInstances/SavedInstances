@@ -1089,7 +1089,7 @@ local presets = {
     type = "any",
     expansion = 10,
     index = 15,
-    name = L["TWW Services Requested"],
+    name = L["TWW Profession Weeklies"],
     questID = {
       84127, -- Blacksmithing Services Requested
       84128, -- Engineering Services Requested
@@ -1098,6 +1098,24 @@ local presets = {
       84131, -- Leatherworking Services Requested
       84132, -- Tailoring Services Requested
       84133, -- Alchemy Services Requested
+      83103, -- Acquiring Aqirite
+      83102, -- Bismuth is Business
+      83104, -- Identifying Ironclaw
+      83106, -- Null Pebble Excavation
+      83105, -- Rush-order Requisition
+      83097, -- Cinder and Storm
+      83100, -- Cracking the Shell
+      82993, -- From Shadows
+      83098, -- Snap and Crackle
+      82992, -- Stormcharged Goods
+      84086, -- A Rare Necessity
+      84084, -- Just a Pinch
+      84085, -- The Power of Potential
+      82970, -- A Bloom and A Blossom
+      82962, -- A Handful of Luredrops
+      82965, -- Light and Shadow
+      82958, -- Little Blessings
+      82916, -- When Fungi Bloom
     },
     reset = "weekly",
     persists = true,
