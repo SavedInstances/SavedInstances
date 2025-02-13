@@ -1198,7 +1198,6 @@ local presets = {
       84430, -- Crystal Crusade
       85051, -- Beach Comber
       84627, -- Three Heads of the Deep
-      84252, -- Peak Precision
     },
     unlockQuest = 84725, -- The Circlet Calls
     reset = "weekly",
