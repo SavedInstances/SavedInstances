@@ -35,7 +35,6 @@ Modules\BonusRoll.lua
 Modules\Calling.lua
 Modules\Currency.lua
 Modules\Emissary.lua
-Modules\LFR.lua
 Modules\MythicPlus.lua
 Modules\Paragon.lua
 Modules\Progress.lua
