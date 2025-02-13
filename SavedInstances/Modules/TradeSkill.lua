@@ -31,42 +31,42 @@ local tradeSpells = {
   [17565] = "310", -- Transmute: Life to Earth
   [17566] = "310", -- Transmute: Earth to Life
   -- Outland Alchemy
-  [28566] = "310", -- Transmute: Primal Air to Fire
-  [28567] = "310", -- Transmute: Primal Earth to Water
-  [28568] = "310", -- Transmute: Primal Fire to Earth
-  [28569] = "310", -- Transmute: Primal Water to Air
-  [28580] = "310", -- Transmute: Primal Shadow to Water
-  [28581] = "310", -- Transmute: Primal Water to Shadow
-  [28582] = "310", -- Transmute: Primal Mana to Fire
-  [28583] = "310", -- Transmute: Primal Fire to Mana
-  [28584] = "310", -- Transmute: Primal Life to Earth
-  [28585] = "310", -- Transmute: Primal Earth to Life
+  [28566] = "2355", -- Transmute: Primal Air to Fire
+  [28567] = "2355", -- Transmute: Primal Earth to Water
+  [28568] = "2355", -- Transmute: Primal Fire to Earth
+  [28569] = "2355", -- Transmute: Primal Water to Air
+  [28580] = "2355", -- Transmute: Primal Shadow to Water
+  [28581] = "2355", -- Transmute: Primal Water to Shadow
+  [28582] = "2355", -- Transmute: Primal Mana to Fire
+  [28583] = "2355", -- Transmute: Primal Fire to Mana
+  [28584] = "2355", -- Transmute: Primal Life to Earth
+  [28585] = "2355", -- Transmute: Primal Earth to Life
   -- Northrend Alchemy
-  [53771] = "310", -- Transmute: Eternal Life to Shadow
-  [53773] = "310", -- Transmute: Eternal Life to Fire
-  [53774] = "310", -- Transmute: Eternal Fire to Water
-  [53775] = "310", -- Transmute: Eternal Fire to Life
-  [53776] = "310", -- Transmute: Eternal Air to Water
-  [53777] = "310", -- Transmute: Eternal Air to Earth
-  [53779] = "310", -- Transmute: Eternal Shadow to Earth
-  [53780] = "310", -- Transmute: Eternal Shadow to Life
-  [53781] = "310", -- Transmute: Eternal Earth to Air
-  [53782] = "310", -- Transmute: Eternal Earth to Shadow
-  [53783] = "310", -- Transmute: Eternal Water to Air
-  [53784] = "310", -- Transmute: Eternal Water to Fire
-  [54020] = "310", -- Transmute: Eternal Might
+  [53771] = "2356", -- Transmute: Eternal Life to Shadow
+  [53773] = "2356", -- Transmute: Eternal Life to Fire
+  [53774] = "2356", -- Transmute: Eternal Fire to Water
+  [53775] = "2356", -- Transmute: Eternal Fire to Life
+  [53776] = "2356", -- Transmute: Eternal Air to Water
+  [53777] = "2356", -- Transmute: Eternal Air to Earth
+  [53779] = "2356", -- Transmute: Eternal Shadow to Earth
+  [53780] = "2356", -- Transmute: Eternal Shadow to Life
+  [53781] = "2356", -- Transmute: Eternal Earth to Air
+  [53782] = "2356", -- Transmute: Eternal Earth to Shadow
+  [53783] = "2356", -- Transmute: Eternal Water to Air
+  [53784] = "2356", -- Transmute: Eternal Water to Fire
+  [54020] = "2356", -- Transmute: Eternal Might
   [60893] = true, -- Northrend Alchemy Research
-  [66658] = "310", -- Transmute: Ametrine
-  [66659] = "310", -- Transmute: Cardinal Ruby
-  [66660] = "310", -- Transmute: King's Amber
-  [66662] = "310", -- Transmute: Dreadstone
-  [66663] = "310", -- Transmute: Majestic Zircon
-  [66664] = "310", -- Transmute: Eye of Zul
+  [66658] = "2356", -- Transmute: Ametrine
+  [66659] = "2356", -- Transmute: Cardinal Ruby
+  [66660] = "2356", -- Transmute: King's Amber
+  [66662] = "2356", -- Transmute: Dreadstone
+  [66663] = "2356", -- Transmute: Majestic Zircon
+  [66664] = "2356", -- Transmute: Eye of Zul
   -- Cataclysm Alchemy
-  [78866] = "310", -- Transmute: Living Elements
-  [80244] = "310", -- Transmute: Pyrium Bar
+  [78866] = "2357", -- Transmute: Living Elements
+  [80244] = "2357", -- Transmute: Pyrium Bar
   -- Pandaria Alchemy
-  [114780] = "310", -- Transmute: Living Steel
+  [114780] = true, -- Transmute: Living Steel
   -- Draenor Alchemy
   [156587] = "1477", -- Alchemical Catalyst
   [156588] = "1477", -- Alchemical Catalyst - Fireweed
@@ -76,7 +76,7 @@ local tradeSpells = {
   [156593] = "1477", -- Alchemical Catalyst - Lotus
   [168042] = true, -- Alchemical Catalyst
   [175880] = true, -- Secrets of Draenor Alchemy
-  [181643] = "310", -- Transmute: Savage Blood
+  [181643] = true, -- Transmute: Savage Blood
   -- Legion Alchemy
   [188800] = "1479", -- Wild Transmutation
   [188801] = "1479", -- Wild Transmutation
@@ -328,6 +328,9 @@ local categoryNames = {
   ["2034"] = C_Spell_GetSpellName(2259) .. ": " .. L["Dragonflight Experimentation"],
   ["2038"] = C_Spell_GetSpellName(2259) .. ": " .. L["Dragonflight Transmute"],
   ["2216"] = C_Spell_GetSpellName(2259) .. ": " .. L["Khaz Algar Transmute"],
+  ["2355"] = C_Spell_GetSpellName(2259) .. ": " .. L["Outland Transmute"],
+  ["2356"] = C_Spell_GetSpellName(2259) .. ": " .. L["Northrend Transmute"],
+  ["2357"] = C_Spell_GetSpellName(2259) .. ": " .. L["Cataclysm Transmute"],
 }
 
 function Module:OnEnable()
