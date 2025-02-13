@@ -6,7 +6,6 @@ local pairs, tinsert = pairs, tinsert
 
 local factionID = {
   -- Legion
-  -- 1090, -- Kirin Tor - No paragon chest
   1828, -- Highmountain Tribe
   1859, -- The Nightfallen
   1883, -- Dreamweavers
@@ -53,9 +52,20 @@ local factionID = {
   2574, -- Dream Wardens
 
   -- The War Within
+  2570, -- Hallowfall Arathi
+  2590, -- Council of Dornogal
+  2594, -- The Assembly of the Deeps
+  2600, -- The Severed Threads
   2601, -- The Weaver
   2605, -- The General
   2607, -- The Vizier
+  2653, -- The Cartels of Undermine
+  2669, -- Darkfuse Solutions
+  2671, -- Venture Company
+  2673, -- Bilgewater Cartel
+  2675, -- Blackwater Cartel
+  2677, -- Steamwheedle Cartel
+  2685, -- Gallagio Loyalty Rewards Club
 }
 
 function Module:OnEnable()
