@@ -397,12 +397,6 @@ function Config:BuildOptions()
             desc = L["Combine World Bosses"],
             order = 23.85,
           },
-          CombineLFR = {
-            type = "toggle",
-            name = L["Combine LFR"],
-            desc = L["Combine LFR"],
-            order = 23.95,
-          },
           WarfrontHeader = {
             order = 33,
             type = "header",

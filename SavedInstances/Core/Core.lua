@@ -354,7 +354,6 @@ SI.defaultDB = {
     ShowHoliday = true,
     ShowRandom = true,
     CombineWorldBosses = false,
-    CombineLFR = true,
     TrackDailyQuests = true,
     TrackWeeklyQuests = true,
     ShowCategories = false,
@@ -866,7 +865,6 @@ end
 
 function SI:instanceBosses(instance, toon, diff)
   local killed, total, base = 0, 0, 1
-  local remap, origin
   local inst = SI.db.Instances[instance]
   local save = inst and inst[toon] and inst[toon][diff]
   if inst.WorldBoss then
@@ -877,15 +875,8 @@ function SI:instanceBosses(instance, toon, diff)
   end
   local exc = SI:instanceException(inst.LFDID)
   total = (exc and exc.total) or GetLFGDungeonNumEncounters(inst.LFDID)
-  local LFR = SI.LFRInstances[inst.LFDID]
-  if LFR then
-    total = LFR.total or total
-    base = LFR.base or base
-    remap = LFR.remap
-    origin = LFR.origin
-  end
   if not save then
-    return killed, total, base, remap, origin
+    return killed, total, base
   elseif save.Link then
     local bits = save.Link:match(":(%d+)\124h")
     bits = bits and tonumber(bits)
@@ -911,7 +902,7 @@ function SI:instanceBosses(instance, toon, diff)
       killed = killed + (save[i] and 1 or 0)
     end
   end
-  return killed, total, base, remap, origin
+  return killed, total, base
 end
 
 local lfrkey = "^" .. L["LFR"] .. ": "
@@ -1205,29 +1196,18 @@ function SI:UpdateInstance(id)
   elseif id == 1911 then -- Caverns of Time - Anniversary: issue #315 (fake LFDID used by Escape from Tol Dagor)
     local _
     _, typeID, subtypeID, _, _, recLevel, _, _, expansionLevel, _, _, difficulty, maxPlayers, _, isHoliday, _, _, _, name = GetLFGDungeonInfo(2004)
-  elseif id == 842 then -- Downfall (#308) different name for origin and solo LFG in deDE
-    if SI.locale == "deDE" then
-      name = "Niedergang"
-    end
   end
   if subtypeID == LFG_SUBTYPEID_SCENARIO and typeID ~= TYPEID_RANDOM_DUNGEON then -- ignore non-random scenarios
     return nil, nil, true
   end
-  if typeID == 2 and subtypeID == 0 and difficulty == 17 and maxPlayers == 0 then
-    --print("ignoring "..id, GetLFGDungeonInfo(id))
-    return nil, nil, true -- ignore bogus LFR entries
+  if difficulty == 7 or difficulty == 17 then
+    -- dropping all lfr instances here as entire lfr module is dropped
+    -- lfr process can be attached to the other difficulty raid instance found by name
+    return nil, nil, true
   end
   if typeID == 1 and subtypeID == 5 and difficulty == 14 and maxPlayers == 25 then
     --print("ignoring "..id, GetLFGDungeonInfo(id))
     return nil, nil, true -- ignore old Flex entries
-  end
-  if SI.LFRInstances[id] then -- ensure uniqueness (eg TeS LFR)
-    local lfrid = SI.db.Instances[name] and SI.db.Instances[name].LFDID
-    if lfrid and SI.LFRInstances[lfrid] then
-      SI.db.Instances[name] = nil -- clean old LFR entries
-    end
-    SI.db.Instances[L["Flex"] .. ": " .. name] = nil -- clean old flex entries
-    name = L["LFR"] .. ": " .. name
   end
   if id == 1966 then -- ignore Arathi Basin Comp Stomp
     return nil, nil, true
@@ -2228,48 +2208,6 @@ hoverTooltip.ShowWorldBossTooltip = function(cell, arg, ...)
   indicatortip:Show()
 end
 
-hoverTooltip.ShowLFRTooltip = function(cell, arg, ...)
-  local boxname, toon, tbl = unpack(arg)
-  local t = SI.db.Toons[toon]
-  if not boxname or not t or not tbl then
-    return
-  end
-  local indicatortip = Tooltip:AcquireIndicatorTip(3, "LEFT", "LEFT", "RIGHT")
-  local line = indicatortip:AddHeader()
-  local toonstr = (db.Tooltip.ShowServer and toon) or strsplit(" ", toon)
-  local reset = t.WeeklyResetTime or SI:GetNextWeeklyResetTime()
-  indicatortip:SetCell(line, 1, ClassColorise(SI.db.Toons[toon].Class, toonstr), indicatortip:GetHeaderFont(), "LEFT", 1)
-  indicatortip:SetCell(line, 2, GOLDFONT .. boxname .. FONTEND, indicatortip:GetHeaderFont(), "RIGHT", 2)
-  indicatortip:AddLine(YELLOWFONT .. L["Time Left"] .. ":" .. FONTEND, nil, SecondsToTime(reset - time()))
-  for i = 1, 20 do
-    local instance = tbl[i]
-    local diff = 2
-    if instance then
-      indicatortip:SetCell(indicatortip:AddLine(), 1, YELLOWFONT .. instance .. FONTEND, "CENTER", 3)
-      local thisinstance = SI.db.Instances[instance]
-      local info = thisinstance[toon] and thisinstance[toon][diff]
-      local killed, total, base, remap, origin = SI:instanceBosses(instance, toon, diff)
-      for i = base, base + total - 1 do
-        local bossid = i
-        if remap then
-          bossid = remap[i - base + 1]
-        end
-        local bossname = GetLFGDungeonEncounterInfo(thisinstance.LFDID, bossid)
-        local n = indicatortip:AddLine()
-        indicatortip:SetCell(n, 1, bossname, "LEFT", 2)
-        -- for LFRs that are different between two factions
-        -- https://github.com/SavedInstances/SavedInstances/pull/238
-        if info and info[origin and origin[i - base + 1] or bossid] then
-          indicatortip:SetCell(n, 3, REDFONT .. ALREADY_LOOTED .. FONTEND, "RIGHT", 1)
-        else
-          indicatortip:SetCell(n, 3, GREENFONT .. AVAILABLE .. FONTEND, "RIGHT", 1)
-        end
-      end
-    end
-  end
-  indicatortip:Show()
-end
-
 hoverTooltip.ShowIndicatorTooltip = function(cell, arg, ...)
   local instance = arg[1]
   local toon = arg[2]
@@ -2381,12 +2319,9 @@ hoverTooltip.ShowIndicatorTooltip = function(cell, arg, ...)
     end
   end
   if id < 0 then
-    local killed, total, base, remap = SI:instanceBosses(instance, toon, diff)
+    local killed, total, base = SI:instanceBosses(instance, toon, diff)
     for i = base, base + total - 1 do
       local bossid = i
-      if remap then
-        bossid = remap[i - base + 1]
-      end
       local bossname
       if worldboss then
         bossname = SI.WorldBosses[worldboss].name or "UNKNOWN"
@@ -3226,12 +3161,7 @@ function SI:Refresh(recoverdaily)
   end
   local temp = localarr("RefreshTemp")
   for name, instance in pairs(SI.db.Instances) do -- clear current toons lockouts before refresh
-    local id = instance.LFDID
-    if
-      instance[SI.thisToon]
-      -- disabled for ticket 178/195:
-      --and not (id and SI.LFRInstances[id] and select(2,GetLFGDungeonNumEncounters(id)) == 0) -- ticket 103
-    then
+    if instance[SI.thisToon] then
       temp[name] = instance[SI.thisToon] -- use a temp to reduce memory churn
       for diff, info in pairs(temp[name]) do
         wipe(info)
@@ -3263,24 +3193,6 @@ function SI:Refresh(recoverdaily)
   end
 
   local weeklyreset = SI:GetNextWeeklyResetTime()
-  for id, _ in pairs(SI.LFRInstances) do
-    local numEncounters, numCompleted = GetLFGDungeonNumEncounters(id)
-    if numCompleted and numCompleted > 0 and weeklyreset then
-      local truename, instance = SI:LookupInstance(id, nil, true)
-      instance[SI.thisToon] = instance[SI.thisToon] or temp[truename] or {}
-      local info = instance[SI.thisToon][2] or {}
-      instance[SI.thisToon][2] = info
-      if not (info.Expires and info.Expires < (time() + 300)) then -- ticket 109: don't refresh expiration close to reset
-        wipe(info)
-        info.Expires = weeklyreset
-      end
-      info.ID = -1 * numEncounters
-      for i = 1, numEncounters do
-        local bossName, texture, isKilled = GetLFGDungeonEncounterInfo(id, i)
-        info[i] = isKilled
-      end
-    end
-  end
 
   local wbsave = localarr("wbsave")
   if GetNumSavedWorldBosses and GetSavedWorldBossInfo then -- 5.4
@@ -3470,17 +3382,6 @@ local function OpenLFD(self, instanceid, button)
   end
 end
 
-local function OpenLFR(self, instanceid, button)
-  if RaidFinderFrame and RaidFinderFrame:IsVisible() and RaidFinderQueueFrame.raid ~= instanceid then
-  -- changing entries
-  else
-    PVEFrame_ToggleFrame("GroupFinderFrame", RaidFinderFrame)
-  end
-  if RaidFinderFrame and RaidFinderFrame:IsVisible() and RaidFinderQueueFrame_SetRaid then
-    RaidFinderQueueFrame_SetRaid(instanceid)
-  end
-end
-
 local function ReportKeys(self, index, button)
   MythicPlus:Keys(index)
 end
@@ -3563,9 +3464,6 @@ function SI:ShowTooltip(anchorframe)
   local wbcons = SI.db.Tooltip.CombineWorldBosses
   local worldbosses = wbcons and localarr("worldbosses")
   local wbalways = false
-  local lfrcons = SI.db.Tooltip.CombineLFR
-  local lfrbox = lfrcons and localarr("lfrbox")
-  local lfrmap = lfrcons and localarr("lfrmap")
   for _, category in ipairs(SI:OrderedCategories()) do
     for _, instance in ipairs(SI:OrderedInstances(category)) do
       local inst = SI.db.Instances[instance]
@@ -3581,23 +3479,11 @@ function SI:ShowTooltip(anchorframe)
           end
           wbalways = wbalways or (inst.Show == "always")
         end
-        local lfrinfo = lfrcons and inst.LFDID and SI.LFRInstances[inst.LFDID]
-        local lfrboxid
-        if lfrinfo then
-          lfrboxid = lfrinfo.parent
-          lfrmap[inst.LFDID] = instance
-          if inst.Show == "always" then
-            lfrbox[lfrboxid] = true
-          end
-        end
         for toon, t in cpairs(SI.db.Toons, true) do
           for diff = 1, maxdiff do
             if inst[toon] and inst[toon][diff] then
               if inst[toon][diff].Expires > 0 then
-                if lfrinfo then
-                  lfrbox[lfrboxid] = true
-                  instancesaved[lfrboxid] = true
-                elseif wbcons and inst.WorldBoss then
+                if wbcons and inst.WorldBoss then
                   instancesaved[L["World Bosses"]] = true
                 else
                   instancesaved[instance] = true
@@ -3644,7 +3530,7 @@ function SI:ShowTooltip(anchorframe)
       end
       for _, instance in ipairs(SI:OrderedInstances(category)) do
         local inst = SI.db.Instances[instance]
-        if not (wbcons and inst.WorldBoss) and not (lfrcons and SI.LFRInstances[inst.LFDID]) then
+        if not (wbcons and inst.WorldBoss) then
           if inst.Show == "always" then
             instancerow[instance] = instancerow[instance] or tooltip:AddLine()
           end
@@ -3659,13 +3545,6 @@ function SI:ShowTooltip(anchorframe)
             end
           end
         end
-        if lfrcons and inst.LFDID then
-          -- check if this parent instance has corresponding lfrboxes, and create them
-          if lfrbox[inst.LFDID] then
-            lfrbox[L["LFR"] .. ": " .. instance] = tooltip:AddLine()
-          end
-          lfrbox[inst.LFDID] = nil
-        end
       end
     end
   end
@@ -3673,9 +3552,6 @@ function SI:ShowTooltip(anchorframe)
   for instance, row in pairs(instancerow) do
     local inst = SI.db.Instances[instance]
     tooltip:SetCell(row, 1, (instancesaved[instance] and GOLDFONT or GRAYFONT) .. instance .. FONTEND)
-    if SI.LFRInstances[inst.LFDID] then
-      tooltip:SetLineScript(row, "OnMouseDown", OpenLFR, inst.LFDID)
-    end
     for toon, t in cpairs(SI.db.Toons, true) do
       if inst[toon] then
         local showcol = localarr("showcol")
@@ -3700,69 +3576,14 @@ function SI:ShowTooltip(anchorframe)
             tooltip:SetCell(row, col, DifficultyString(instance, diff, toon, inst[toon][diff].Expires == 0), span)
             tooltip:SetCellScript(row, col, "OnEnter", hoverTooltip.ShowIndicatorTooltip, { instance, toon, diff })
             tooltip:SetCellScript(row, col, "OnLeave", CloseTooltips)
-            if SI.LFRInstances[inst.LFDID] then
-              tooltip:SetCellScript(row, col, "OnMouseDown", OpenLFR, inst.LFDID)
-            else
-              local link = inst[toon][diff].Link
-              if link then
-                tooltip:SetCellScript(row, col, "OnMouseDown", ChatLink, link)
-              end
+            local link = inst[toon][diff].Link
+            if link then
+              tooltip:SetCellScript(row, col, "OnMouseDown", ChatLink, link)
             end
             base = base + 1
           elseif columns[toon .. diff] and showcnt > 1 then
             tooltip:SetCell(row, columns[toon .. diff], "")
           end
-        end
-      end
-    end
-  end
-
-  -- combined LFRs
-  if lfrcons then
-    for boxname, line in pairs(lfrbox) do
-      if type(boxname) == "number" then
-        SI:BugReport("Unrecognized LFR instance parent id= " .. boxname)
-        lfrbox[boxname] = nil
-      end
-    end
-    for boxname, line in pairs(lfrbox) do
-      local boxtype, pinstance = boxname:match("^([^:]+): (.+)$")
-      local pinst = SI.db.Instances[pinstance]
-      local boxid = pinst.LFDID
-      local firstid
-      local total = 0
-      local flag = false -- flag for LFRs that are different between two factions
-      local tbl, other = {}, {}
-      for lfdid, lfrinfo in pairs(SI.LFRInstances) do
-        if lfrinfo.parent == pinst.LFDID and lfrmap[lfdid] then
-          if (not lfrinfo.faction) or (lfrinfo.faction == UnitFactionGroup("player")) then
-            firstid = math.min(lfdid, firstid or lfdid)
-          end
-          if lfrinfo.faction and lfrinfo.faction == "Horde" then
-            flag = true
-            other[lfrinfo.base] = lfrmap[lfdid]
-          else
-            -- count total bosses for only one faction
-            total = total + lfrinfo.total
-            tbl[lfrinfo.base] = lfrmap[lfdid]
-          end
-        end
-      end
-      tooltip:SetCell(line, 1, (instancesaved[boxid] and GOLDFONT or GRAYFONT) .. boxname .. FONTEND)
-      tooltip:SetLineScript(line, "OnMouseDown", OpenLFR, firstid)
-      for toon, t in cpairs(SI.db.Toons, true) do
-        local saved = 0
-        local diff = 2
-        local curr = (flag and t.Faction == "Horde") and other or tbl
-        for key, instance in pairs(curr) do
-          saved = saved + SI:instanceBosses(instance, toon, diff)
-        end
-        if saved > 0 then
-          addColumns(columns, toon, tooltip)
-          local col = columns[toon .. 1]
-          tooltip:SetCell(line, col, DifficultyString(pinstance, diff, toon, false, saved, total), 4)
-          tooltip:SetCellScript(line, col, "OnEnter", hoverTooltip.ShowLFRTooltip, { boxname, toon, curr })
-          tooltip:SetCellScript(line, col, "OnLeave", CloseTooltips)
         end
       end
     end
