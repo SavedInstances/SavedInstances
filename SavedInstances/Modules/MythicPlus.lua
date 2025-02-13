@@ -45,6 +45,11 @@ local ItemLevelsBySeason = {
     ["HEROIC"] = 593,
     ["MYTHIC"] = 603,
   },
+  -- TWW Season 2
+  [103] = {
+    ["HEROIC"] = 632,
+    ["MYTHIC"] = 645,
+  },
 }
 
 local KeystoneAbbrev = {
@@ -124,6 +129,7 @@ local KeystoneAbbrev = {
   [504] = L["DFC"], -- Darkflame Cleft
   [505] = L["DAWN"], -- The Dawnbreaker
   [506] = L["BREW"], -- Cinderbrew Meadery
+  [525] = L["FLOOD"], -- Operation: Floodgate
 }
 SI.KeystoneAbbrev = KeystoneAbbrev
 
