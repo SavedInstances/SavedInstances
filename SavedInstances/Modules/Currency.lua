@@ -218,7 +218,7 @@ local specialCurrency = {
   },
   [3028] = { -- Restored Coffer Key
     relatedItem = {
-      id = 229899, -- Coffer Key Shard
+      id = 236096, -- Coffer Key Shard
     },
   },
 }
