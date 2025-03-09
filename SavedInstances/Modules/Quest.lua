@@ -535,7 +535,7 @@ local QuestExceptions = {
   [80671] = "Weekly", -- Blade of the General
   [80672] = "Weekly", -- Hand of the Vizier
     -- Fishing Derby
-  [83529] = "Weekly", -- Hallowfall Fishing Derby 
+  [83529] = "Weekly", -- Hallowfall Fishing Derby
   [83530] = "Weekly", -- Hallowfall Fishing Derby
   [83531] = "Weekly", -- Hallowfall Fishing Derby
   [83532] = "Weekly", -- Hallowfall Fishing Derby
