@@ -1244,7 +1244,7 @@ function SI:UpdateInstance(id)
   if recLevel > 0 and recLevel < instance.RecLevel then
     instance.RecLevel = recLevel
   end -- favor non-heroic RecLevel
-  instance.Raid = (maxPlayers > 5 or (maxPlayers == 0 and typeID == 2))
+  instance.Raid = (maxPlayers > 5 or ((maxPlayers == 0 or maxPlayers == 5) and typeID == 2))
   if typeID == TYPEID_RANDOM_DUNGEON then
     instance.Random = true
   end
