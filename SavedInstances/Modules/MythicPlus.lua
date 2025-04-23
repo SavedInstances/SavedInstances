@@ -11,6 +11,8 @@ local C_ChallengeMode_GetMapUIInfo = C_ChallengeMode.GetMapUIInfo
 local C_Container_GetContainerItemID = C_Container.GetContainerItemID
 local C_Container_GetContainerItemLink = C_Container.GetContainerItemLink
 local C_Container_GetContainerNumSlots = C_Container.GetContainerNumSlots
+local C_MythicPlus_GetOwnedKeystoneChallengeMapID = C_MythicPlus.GetOwnedKeystoneChallengeMapID
+local C_MythicPlus_GetOwnedKeystoneLevel = C_MythicPlus.GetOwnedKeystoneLevel
 local C_MythicPlus_GetRunHistory = C_MythicPlus.GetRunHistory
 local C_MythicPlus_RequestMapInfo = C_MythicPlus.RequestMapInfo
 local C_MythicPlus_GetRewardLevelFromKeystoneLevel = C_MythicPlus.GetRewardLevelFromKeystoneLevel
@@ -162,10 +164,8 @@ do
   end
 
   function Module:ProcessKey(itemLink, targetTable)
-    local _, _, mapID, mapLevel = strsplit(":", itemLink)
-    mapID = tonumber(mapID)
-    mapLevel = tonumber(mapLevel)
-
+    local mapID = C_MythicPlus_GetOwnedKeystoneChallengeMapID()
+    local mapLevel = C_MythicPlus_GetOwnedKeystoneLevel()
     targetTable.link = itemLink
     targetTable.mapID = mapID
     targetTable.level = mapLevel
