@@ -162,7 +162,7 @@ do
   end
 
   function Module:ProcessKey(itemLink, targetTable)
-    local _, _, mapID, mapLevel = strsplit(":", itemLink)
+    local _, _, _, mapID, mapLevel = strsplit(":", itemLink)
     mapID = tonumber(mapID)
     mapLevel = tonumber(mapLevel)
 
