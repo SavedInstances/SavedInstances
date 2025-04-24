@@ -212,19 +212,15 @@ SI.defaultDB = {
   -- item: linkstring or nil
 
   -- MythicKey
-  -- name: string
   -- ResetTime: expiry
   -- mapID: int
   -- level: int
-  -- color: string
   -- link: string
 
   -- TimewornMythicKey
-  -- name: string
   -- ResetTime: expiry
   -- mapID: int
   -- level: int
-  -- color: string
   -- link: string
 
   -- MythicKeyBest
@@ -3820,13 +3816,11 @@ function SI:ShowTooltip(anchorframe)
     for toon, t in cpairs(SI.db.Toons, true) do
       if t.MythicKey and t.MythicKey.link then
         local col = columns[toon .. 1]
-        local name
-        if SI.db.Tooltip.AbbreviateKeystone then
-          name = SI.KeystoneAbbrev[t.MythicKey.mapID] or t.MythicKey.name
-        else
-          name = t.MythicKey.name
-        end
-        tooltip:SetCell(show, col, "|c" .. t.MythicKey.color .. name .. " (" .. t.MythicKey.level .. ")" .. FONTEND, "CENTER", maxcol)
+        local mapName = C_ChallengeMode.GetMapUIInfo(t.MythicKey.mapID)
+        local name = SI.db.Tooltip.AbbreviateKeystone and SI.KeystoneAbbrev[t.MythicKey.mapID] or mapName or t.MythicKey.link
+        local color = C_ChallengeMode.GetKeystoneLevelRarityColor(t.MythicKey.level) or WHITE_FONT_COLOR
+        local text = color:WrapTextInColorCode(name .. " (" .. t.MythicKey.level .. ")")
+        tooltip:SetCell(show, col, text, "CENTER", maxcol)
         tooltip:SetCellScript(show, col, "OnMouseDown", ChatLink, t.MythicKey.link)
       end
     end
@@ -3852,13 +3846,11 @@ function SI:ShowTooltip(anchorframe)
     for toon, t in cpairs(SI.db.Toons, true) do
       if t.TimewornMythicKey and t.TimewornMythicKey.link then
         local col = columns[toon .. 1]
-        local name
-        if SI.db.Tooltip.AbbreviateKeystone then
-          name = SI.KeystoneAbbrev[t.TimewornMythicKey.mapID] or t.TimewornMythicKey.name
-        else
-          name = t.TimewornMythicKey.name
-        end
-        tooltip:SetCell(show, col, "|c" .. t.TimewornMythicKey.color .. name .. " (" .. t.TimewornMythicKey.level .. ")" .. FONTEND, "CENTER", maxcol)
+        local mapName = C_ChallengeMode.GetMapUIInfo(t.TimewornMythicKey.mapID)
+        local name = SI.db.Tooltip.AbbreviateKeystone and SI.KeystoneAbbrev[t.TimewornMythicKey.mapID] or mapName or t.TimewornMythicKey.link
+        local color = C_ChallengeMode.GetKeystoneLevelRarityColor(t.TimewornMythicKey.level) or WHITE_FONT_COLOR
+        local text = color:WrapTextInColorCode(name .. " (" .. t.TimewornMythicKey.level .. ")")
+        tooltip:SetCell(show, col, text, "CENTER", maxcol)
         tooltip:SetCellScript(show, col, "OnMouseDown", ChatLink, t.TimewornMythicKey.link)
       end
     end
