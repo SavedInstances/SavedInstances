@@ -3826,8 +3826,10 @@ function SI:ShowTooltip(anchorframe)
         else
           name = t.MythicKey.name
         end
-        tooltip:SetCell(show, col, "|c" .. t.MythicKey.color .. name .. " (" .. t.MythicKey.level .. ")" .. FONTEND, "CENTER", maxcol)
-        tooltip:SetCellScript(show, col, "OnMouseDown", ChatLink, t.MythicKey.link)
+        if name then
+          tooltip:SetCell(show, col, "|c" .. t.MythicKey.color .. name .. " (" .. t.MythicKey.level .. ")" .. FONTEND, "CENTER", maxcol)
+          tooltip:SetCellScript(show, col, "OnMouseDown", ChatLink, t.MythicKey.link)
+        end
       end
     end
   end
