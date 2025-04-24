@@ -3817,11 +3817,17 @@ function SI:ShowTooltip(anchorframe)
       if t.MythicKey and t.MythicKey.link then
         local col = columns[toon .. 1]
         local mapName = C_ChallengeMode.GetMapUIInfo(t.MythicKey.mapID)
-        local name = SI.db.Tooltip.AbbreviateKeystone and SI.KeystoneAbbrev[t.MythicKey.mapID] or mapName or t.MythicKey.link
-        local color = C_ChallengeMode.GetKeystoneLevelRarityColor(t.MythicKey.level) or WHITE_FONT_COLOR
-        local text = color:WrapTextInColorCode(name .. " (" .. t.MythicKey.level .. ")")
-        tooltip:SetCell(show, col, text, "CENTER", maxcol)
-        tooltip:SetCellScript(show, col, "OnMouseDown", ChatLink, t.MythicKey.link)
+        if mapName then
+          local name = SI.db.Tooltip.AbbreviateKeystone and SI.KeystoneAbbrev[t.MythicKey.mapID] or mapName
+          local color = C_ChallengeMode.GetKeystoneLevelRarityColor(t.MythicKey.level) or WHITE_FONT_COLOR
+          local text = color:WrapTextInColorCode(name .. " (" .. t.MythicKey.level .. ")")
+          tooltip:SetCell(show, col, text, "CENTER", maxcol)
+          tooltip:SetCellScript(show, col, "OnMouseDown", ChatLink, t.MythicKey.link)
+        else
+          -- might be caused by corrupted keystone parsing
+          tooltip:SetCell(show, col, t.MythicKey.link, "CENTER", maxcol)
+          tooltip:SetCellScript(show, col, "OnMouseDown", ChatLink, t.MythicKey.link)
+        end
       end
     end
   end
@@ -3847,11 +3853,17 @@ function SI:ShowTooltip(anchorframe)
       if t.TimewornMythicKey and t.TimewornMythicKey.link then
         local col = columns[toon .. 1]
         local mapName = C_ChallengeMode.GetMapUIInfo(t.TimewornMythicKey.mapID)
-        local name = SI.db.Tooltip.AbbreviateKeystone and SI.KeystoneAbbrev[t.TimewornMythicKey.mapID] or mapName or t.TimewornMythicKey.link
-        local color = C_ChallengeMode.GetKeystoneLevelRarityColor(t.TimewornMythicKey.level) or WHITE_FONT_COLOR
-        local text = color:WrapTextInColorCode(name .. " (" .. t.TimewornMythicKey.level .. ")")
-        tooltip:SetCell(show, col, text, "CENTER", maxcol)
-        tooltip:SetCellScript(show, col, "OnMouseDown", ChatLink, t.TimewornMythicKey.link)
+        if mapName then
+          local name = SI.db.Tooltip.AbbreviateKeystone and SI.KeystoneAbbrev[t.TimewornMythicKey.mapID] or mapName
+          local color = C_ChallengeMode.GetKeystoneLevelRarityColor(t.TimewornMythicKey.level) or WHITE_FONT_COLOR
+          local text = color:WrapTextInColorCode(name .. " (" .. t.TimewornMythicKey.level .. ")")
+          tooltip:SetCell(show, col, text, "CENTER", maxcol)
+          tooltip:SetCellScript(show, col, "OnMouseDown", ChatLink, t.TimewornMythicKey.link)
+        else
+          -- might be caused by corrupted keystone parsing
+          tooltip:SetCell(show, col, t.TimewornMythicKey.link, "CENTER", maxcol)
+          tooltip:SetCellScript(show, col, "OnMouseDown", ChatLink, t.TimewornMythicKey.link)
+        end
       end
     end
   end
