@@ -2,3 +2,5 @@ SavedInstances_Main.lua
 SavedInstances/Libs/*
 .env
 .DS_Store
+.vscode/*
+!.vscode/extensions.json
