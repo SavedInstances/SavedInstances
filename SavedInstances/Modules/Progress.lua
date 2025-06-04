@@ -885,6 +885,7 @@ local presets = {
       81794, -- Sparks of War: The Ringing Deeps
       81795, -- Sparks of War: Hallowfall
       81796, -- Sparks of War: Azj-Kahet
+      86853, -- Sparks of War: Undermine
     },
     reset = "weekly",
     persists = true,
@@ -918,6 +919,8 @@ local presets = {
       82453, -- Worldsoul: Encore!
       82489, -- Worldsoul: The Dawnbreaker
       82659, -- Worldsoul: Nerub-ar Palace
+      87417, -- Worldsoul: Dungeons
+      87419, -- Worldsoul: Delves
       82490, -- Worldsoul: Priory of the Sacred Flame
       82491, -- Worldsoul: Ara-Kara, City of Echoes
       82492, -- Worldsoul: City of Threads
@@ -939,13 +942,18 @@ local presets = {
       82509, -- Worldsoul: Nerub-ar Palace
       82510, -- Worldsoul: Nerub-ar Palace
       82511, -- Worldsoul: Awakening Machine
+      89514, -- Worldsoul: Horrific Visions Revisited
       82512, -- Worldsoul: World Boss
+      87423, -- Worldsoul: Undermine Explorer
+      87424, -- Worldsoul: World Bosses
       82488, -- Worldsoul: Darkflame Cleft
       82487, -- Worldsoul: The Stonevault
       82486, -- Worldsoul: The Rookery
       82485, -- Worldsoul: Cinderbrew Meadery
       82452, -- Worldsoul: World Quests
+      87422, -- Worldsoul: Undermine World Quests
       82495, -- Worldsoul: Cinderbrew Meadery
+      89502, -- Worldsoul: Nightfall
     },
     reset = "weekly",
     persists = true,
@@ -959,8 +967,8 @@ local presets = {
     name = L["Archives"],
     questID = {
       -- https://wago.tools/db2/QuestLineXQuest?filter[QuestLineID]=5572&page=1&sort[OrderIndex]=asc
-      82678, -- Archives: The First Disc
       82679, -- Archives: Seeking History
+      82678, -- Archives: The First Disc
     },
     reset = "weekly",
     persists = true,
@@ -976,7 +984,7 @@ local presets = {
       -- https://wago.tools/db2/QuestLineXQuest?filter[QuestLineID]=5572&page=1&sort[OrderIndex]=asc
       82708, -- Delves: Nerubian Menace
       82707, -- Delves: Earthen Defense
-      82706, -- Delves: Khaz Algar Research
+      82706, -- Delves: Worldwide Research
       82709, -- Delves: Percussive Archaeology
       82710, -- Delves: Empire-ical Exploration
       82711, -- Delves: Lost and Found
@@ -1035,10 +1043,12 @@ local presets = {
       82787, -- Special Assignment: Rise of the Colossals (Completing)
       82414, -- Special Assignment: A Pound of Cure (Completing)
       82531, -- Special Assignment: Bombs from Behind (Completing)
+      85487, -- Special Assignment: Boom! Headshot! (Completing)
+      85488, -- Special Assignment: Security Detail (Completing)
     },
     reset = "weekly",
     persists = false,
-    threshold = 2,
+    threshold = 3,
     progress = true,
     onlyOnOrCompleted = true,
   },
@@ -1068,6 +1078,7 @@ local presets = {
       83459, -- The Dawnbreaker
       83465, -- Ara-Kara, City of Echoes
       83469, -- City of Threads
+      86203, -- Operation: Floodgate
     },
     reset = "weekly",
     persists = false,
@@ -1175,7 +1186,7 @@ local presets = {
   ["tww-siren-isle-weekly"] = {
     type = "list",
     expansion = 10,
-    index = 16,
+    index = 18,
     name = L["Siren Isle Weekly"],
     questID = {
       -- Vrykul invasion
@@ -1203,6 +1214,101 @@ local presets = {
     reset = "weekly",
     persists = false,
     threshold = 6,
+    progress = true,
+    onlyOnOrCompleted = true,
+  },
+  -- Free C.H.E.T.T. List
+  ["tww-free-chett-list"] = {
+    type = "single",
+    expansion = 10,
+    index = 19,
+    name = L["Free C.H.E.T.T. List"],
+    questID = 87296,
+    reset = "weekly",
+    persists = false,
+    fullObjective = false,
+  },
+  -- C.H.E.T.T. List
+  ["tww-chett-list"] = {
+    type = "list",
+    expansion = 10,
+    index = 20,
+    name = L["C.H.E.T.T. List"],
+    questID = {
+      86915, -- Side with a Cartel
+      86917, -- Ship Right
+      86918, -- Reclaimed Scrap
+      86919, -- Side Gig
+      86920, -- War Mode Violence
+      86923, -- Go Fish
+      86924, -- Gotta Catch at Least a Few
+      87302, -- Rare Rivals
+      87303, -- Clean the Sidestreets
+      87304, -- Time to Vacate
+      87305, -- Desire to D.R.I.V.E.
+      87306, -- Kaja Cruising
+      87307, -- Garbage Day
+    },
+    reset = "weekly",
+    persists = true,
+    threshold = 4,
+    progress = true,
+    onlyOnOrCompleted = true,
+    questName = {
+      [86915] = L["Side with a Cartel"],
+      [86917] = L["Ship Right"],
+      [86918] = L["Reclaimed Scrap"],
+      [86919] = L["Side Gig"],
+      [86920] = L["War Mode Violence"],
+      [86923] = L["Go Fish"],
+      [86924] = L["Gotta Catch at Least a Few"],
+      [87302] = L["Rare Rivals"],
+      [87303] = L["Clean the Sidestreets"],
+      [87304] = L["Time to Vacate"],
+      [87305] = L["Desire to D.R.I.V.E."],
+      [87306] = L["Kaja Cruising"],
+      [87307] = L["Garbage Day"],
+    },
+  },
+  -- Delver's Bounty
+  ["tww-delvers-bounty"] = {
+    type = "single",
+    expansion = 10,
+    index = 21,
+    name = L["Delver's Bounty"],
+    questID = 86371,
+    reset = "weekly",
+    persists = false,
+    fullObjective = false,
+  },
+  -- The Flame Burns Eternal
+  ["tww-nightfall-scenario"] = {
+    type = "single",
+    expansion = 10,
+    index = 22,
+    name = L["The Flame Burns Eternal"],
+    questID = 91173,
+    reset = "weekly",
+    persists = true,
+    fullObjective = false,
+  },
+  -- Nightfall Daily
+  ["tww-nightfall-daily"] = {
+    type = "list",
+    expansion = 10,
+    index = 23,
+    name = L["Nightfall Daily"],
+    questID = {
+      87475, -- Sureki Incursion: Hold the Wall
+      87477, -- Sureki Incursion: Southern Swarm
+      87480, -- Sureki Incursion: The Eastern Assault
+      88711, -- Radiant Incursion: Toxins and Pheromones
+      88916, -- Radiant Incursion: Sureki's End
+      88945, -- Radiant Incursion: Rak-Zakaz
+    },
+    reset = "daily",
+    persists = false,
+    threshold = 3,
     progress = true,
     onlyOnOrCompleted = true,
   },
