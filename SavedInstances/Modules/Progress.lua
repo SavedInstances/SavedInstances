@@ -1424,7 +1424,7 @@ local function ShowQuestListStore(store, entry)
 
   if entry.questAbbr then
     for _, questID in ipairs(entry.questID) do
-      if store[questID].isComplete and entry.questAbbr[questID] then
+      if store[questID] and store[questID].isComplete and entry.questAbbr[questID] then
         return entry.questAbbr[questID]
       end
     end
@@ -1434,7 +1434,7 @@ local function ShowQuestListStore(store, entry)
   local total = entry.threshold or #entry.questID
 
   for _, questID in ipairs(entry.questID) do
-    if store[questID].isComplete then
+    if store[questID] and store[questID].isComplete then
       completed = completed + 1
     end
   end
@@ -1480,7 +1480,7 @@ local function TooltipQuestListStore(_, arg)
   local total = entry.threshold or #entry.questID
 
   for _, questID in ipairs(entry.questID) do
-    if store[questID].isComplete then
+    if store[questID] and store[questID].isComplete then
       completed = completed + 1
     end
   end
@@ -1492,11 +1492,11 @@ local function TooltipQuestListStore(_, arg)
       tip:AddLine(entry.separateLines[i])
     end
 
-    if not entry.onlyOnOrCompleted or store[questID].show then
+    if not entry.onlyOnOrCompleted or (store[questID] and store[questID].show) then
       local questName = entry.questName and entry.questName[questID] or SI:QuestInfo(questID)
       local questText
       if entry.progress then
-        if not store.show then
+        if not store.show or not store[questID] then
           -- do nothing
         elseif store[questID].isComplete then
           questText = SI.questCheckMark
@@ -1509,7 +1509,8 @@ local function TooltipQuestListStore(_, arg)
         end
       else
         questText = (
-          store[questID].isComplete and (RED_FONT_COLOR_CODE .. CRITERIA_COMPLETED .. FONT_COLOR_CODE_CLOSE)
+          (store[questID] and store[questID].isComplete)
+          and (RED_FONT_COLOR_CODE .. CRITERIA_COMPLETED .. FONT_COLOR_CODE_CLOSE)
           or (GREEN_FONT_COLOR_CODE .. AVAILABLE .. FONT_COLOR_CODE_CLOSE)
         )
       end
