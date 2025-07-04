@@ -1036,7 +1036,9 @@ local presets = {
     name = L["Special Assignments"],
     questID = {
       82355, -- Special Assignment: Cinderbee Surge (Completing)
+      81647, -- Special Assignment: Titanic Resurgence (Completing)
       81649, -- Special Assignment: Titanic Resurgence (Completing)
+      81650, -- Special Assignment: Titanic Resurgence (Completing)
       81691, -- Special Assignment: Shadows Below (Completing)
       83229, -- Special Assignment: When the Deeps Stir (Completing)
       82852, -- Special Assignment: Lynx Rescue (Completing)
