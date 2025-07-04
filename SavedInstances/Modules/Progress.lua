@@ -246,6 +246,7 @@ local presets = {
       83364, -- A Savage Path Through Time - WOD Timewalking
       83360, -- A Fel Path Through Time - LEG Timewalking
       86731, -- An Original Path Through Time - CLA Timewalking
+      88805, -- A Scarred Path Through Time - BFA Timewalking
     },
     reset = "weekly",
     persists = false,

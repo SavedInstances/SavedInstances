@@ -647,6 +647,7 @@ local QuestExceptions = {
   [83364] = "Weekly", -- A Savage Path Through Time - WOD Timewalking
   [83360] = "Weekly", -- A Fel Path Through Time - LEG Timewalking
   [86731] = "Weekly", -- An Original Path Through Time - CLA Timewalking
+  [88805] = "Weekly", -- A Scarred Path Through Time - BFA Timewalking
   [83345] = "Weekly", -- A Call to Battle - Battlegrounds
   [83347] = "Weekly", -- Emissary of War - Mythic Dungeons
   [83357] = "AccountWeekly", -- The Very Best - PvP Pet Battles
@@ -668,6 +669,8 @@ local TimewalkingItemQuest = {
   [55499] = 1971, -- The Shimmering Crystal - WOD Timewalking - Horde
   [64710] = 2274, -- Whispering Felflame Crystal - LEG Timewalking
   [83285] = 2634, -- The Ancient Scroll - CLA Timewalking
+  [89222] = 2874, -- Remnant of Azeroth - BFA Timewalking - Alliance
+  [89223] = 2874, -- Remnant of Azeroth - BFA Timewalking - Horde
 }
 
 for questID, tbl in pairs(TimewalkingItemQuest) do
