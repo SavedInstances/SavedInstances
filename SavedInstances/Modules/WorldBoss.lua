@@ -92,6 +92,7 @@ SI.WorldBosses = {
   [2636] = { quest = 81653, expansion = 10, level = 80 }, -- Shurrai, Atrocity of the Undersea
   [2637] = { quest = 81630, expansion = 10, level = 80 }, -- Kordac, the Dormant Protector
   [2683] = { quest = 85088, expansion = 10, level = 80 }, -- The Gobfather
+  [2762] = { quest = 87354, expansion = 10, level = 80 }, -- Reshanor, the Untethered
 
   -- bosses with no EJ entry (eid is a placeholder)
   [9001] = { quest = 38276, name = GARRISON_LOCATION_TOOLTIP .. " " .. BOSS, expansion = 5, level = 40 },
