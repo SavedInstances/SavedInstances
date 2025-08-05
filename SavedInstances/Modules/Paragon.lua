@@ -60,12 +60,14 @@ local factionID = {
   2605, -- The General
   2607, -- The Vizier
   2653, -- The Cartels of Undermine
+  2658, -- The K'aresh Trust
   2669, -- Darkfuse Solutions
   2671, -- Venture Company
   2673, -- Bilgewater Cartel
   2675, -- Blackwater Cartel
   2677, -- Steamwheedle Cartel
   2685, -- Gallagio Loyalty Rewards Club
+  2688, -- Flame's Radiance
 }
 
 function Module:OnEnable()
