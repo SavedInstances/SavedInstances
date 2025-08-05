@@ -816,6 +816,17 @@ local presets = {
       [84739] = L["Fourth Cache"],
     },
   },
+  -- Delver's Bounty
+  ["tww-delvers-bounty"] = {
+    type = "single",
+    expansion = 10,
+    index = 1.1,
+    name = L["Delver's Bounty"],
+    questID = 86371,
+    reset = "weekly",
+    persists = false,
+    fullObjective = false,
+  },
   -- Lesser Keyflame
   ["tww-lesser-keyflame"] = {
     type = "list",
@@ -887,6 +898,7 @@ local presets = {
       81795, -- Sparks of War: Hallowfall
       81796, -- Sparks of War: Azj-Kahet
       86853, -- Sparks of War: Undermine
+      90781, -- Sparks of War: K'aresh?
     },
     reset = "weekly",
     persists = true,
@@ -921,6 +933,7 @@ local presets = {
       82489, -- Worldsoul: The Dawnbreaker
       82659, -- Worldsoul: Nerub-ar Palace
       87417, -- Worldsoul: Dungeons
+      91052, -- Worldsoul: Overcharged Delves
       87419, -- Worldsoul: Delves
       82490, -- Worldsoul: Priory of the Sacred Flame
       82491, -- Worldsoul: Ara-Kara, City of Echoes
@@ -942,12 +955,14 @@ local presets = {
       82508, -- Worldsoul: The Rookery
       82509, -- Worldsoul: Nerub-ar Palace
       82510, -- Worldsoul: Nerub-ar Palace
-      82511, -- Worldsoul: Awakening Machine
       89514, -- Worldsoul: Horrific Visions Revisited
-      82512, -- Worldsoul: World Boss
-      87423, -- Worldsoul: Undermine Explorer
       87424, -- Worldsoul: World Bosses
+      82511, -- Worldsoul: Awakening Machine
+      82512, -- Worldsoul: World Boss
+      89492, -- Worldsoul: Dastardly Duos in the Dome!
+      87423, -- Worldsoul: Undermine Explorer
       82488, -- Worldsoul: Darkflame Cleft
+      91855, -- Worldsoul: K'aresh World Quests
       82487, -- Worldsoul: The Stonevault
       82486, -- Worldsoul: The Rookery
       82485, -- Worldsoul: Cinderbrew Meadery
@@ -1048,10 +1063,12 @@ local presets = {
       82531, -- Special Assignment: Bombs from Behind (Completing)
       85487, -- Special Assignment: Boom! Headshot! (Completing)
       85488, -- Special Assignment: Security Detail (Completing)
+      89294, -- Special Assignment: Aligned Views (Completing)
+      89293, -- Special Assignment: Overshadowed (Completing)
     },
     reset = "weekly",
     persists = false,
-    threshold = 3,
+    threshold = 4,
     progress = true,
     onlyOnOrCompleted = true,
   },
@@ -1273,22 +1290,44 @@ local presets = {
       [87307] = L["Garbage Day"],
     },
   },
-  -- Delver's Bounty
-  ["tww-delvers-bounty"] = {
+  -- Urge to Surge
+  ["tww-urge-to-surge"] = {
     type = "single",
     expansion = 10,
     index = 21,
-    name = L["Delver's Bounty"],
-    questID = 86371,
+    name = L["Urge to Surge"],
+    questID = 86775,
     reset = "weekly",
-    persists = false,
+    persists = true,
+    fullObjective = false,
+  },
+  -- Many Jobs, Handle It!
+  ["tww-many-jobs-handle-it"] = {
+    type = "single",
+    expansion = 10,
+    index = 22,
+    name = L["Many Jobs, Handle It!"],
+    questID = 85869,
+    reset = "weekly",
+    persists = true,
+    fullObjective = false,
+  },
+  -- Reduce, Reuse, Resell
+  ["tww-reduce-reuse-resell"] = {
+    type = "single",
+    expansion = 10,
+    index = 23,
+    name = L["Reduce, Reuse, Resell"],
+    questID = 85879,
+    reset = "weekly",
+    persists = true,
     fullObjective = false,
   },
   -- The Flame Burns Eternal
   ["tww-nightfall-scenario"] = {
     type = "single",
     expansion = 10,
-    index = 22,
+    index = 24,
     name = L["The Flame Burns Eternal"],
     questID = 91173,
     reset = "weekly",
@@ -1299,7 +1338,7 @@ local presets = {
   ["tww-nightfall-daily"] = {
     type = "list",
     expansion = 10,
-    index = 23,
+    index = 25,
     name = L["Nightfall Daily"],
     questID = {
       87475, -- Sureki Incursion: Hold the Wall
@@ -1314,6 +1353,53 @@ local presets = {
     threshold = 3,
     progress = true,
     onlyOnOrCompleted = true,
+  },
+  -- More Than Just a Phase
+  ["tww-more-than-just-a-phase"] = {
+    type = "single",
+    expansion = 10,
+    index = 26,
+    name = L["More Than Just a Phase"],
+    questID = 91093,
+    reset = "weekly",
+    persists = true,
+    fullObjective = false,
+  },
+  -- Ecological Succession
+  ["tww-ecological-succession"] = {
+    type = "single",
+    expansion = 10,
+    index = 27,
+    name = L["Ecological Succession"],
+    questID = 85460,
+    reset = "weekly",
+    persists = true,
+    fullObjective = false,
+  },
+  -- Tazavesh Warrant Quests
+  ["tww-tazavesh-warrant-quests"] = {
+    type = "list",
+    expansion = 10,
+    index = 28,
+    name = L["Tazavesh Warrant Quests"],
+    questID = {
+      87001, -- Warrant: Shatterpulse
+      87343, -- Warrant: Hollowbane
+      87345, -- Warrant: Xy'vox the Twisted
+      87405, -- Warrant: Grubber
+      87546, -- Warrant: Purple Peat
+      89490, -- Warrant: Arcana-Monger So'zer
+      90124, -- Eliminate Shatterpulse
+      90123, -- Eliminate Hollowbane
+      90122, -- Eliminate Xy'vox the Twisted
+      90126, -- Eliminate Grubber
+      90125, -- Eliminate Purple Peat
+      90127, -- Eliminate Arcana-Monger So'zer
+    },
+    reset = "weekly",
+    persists = false,
+    progress = true,
+    onlyOnOrCompleted = false,
   },
 }
 
