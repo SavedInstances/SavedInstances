@@ -148,7 +148,15 @@ local currency = {
   3109, -- Runed Undermine Crest
   3110, -- Gilded Undermine Crest
   3132, -- 11.1 Professions - Personal Tracker - S2 Spark Drops (Hidden)
-  3216, -- Bounty's Remnants
+  3149, -- Displaced Corrupted Mementos
+  3303, -- Untethered Coin
+  3356, -- Untainted Mana-Crystals
+  3269, -- Ethereal Voidsplinter
+  3284, -- Weathered Ethereal Crest
+  3286, -- Carved Ethereal Crest
+  3288, -- Runed Ethereal Crest
+  3290, -- Gilded Ethereal Crest
+  3141, -- Starlight Spark Dust
 }
 SI.currency = currency
 
@@ -218,7 +226,7 @@ local specialCurrency = {
   },
   [3028] = { -- Restored Coffer Key
     relatedItem = {
-      id = 236096, -- Coffer Key Shard
+      id = 245653, -- Coffer Key Shard
     },
   },
 }
