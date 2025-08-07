@@ -149,6 +149,7 @@ local currency = {
   3110, -- Gilded Undermine Crest
   3132, -- 11.1 Professions - Personal Tracker - S2 Spark Drops (Hidden)
   3149, -- Displaced Corrupted Mementos
+  3278, -- Ethereal Strands
   3303, -- Untethered Coin
   3356, -- Untainted Mana-Crystals
   3269, -- Ethereal Voidsplinter
