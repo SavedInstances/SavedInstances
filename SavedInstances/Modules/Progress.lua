@@ -816,6 +816,29 @@ local presets = {
       [84739] = L["Fourth Cache"],
     },
   },
+  -- TWW Season 3 Weekly Cache
+  ["tww-s3-weekly-cache"] = {
+    type = "list",
+    expansion = 10,
+    index = 1.1,
+    name = L["TWW Season 3 Weekly Cache"],
+    questID = {
+      91175,
+      91176,
+      91177,
+      91178,
+    },
+    reset = "weekly",
+    persists = false,
+    progress = false,
+    onlyOnOrCompleted = false,
+    questName = {
+      [91175] = L["First Cache"],
+      [91176] = L["Second Cache"],
+      [91177] = L["Third Cache"],
+      [91178] = L["Fourth Cache"],
+    },
+  },
   -- Delver's Bounty
   ["tww-delvers-bounty"] = {
     type = "single",
