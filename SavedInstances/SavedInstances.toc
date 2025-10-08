@@ -1,7 +1,7 @@
-## Interface: 110200
+## Interface: 110205
 ## Title: SavedInstances
 ## Notes: Tracks Raid, Instance, World Boss lockouts for all your characters, daily/weekly quests, currencies, trade cooldowns, and more!
-## Notes-ruRU: Отслеживает прогресс в рейдах и подземельях, также блокировки мировых боссов для всех Ваших персонажей, также ежедневные/еженедельные квесты, валюту и многое другое!
+## Notes-ruRU: Отслеживает прогресс в рейдах и подземельях, также блокировки мировых боссов для всех Ваших персонажей, а также ежедневные/еженедельные квесты, валюту и многое другое!
 ## Author: oscarucb and the Saved Instances Community
 ## Version: @project-version@
 ## IconTexTure: Interface\AddOns\SavedInstances\Media\Icon.tga
