@@ -2,31 +2,29 @@ local SI, L = unpack((select(2, ...)))
 local Module = SI:NewModule("MythicPlus", "AceEvent-3.0", "AceBucket-3.0")
 
 -- Lua functions
-local _G = _G
 local ipairs, sort, strsplit, tonumber, wipe = ipairs, sort, strsplit, tonumber, wipe
 
 -- WoW API / Variables
-local C_ChallengeMode_GetKeystoneLevelRarityColor = C_ChallengeMode.GetKeystoneLevelRarityColor
 local C_ChallengeMode_GetMapUIInfo = C_ChallengeMode.GetMapUIInfo
+local C_ChatInfo_SendChatMessage = C_ChatInfo.SendChatMessage
 local C_Container_GetContainerItemID = C_Container.GetContainerItemID
 local C_Container_GetContainerItemLink = C_Container.GetContainerItemLink
 local C_Container_GetContainerNumSlots = C_Container.GetContainerNumSlots
+local C_MythicPlus_GetCurrentSeasonValues = C_MythicPlus.GetCurrentSeasonValues
+local C_MythicPlus_GetRewardLevelFromKeystoneLevel = C_MythicPlus.GetRewardLevelFromKeystoneLevel
 local C_MythicPlus_GetRunHistory = C_MythicPlus.GetRunHistory
 local C_MythicPlus_RequestMapInfo = C_MythicPlus.RequestMapInfo
-local C_MythicPlus_GetRewardLevelFromKeystoneLevel = C_MythicPlus.GetRewardLevelFromKeystoneLevel
-local C_MythicPlus_GetCurrentSeasonValues = C_MythicPlus.GetCurrentSeasonValues
-local C_WeeklyRewards_GetActivities = C_WeeklyRewards.GetActivities
-local C_WeeklyRewards_HasAvailableRewards = C_WeeklyRewards.HasAvailableRewards
 local C_WeeklyRewards_CanClaimRewards = C_WeeklyRewards.CanClaimRewards
+local C_WeeklyRewards_GetActivities = C_WeeklyRewards.GetActivities
 local C_WeeklyRewards_GetNumCompletedDungeonRuns = C_WeeklyRewards.GetNumCompletedDungeonRuns
-local WeeklyRewardsUtil_MythicLevel = WeeklyRewardsUtil.MythicLevel
-local WEEKLY_REWARDS_HEROIC, WEEKLY_REWARDS_MYTHIC = WEEKLY_REWARDS_HEROIC, WEEKLY_REWARDS_MYTHIC
+local C_WeeklyRewards_HasAvailableRewards = C_WeeklyRewards.HasAvailableRewards
 local CreateFrame = CreateFrame
-local SendChatMessage = SendChatMessage
 
 local StaticPopup_Show = StaticPopup_Show
 
 local Enum_WeeklyRewardChestThresholdType_Activities = Enum.WeeklyRewardChestThresholdType.Activities
+local WEEKLY_REWARDS_HEROIC, WEEKLY_REWARDS_MYTHIC = WEEKLY_REWARDS_HEROIC, WEEKLY_REWARDS_MYTHIC
+local WeeklyRewardsUtil_MythicLevel = WeeklyRewardsUtil.MythicLevel
 
 -- this is from https://wago.tools/db2/MythicPlusSeasonRewardLevels?page=1&sort[WeeklyRewardLevel]=asc&filter[MythicPlusSeasonID]=98
 local ItemLevelsBySeason = {
@@ -290,7 +288,7 @@ end
 
 function Module:ReportKeys(target, index)
   self:KeyData(index, function(toon, key)
-    SendChatMessage(toon .. " - " .. key, target)
+    C_ChatInfo_SendChatMessage(toon .. " - " .. key, target)
   end)
 end
 
