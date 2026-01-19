@@ -38,9 +38,17 @@ local function BonusRollShow()
     return
   end
   if not BonusFrame then
-    BonusFrame = CreateFrame("Button", "SavedInstancesBonusRollFrame", BonusRollFrame, "ButtonFrameTemplate")
+    BonusFrame = CreateFrame("Button", "SavedInstancesBonusRollFrame", BonusRollFrame, "BackdropTemplate")
     BonusFrame:SetSize(32, 32)
     BonusFrame:SetPoint("LEFT", BonusRollFrame, "RIGHT", 0, 8)
+    BonusFrame:SetBackdrop({
+      bgFile = "Interface\\FrameGeneral\\UI-Background-Rock",
+      edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+      tile = true,
+      tileSize = 8,
+      edgeSize = 8,
+      insets = { left = 1, right = 1, top = 1, bottom = 1 },
+    })
     BonusFrame.text = BonusFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     BonusFrame.text:SetPoint("CENTER")
     BonusFrame:SetScript("OnEnter", function()
