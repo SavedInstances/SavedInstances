@@ -1021,14 +1021,14 @@ local presets = {
     name = L["Delves"],
     questID = {
       -- https://wago.tools/db2/QuestLineXQuest?filter[QuestLineID]=5572&page=1&sort[OrderIndex]=asc
-      82708, -- Delves: Nerubian Menace
-      82707, -- Delves: Earthen Defense
+      -- 82708, -- Delves: Nerubian Menace
+      -- 82707, -- Delves: Earthen Defense
       82706, -- Delves: Worldwide Research
-      82709, -- Delves: Percussive Archaeology
-      82710, -- Delves: Empire-ical Exploration
-      82711, -- Delves: Lost and Found
-      82712, -- Delves: Trouble Up and Down Khaz Algar
-      82746, -- Delves: Breaking Tough to Loot Stuff
+      -- 82709, -- Delves: Percussive Archaeology
+      -- 82710, -- Delves: Empire-ical Exploration
+      -- 82711, -- Delves: Lost and Found
+      -- 82712, -- Delves: Trouble Up and Down Khaz Algar
+      -- 82746, -- Delves: Breaking Tough to Loot Stuff
     },
     reset = "weekly",
     persists = true,
