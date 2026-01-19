@@ -14,6 +14,7 @@ SI.Libs.LDBI = SI.Libs.LDB and LibStub("LibDBIcon-1.0", true)
 SI.ScanTooltip = CreateFrame("GameTooltip", "SavedInstancesScanTooltip", UIParent, "GameTooltipTemplate")
 SI.ScanTooltip:SetOwner(UIParent, "ANCHOR_NONE")
 
+SI.playerGUID = UnitGUID("player")
 SI.playerName = UnitName("player")
 SI.playerLevel = UnitLevel("player")
 SI.realmName = GetRealmName()
