@@ -395,6 +395,7 @@ SI.defaultDB = {
     Currency3288 = true, -- Runed Ethereal Crest
     Currency3290 = true, -- Gilded Ethereal Crest
     Currency3141 = true, -- Starlight Spark Dust
+    Currency3319 = true, -- Twilight's Blade Insignia
     CurrencyMax = false,
     CurrencyEarned = true,
     CurrencySortName = false,
