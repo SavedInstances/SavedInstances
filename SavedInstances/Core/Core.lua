@@ -169,6 +169,7 @@ SI.defaultDB = {
   -- Artifact: string REMOVED
   -- Cloak: string REMOVED
   -- Covenant: number
+  -- GUID: string
   -- MythicPlusScore: number
   -- Paragon: table
   -- oRace: string
@@ -1540,6 +1541,7 @@ function SI:UpdateToonData()
     t.Warmode = C_PvP.IsWarModeDesired()
     t.Covenant = C_Covenants.GetActiveCovenantID()
     t.MythicPlusScore = C_ChallengeMode.GetOverallDungeonScore()
+    t.GUID = SI.playerGUID
   end
 
   t.LastSeen = time()
