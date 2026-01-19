@@ -158,6 +158,9 @@ local currency = {
   3288, -- Runed Ethereal Crest
   3290, -- Gilded Ethereal Crest
   3141, -- Starlight Spark Dust
+
+  -- Midnight
+  3319, -- Twilight's Blade Insignia
 }
 SI.currency = currency
 
