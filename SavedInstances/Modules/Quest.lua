@@ -466,7 +466,9 @@ local QuestExceptions = {
   [70211] = "Weekly", -- Stomping Explorers
   [70567] = "Weekly", -- When You Give Bakar a Bone
   [70615] = "Weekly", -- The Case of the Missing Herbs
+  [70539] = "Weekly", -- And You Thought They Did Nothing
   [70545] = "Weekly", -- Blingtron 8000...?
+  [77935] = "Weekly", -- A-Sword-ed Needs
   [72155] = "Weekly", -- Spread the Enchantment
   -- Primalist Invasions
   [70723] = "Weekly", -- Shattering the Earth Primalists
