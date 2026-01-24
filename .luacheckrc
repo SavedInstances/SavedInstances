@@ -3804,6 +3804,7 @@ globals = {
 	"gsub",
 	"hooksecurefunc",
 	"ipars",
+	"issecretvalue",
 	"issecure",
 	"issecurevariable",
 	"ldexp",

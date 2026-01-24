@@ -2745,6 +2745,7 @@ end
 
 local currency_msg = CURRENCY_GAINED:gsub(":.*$", "")
 function SI:CheckSystemMessage(event, msg)
+  if issecretvalue(msg) then return end
   local inst, t = IsInInstance()
   -- note: currency is already updated in TooltipShow,
   -- here we just hook JP/VP currency messages to capture lockout changes
@@ -2873,6 +2874,7 @@ function SI.HistoryEvent(f, evt, ...)
     end
   elseif evt == "CHAT_MSG_SYSTEM" then
     local msg = ...
+    if issecretvalue(msg) then return end
     if msg:match("^" .. resetmsg .. "$") then -- I performed expicit reset
       doExplicitReset(msg)
     elseif msg:match("^" .. INSTANCE_SAVED .. "$") then -- just got saved
