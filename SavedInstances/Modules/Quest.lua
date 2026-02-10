@@ -661,6 +661,7 @@ local QuestExceptions = {
   [83360] = "Weekly", -- A Fel Path Through Time - LEG Timewalking
   [86731] = "Weekly", -- An Original Path Through Time - CLA Timewalking
   [88805] = "Weekly", -- A Scarred Path Through Time - BFA Timewalking
+  [92649] = "Weekly", -- A Shadowed Path Through Time - SL Timewalking
   [83345] = "Weekly", -- A Call to Battle - Battlegrounds
   [83347] = "Weekly", -- Emissary of War - Mythic Dungeons
   [83357] = "AccountWeekly", -- The Very Best - PvP Pet Battles
