@@ -94,6 +94,12 @@ SI.WorldBosses = {
   [2683] = { quest = 85088, expansion = 10, level = 80 }, -- The Gobfather
   [2762] = { quest = 87354, expansion = 10, level = 80 }, -- Reshanor, the Untethered
 
+  -- Midnight
+  [2782] = { quest = 92123, expansion = 11, level = 90 }, -- Cragpine
+  [2827] = { quest = 92560, expansion = 11, level = 90 }, -- Lu'ashal
+  [2828] = { quest = 92636, expansion = 11, level = 90 }, -- Predaxas
+  [2829] = { quest = 92034, expansion = 11, level = 90 }, -- Thorm'belan
+
   -- bosses with no EJ entry (eid is a placeholder)
   [9001] = { quest = 38276, name = GARRISON_LOCATION_TOOLTIP .. " " .. BOSS, expansion = 5, level = 40 },
   -- Old Vanilla Bosses during Anniversary Event
