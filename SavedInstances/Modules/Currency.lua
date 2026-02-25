@@ -128,7 +128,6 @@ local currency = {
   3089, -- Residual Memories
   2803, -- Undercoin
   2815, -- Resonance Crystals
-  3028, -- Restored Coffer Key
   3056, -- Kej
   3008, -- Valorstones
   2813, -- Harmonized Silk
@@ -161,6 +160,34 @@ local currency = {
 
   -- Midnight
   3319, -- Twilight's Blade Insignia
+  3316, -- Voidlight Marl
+  3373, -- Angler Pearls
+  3376, -- Shard of Dundun
+  3377, -- Unalloyed Abundance
+  3379, -- Brimming Arcana
+  3385, -- Luminous Dust
+  3392, -- Remnant of Anguish
+  3400, -- Uncontaminated Void Sample
+  3256, -- Artisan Alchemist's Moxie
+  3257, -- Artisan Blacksmith's Moxie
+  3258, -- Artisan Enchanter's Moxie
+  3259, -- Artisan Engineer's Moxie
+  3260, -- Artisan Herbalist's Moxie
+  3261, -- Artisan Scribe's Moxie
+  3262, -- Artisan Jewelcrafter's Moxie
+  3263, -- Artisan Leatherworker's Moxie
+  3264, -- Artisan Miner's Moxie
+  3265, -- Artisan Skinner's Moxie
+  3266, -- Artisan Tailor's Moxie
+  3028, -- Restored Coffer Key
+  3310, -- Coffer Key Shards
+  3212, -- Radiant Spark Dust
+  3378, -- Dawnlight Manaflux
+  3383, -- Adventurer Dawncrest
+  3341, -- Veteran Dawncrest
+  3343, -- Champion Dawncrest
+  3345, -- Hero Dawncrest
+  3347, -- Myth Dawncrest
 }
 SI.currency = currency
 
@@ -230,7 +257,7 @@ local specialCurrency = {
   },
   [3028] = { -- Restored Coffer Key
     relatedItem = {
-      id = 245653, -- Coffer Key Shard
+      id = 252609, -- Coffer Key Shard
     },
   },
 }
