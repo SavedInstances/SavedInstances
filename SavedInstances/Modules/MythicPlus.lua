@@ -26,36 +26,30 @@ local Enum_WeeklyRewardChestThresholdType_Activities = Enum.WeeklyRewardChestThr
 local WEEKLY_REWARDS_HEROIC, WEEKLY_REWARDS_MYTHIC = WEEKLY_REWARDS_HEROIC, WEEKLY_REWARDS_MYTHIC
 local WeeklyRewardsUtil_MythicLevel = WeeklyRewardsUtil.MythicLevel
 
--- this is from https://wago.tools/db2/MythicPlusSeasonRewardLevels?page=1&sort[WeeklyRewardLevel]=asc&filter[MythicPlusSeasonID]=98
+-- Step 1. https://wago.tools/db2/WeeklyRewardChestActivityTier
+--         Find latest ActivityTierIDs with field 1 and 2 has value of 0, 2 and 1, 23, which are for heroic and mythic dungeons respectively.
+--         For Midnight Season 1, these are 101 and 102.
+-- Step 2. https://wago.tools/db2/MythicPlusSeasonRewardLevels
+--         Find the records with ActivityTierID from step 1. These records should have same MythicPlusSeasonID matched with each other.
+--         For Midnight Season 1, the MythicPlusSeasonID is 117.
+-- Note: Sometimes there are placeholder records with bigger IDs. Cross check should be done to make sure the correct records are used.
 local ItemLevelsBySeason = {
-  -- DF Season 3
-  [98] = {
-    ["HEROIC"] = 441,
-    ["MYTHIC"] = 450,
-  },
-  -- DF Season 4
-  [100] = {
-    ["HEROIC"] = 489,
-    ["MYTHIC"] = 506,
-  },
-  -- TWW Season 1
-  [99] = {
-    ["HEROIC"] = 593,
-    ["MYTHIC"] = 603,
-  },
-  -- TWW Season 2
-  [103] = {
-    ["HEROIC"] = 632,
-    ["MYTHIC"] = 645,
-  },
   -- TWW Season 3
   [108] = {
-    ["HEROIC"] = 678,
-    ["MYTHIC"] = 691,
+    ["HEROIC"] = 118,
+    ["MYTHIC"] = 131,
+  },
+  -- MID Season 1
+  [117] = {
+    ["HEROIC"] = 243,
+    ["MYTHIC"] = 256,
   },
 }
 
 local KeystoneAbbrev = {
+  -- Wrath of the Lich King
+  [556] = L["POS"], -- Pit of Saron
+
   -- Cataclysm
   [438] = L["VP"], -- The Vortex Pinnacle
   [456] = L["TOTT"], -- Throne of the Tides
@@ -65,6 +59,7 @@ local KeystoneAbbrev = {
   [2] = L["TJS"], -- Temple of the Jade Serpent
 
   -- Warlords of Draenor
+  [161] = L["SR"], -- Skyreach
   [165] = L["SBG"], -- Shadowmoon Burial Grounds
   [166] = L["GD"], -- Grimrail Depot
   [168] = L["EB"], -- Everbloom
@@ -134,6 +129,12 @@ local KeystoneAbbrev = {
   [506] = L["BREW"], -- Cinderbrew Meadery
   [525] = L["FLOOD"], -- Operation: Floodgate
   [542] = L["EDA"], -- Eco-Dome Al'dani
+
+    -- Midnight
+  [557] = L["WS"], -- Windrunner Spire
+  [558] = L["MT"], -- Magisters' Terrace
+  [559] = L["NPX"], -- Nexus-Point Xenas
+  [560] = L["MC"], -- Maisara Caverns
 }
 SI.KeystoneAbbrev = KeystoneAbbrev
 
