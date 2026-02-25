@@ -133,6 +133,15 @@ local tradeSpells = {
   [449574] = "2216", -- Ominous Coalescence
   [449575] = "2216", -- Volatile Coalescence
   [449938] = "2216", -- Gleaming Chaos
+  -- Midnight Alchemy
+  [1230856] = true, -- Wondrous Synergist
+  [1230887] = "2527", -- Transmute: Mote of Wild Magic
+  [1230888] = "2527", -- Transmute: Mote of Pure Void
+  [1230889] = "2527", -- Transmute: Mote of Primal Energy
+  [1230890] = "2527", -- Transmute: Mote of Light
+  [1230891] = "2528", -- Box of Rocks
+  [1230892] = "2528", -- Bouquet of Herbs
+  [1230893] = "2528", -- School of Gems
 
   -- Blacksmithing
   -- Pandaria Blacksmithing
@@ -234,6 +243,9 @@ local tradeSpells = {
   -- Khaz Algar Tailoring
   [446927] = true, -- Duskweave Bolt
   [446928] = true, -- Dawnweave Bolt
+  -- Midnight Tailoring
+  [1227926] = true, -- Arcanoweave Bolt
+  [1228060] = true, -- Sunfire Silk Bolt
 
   -- Enchanting
   -- Outland Enchanting
@@ -331,6 +343,8 @@ local categoryNames = {
   ["2355"] = C_Spell_GetSpellName(2259) .. ": " .. L["Outland Transmute"],
   ["2356"] = C_Spell_GetSpellName(2259) .. ": " .. L["Northrend Transmute"],
   ["2357"] = C_Spell_GetSpellName(2259) .. ": " .. L["Cataclysm Transmute"],
+  ["2527"] = C_Spell_GetSpellName(2259) .. ": " .. L["Midnight Mote Transmute"],
+  ["2528"] = C_Spell_GetSpellName(2259) .. ": " .. L["Midnight Transmute"],
 }
 
 function Module:OnEnable()
