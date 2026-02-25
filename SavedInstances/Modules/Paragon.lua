@@ -68,6 +68,13 @@ local factionID = {
   2677, -- Steamwheedle Cartel
   2685, -- Gallagio Loyalty Rewards Club
   2688, -- Flame's Radiance
+
+  -- Midnight
+  2696, -- Amani Tribe
+  2699, -- The Singularity
+  2704, -- Hara'ti
+  2710, -- Silvermoon Court
+  2770, -- Slayer's Duellum
 }
 
 function Module:OnEnable()
