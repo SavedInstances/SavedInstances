@@ -2937,6 +2937,9 @@ function SI:histZoneKey()
   if C_Garrison.IsOnGarrisonMap() then -- Garrisons don't count
     return nil
   end
+  if C_Housing.IsOnNeighborhoodMap() then -- Housing Neighborhood doesn't count
+    return nil
+  end
   -- check if we're locked (using FindInstance so we don't complain about unsaved unknown instances)
   local truename = SI:FindInstance(instname, insttype == "raid")
   local locked = false
