@@ -4,7 +4,7 @@ local QTip = SI.Libs.QTip
 local db
 local maxdiff = 33 -- max number of instance difficulties
 local maxcol = 4 -- max columns per player+instance
-local maxid = 3000 -- highest possible value for an instanceID, current max (Battle of Dazar'alor) is 2070
+local maxid = 4000 -- highest possible value for an instanceID, current max (The Voidspire) is 3159
 
 local table, math, bit, string, pairs, ipairs, unpack, strsplit, time, type, wipe, tonumber, select, strsub =
   table, math, bit, string, pairs, ipairs, unpack, strsplit, time, type, wipe, tonumber, select, strsub
@@ -66,7 +66,7 @@ SI.Indicators = {
 
 SI.Categories = {}
 local maxExpansion
-for i = 0, 10 do
+for i = 0, GetServerExpansionLevel() do
   local ename = _G["EXPANSION_NAME" .. i]
   if ename then
     maxExpansion = i
@@ -2935,6 +2935,9 @@ function SI:histZoneKey()
     return nil
   end
   if C_Garrison.IsOnGarrisonMap() then -- Garrisons don't count
+    return nil
+  end
+  if C_Housing.IsOnNeighborhoodMap() then -- Housing Neighborhood doesn't count
     return nil
   end
   -- check if we're locked (using FindInstance so we don't complain about unsaved unknown instances)
