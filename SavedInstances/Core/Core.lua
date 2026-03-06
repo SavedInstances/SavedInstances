@@ -1207,6 +1207,10 @@ function SI:UpdateInstance(id)
     -- lfr process can be attached to the other difficulty raid instance found by name
     return nil, nil, true
   end
+  if difficulty == 220 then
+    -- ignore Story difficulty, which has no save and has wrong infos (issue #1036)
+    return nil, nil, true
+  end
   if typeID == 1 and subtypeID == 5 and difficulty == 14 and maxPlayers == 25 then
     --print("ignoring "..id, GetLFGDungeonInfo(id))
     return nil, nil, true -- ignore old Flex entries
