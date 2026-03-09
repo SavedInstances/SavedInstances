@@ -685,6 +685,7 @@ local TimewalkingItemQuest = {
   [83285] = 2634, -- The Ancient Scroll - CLA Timewalking
   [89222] = 2874, -- Remnant of Azeroth - BFA Timewalking - Alliance
   [89223] = 2874, -- Remnant of Azeroth - BFA Timewalking - Horde
+  [92650] = 3076, -- The Flickering Anima - SL Timewalking
 }
 
 for questID, tbl in pairs(TimewalkingItemQuest) do

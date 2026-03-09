@@ -1329,6 +1329,7 @@ function SI:UpdateToonData()
           or id == 2274 -- Random Timewalking Dungeon (Legion)
           or id == 2634 -- Random Timewalking Dungeon (Classic)
           or id == 2874 -- Random Timewalking Dungeon (Battle for Azeroth)
+          or id == 3076 -- Random Timewalking Dungeon (Shadowlands)
           or id == 2714 -- The Codex of Chromie
         )
       then -- donetoday flag is falsely set for some level/dungeon combos where no daily incentive is available
