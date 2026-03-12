@@ -2617,8 +2617,7 @@ function SI:OnInitialize()
           if InCombatLockdown() then
             return
           end
-          ToggleFriendsFrame(4) -- open Blizzard Raid window
-          RaidInfoFrame:Show()
+          ToggleRaidFrame()
         elseif button == "LeftButton" then
           Tooltip:ToggleDetached()
         else
