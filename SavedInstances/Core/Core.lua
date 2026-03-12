@@ -66,7 +66,7 @@ SI.Indicators = {
 
 SI.Categories = {}
 local maxExpansion
-for i = 0, GetServerExpansionLevel() do
+for i = 0, GetExpansionLevel() do
   local ename = _G["EXPANSION_NAME" .. i]
   if ename then
     maxExpansion = i
