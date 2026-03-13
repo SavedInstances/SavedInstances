@@ -162,6 +162,19 @@ local _specialQuests = {
   [83734] = { lid = 222649 }, -- Algari Treatise on Skinning
   [83735] = { lid = 222547 }, -- Algari Treatise on Tailoring
 
+  -- Midnight Thalassian Treatise
+  [95127] = { lid = 245755 }, -- Thalassian Treatise on Alchemy
+  [95128] = { lid = 245763 }, -- Thalassian Treatise on Blacksmithing
+  [95129] = { lid = 245759 }, -- Thalassian Treatise on Enchanting
+  [95138] = { lid = 245809 }, -- Thalassian Treatise on Engineering
+  [95130] = { lid = 245761 }, -- Thalassian Treatise on Herbalism
+  [95131] = { lid = 245757 }, -- Thalassian Treatise on Inscription
+  [95133] = { lid = 245760 }, -- Thalassian Treatise on Jewelcrafting
+  [95134] = { lid = 245758 }, -- Thalassian Treatise on Leatherworking
+  [95135] = { lid = 245762 }, -- Thalassian Treatise on Mining
+  [95136] = { lid = 245828 }, -- Thalassian Treatise on Skinning
+  [95137] = { lid = 245756 }, -- Thalassian Treatise on Tailoring
+
   -- Old Vanilla Bosses during Anniversary Event
   [47461] = { daily = true, name = L["Lord Kazzak"] }, -- Lord Kazzak
   [47462] = { daily = true, name = L["Azuregos"] }, -- Azuregos
@@ -527,11 +540,11 @@ local QuestExceptions = {
   [80188] = "Weekly", -- Preserving in Arenas
   [80189] = "Weekly", -- Preserving Teamwork
   -- World PvP
-  [81793] = "Weekly", -- Sparks of War: Isle of Dorn
-  [81794] = "Weekly", -- Sparks of War: The Ringing Deeps
-  [81795] = "Weekly", -- Sparks of War: Hallowfall
-  [81796] = "Weekly", -- Sparks of War: Azj-Kahet
-  [90781] = "Weekly", -- Sparks of War: K'aresh?
+  [81793] = "Regular", -- Sparks of War: Isle of Dorn
+  [81794] = "Regular", -- Sparks of War: The Ringing Deeps
+  [81795] = "Regular", -- Sparks of War: Hallowfall
+  [81796] = "Regular", -- Sparks of War: Azj-Kahet
+  [90781] = "Regular", -- Sparks of War: K'aresh?
   -- The Severed Threads
   [80592] = "AccountWeekly", -- Forge a Pact
   [80670] = "Weekly", -- Eyes of the Weaver
@@ -630,6 +643,66 @@ local QuestExceptions = {
   [84130] = "Weekly", -- Jewelcrafting Services Requested
   [84131] = "Weekly", -- Leatherworking Services Requested
   [84132] = "Weekly", -- Tailoring Services Requested
+
+  -- MN
+  -- Meta Quest
+  [93766] = "Weekly", -- Midnight: World Quests
+  [93767] = "Weekly", -- Midnight: Arcantina
+  [93769] = "Weekly", -- Midnight: Housing
+  [93889] = "Weekly", -- Midnight: Saltheril's Soiree
+  [93890] = "Weekly", -- Midnight: Abundance
+  [93891] = "Weekly", -- Midnight: Legends of the Haranir
+  [93892] = "Weekly", -- Midnight: Stormarion Assault
+  [93909] = "Weekly", -- Midnight: Delves
+  [93910] = "Weekly", -- Midnight: Prey
+  [93911] = "Weekly", -- Midnight: Dungeons
+  [93912] = "Weekly", -- Midnight: Raid
+  [93913] = "Weekly", -- Midnight: World Boss
+  [94457] = "Weekly", -- Midnight: Battlegrounds
+  [95842] = "Weekly", -- Midnight: Void Assaults
+  [95843] = "Weekly", -- Midnight: Ritual Sites
+  -- Special Assignments
+  [91390] = "Weekly", -- Special Assignment: What Remains of a Temple Broken
+  [91796] = "Weekly", -- Special Assignment: Ours Once More!
+  [92063] = "Weekly", -- Special Assignment: A Hunter's Regret
+  [92139] = "Weekly", -- Special Assignment: Shade and Claw
+  [92145] = "Weekly", -- Special Assignment: The Grand Magister's Drink
+  [93013] = "Weekly", -- Special Assignment: Push Back the Light
+  [93244] = "Weekly", -- Special Assignment: Agents of the Shield
+  [93438] = "Weekly", -- Special Assignment: Precision Excision
+  -- Dungeon Weekly
+  [93751] = "Weekly", -- Windrunner Spire
+  [93752] = "Weekly", -- Murder Row
+  [93753] = "Weekly", -- Magisters' Terrace
+  [93754] = "Weekly", -- Maisara Caverns
+  [93755] = "Weekly", -- Den of Nalorakk
+  [93756] = "Weekly", -- The Blinding Vale
+  [93757] = "Weekly", -- Voidscar Arena
+  [93758] = "Weekly", -- Nexus-Point Xenas
+  -- Legends of the Haranir
+  [88993] = "Weekly", -- Wey'nan's Ward
+  [88994] = "Weekly", -- The Cauldron of Echoes
+  [88995] = "Weekly", -- Aln'hara's Bloom
+  [88996] = "Weekly", -- The Echoless Flame
+  [88997] = "Weekly", -- Russula's Outreach
+  [88998] = "Weekly", -- Root of the World
+  [88999] = "Weekly", -- Sky's Hope
+  -- Harandar Daily Wanted
+  [91970] = "Daily", -- WANTED: Gelatonius
+  [91980] = "Daily", -- WANTED: Hellebora's Thorn
+  [91982] = "Daily", -- WANTED: Toadshade's Petals
+  [91998] = "Daily", -- WANTED: Muckmire's Choking Vines
+  [92010] = "Daily", -- WANTED: Slewstalk's Stalks
+  [92012] = "Daily", -- WANTED: Gorebarb's Pincers
+  [92013] = "Daily", -- WANTED: Dionaea's Thorntusks
+  -- Sparks of War
+  [93423] = "Weekly", -- Sparks of War: Eversong Woods
+  [93424] = "Weekly", -- Sparks of War: Zul'Aman
+  [93425] = "Weekly", -- Sparks of War: Harandar
+  [93426] = "Weekly", -- Sparks of War: Voidstorm
+  -- Other
+  [91966] = "Daily", -- Saltheril's Soiree
+  [90962] = "Daily", -- Stormarion Assault
 
   -- General
   -- Darkmoon Faire
