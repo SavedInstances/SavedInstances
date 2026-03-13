@@ -1432,7 +1432,7 @@ local function UpdateQuestStore(store, questID)
     store.isComplete = true
 
     return true
-  elseif not C_QuestLog.IsOnQuest(questID) then
+  elseif not C_QuestLog.IsOnQuest(questID) and not C_TaskQuest.IsActive(questID) then
     store.show = false
 
     return false
@@ -1447,6 +1447,15 @@ local function UpdateQuestStore(store, questID)
       ---@cast _ boolean
       ---@cast numFulfilled number
       ---@cast numRequired number
+
+      if not text and not C_QuestLog.IsOnQuest(questID) then
+        -- some quest (like A Worthy Ally: Loamm Niffen) is display on map to remind players to accpet,
+        -- but don't have any objective yet, this is not on quest, nor world quest that we should track
+
+        store.show = false
+
+        return false
+      end
 
       local objectiveText
       if objectiveType == "progressbar" then
