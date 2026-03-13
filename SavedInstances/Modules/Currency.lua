@@ -297,6 +297,20 @@ function Module:OnEnable()
   self:RegisterEvent("PLAYER_MONEY", "UpdateCurrency")
   self:RegisterBucketEvent("CURRENCY_DISPLAY_UPDATE", 0.25, "UpdateCurrency")
   self:RegisterEvent("BAG_UPDATE_DELAYED", "UpdateCurrencyItem")
+
+  hooksecurefunc(C_CurrencyInfo, 'RequestCurrencyFromAccountCharacter', function(sourceCharacterGUID, currencyID, quantity)
+    for _, t in pairs(SI.db.Toons) do
+      if t.GUID == sourceCharacterGUID then
+        if t.currency and t.currency[currencyID] then
+          local totalQuantityConsumed = C_CurrencyInfo.GetCostToTransferCurrency(currencyID, quantity)
+
+          t.currency[currencyID].amount = t.currency[currencyID].amount - totalQuantityConsumed
+        end
+
+        break
+      end
+    end
+  end)
 end
 
 function Module:UpdateCurrency()
