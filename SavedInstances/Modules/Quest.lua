@@ -701,8 +701,9 @@ local QuestExceptions = {
   [93425] = "Weekly", -- Sparks of War: Harandar
   [93426] = "Weekly", -- Sparks of War: Voidstorm
   -- Other
-  [91966] = "Daily", -- Saltheril's Soiree
+  [89268] = "AccountWeekly", -- Lost Legends
   [90962] = "Daily", -- Stormarion Assault
+  [91966] = "Daily", -- Saltheril's Soiree
 
   -- General
   -- Darkmoon Faire
