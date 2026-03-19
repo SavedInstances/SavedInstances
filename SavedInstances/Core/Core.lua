@@ -3822,11 +3822,9 @@ function SI:ShowTooltip(anchorframe)
   if SI.db.Tooltip.MythicKey or showall then
     local show = false
     for toon, t in cpairs(SI.db.Toons, true) do
-      if t.MythicKey then
-        if t.MythicKey.link then
-          show = true
-          addColumns(columns, toon, tooltip)
-        end
+      if t.MythicKey and t.MythicKey.link and t.MythicKey.mapID then
+        show = true
+        addColumns(columns, toon, tooltip)
       end
     end
     if show then
@@ -3839,7 +3837,7 @@ function SI:ShowTooltip(anchorframe)
       tooltip:SetCellScript(show, 1, "OnMouseDown", ReportKeys, "MythicKey")
     end
     for toon, t in cpairs(SI.db.Toons, true) do
-      if t.MythicKey and t.MythicKey.link then
+      if t.MythicKey and t.MythicKey.link and t.MythicKey.mapID then
         local col = columns[toon .. 1]
         local mapName = C_ChallengeMode.GetMapUIInfo(t.MythicKey.mapID)
         if mapName then
