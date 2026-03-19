@@ -203,6 +203,16 @@ local presets = {
     persists = false,
     fullObjective = false,
   },
+  -- Delver's Bounty
+  ["delvers-bounty"] = {
+    type = "single",
+    index = 3.1,
+    name = L["Delver's Bounty"],
+    questID = 86371,
+    reset = "weekly",
+    persists = false,
+    fullObjective = false,
+  },
   -- The World Awaits
   ["the-world-awaits"] = {
     type = "single",
@@ -849,17 +859,6 @@ local presets = {
       [91177] = L["Third Cache"],
       [91178] = L["Fourth Cache"],
     },
-  },
-  -- Delver's Bounty
-  ["tww-delvers-bounty"] = {
-    type = "single",
-    expansion = 10,
-    index = 1.1,
-    name = L["Delver's Bounty"],
-    questID = 86371,
-    reset = "weekly",
-    persists = false,
-    fullObjective = false,
   },
   -- Lesser Keyflame
   ["tww-lesser-keyflame"] = {
@@ -1607,6 +1606,17 @@ local presets = {
     threshold = 4,
     progress = true,
     onlyOnOrCompleted = true,
+  },
+  -- A Nightmarish Task
+  ["mn-a-nightmarish-task"] = {
+    type = "single",
+    expansion = 11,
+    index = 7.1,
+    name = L["A Nightmarish Task"],
+    questID = 94446,
+    reset = "weekly",
+    persists = false,
+    fullObjective = false,
   },
   -- Abundant Offerings
   ["mn-abundant-offerings"] = {
