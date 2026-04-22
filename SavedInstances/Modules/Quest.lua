@@ -741,7 +741,7 @@ local QuestExceptions = {
   [83357] = "AccountWeekly", -- The Very Best - PvP Pet Battles
   [83358] = "Weekly", -- The Arena Calls - Arena Skirmishes
   [83366] = "Weekly", -- The World Awaits - World Quests
-  [84776] = "Weekly", -- A Call to Delves - Delves
+  [93595] = "Weekly", -- A Call to Delves - Delves
 }
 SI.QuestExceptions = QuestExceptions
 
