@@ -2279,6 +2279,66 @@ local function sortDisplay(left, right)
   return left < right
 end
 
+local function getPresetDefaultEnabled(entry)
+  if entry.defaultEnabled ~= nil then
+    return entry.defaultEnabled
+  end
+
+  return true
+end
+
+local function buildPresetGroups()
+  local groupsByKey = {}
+  local groups = {}
+
+  for key, entry in pairs(presets) do
+    local expansion = entry.expansion
+    local groupKey = expansion and ("expansion-" .. expansion .. (entry.patch and ("-" .. entry.patch) or "")) or "general"
+    local group = groupsByKey[groupKey]
+
+    if not group then
+      group = {
+        key = groupKey,
+        name = expansion and _G["EXPANSION_NAME" .. expansion] or GENERAL,
+        order = ((expansion or -1) + 1) * 1000,
+        entries = {},
+      }
+
+      if entry.patch then
+        group.name = group.name .. " (" .. entry.patch .. ")"
+      end
+
+      groupsByKey[groupKey] = group
+      tinsert(groups, group)
+    end
+
+    tinsert(group.entries, key)
+  end
+
+  for _, group in ipairs(groups) do
+    sort(group.entries, function(left, right)
+      local leftEntry = presets[left]
+      local rightEntry = presets[right]
+
+      if (leftEntry.index or 0) ~= (rightEntry.index or 0) then
+        return (leftEntry.index or 0) < (rightEntry.index or 0)
+      end
+
+      return left < right
+    end)
+  end
+
+  sort(groups, function(left, right)
+    if left.order ~= right.order then
+      return left.order < right.order
+    end
+
+    return left.name < right.name
+  end)
+
+  return groups
+end
+
 function Module:BuildDisplayOrder()
   wipe(self.display)
   wipe(self.displayAll)
@@ -2654,6 +2714,14 @@ do
     Module:BuildDisplayOrder()
   end
 
+  function Module:ResetPresetGroup(group)
+    for _, key in ipairs(group.entries) do
+      SI.db.Progress.Enable[key] = getPresetDefaultEnabled(presets[key])
+    end
+
+    Module:BuildDisplayOrder()
+  end
+
   function Module:BuildOptions(order)
     ---@type SingleQuestEntry
     local userSingleEntry = {
@@ -2689,19 +2757,13 @@ do
             Module:BuildDisplayOrder()
           end,
           args = {
-            Presets = {
-              order = 1,
-              type = "group",
-              name = L["Presets"],
-              guiInline = true,
-              args = {
-                General = {
-                  order = 0,
-                  type = "header",
-                  name = GENERAL,
-                },
-              },
-            },
+             Presets = {
+               order = 1,
+               type = "group",
+               name = L["Presets"],
+               guiInline = true,
+               args = {},
+             },
             User = {
               order = 2,
               type = "group",
@@ -2818,30 +2880,39 @@ do
       },
     }
 
-    for key, entry in pairs(presets) do
-      if entry.expansion then
-        if not options.args.Enable.args.Presets.args["Expansion" .. entry.expansion .. "Header"] then
-          options.args.Enable.args.Presets.args["Expansion" .. entry.expansion .. "Header"] = {
-            order = (entry.expansion + 1) * 100,
-            type = "header",
-            name = _G["EXPANSION_NAME" .. entry.expansion],
-          }
-        end
-      end
-      options.args.Enable.args.Presets.args[key] = {
-        order = ((entry.expansion or -1) + 1) * 100 + entry.index,
-        type = "toggle",
-        name = entry.name,
+    for _, group in ipairs(buildPresetGroups()) do
+      options.args.Enable.args.Presets.args[group.key .. "Header"] = {
+        order = group.order,
+        type = "header",
+        name = group.name,
       }
-      options.args.Sorting.args[key] = {
-        order = function()
-          return tIndexOf(Module.displayAll, key)
+      options.args.Enable.args.Presets.args[group.key .. "Reset"] = {
+        order = group.order + 0.1,
+        type = "execute",
+        name = L["Reset to Default"],
+        desc = string.format(L["Reset %s tracking to its default values."], group.name),
+        func = function()
+          Module:ResetPresetGroup(group)
         end,
-        type = "input",
-        name = entry.name,
-        desc = L["Sort Order"],
-        validate = orderValidate,
       }
+
+      for _, key in ipairs(group.entries) do
+        local entry = presets[key]
+        options.args.Enable.args.Presets.args[key] = {
+          order = group.order + 1 + entry.index,
+          type = "toggle",
+          name = entry.name,
+        }
+        options.args.Sorting.args[key] = {
+          order = function()
+            return tIndexOf(Module.displayAll, key)
+          end,
+          type = "input",
+          name = entry.name,
+          desc = L["Sort Order"],
+          validate = orderValidate,
+        }
+      end
     end
 
     for key, entry in pairs(SI.db.Progress.User) do

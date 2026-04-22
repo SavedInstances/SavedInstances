@@ -50,6 +50,32 @@ SI.diff_strings = {
 local FONTEND = FONT_COLOR_CODE_CLOSE
 local GOLDFONT = NORMAL_FONT_COLOR_CODE
 
+local function RefreshTooltipCache()
+  wipe(SI.scaleCache)
+  wipe(SI.oi_cache)
+  SI.oc_cache = nil
+end
+
+local function GetCurrencyGroupName(group)
+  if group.label then
+    return group.label
+  end
+
+  if group.expansion then
+    return _G["EXPANSION_NAME" .. group.expansion]
+  end
+
+  return GENERAL
+end
+
+local function ResetCurrencyGroup(group)
+  for _, currencyID in ipairs(group.currencies) do
+    SI.db.Tooltip["Currency" .. currencyID] = SI.defaultDB.Tooltip["Currency" .. currencyID]
+  end
+
+  RefreshTooltipCache()
+end
+
 -- config global functions
 
 function Config:OnInitialize()
@@ -173,9 +199,7 @@ function Config:BuildOptions()
     set = function(info, value)
       SI:Debug(info[#info] .. " set to: " .. tostring(value))
       SI.db.Tooltip[info[#info]] = value
-      wipe(SI.scaleCache)
-      wipe(SI.oi_cache)
-      SI.oc_cache = nil
+      RefreshTooltipCache()
     end,
     args = {
       config = {
@@ -551,9 +575,7 @@ function Config:BuildOptions()
         set = function(info, value)
           SI:Debug(info[#info] .. " set to: " .. tostring(value))
           SI.db.Tooltip[info[#info]] = value
-          wipe(SI.scaleCache)
-          wipe(SI.oi_cache)
-          SI.oc_cache = nil
+          RefreshTooltipCache()
         end,
         args = {
           CurrencyValueColor = {
@@ -935,16 +957,36 @@ function Config:BuildOptions()
     }
   end
   local hdroffset = SI.Options.args.Currency.args.CurrencyHeader.order
-  for i, curr in ipairs(SI.currency) do
-    local data = C_CurrencyInfo_GetCurrencyInfo(curr)
-    local name = Currency.OverrideName[curr] or data.name
-    local tex = Currency.OverrideTexture[curr] or data.iconFileID
-    tex = "\124T" .. tex .. ":0\124t "
-    SI.Options.args.Currency.args["Currency" .. curr] = {
-      type = "toggle",
-      order = hdroffset + i,
-      name = tex .. name,
+  for groupIndex, group in ipairs(Currency.Groups or {}) do
+    local groupOrder = hdroffset + groupIndex * 100
+    local groupName = GetCurrencyGroupName(group)
+
+    SI.Options.args.Currency.args["CurrencyGroupHeader" .. groupIndex] = {
+      order = groupOrder,
+      type = "header",
+      name = groupName,
     }
+    SI.Options.args.Currency.args["CurrencyGroupReset" .. groupIndex] = {
+      order = groupOrder + 0.1,
+      type = "execute",
+      name = L["Reset to Default"],
+      desc = string.format(L["Reset %s tracking to its default values."], groupName),
+      func = function()
+        ResetCurrencyGroup(group)
+      end,
+    }
+
+    for currencyIndex, curr in ipairs(group.currencies) do
+      local data = C_CurrencyInfo_GetCurrencyInfo(curr)
+      local name = Currency.OverrideName[curr] or data.name
+      local tex = Currency.OverrideTexture[curr] or data.iconFileID
+      tex = "\124T" .. tex .. ":0\124t "
+      SI.Options.args.Currency.args["Currency" .. curr] = {
+        type = "toggle",
+        order = groupOrder + 1 + currencyIndex,
+        name = tex .. name,
+      }
+    end
   end
 end
 
