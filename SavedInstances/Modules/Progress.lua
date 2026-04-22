@@ -2287,13 +2287,26 @@ local function getPresetDefaultEnabled(entry)
   return true
 end
 
+local function getPresetGroupKey(entry)
+  local expansion = entry.expansion
+  if not expansion then
+    return "general"
+  end
+
+  if entry.patch then
+    return "expansion-" .. expansion .. "-" .. entry.patch
+  end
+
+  return "expansion-" .. expansion
+end
+
 local function buildPresetGroups()
   local groupsByKey = {}
   local groups = {}
 
   for key, entry in pairs(presets) do
     local expansion = entry.expansion
-    local groupKey = expansion and ("expansion-" .. expansion .. (entry.patch and ("-" .. entry.patch) or "")) or "general"
+    local groupKey = getPresetGroupKey(entry)
     local group = groupsByKey[groupKey]
 
     if not group then

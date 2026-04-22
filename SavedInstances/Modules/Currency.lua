@@ -2,7 +2,7 @@ local SI, L = unpack((select(2, ...)))
 local Module = SI:NewModule("Currency", "AceEvent-3.0", "AceTimer-3.0", "AceBucket-3.0")
 
 -- Lua functions
-local ipairs, pairs = ipairs, pairs
+local ipairs, pairs, tinsert = ipairs, pairs, tinsert
 
 -- WoW API / Variables
 local C_Covenants_GetActiveCovenantID = C_Covenants.GetActiveCovenantID
@@ -243,7 +243,7 @@ Module.Groups = {
 local currency = {}
 for _, group in ipairs(Module.Groups) do
   for _, currencyID in ipairs(group.currencies) do
-    table.insert(currency, currencyID)
+    tinsert(currency, currencyID)
   end
 end
 SI.currency = currency
