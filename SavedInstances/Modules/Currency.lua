@@ -15,6 +15,7 @@ local currency = {
   81, -- Epicurean Award
   515, -- Darkmoon Prize Ticket
   2588, -- Riders of Azeroth Badge
+  3363, -- Community Coupons
 
   -- Wrath of the Lich King
   241, -- Champion's Seal
@@ -161,13 +162,15 @@ local currency = {
   -- Midnight
   3319, -- Twilight's Blade Insignia
   3316, -- Voidlight Marl
-  3373, -- Angler Pearls
   3376, -- Shard of Dundun
   3377, -- Unalloyed Abundance
   3379, -- Brimming Arcana
   3385, -- Luminous Dust
   3392, -- Remnant of Anguish
   3400, -- Uncontaminated Void Sample
+  3373, -- Angler Pearls
+  3393, -- Illusionary Coin
+  3405, -- Field Accolade
   3256, -- Artisan Alchemist's Moxie
   3257, -- Artisan Blacksmith's Moxie
   3258, -- Artisan Enchanter's Moxie
@@ -188,6 +191,7 @@ local currency = {
   3343, -- Champion Dawncrest
   3345, -- Hero Dawncrest
   3347, -- Myth Dawncrest
+  3418, -- Nebulous Voidcore
 }
 SI.currency = currency
 
