@@ -75,6 +75,7 @@ local factionID = {
   2704, -- Hara'ti
   2710, -- Silvermoon Court
   2770, -- Slayer's Duellum
+  2792, -- Ritual Sites
 }
 
 function Module:OnEnable()
