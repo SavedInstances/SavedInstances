@@ -1742,7 +1742,7 @@ local presets = {
     name = L["Saltheril's Soiree"],
     questID = 91966,
     reset = "daily",
-    persists = false,
+    persists = true,
     fullObjective = false,
   },
   -- Stormarion Assault
