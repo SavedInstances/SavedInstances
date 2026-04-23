@@ -68,8 +68,8 @@ local function GetCurrencyGroupName(group)
   return GENERAL
 end
 
-local function ResetCurrencyGroup(group)
-  for _, currencyID in ipairs(group.currencies) do
+local function ResetCurrenciesToDefault()
+  for _, currencyID in ipairs(SI.currency) do
     SI.db.Tooltip["Currency" .. currencyID] = SI.defaultDB.Tooltip["Currency" .. currencyID]
   end
 
@@ -608,6 +608,13 @@ function Config:BuildOptions()
             type = "header",
             name = CURRENCY,
           },
+          CurrencyReset = {
+            order = 61,
+            type = "execute",
+            name = L["Reset to Default"],
+            desc = L["Reset currency tracking to its default values."],
+            func = ResetCurrenciesToDefault,
+          },
         },
       },
       Indicators = {
@@ -966,15 +973,6 @@ function Config:BuildOptions()
       type = "header",
       name = groupName,
     }
-    SI.Options.args.Currency.args["CurrencyGroupReset" .. groupIndex] = {
-      order = groupOrder + 0.1,
-      type = "execute",
-      name = L["Reset to Default"],
-      desc = string.format(L["Reset %s tracking to its default values."], groupName),
-      func = function()
-        ResetCurrencyGroup(group)
-      end,
-    }
 
     for currencyIndex, curr in ipairs(group.currencies) do
       local data = C_CurrencyInfo_GetCurrencyInfo(curr)
@@ -983,7 +981,7 @@ function Config:BuildOptions()
       tex = "\124T" .. tex .. ":0\124t "
       SI.Options.args.Currency.args["Currency" .. curr] = {
         type = "toggle",
-        order = groupOrder + 1 + currencyIndex,
+        order = groupOrder + currencyIndex,
         name = tex .. name,
       }
     end

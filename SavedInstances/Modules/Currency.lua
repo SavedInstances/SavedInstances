@@ -12,8 +12,8 @@ local C_Item_GetItemCount = C_Item.GetItemCount
 local GetMoney = GetMoney
 
 Module.Groups = {
+  -- General
   {
-    key = "general",
     label = GENERAL,
     currencies = {
       81, -- Epicurean Award
@@ -22,23 +22,23 @@ Module.Groups = {
       3363, -- Community Coupons
     },
   },
+  -- Wrath of the Lich King
   {
-    key = "wrath-of-the-lich-king",
     expansion = 2,
     currencies = {
       241, -- Champion's Seal
     },
   },
+  -- Cataclysm
   {
-    key = "cataclysm",
     expansion = 3,
     currencies = {
       391, -- Tol Barad Commendation
       416, -- Mark of the World Tree
     },
   },
+  -- Mists of Pandaria
   {
-    key = "mists-of-pandaria",
     expansion = 4,
     currencies = {
       402, -- Ironpaw Token
@@ -50,8 +50,8 @@ Module.Groups = {
       789, -- Bloody Coin
     },
   },
+  -- Warlords of Draenor
   {
-    key = "warlords-of-draenor",
     expansion = 5,
     currencies = {
       823, -- Apexis Crystal
@@ -61,8 +61,8 @@ Module.Groups = {
       1129, -- Seal of Inevitable Fate
     },
   },
+  -- Legion
   {
-    key = "legion",
     expansion = 6,
     currencies = {
       1149, -- Sightless Eye
@@ -80,8 +80,8 @@ Module.Groups = {
       1533, -- Wakening Essence
     },
   },
+  -- Battle for Azeroth
   {
-    key = "battle-for-azeroth",
     expansion = 7,
     currencies = {
       1710, -- Seafarer's Dubloon
@@ -97,8 +97,8 @@ Module.Groups = {
       1803, -- Echoes of Ny'alotha
     },
   },
+  -- Shadowlands
   {
-    key = "shadowlands",
     expansion = 8,
     currencies = {
       1754, -- Argent Commendation
@@ -124,8 +124,8 @@ Module.Groups = {
       2000, -- Motes of Fate
     },
   },
+  -- Dragonflight
   {
-    key = "dragonflight",
     expansion = 9,
     currencies = {
       2003, -- Dragon Isles Supplies
@@ -162,8 +162,8 @@ Module.Groups = {
       2778, -- Bronze
     },
   },
+  -- The War Within
   {
-    key = "the-war-within",
     expansion = 10,
     currencies = {
       3089, -- Residual Memories
@@ -200,8 +200,8 @@ Module.Groups = {
       3141, -- Starlight Spark Dust
     },
   },
+  -- Midnight
   {
-    key = "midnight",
     expansion = 11,
     currencies = {
       3319, -- Twilight's Blade Insignia
