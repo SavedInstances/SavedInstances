@@ -2654,6 +2654,16 @@ do
     Module:BuildDisplayOrder()
   end
 
+  function Module:ResetPresetsToDefault()
+    local currentExpansion = GetExpansionLevel()
+
+    for key, entry in pairs(presets) do
+      SI.db.Progress.Enable[key] = not entry.expansion or entry.expansion == currentExpansion
+    end
+
+    Module:BuildDisplayOrder()
+  end
+
   function Module:BuildOptions(order)
     ---@type SingleQuestEntry
     local userSingleEntry = {
@@ -2695,13 +2705,22 @@ do
               name = L["Presets"],
               guiInline = true,
               args = {
+                Reset = {
+                  order = -1,
+                  type = "execute",
+                  name = L["Reset to Default"],
+                  desc = L["Enable General and current expansion presets, and disable the others."],
+                  func = function()
+                    Module:ResetPresetsToDefault()
+                  end,
+                },
                 General = {
                   order = 0,
                   type = "header",
                   name = GENERAL,
                 },
               },
-            },
+              },
             User = {
               order = 2,
               type = "group",

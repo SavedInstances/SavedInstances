@@ -2,7 +2,7 @@ local SI, L = unpack((select(2, ...)))
 local Module = SI:NewModule("Currency", "AceEvent-3.0", "AceTimer-3.0", "AceBucket-3.0")
 
 -- Lua functions
-local ipairs, pairs = ipairs, pairs
+local ipairs, pairs, tinsert = ipairs, pairs, tinsert
 
 -- WoW API / Variables
 local C_Covenants_GetActiveCovenantID = C_Covenants.GetActiveCovenantID
@@ -11,188 +11,241 @@ local C_QuestLog_IsQuestFlaggedCompleted = C_QuestLog.IsQuestFlaggedCompleted
 local C_Item_GetItemCount = C_Item.GetItemCount
 local GetMoney = GetMoney
 
-local currency = {
-  81, -- Epicurean Award
-  515, -- Darkmoon Prize Ticket
-  2588, -- Riders of Azeroth Badge
-  3363, -- Community Coupons
-
+Module.Groups = {
+  -- General
+  {
+    label = GENERAL,
+    currencies = {
+      81, -- Epicurean Award
+      515, -- Darkmoon Prize Ticket
+      2588, -- Riders of Azeroth Badge
+      3363, -- Community Coupons
+    },
+  },
   -- Wrath of the Lich King
-  241, -- Champion's Seal
-
+  {
+    expansion = 2,
+    currencies = {
+      241, -- Champion's Seal
+    },
+  },
   -- Cataclysm
-  391, -- Tol Barad Commendation
-  416, -- Mark of the World Tree
-
+  {
+    expansion = 3,
+    currencies = {
+      391, -- Tol Barad Commendation
+      416, -- Mark of the World Tree
+    },
+  },
   -- Mists of Pandaria
-  402, -- Ironpaw Token
-  697, -- Elder Charm of Good Fortune
-  738, -- Lesser Charm of Good Fortune
-  752, -- Mogu Rune of Fate
-  776, -- Warforged Seal
-  777, -- Timeless Coin
-  789, -- Bloody Coin
-
+  {
+    expansion = 4,
+    currencies = {
+      402, -- Ironpaw Token
+      697, -- Elder Charm of Good Fortune
+      738, -- Lesser Charm of Good Fortune
+      752, -- Mogu Rune of Fate
+      776, -- Warforged Seal
+      777, -- Timeless Coin
+      789, -- Bloody Coin
+    },
+  },
   -- Warlords of Draenor
-  823, -- Apexis Crystal
-  824, -- Garrison Resources
-  994, -- Seal of Tempered Fate
-  1101, -- Oil
-  1129, -- Seal of Inevitable Fate
-  1149, -- Sightless Eye
-  1155, -- Ancient Mana
-  1166, -- Timewarped Badge
-
+  {
+    expansion = 5,
+    currencies = {
+      823, -- Apexis Crystal
+      824, -- Garrison Resources
+      994, -- Seal of Tempered Fate
+      1101, -- Oil
+      1129, -- Seal of Inevitable Fate
+    },
+  },
   -- Legion
-  1220, -- Order Resources
-  1226, -- Nethershards
-  1273, -- Seal of Broken Fate
-  1275, -- Curious Coin
-  1299, -- Brawler's Gold
-  1314, -- Lingering Soul Fragment
-  1342, -- Legionfall War Supplies
-  1501, -- Writhing Essence
-  1508, -- Veiled Argunite
-  1533, -- Wakening Essence
-
+  {
+    expansion = 6,
+    currencies = {
+      1149, -- Sightless Eye
+      1155, -- Ancient Mana
+      1166, -- Timewarped Badge
+      1220, -- Order Resources
+      1226, -- Nethershards
+      1273, -- Seal of Broken Fate
+      1275, -- Curious Coin
+      1299, -- Brawler's Gold
+      1314, -- Lingering Soul Fragment
+      1342, -- Legionfall War Supplies
+      1501, -- Writhing Essence
+      1508, -- Veiled Argunite
+      1533, -- Wakening Essence
+    },
+  },
   -- Battle for Azeroth
-  1710, -- Seafarer's Dubloon
-  1580, -- Seal of Wartorn Fate
-  1560, -- War Resources
-  1587, -- War Supplies
-  1716, -- Honorbound Service Medal
-  1717, -- 7th Legion Service Medal
-  1718, -- Titan Residuum
-  1721, -- Prismatic Manapearl
-  1719, -- Corrupted Memento
-  1755, -- Coalescing Visions
-  1803, -- Echoes of Ny'alotha
-
+  {
+    expansion = 7,
+    currencies = {
+      1710, -- Seafarer's Dubloon
+      1580, -- Seal of Wartorn Fate
+      1560, -- War Resources
+      1587, -- War Supplies
+      1716, -- Honorbound Service Medal
+      1717, -- 7th Legion Service Medal
+      1718, -- Titan Residuum
+      1721, -- Prismatic Manapearl
+      1719, -- Corrupted Memento
+      1755, -- Coalescing Visions
+      1803, -- Echoes of Ny'alotha
+    },
+  },
   -- Shadowlands
-  1754, -- Argent Commendation
-  1191, -- Valor
-  1602, -- Conquest
-  1792, -- Honor
-  1822, -- Renown
-  1767, -- Stygia
-  1828, -- Soul Ash
-  1810, -- Redeemed Soul
-  1813, -- Reservoir Anima
-  1816, -- Sinstone Fragments
-  1819, -- Medallion of Service
-  1820, -- Infused Ruby
-  1885, -- Grateful Offering
-  1889, -- Adventure Campaign Progress
-  1904, -- Tower Knowledge
-  1906, -- Soul Cinders
-  1931, -- Cataloged Research
-  1977, -- Stygian Ember
-  1979, -- Cyphers of the First Ones
-  2009, -- Cosmic Flux
-  2000, -- Motes of Fate
-
+  {
+    expansion = 8,
+    currencies = {
+      1754, -- Argent Commendation
+      1191, -- Valor
+      1602, -- Conquest
+      1792, -- Honor
+      1822, -- Renown
+      1767, -- Stygia
+      1828, -- Soul Ash
+      1810, -- Redeemed Soul
+      1813, -- Reservoir Anima
+      1816, -- Sinstone Fragments
+      1819, -- Medallion of Service
+      1820, -- Infused Ruby
+      1885, -- Grateful Offering
+      1889, -- Adventure Campaign Progress
+      1904, -- Tower Knowledge
+      1906, -- Soul Cinders
+      1931, -- Cataloged Research
+      1977, -- Stygian Ember
+      1979, -- Cyphers of the First Ones
+      2009, -- Cosmic Flux
+      2000, -- Motes of Fate
+    },
+  },
   -- Dragonflight
-  2003, -- Dragon Isles Supplies
-  2245, -- Flightstones
-  2123, -- Bloody Tokens
-  2797, -- Trophy of Strife
-  2045, -- Dragon Glyph Embers
-  2118, -- Elemental Overflow
-  2122, -- Storm Sigil
-  2409, -- Whelpling Crest Fragment Tracker [DNT]
-  2410, -- Drake Crest Fragment Tracker [DNT]
-  2411, -- Wyrm Crest Fragment Tracker [DNT]
-  2412, -- Aspect Crest Fragment Tracker [DNT]
-  2413, -- 10.1 Professions - Personal Tracker - S2 Spark Drops (Hidden)
-  2533, -- Renascent Shadowflame
-  2594, -- Paracausal Flakes
-  2650, -- Emerald Dewdrop
-  2651, -- Seedbloom
-  2777, -- Dream Infusion
-  2796, -- Renascent Dream
-  2706, -- Whelpling's Dreaming Crest
-  2707, -- Drake's Dreaming Crest
-  2708, -- Wyrm's Dreaming Crest
-  2709, -- Aspect's Dreaming Crest
-  2774, -- 10.2 Professions - Personal Tracker - S3 Spark Drops (Hidden)
-  2657, -- Mysterious Fragment
-  2912, -- Renascent Awakening
-  2806, -- Whelpling's Awakened Crest
-  2807, -- Drake's Awakened Crest
-  2809, -- Wyrm's Awakened Crest
-  2812, -- Aspect's Awakened Crest
-  2800, -- 10.2.6 Professions - Personal Tracker - S4 Spark Drops (Hidden)
-  3010, -- 10.2.6 Rewards - Personal Tracker - S4 Dinar Drops (Hidden)
-  2778, -- Bronze
-
+  {
+    expansion = 9,
+    currencies = {
+      2003, -- Dragon Isles Supplies
+      2245, -- Flightstones
+      2123, -- Bloody Tokens
+      2797, -- Trophy of Strife
+      2045, -- Dragon Glyph Embers
+      2118, -- Elemental Overflow
+      2122, -- Storm Sigil
+      2409, -- Whelpling Crest Fragment Tracker [DNT]
+      2410, -- Drake Crest Fragment Tracker [DNT]
+      2411, -- Wyrm Crest Fragment Tracker [DNT]
+      2412, -- Aspect Crest Fragment Tracker [DNT]
+      2413, -- 10.1 Professions - Personal Tracker - S2 Spark Drops (Hidden)
+      2533, -- Renascent Shadowflame
+      2594, -- Paracausal Flakes
+      2650, -- Emerald Dewdrop
+      2651, -- Seedbloom
+      2777, -- Dream Infusion
+      2796, -- Renascent Dream
+      2706, -- Whelpling's Dreaming Crest
+      2707, -- Drake's Dreaming Crest
+      2708, -- Wyrm's Dreaming Crest
+      2709, -- Aspect's Dreaming Crest
+      2774, -- 10.2 Professions - Personal Tracker - S3 Spark Drops (Hidden)
+      2657, -- Mysterious Fragment
+      2912, -- Renascent Awakening
+      2806, -- Whelpling's Awakened Crest
+      2807, -- Drake's Awakened Crest
+      2809, -- Wyrm's Awakened Crest
+      2812, -- Aspect's Awakened Crest
+      2800, -- 10.2.6 Professions - Personal Tracker - S4 Spark Drops (Hidden)
+      3010, -- 10.2.6 Rewards - Personal Tracker - S4 Dinar Drops (Hidden)
+      2778, -- Bronze
+    },
+  },
   -- The War Within
-  3089, -- Residual Memories
-  2803, -- Undercoin
-  2815, -- Resonance Crystals
-  3056, -- Kej
-  3008, -- Valorstones
-  2813, -- Harmonized Silk
-  2914, -- Weathered Harbinger Crest
-  2915, -- Carved Harbinger Crest
-  2916, -- Runed Harbinger Crest
-  2917, -- Gilded Harbinger Crest
-  3023, -- 11.0 Professions - Personal Tracker - S1 Spark Drops (Hidden)
-  3100, -- Bronze Celebration Token
-  3090, -- Flame-Blessed Iron
-  3218, -- Empty Kaja'Cola Can
-  3220, -- Vintage Kaja'Cola Can
-  3226, -- Market Research
-  3116, -- Essence of Kaja'mite
-  3107, -- Weathered Undermine Crest
-  3108, -- Carved Undermine Crest
-  3109, -- Runed Undermine Crest
-  3110, -- Gilded Undermine Crest
-  3132, -- 11.1 Professions - Personal Tracker - S2 Spark Drops (Hidden)
-  3149, -- Displaced Corrupted Mementos
-  3278, -- Ethereal Strands
-  3303, -- Untethered Coin
-  3356, -- Untainted Mana-Crystals
-  3269, -- Ethereal Voidsplinter
-  3284, -- Weathered Ethereal Crest
-  3286, -- Carved Ethereal Crest
-  3288, -- Runed Ethereal Crest
-  3290, -- Gilded Ethereal Crest
-  3141, -- Starlight Spark Dust
-
+  {
+    expansion = 10,
+    currencies = {
+      3089, -- Residual Memories
+      2803, -- Undercoin
+      2815, -- Resonance Crystals
+      3056, -- Kej
+      3008, -- Valorstones
+      2813, -- Harmonized Silk
+      2914, -- Weathered Harbinger Crest
+      2915, -- Carved Harbinger Crest
+      2916, -- Runed Harbinger Crest
+      2917, -- Gilded Harbinger Crest
+      3023, -- 11.0 Professions - Personal Tracker - S1 Spark Drops (Hidden)
+      3100, -- Bronze Celebration Token
+      3090, -- Flame-Blessed Iron
+      3218, -- Empty Kaja'Cola Can
+      3220, -- Vintage Kaja'Cola Can
+      3226, -- Market Research
+      3116, -- Essence of Kaja'mite
+      3107, -- Weathered Undermine Crest
+      3108, -- Carved Undermine Crest
+      3109, -- Runed Undermine Crest
+      3110, -- Gilded Undermine Crest
+      3132, -- 11.1 Professions - Personal Tracker - S2 Spark Drops (Hidden)
+      3149, -- Displaced Corrupted Mementos
+      3278, -- Ethereal Strands
+      3303, -- Untethered Coin
+      3356, -- Untainted Mana-Crystals
+      3269, -- Ethereal Voidsplinter
+      3284, -- Weathered Ethereal Crest
+      3286, -- Carved Ethereal Crest
+      3288, -- Runed Ethereal Crest
+      3290, -- Gilded Ethereal Crest
+      3141, -- Starlight Spark Dust
+    },
+  },
   -- Midnight
-  3319, -- Twilight's Blade Insignia
-  3316, -- Voidlight Marl
-  3376, -- Shard of Dundun
-  3377, -- Unalloyed Abundance
-  3379, -- Brimming Arcana
-  3385, -- Luminous Dust
-  3392, -- Remnant of Anguish
-  3400, -- Uncontaminated Void Sample
-  3373, -- Angler Pearls
-  3393, -- Illusionary Coin
-  3405, -- Field Accolade
-  3256, -- Artisan Alchemist's Moxie
-  3257, -- Artisan Blacksmith's Moxie
-  3258, -- Artisan Enchanter's Moxie
-  3259, -- Artisan Engineer's Moxie
-  3260, -- Artisan Herbalist's Moxie
-  3261, -- Artisan Scribe's Moxie
-  3262, -- Artisan Jewelcrafter's Moxie
-  3263, -- Artisan Leatherworker's Moxie
-  3264, -- Artisan Miner's Moxie
-  3265, -- Artisan Skinner's Moxie
-  3266, -- Artisan Tailor's Moxie
-  3028, -- Restored Coffer Key
-  3310, -- Coffer Key Shards
-  3212, -- Radiant Spark Dust
-  3378, -- Dawnlight Manaflux
-  3383, -- Adventurer Dawncrest
-  3341, -- Veteran Dawncrest
-  3343, -- Champion Dawncrest
-  3345, -- Hero Dawncrest
-  3347, -- Myth Dawncrest
-  3418, -- Nebulous Voidcore
+  {
+    expansion = 11,
+    currencies = {
+      3319, -- Twilight's Blade Insignia
+      3316, -- Voidlight Marl
+      3376, -- Shard of Dundun
+      3377, -- Unalloyed Abundance
+      3379, -- Brimming Arcana
+      3385, -- Luminous Dust
+      3392, -- Remnant of Anguish
+      3400, -- Uncontaminated Void Sample
+      3373, -- Angler Pearls
+      3393, -- Illusionary Coin
+      3405, -- Field Accolade
+      3256, -- Artisan Alchemist's Moxie
+      3257, -- Artisan Blacksmith's Moxie
+      3258, -- Artisan Enchanter's Moxie
+      3259, -- Artisan Engineer's Moxie
+      3260, -- Artisan Herbalist's Moxie
+      3261, -- Artisan Scribe's Moxie
+      3262, -- Artisan Jewelcrafter's Moxie
+      3263, -- Artisan Leatherworker's Moxie
+      3264, -- Artisan Miner's Moxie
+      3265, -- Artisan Skinner's Moxie
+      3266, -- Artisan Tailor's Moxie
+      3028, -- Restored Coffer Key
+      3310, -- Coffer Key Shards
+      3212, -- Radiant Spark Dust
+      3378, -- Dawnlight Manaflux
+      3383, -- Adventurer Dawncrest
+      3341, -- Veteran Dawncrest
+      3343, -- Champion Dawncrest
+      3345, -- Hero Dawncrest
+      3347, -- Myth Dawncrest
+      3418, -- Nebulous Voidcore
+    },
+  },
 }
+
+local currency = {}
+for _, group in ipairs(Module.Groups) do
+  for _, currencyID in ipairs(group.currencies) do
+    tinsert(currency, currencyID)
+  end
+end
 SI.currency = currency
 
 local currencySorted = {}
