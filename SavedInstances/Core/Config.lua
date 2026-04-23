@@ -69,8 +69,10 @@ local function GetCurrencyGroupName(group)
 end
 
 local function ResetCurrenciesToDefault()
-  for _, currencyID in ipairs(SI.currency) do
-    SI.db.Tooltip["Currency" .. currencyID] = SI.defaultDB.Tooltip["Currency" .. currencyID]
+  for _, group in ipairs(Currency.Groups or {}) do
+    for _, currencyID in ipairs(group.currencies) do
+      SI.db.Tooltip["Currency" .. currencyID] = SI.defaultDB.Tooltip["Currency" .. currencyID]
+    end
   end
 
   RefreshTooltipCache()
