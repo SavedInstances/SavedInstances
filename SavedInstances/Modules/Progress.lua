@@ -218,7 +218,7 @@ local presets = {
     type = "single",
     index = 4,
     name = L["The World Awaits"],
-    questID = 83366,
+    questID = 93605,
     reset = "weekly",
     persists = false,
     fullObjective = false,
@@ -238,7 +238,7 @@ local presets = {
     type = "single",
     index = 6,
     name = L["A Call to Battle"],
-    questID = 83345,
+    questID = 93593,
     reset = "weekly",
     persists = false,
     fullObjective = false,
@@ -259,15 +259,15 @@ local presets = {
     index = 8,
     name = L["Timewalking Weekend Event"],
     questID = {
-      83363, -- A Burning Path Through Time - TBC Timewalking
-      83365, -- A Frozen Path Through Time - WLK Timewalking
-      83359, -- A Shattered Path Through Time - CTM Timewalking
-      83362, -- A Shrouded Path Through Time - MOP Timewalking
-      83364, -- A Savage Path Through Time - WOD Timewalking
-      83360, -- A Fel Path Through Time - LEG Timewalking
-      86731, -- An Original Path Through Time - CLA Timewalking
-      88805, -- A Scarred Path Through Time - BFA Timewalking
-      92649, -- A Shadowed Path Through Time - SL Timewalking
+      93607, -- An Original Path Through Time - CLA Timewalking
+      93608, -- A Burning Path Through Time - TBC Timewalking
+      93610, -- A Frozen Path Through Time - WLK Timewalking
+      93611, -- A Shattered Path Through Time - CTM Timewalking
+      93612, -- A Shrouded Path Through Time - MOP Timewalking
+      93613, -- A Savage Path Through Time - WOD Timewalking
+      93614, -- A Fel Path Through Time - LEG Timewalking
+      93627, -- A Scarred Path Through Time - BFA Timewalking
+      93628, -- A Shadowed Path Through Time - SL Timewalking
     },
     reset = "weekly",
     persists = false,

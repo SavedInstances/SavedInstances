@@ -727,20 +727,20 @@ local QuestExceptions = {
   [58458] = "AccountWeekly", -- Pet Battle Challenge: Blackrock Depths
 
   -- Weekend Event
-  [83363] = "Weekly", -- A Burning Path Through Time - TBC Timewalking
-  [83365] = "Weekly", -- A Frozen Path Through Time - WLK Timewalking
-  [83359] = "Weekly", -- A Shattered Path Through Time - CTM Timewalking
-  [83362] = "Weekly", -- A Shrouded Path Through Time - MOP Timewalking
-  [83364] = "Weekly", -- A Savage Path Through Time - WOD Timewalking
-  [83360] = "Weekly", -- A Fel Path Through Time - LEG Timewalking
-  [86731] = "Weekly", -- An Original Path Through Time - CLA Timewalking
-  [88805] = "Weekly", -- A Scarred Path Through Time - BFA Timewalking
-  [92649] = "Weekly", -- A Shadowed Path Through Time - SL Timewalking
-  [83345] = "Weekly", -- A Call to Battle - Battlegrounds
+  [93607] = "Weekly", -- An Original Path Through Time - CLA Timewalking
+  [93608] = "Weekly", -- A Burning Path Through Time - TBC Timewalking
+  [93610] = "Weekly", -- A Frozen Path Through Time - WLK Timewalking
+  [93611] = "Weekly", -- A Shattered Path Through Time - CTM Timewalking
+  [93612] = "Weekly", -- A Shrouded Path Through Time - MOP Timewalking
+  [93613] = "Weekly", -- A Savage Path Through Time - WOD Timewalking
+  [93614] = "Weekly", -- A Fel Path Through Time - LEG Timewalking
+  [93627] = "Weekly", -- A Scarred Path Through Time - BFA Timewalking
+  [93628] = "Weekly", -- A Shadowed Path Through Time - SL Timewalking
+  [93593] = "Weekly", -- A Call to Battle - Battlegrounds
   [93598] = "Weekly", -- Emissary of War - Mythic Dungeons
-  [83357] = "AccountWeekly", -- The Very Best - PvP Pet Battles
-  [83358] = "Weekly", -- The Arena Calls - Arena Skirmishes
-  [83366] = "Weekly", -- The World Awaits - World Quests
+  [93599] = "AccountWeekly", -- The Very Best - PvP Pet Battles
+  [93600] = "Weekly", -- The Arena Calls - Arena Skirmishes
+  [93605] = "Weekly", -- The World Awaits - World Quests
   [93595] = "Weekly", -- A Call to Delves - Delves
 }
 SI.QuestExceptions = QuestExceptions
