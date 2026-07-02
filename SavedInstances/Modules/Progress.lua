@@ -1645,6 +1645,7 @@ local presets = {
       88998, -- Root of the World
       88999, -- Sky's Hope
     },
+    unlockQuest = 89268, -- Lost Legends
     reset = "weekly",
     persists = false,
     fullObjective = false,
