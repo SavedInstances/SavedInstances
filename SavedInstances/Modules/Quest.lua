@@ -736,6 +736,7 @@ local QuestExceptions = {
   [93614] = "Weekly", -- A Fel Path Through Time - LEG Timewalking
   [93627] = "Weekly", -- A Scarred Path Through Time - BFA Timewalking
   [93628] = "Weekly", -- A Shadowed Path Through Time - SL Timewalking
+  [93497] = "Weekly", -- A Soaring Path Through Time - DF Timewalking
   [93593] = "Weekly", -- A Call to Battle - Battlegrounds
   [93598] = "Weekly", -- Emissary of War - Mythic Dungeons
   [93599] = "AccountWeekly", -- The Very Best - PvP Pet Battles
@@ -760,6 +761,7 @@ local TimewalkingItemQuest = {
   [89222] = 2874, -- Remnant of Azeroth - BFA Timewalking - Alliance
   [89223] = 2874, -- Remnant of Azeroth - BFA Timewalking - Horde
   [92650] = 3076, -- The Flickering Anima - SL Timewalking
+  [93852] = 3143, -- Lost Iridescent Flightstone - DF Timewalking
 }
 
 for questID, tbl in pairs(TimewalkingItemQuest) do
