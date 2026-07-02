@@ -268,6 +268,7 @@ local presets = {
       93614, -- A Fel Path Through Time - LEG Timewalking
       93627, -- A Scarred Path Through Time - BFA Timewalking
       93628, -- A Shadowed Path Through Time - SL Timewalking
+      93497, -- A Soaring Path Through Time - DF Timewalking
     },
     reset = "weekly",
     persists = false,
