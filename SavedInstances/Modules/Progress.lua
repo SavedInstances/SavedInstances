@@ -1891,6 +1891,20 @@ local presets = {
       [95137] = L["Thalassian Treatise on Tailoring"],
     },
   },
+  -- Midnight Void Assaults
+  ["mn-void-assaults"] = {
+    type = "any",
+    expansion = 11,
+    index = 21,
+    name = L["Midnight Void Assaults"],
+    questID = {
+      94385, -- Void Assaults: Eversong Woods
+      94386, -- Void Assaults: Eversong Woods
+    },
+    reset = "weekly",
+    persists = false,
+    fullObjective = false,
+  },
 }
 
 ---update the progress of quest to the store

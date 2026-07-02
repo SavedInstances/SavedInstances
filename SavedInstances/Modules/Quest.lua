@@ -704,6 +704,8 @@ local QuestExceptions = {
   [89268] = "AccountWeekly", -- Lost Legends
   [90962] = "Daily", -- Stormarion Assault
   [91966] = "Daily", -- Saltheril's Soiree
+  [94385] = "Weekly", -- Void Assaults: Eversong Woods
+  [94386] = "Weekly", -- Void Assaults: Zul'Aman
 
   -- General
   -- Darkmoon Faire
