@@ -1037,7 +1037,7 @@ local function DifficultyString(instance, diff, toon, expired, killoverride, tot
       killed = "*"
       total = "*"
     elseif killed == 1 and total == 1 and not expired then
-      text = SI.questCheckMark
+      text = text:gsub("KILLED/TOTAL", SI.questCheckMark)
     end
     text = text:gsub("KILLED", killed)
     text = text:gsub("TOTAL", total)
