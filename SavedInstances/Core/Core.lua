@@ -1643,7 +1643,7 @@ local function SI_GetQuestReward()
     ["Link"] = link,
     ["isDaily"] = isDaily,
     ["Expires"] = expires,
-    ["Zone"] = C_Map.GetMapInfo(mapid),
+    ["Zone"] = mapid and C_Map.GetMapInfo(mapid),
   }
   local scope = t
   if isAccount then
