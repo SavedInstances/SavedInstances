@@ -680,13 +680,13 @@ local QuestExceptions = {
   [93757] = "Weekly", -- Voidscar Arena
   [93758] = "Weekly", -- Nexus-Point Xenas
   -- Legends of the Haranir
-  [88993] = "Weekly", -- Wey'nan's Ward
-  [88994] = "Weekly", -- The Cauldron of Echoes
-  [88995] = "Weekly", -- Aln'hara's Bloom
-  [88996] = "Weekly", -- The Echoless Flame
-  [88997] = "Weekly", -- Russula's Outreach
-  [88998] = "Weekly", -- Root of the World
-  [88999] = "Weekly", -- Sky's Hope
+  [88993] = "Regular", -- Wey'nan's Ward
+  [88994] = "Regular", -- The Cauldron of Echoes
+  [88995] = "Regular", -- Aln'hara's Bloom
+  [88996] = "Regular", -- The Echoless Flame
+  [88997] = "Regular", -- Russula's Outreach
+  [88998] = "Regular", -- Root of the World
+  [88999] = "Regular", -- Sky's Hope
   -- Harandar Daily Wanted
   [91970] = "Daily", -- WANTED: Gelatonius
   [91980] = "Daily", -- WANTED: Hellebora's Thorn
