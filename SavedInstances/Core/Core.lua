@@ -847,7 +847,7 @@ function SI:instanceException(LFDID)
         SI.ScanTooltip:Show()
         local line = _G[SI.ScanTooltip:GetName() .. "TextLeft1"]
         line = line and line:GetText()
-        if line and #line > 0 then
+        if line and (issecretvalue(line) or #line > 0) then
           exc[idx] = line
         end
       end
