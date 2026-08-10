@@ -118,4 +118,9 @@ SI.WorldBosses = {
   [9011] = { quest = 66615, name = EJ_GetEncounterInfo(2433), expansion = 8, level = 60 }, -- Nurgash Muckformed
   [9012] = { quest = 66618, name = EJ_GetEncounterInfo(2456), expansion = 8, level = 60 }, -- Mor'geth, Tormentor of the Damned
   [9013] = { quest = 66619, name = EJ_GetEncounterInfo(2468), expansion = 8, level = 60 }, -- Antros
+  -- Val / Naigtal
+  [9014] = { quest = 96295, name = L["Imperator Pertinax (Normal)"], expansion = 11, level = 90 }, -- Imperator Pertinax (Normal)
+  [9015] = { quest = 96941, name = L["Imperator Pertinax (Heroic)"], expansion = 11, level = 90 }, -- Imperator Pertinax (Heroic)
+  [9016] = { quest = 96522, name = L["Nexus-Captain Leth'ir (Normal)"], expansion = 11, level = 90 }, -- Nexus-Captain Leth'ir (Normal)
+  [9017] = { quest = 96942, name = L["Nexus-Captain Leth'ir (Heroic)"], expansion = 11, level = 90 }, -- Nexus-Captain Leth'ir (Heroic)
 }
