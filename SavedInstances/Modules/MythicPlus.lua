@@ -44,6 +44,11 @@ local ItemLevelsBySeason = {
     ["HEROIC"] = 243,
     ["MYTHIC"] = 256,
   },
+  -- MID Season 2
+  [120] = {
+    ["HEROIC"] = 289,
+    ["MYTHIC"] = 302,
+  },
 }
 
 local KeystoneAbbrev = {
@@ -135,6 +140,11 @@ local KeystoneAbbrev = {
   [558] = L["MT"], -- Magisters' Terrace
   [559] = L["NPX"], -- Nexus-Point Xenas
   [560] = L["MC"], -- Maisara Caverns
+  [584] = L["BV"], -- The Blinding Vale
+  [585] = L["VSA"], -- Voidscar Arena
+  [586] = L["DON"], -- Den of Nalorakk
+  [587] = L["MR"], -- Murder Row
+  [588] = L["AOF"], -- Altar of Fangs
 }
 SI.KeystoneAbbrev = KeystoneAbbrev
 
