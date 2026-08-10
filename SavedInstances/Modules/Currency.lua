@@ -16,6 +16,7 @@ local currency = {
   515, -- Darkmoon Prize Ticket
   2588, -- Riders of Azeroth Badge
   3363, -- Community Coupons
+  3508, -- Salty Pet Charms
 
   -- Wrath of the Lich King
   241, -- Champion's Seal
@@ -182,8 +183,6 @@ local currency = {
   3264, -- Artisan Miner's Moxie
   3265, -- Artisan Skinner's Moxie
   3266, -- Artisan Tailor's Moxie
-  3028, -- Restored Coffer Key
-  3310, -- Coffer Key Shards
   3212, -- Radiant Spark Dust
   3378, -- Dawnlight Manaflux
   3383, -- Adventurer Dawncrest
@@ -191,7 +190,18 @@ local currency = {
   3343, -- Champion Dawncrest
   3345, -- Hero Dawncrest
   3347, -- Myth Dawncrest
+  3448, -- Corrosive Coin
+  3546, -- Coiled Filament
+  3028, -- Restored Coffer Key
+  3310, -- Coffer Key Shards
   3418, -- Nebulous Voidcore
+  3465, -- Venomblight Manaflux
+  3509, -- Tidal Spark Dust
+  3442, -- Adventurer Mistcrest
+  3443, -- Veteran Mistcrest
+  3444, -- Champion Mistcrest
+  3445, -- Hero Mistcrest
+  3446, -- Myth Mistcrest
 }
 SI.currency = currency
 
