@@ -94,16 +94,10 @@ local currency = {
 
   -- Dragonflight
   2003, -- Dragon Isles Supplies
-  2245, -- Flightstones
   2123, -- Bloody Tokens
   2797, -- Trophy of Strife
-  2045, -- Dragon Glyph Embers
   2118, -- Elemental Overflow
   2122, -- Storm Sigil
-  2409, -- Whelpling Crest Fragment Tracker [DNT]
-  2410, -- Drake Crest Fragment Tracker [DNT]
-  2411, -- Wyrm Crest Fragment Tracker [DNT]
-  2412, -- Aspect Crest Fragment Tracker [DNT]
   2413, -- 10.1 Professions - Personal Tracker - S2 Spark Drops (Hidden)
   2533, -- Renascent Shadowflame
   2594, -- Paracausal Flakes
@@ -111,17 +105,9 @@ local currency = {
   2651, -- Seedbloom
   2777, -- Dream Infusion
   2796, -- Renascent Dream
-  2706, -- Whelpling's Dreaming Crest
-  2707, -- Drake's Dreaming Crest
-  2708, -- Wyrm's Dreaming Crest
-  2709, -- Aspect's Dreaming Crest
   2774, -- 10.2 Professions - Personal Tracker - S3 Spark Drops (Hidden)
   2657, -- Mysterious Fragment
   2912, -- Renascent Awakening
-  2806, -- Whelpling's Awakened Crest
-  2807, -- Drake's Awakened Crest
-  2809, -- Wyrm's Awakened Crest
-  2812, -- Aspect's Awakened Crest
   2800, -- 10.2.6 Professions - Personal Tracker - S4 Spark Drops (Hidden)
   3010, -- 10.2.6 Rewards - Personal Tracker - S4 Dinar Drops (Hidden)
   2778, -- Bronze
@@ -131,12 +117,7 @@ local currency = {
   2803, -- Undercoin
   2815, -- Resonance Crystals
   3056, -- Kej
-  3008, -- Valorstones
   2813, -- Harmonized Silk
-  2914, -- Weathered Harbinger Crest
-  2915, -- Carved Harbinger Crest
-  2916, -- Runed Harbinger Crest
-  2917, -- Gilded Harbinger Crest
   3023, -- 11.0 Professions - Personal Tracker - S1 Spark Drops (Hidden)
   3100, -- Bronze Celebration Token
   3090, -- Flame-Blessed Iron
@@ -144,20 +125,12 @@ local currency = {
   3220, -- Vintage Kaja'Cola Can
   3226, -- Market Research
   3116, -- Essence of Kaja'mite
-  3107, -- Weathered Undermine Crest
-  3108, -- Carved Undermine Crest
-  3109, -- Runed Undermine Crest
-  3110, -- Gilded Undermine Crest
   3132, -- 11.1 Professions - Personal Tracker - S2 Spark Drops (Hidden)
   3149, -- Displaced Corrupted Mementos
   3278, -- Ethereal Strands
   3303, -- Untethered Coin
   3356, -- Untainted Mana-Crystals
   3269, -- Ethereal Voidsplinter
-  3284, -- Weathered Ethereal Crest
-  3286, -- Carved Ethereal Crest
-  3288, -- Runed Ethereal Crest
-  3290, -- Gilded Ethereal Crest
   3141, -- Starlight Spark Dust
 
   -- Midnight
@@ -185,11 +158,6 @@ local currency = {
   3266, -- Artisan Tailor's Moxie
   3212, -- Radiant Spark Dust
   3378, -- Dawnlight Manaflux
-  3383, -- Adventurer Dawncrest
-  3341, -- Veteran Dawncrest
-  3343, -- Champion Dawncrest
-  3345, -- Hero Dawncrest
-  3347, -- Myth Dawncrest
   3448, -- Corrosive Coin
   3546, -- Coiled Filament
   3028, -- Restored Coffer Key
@@ -281,10 +249,6 @@ for _, tbl in pairs(specialCurrency) do
 end
 
 Module.OverrideName = {
-  [2409] = L["Loot Whelpling Crest Fragment"], -- Whelpling Crest Fragment Tracker [DNT]
-  [2410] = L["Loot Drake Crest Fragment"], -- Drake Crest Fragment Tracker [DNT]
-  [2411] = L["Loot Wyrm Crest Fragment"], -- Wyrm Crest Fragment Tracker [DNT]
-  [2412] = L["Loot Aspect Crest Fragment"], -- Aspect Crest Fragment Tracker [DNT]
   [2413] = L["Loot Spark of Shadowflame"], -- 10.1 Professions - Personal Tracker - S2 Spark Drops (Hidden)
   [2774] = L["Loot Spark of Dreams"], -- 10.2 Professions - Personal Tracker - S3 Spark Drops (Hidden)
   [2800] = L["Loot Spark of Awakening"], -- 10.2.6 Professions - Personal Tracker - S4 Spark Drops (Hidden)
